@@ -3,7 +3,7 @@ package conv
 import (
 	"strings"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
+	"github.com/antlr4-go/antlr/v4"
 	"github.com/kaisawind/cobol/constant"
 )
 

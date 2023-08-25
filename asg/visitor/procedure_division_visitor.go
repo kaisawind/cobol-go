@@ -1,7 +1,7 @@
 package visitor
 
 import (
-	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
+	"github.com/antlr4-go/antlr/v4"
 	"github.com/kaisawind/cobol/asg/conv"
 	"github.com/kaisawind/cobol/asg/visitor/procedure"
 	"github.com/kaisawind/cobol/gen/cobol85"

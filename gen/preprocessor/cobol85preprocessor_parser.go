@@ -1,4 +1,4 @@
-// Code generated from java-escape by ANTLR 4.11.1. DO NOT EDIT.
+// Code generated from preprocessor/Cobol85Preprocessor.g4 by ANTLR 4.13.0. DO NOT EDIT.
 
 package preprocessor // Cobol85Preprocessor
 import (
@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
+	"github.com/antlr4-go/antlr/v4"
 )
 
 // Suppress unused import errors
@@ -18,20 +18,20 @@ type Cobol85PreprocessorParser struct {
 	*antlr.BaseParser
 }
 
-var cobol85preprocessorParserStaticData struct {
+var Cobol85PreprocessorParserStaticData struct {
 	once                   sync.Once
 	serializedATN          []int32
-	literalNames           []string
-	symbolicNames          []string
-	ruleNames              []string
-	predictionContextCache *antlr.PredictionContextCache
+	LiteralNames           []string
+	SymbolicNames          []string
+	RuleNames              []string
+	PredictionContextCache *antlr.PredictionContextCache
 	atn                    *antlr.ATN
 	decisionToDFA          []*antlr.DFA
 }
 
 func cobol85preprocessorParserInit() {
-	staticData := &cobol85preprocessorParserStaticData
-	staticData.literalNames = []string{
+	staticData := &Cobol85PreprocessorParserStaticData
+	staticData.LiteralNames = []string{
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
@@ -50,7 +50,7 @@ func cobol85preprocessorParserInit() {
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "", "", "", "'*>'", "','", "'.'", "'=='",
 	}
-	staticData.symbolicNames = []string{
+	staticData.SymbolicNames = []string{
 		"", "ADATA", "ADV", "ALIAS", "ANSI", "ANY", "APOST", "AR", "ARITH",
 		"AUTO", "AWO", "BIN", "BLOCK0", "BUF", "BUFSIZE", "BY", "CBL", "CBLCARD",
 		"CICS", "CO", "COBOL2", "COBOL3", "CODEPAGE", "COMPAT", "COMPILE", "COPY",
@@ -91,7 +91,7 @@ func cobol85preprocessorParserInit() {
 		"DOUBLEEQUALCHAR", "NONNUMERICLITERAL", "NUMERICLITERAL", "IDENTIFIER",
 		"FILENAME", "PREFIX", "NEWLINE", "COMMENTLINE", "WS", "TEXT",
 	}
-	staticData.ruleNames = []string{
+	staticData.RuleNames = []string{
 		"startRule", "compilerOptions", "compilerXOpts", "compilerOption", "execCicsStatement",
 		"execSqlStatement", "execSqlImsStatement", "copyStatement", "copySource",
 		"copyLibrary", "prefixingPhrase", "replacingPhrase", "replaceArea",
@@ -100,7 +100,7 @@ func cobol85preprocessorParserInit() {
 		"titleStatement", "pseudoText", "charData", "charDataSql", "charDataLine",
 		"cobolWord", "prefixWord", "literal", "filename", "charDataKeyword",
 	}
-	staticData.predictionContextCache = antlr.NewPredictionContextCache()
+	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
 		4, 1, 294, 694, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
 		4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7,
@@ -504,7 +504,7 @@ func cobol85preprocessorParserInit() {
 // NewCobol85PreprocessorParser(). You can call this function if you wish to initialize the static state ahead
 // of time.
 func Cobol85PreprocessorParserInit() {
-	staticData := &cobol85preprocessorParserStaticData
+	staticData := &Cobol85PreprocessorParserStaticData
 	staticData.once.Do(cobol85preprocessorParserInit)
 }
 
@@ -513,12 +513,12 @@ func NewCobol85PreprocessorParser(input antlr.TokenStream) *Cobol85PreprocessorP
 	Cobol85PreprocessorParserInit()
 	this := new(Cobol85PreprocessorParser)
 	this.BaseParser = antlr.NewBaseParser(input)
-	staticData := &cobol85preprocessorParserStaticData
-	this.Interpreter = antlr.NewParserATNSimulator(this, staticData.atn, staticData.decisionToDFA, staticData.predictionContextCache)
-	this.RuleNames = staticData.ruleNames
-	this.LiteralNames = staticData.literalNames
-	this.SymbolicNames = staticData.symbolicNames
-	this.GrammarFileName = "java-escape"
+	staticData := &Cobol85PreprocessorParserStaticData
+	this.Interpreter = antlr.NewParserATNSimulator(this, staticData.atn, staticData.decisionToDFA, staticData.PredictionContextCache)
+	this.RuleNames = staticData.RuleNames
+	this.LiteralNames = staticData.LiteralNames
+	this.SymbolicNames = staticData.SymbolicNames
+	this.GrammarFileName = "Cobol85Preprocessor.g4"
 
 	return this
 }
@@ -865,20 +865,52 @@ type IStartRuleContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EOF() antlr.TerminalNode
+	AllCompilerOptions() []ICompilerOptionsContext
+	CompilerOptions(i int) ICompilerOptionsContext
+	AllCopyStatement() []ICopyStatementContext
+	CopyStatement(i int) ICopyStatementContext
+	AllExecCicsStatement() []IExecCicsStatementContext
+	ExecCicsStatement(i int) IExecCicsStatementContext
+	AllExecSqlStatement() []IExecSqlStatementContext
+	ExecSqlStatement(i int) IExecSqlStatementContext
+	AllExecSqlImsStatement() []IExecSqlImsStatementContext
+	ExecSqlImsStatement(i int) IExecSqlImsStatementContext
+	AllReplaceOffStatement() []IReplaceOffStatementContext
+	ReplaceOffStatement(i int) IReplaceOffStatementContext
+	AllReplaceArea() []IReplaceAreaContext
+	ReplaceArea(i int) IReplaceAreaContext
+	AllEjectStatement() []IEjectStatementContext
+	EjectStatement(i int) IEjectStatementContext
+	AllSkipStatement() []ISkipStatementContext
+	SkipStatement(i int) ISkipStatementContext
+	AllTitleStatement() []ITitleStatementContext
+	TitleStatement(i int) ITitleStatementContext
+	AllCharDataLine() []ICharDataLineContext
+	CharDataLine(i int) ICharDataLineContext
+	AllNEWLINE() []antlr.TerminalNode
+	NEWLINE(i int) antlr.TerminalNode
+
 	// IsStartRuleContext differentiates from other interfaces.
 	IsStartRuleContext()
 }
 
 type StartRuleContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyStartRuleContext() *StartRuleContext {
 	var p = new(StartRuleContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_startRule
 	return p
+}
+
+func InitEmptyStartRuleContext(p *StartRuleContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_startRule
 }
 
 func (*StartRuleContext) IsStartRuleContext() {}
@@ -886,7 +918,7 @@ func (*StartRuleContext) IsStartRuleContext() {}
 func NewStartRuleContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *StartRuleContext {
 	var p = new(StartRuleContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_startRule
@@ -1390,38 +1422,26 @@ func (s *StartRuleContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 }
 
 func (p *Cobol85PreprocessorParser) StartRule() (localctx IStartRuleContext) {
-	this := p
-	_ = this
-
 	localctx = NewStartRuleContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 0, Cobol85PreprocessorParserRULE_startRule)
 	var _la int
 
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.EnterOuterAlt(localctx, 1)
 	p.SetState(78)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_la = p.GetTokenStream().LA(1)
 
-	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&-2310346608841326594) != 0 || (int64((_la-64)) & ^0x3f) == 0 && ((int64(1)<<(_la-64))&-8193) != 0 || (int64((_la-128)) & ^0x3f) == 0 && ((int64(1)<<(_la-128))&-288230376151711745) != 0 || (int64((_la-192)) & ^0x3f) == 0 && ((int64(1)<<(_la-192))&-18084767270436865) != 0 || (int64((_la-256)) & ^0x3f) == 0 && ((int64(1)<<(_la-256))&325813534447) != 0 {
+	for ((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&-2310346608841326594) != 0) || ((int64((_la-64)) & ^0x3f) == 0 && ((int64(1)<<(_la-64))&-8193) != 0) || ((int64((_la-128)) & ^0x3f) == 0 && ((int64(1)<<(_la-128))&-288230376151711745) != 0) || ((int64((_la-192)) & ^0x3f) == 0 && ((int64(1)<<(_la-192))&-18084767270436865) != 0) || ((int64((_la-256)) & ^0x3f) == 0 && ((int64(1)<<(_la-256))&325813534447) != 0) {
 		p.SetState(76)
 		p.GetErrorHandler().Sync(p)
-		switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 0, p.GetParserRuleContext()) {
+		if p.HasError() {
+			goto errorExit
+		}
+
+		switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 0, p.GetParserRuleContext()) {
 		case 1:
 			{
 				p.SetState(64)
@@ -1492,20 +1512,43 @@ func (p *Cobol85PreprocessorParser) StartRule() (localctx IStartRuleContext) {
 			{
 				p.SetState(75)
 				p.Match(Cobol85PreprocessorParserNEWLINE)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
+		case antlr.ATNInvalidAltNumber:
+			goto errorExit
 		}
 
 		p.SetState(80)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
 		p.SetState(81)
 		p.Match(Cobol85PreprocessorParserEOF)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ICompilerOptionsContext is an interface to support dynamic dispatch.
@@ -1515,20 +1558,35 @@ type ICompilerOptionsContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	PROCESS() antlr.TerminalNode
+	CBL() antlr.TerminalNode
+	AllCompilerOption() []ICompilerOptionContext
+	CompilerOption(i int) ICompilerOptionContext
+	AllCompilerXOpts() []ICompilerXOptsContext
+	CompilerXOpts(i int) ICompilerXOptsContext
+	AllCOMMACHAR() []antlr.TerminalNode
+	COMMACHAR(i int) antlr.TerminalNode
+
 	// IsCompilerOptionsContext differentiates from other interfaces.
 	IsCompilerOptionsContext()
 }
 
 type CompilerOptionsContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyCompilerOptionsContext() *CompilerOptionsContext {
 	var p = new(CompilerOptionsContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_compilerOptions
 	return p
+}
+
+func InitEmptyCompilerOptionsContext(p *CompilerOptionsContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_compilerOptions
 }
 
 func (*CompilerOptionsContext) IsCompilerOptionsContext() {}
@@ -1536,7 +1594,7 @@ func (*CompilerOptionsContext) IsCompilerOptionsContext() {}
 func NewCompilerOptionsContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CompilerOptionsContext {
 	var p = new(CompilerOptionsContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_compilerOptions
@@ -1675,28 +1733,9 @@ func (s *CompilerOptionsContext) Accept(visitor antlr.ParseTreeVisitor) interfac
 }
 
 func (p *Cobol85PreprocessorParser) CompilerOptions() (localctx ICompilerOptionsContext) {
-	this := p
-	_ = this
-
 	localctx = NewCompilerOptionsContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 2, Cobol85PreprocessorParserRULE_compilerOptions)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	var _alt int
 
@@ -1714,23 +1753,36 @@ func (p *Cobol85PreprocessorParser) CompilerOptions() (localctx ICompilerOptions
 	}
 	p.SetState(89)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_alt = 1
 	for ok := true; ok; ok = _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
 		switch _alt {
 		case 1:
 			p.SetState(89)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 
 			switch p.GetTokenStream().LA(1) {
 			case Cobol85PreprocessorParserADATA, Cobol85PreprocessorParserADV, Cobol85PreprocessorParserAPOST, Cobol85PreprocessorParserAR, Cobol85PreprocessorParserARITH, Cobol85PreprocessorParserAWO, Cobol85PreprocessorParserBLOCK0, Cobol85PreprocessorParserBUF, Cobol85PreprocessorParserBUFSIZE, Cobol85PreprocessorParserCBLCARD, Cobol85PreprocessorParserCICS, Cobol85PreprocessorParserCOBOL2, Cobol85PreprocessorParserCOBOL3, Cobol85PreprocessorParserCODEPAGE, Cobol85PreprocessorParserCOMPILE, Cobol85PreprocessorParserCP, Cobol85PreprocessorParserCPP, Cobol85PreprocessorParserCPSM, Cobol85PreprocessorParserCURR, Cobol85PreprocessorParserCURRENCY, Cobol85PreprocessorParserDATA, Cobol85PreprocessorParserDATEPROC, Cobol85PreprocessorParserDBCS, Cobol85PreprocessorParserDEBUG, Cobol85PreprocessorParserDECK, Cobol85PreprocessorParserDIAGTRUNC, Cobol85PreprocessorParserDLL, Cobol85PreprocessorParserDP, Cobol85PreprocessorParserDTR, Cobol85PreprocessorParserDU, Cobol85PreprocessorParserDUMP, Cobol85PreprocessorParserDYN, Cobol85PreprocessorParserDYNAM, Cobol85PreprocessorParserEDF, Cobol85PreprocessorParserEPILOG, Cobol85PreprocessorParserEXIT, Cobol85PreprocessorParserEXP, Cobol85PreprocessorParserEXPORTALL, Cobol85PreprocessorParserFASTSRT, Cobol85PreprocessorParserFEPI, Cobol85PreprocessorParserFLAG, Cobol85PreprocessorParserFLAGSTD, Cobol85PreprocessorParserFSRT, Cobol85PreprocessorParserGDS, Cobol85PreprocessorParserGRAPHIC, Cobol85PreprocessorParserINTDATE, Cobol85PreprocessorParserLANG, Cobol85PreprocessorParserLANGUAGE, Cobol85PreprocessorParserLC, Cobol85PreprocessorParserLEASM, Cobol85PreprocessorParserLENGTH, Cobol85PreprocessorParserLIB, Cobol85PreprocessorParserLIN, Cobol85PreprocessorParserLINECOUNT, Cobol85PreprocessorParserLINKAGE, Cobol85PreprocessorParserLIST, Cobol85PreprocessorParserMAP, Cobol85PreprocessorParserMARGINS, Cobol85PreprocessorParserMD, Cobol85PreprocessorParserMDECK, Cobol85PreprocessorParserNAME, Cobol85PreprocessorParserNATLANG, Cobol85PreprocessorParserNOADATA, Cobol85PreprocessorParserNOADV, Cobol85PreprocessorParserNOAWO, Cobol85PreprocessorParserNOBLOCK0, Cobol85PreprocessorParserNOC, Cobol85PreprocessorParserNOCBLCARD, Cobol85PreprocessorParserNOCICS, Cobol85PreprocessorParserNOCMPR2, Cobol85PreprocessorParserNOCOMPILE, Cobol85PreprocessorParserNOCPSM, Cobol85PreprocessorParserNOCURR, Cobol85PreprocessorParserNOCURRENCY, Cobol85PreprocessorParserNOD, Cobol85PreprocessorParserNODATEPROC, Cobol85PreprocessorParserNODBCS, Cobol85PreprocessorParserNODE, Cobol85PreprocessorParserNODEBUG, Cobol85PreprocessorParserNODECK, Cobol85PreprocessorParserNODIAGTRUNC, Cobol85PreprocessorParserNODLL, Cobol85PreprocessorParserNODU, Cobol85PreprocessorParserNODUMP, Cobol85PreprocessorParserNODP, Cobol85PreprocessorParserNODTR, Cobol85PreprocessorParserNODYN, Cobol85PreprocessorParserNODYNAM, Cobol85PreprocessorParserNOEDF, Cobol85PreprocessorParserNOEPILOG, Cobol85PreprocessorParserNOEXIT, Cobol85PreprocessorParserNOEXP, Cobol85PreprocessorParserNOEXPORTALL, Cobol85PreprocessorParserNOF, Cobol85PreprocessorParserNOFASTSRT, Cobol85PreprocessorParserNOFEPI, Cobol85PreprocessorParserNOFLAG, Cobol85PreprocessorParserNOFLAGMIG, Cobol85PreprocessorParserNOFLAGSTD, Cobol85PreprocessorParserNOFSRT, Cobol85PreprocessorParserNOGRAPHIC, Cobol85PreprocessorParserNOLENGTH, Cobol85PreprocessorParserNOLIB, Cobol85PreprocessorParserNOLINKAGE, Cobol85PreprocessorParserNOLIST, Cobol85PreprocessorParserNOMAP, Cobol85PreprocessorParserNOMD, Cobol85PreprocessorParserNOMDECK, Cobol85PreprocessorParserNONAME, Cobol85PreprocessorParserNONUM, Cobol85PreprocessorParserNONUMBER, Cobol85PreprocessorParserNOOBJ, Cobol85PreprocessorParserNOOBJECT, Cobol85PreprocessorParserNOOFF, Cobol85PreprocessorParserNOOFFSET, Cobol85PreprocessorParserNOOPSEQUENCE, Cobol85PreprocessorParserNOOPT, Cobol85PreprocessorParserNOOPTIMIZE, Cobol85PreprocessorParserNOOPTIONS, Cobol85PreprocessorParserNOP, Cobol85PreprocessorParserNOPROLOG, Cobol85PreprocessorParserNORENT, Cobol85PreprocessorParserNOS, Cobol85PreprocessorParserNOSEQ, Cobol85PreprocessorParserNOSOURCE, Cobol85PreprocessorParserNOSPIE, Cobol85PreprocessorParserNOSQL, Cobol85PreprocessorParserNOSQLC, Cobol85PreprocessorParserNOSQLCCSID, Cobol85PreprocessorParserNOSSR, Cobol85PreprocessorParserNOSSRANGE, Cobol85PreprocessorParserNOSTDTRUNC, Cobol85PreprocessorParserNOSEQUENCE, Cobol85PreprocessorParserNOTERM, Cobol85PreprocessorParserNOTERMINAL, Cobol85PreprocessorParserNOTEST, Cobol85PreprocessorParserNOTHREAD, Cobol85PreprocessorParserNOVBREF, Cobol85PreprocessorParserNOWD, Cobol85PreprocessorParserNOWORD, Cobol85PreprocessorParserNOX, Cobol85PreprocessorParserNOXREF, Cobol85PreprocessorParserNOZWB, Cobol85PreprocessorParserNS, Cobol85PreprocessorParserNSEQ, Cobol85PreprocessorParserNSYMBOL, Cobol85PreprocessorParserNUM, Cobol85PreprocessorParserNUMBER, Cobol85PreprocessorParserNUMPROC, Cobol85PreprocessorParserOBJ, Cobol85PreprocessorParserOBJECT, Cobol85PreprocessorParserOFF, Cobol85PreprocessorParserOFFSET, Cobol85PreprocessorParserOP, Cobol85PreprocessorParserOPMARGINS, Cobol85PreprocessorParserOPSEQUENCE, Cobol85PreprocessorParserOPT, Cobol85PreprocessorParserOPTFILE, Cobol85PreprocessorParserOPTIMIZE, Cobol85PreprocessorParserOPTIONS, Cobol85PreprocessorParserOUT, Cobol85PreprocessorParserOUTDD, Cobol85PreprocessorParserPGMN, Cobol85PreprocessorParserPGMNAME, Cobol85PreprocessorParserPROLOG, Cobol85PreprocessorParserQUOTE, Cobol85PreprocessorParserRENT, Cobol85PreprocessorParserRMODE, Cobol85PreprocessorParserSEQ, Cobol85PreprocessorParserSEQUENCE, Cobol85PreprocessorParserSIZE, Cobol85PreprocessorParserSOURCE, Cobol85PreprocessorParserSP, Cobol85PreprocessorParserSPACE, Cobol85PreprocessorParserSPIE, Cobol85PreprocessorParserSQL, Cobol85PreprocessorParserSQLC, Cobol85PreprocessorParserSQLCCSID, Cobol85PreprocessorParserSSR, Cobol85PreprocessorParserSSRANGE, Cobol85PreprocessorParserSYSEIB, Cobol85PreprocessorParserSZ, Cobol85PreprocessorParserTERM, Cobol85PreprocessorParserTERMINAL, Cobol85PreprocessorParserTEST, Cobol85PreprocessorParserTHREAD, Cobol85PreprocessorParserTRUNC, Cobol85PreprocessorParserVBREF, Cobol85PreprocessorParserWD, Cobol85PreprocessorParserWORD, Cobol85PreprocessorParserXMLPARSE, Cobol85PreprocessorParserXP, Cobol85PreprocessorParserXREF, Cobol85PreprocessorParserYEARWINDOW, Cobol85PreprocessorParserYW, Cobol85PreprocessorParserZWB, Cobol85PreprocessorParserC_CHAR, Cobol85PreprocessorParserD_CHAR, Cobol85PreprocessorParserF_CHAR, Cobol85PreprocessorParserQ_CHAR, Cobol85PreprocessorParserS_CHAR, Cobol85PreprocessorParserX_CHAR, Cobol85PreprocessorParserCOMMACHAR:
 				p.SetState(85)
 				p.GetErrorHandler().Sync(p)
+				if p.HasError() {
+					goto errorExit
+				}
 				_la = p.GetTokenStream().LA(1)
 
 				if _la == Cobol85PreprocessorParserCOMMACHAR {
 					{
 						p.SetState(84)
 						p.Match(Cobol85PreprocessorParserCOMMACHAR)
+						if p.HasError() {
+							// Recognition error - abort rule
+							goto errorExit
+						}
 					}
 
 				}
@@ -1746,19 +1798,34 @@ func (p *Cobol85PreprocessorParser) CompilerOptions() (localctx ICompilerOptions
 				}
 
 			default:
-				panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+				p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+				goto errorExit
 			}
 
 		default:
-			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			goto errorExit
 		}
 
 		p.SetState(91)
 		p.GetErrorHandler().Sync(p)
-		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 4, p.GetParserRuleContext())
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 4, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ICompilerXOptsContext is an interface to support dynamic dispatch.
@@ -1768,20 +1835,34 @@ type ICompilerXOptsContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	XOPTS() antlr.TerminalNode
+	LPARENCHAR() antlr.TerminalNode
+	AllCompilerOption() []ICompilerOptionContext
+	CompilerOption(i int) ICompilerOptionContext
+	RPARENCHAR() antlr.TerminalNode
+	AllCOMMACHAR() []antlr.TerminalNode
+	COMMACHAR(i int) antlr.TerminalNode
+
 	// IsCompilerXOptsContext differentiates from other interfaces.
 	IsCompilerXOptsContext()
 }
 
 type CompilerXOptsContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyCompilerXOptsContext() *CompilerXOptsContext {
 	var p = new(CompilerXOptsContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_compilerXOpts
 	return p
+}
+
+func InitEmptyCompilerXOptsContext(p *CompilerXOptsContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_compilerXOpts
 }
 
 func (*CompilerXOptsContext) IsCompilerXOptsContext() {}
@@ -1789,7 +1870,7 @@ func (*CompilerXOptsContext) IsCompilerXOptsContext() {}
 func NewCompilerXOptsContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CompilerXOptsContext {
 	var p = new(CompilerXOptsContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_compilerXOpts
@@ -1891,37 +1972,26 @@ func (s *CompilerXOptsContext) Accept(visitor antlr.ParseTreeVisitor) interface{
 }
 
 func (p *Cobol85PreprocessorParser) CompilerXOpts() (localctx ICompilerXOptsContext) {
-	this := p
-	_ = this
-
 	localctx = NewCompilerXOptsContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 4, Cobol85PreprocessorParserRULE_compilerXOpts)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(93)
 		p.Match(Cobol85PreprocessorParserXOPTS)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(94)
 		p.Match(Cobol85PreprocessorParserLPARENCHAR)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(95)
@@ -1929,17 +1999,27 @@ func (p *Cobol85PreprocessorParser) CompilerXOpts() (localctx ICompilerXOptsCont
 	}
 	p.SetState(102)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_la = p.GetTokenStream().LA(1)
 
-	for (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&-639230256804891194) != 0 || (int64((_la-64)) & ^0x3f) == 0 && ((int64(1)<<(_la-64))&-2669655688115) != 0 || (int64((_la-128)) & ^0x3f) == 0 && ((int64(1)<<(_la-128))&-72060961292353545) != 0 || (int64((_la-192)) & ^0x3f) == 0 && ((int64(1)<<(_la-192))&-6946732225642628225) != 0 || (int64((_la-258)) & ^0x3f) == 0 && ((int64(1)<<(_la-258))&43540431) != 0 {
+	for ((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&-639230256804891194) != 0) || ((int64((_la-64)) & ^0x3f) == 0 && ((int64(1)<<(_la-64))&-2669655688115) != 0) || ((int64((_la-128)) & ^0x3f) == 0 && ((int64(1)<<(_la-128))&-72060961292353545) != 0) || ((int64((_la-192)) & ^0x3f) == 0 && ((int64(1)<<(_la-192))&-6946732225642628225) != 0) || ((int64((_la-258)) & ^0x3f) == 0 && ((int64(1)<<(_la-258))&43540431) != 0) {
 		p.SetState(97)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 
 		if _la == Cobol85PreprocessorParserCOMMACHAR {
 			{
 				p.SetState(96)
 				p.Match(Cobol85PreprocessorParserCOMMACHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
 		}
@@ -1950,14 +2030,31 @@ func (p *Cobol85PreprocessorParser) CompilerXOpts() (localctx ICompilerXOptsCont
 
 		p.SetState(104)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
 		p.SetState(105)
 		p.Match(Cobol85PreprocessorParserRPARENCHAR)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ICompilerOptionContext is an interface to support dynamic dispatch.
@@ -1967,20 +2064,294 @@ type ICompilerOptionContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	ADATA() antlr.TerminalNode
+	ADV() antlr.TerminalNode
+	APOST() antlr.TerminalNode
+	LPARENCHAR() antlr.TerminalNode
+	RPARENCHAR() antlr.TerminalNode
+	ARITH() antlr.TerminalNode
+	AR() antlr.TerminalNode
+	EXTEND() antlr.TerminalNode
+	AllE_CHAR() []antlr.TerminalNode
+	E_CHAR(i int) antlr.TerminalNode
+	COMPAT() antlr.TerminalNode
+	C_CHAR() antlr.TerminalNode
+	AWO() antlr.TerminalNode
+	BLOCK0() antlr.TerminalNode
+	AllLiteral() []ILiteralContext
+	Literal(i int) ILiteralContext
+	BUFSIZE() antlr.TerminalNode
+	BUF() antlr.TerminalNode
+	CBLCARD() antlr.TerminalNode
+	CICS() antlr.TerminalNode
+	COBOL2() antlr.TerminalNode
+	COBOL3() antlr.TerminalNode
+	CODEPAGE() antlr.TerminalNode
+	CP() antlr.TerminalNode
+	COMPILE() antlr.TerminalNode
+	CPP() antlr.TerminalNode
+	CPSM() antlr.TerminalNode
+	CURRENCY() antlr.TerminalNode
+	CURR() antlr.TerminalNode
+	DATA() antlr.TerminalNode
+	DATEPROC() antlr.TerminalNode
+	DP() antlr.TerminalNode
+	AllCOMMACHAR() []antlr.TerminalNode
+	COMMACHAR(i int) antlr.TerminalNode
+	FLAG() antlr.TerminalNode
+	NOFLAG() antlr.TerminalNode
+	TRIG() antlr.TerminalNode
+	NOTRIG() antlr.TerminalNode
+	DBCS() antlr.TerminalNode
+	DECK() antlr.TerminalNode
+	D_CHAR() antlr.TerminalNode
+	DEBUG() antlr.TerminalNode
+	DIAGTRUNC() antlr.TerminalNode
+	DTR() antlr.TerminalNode
+	DLL() antlr.TerminalNode
+	DUMP() antlr.TerminalNode
+	DU() antlr.TerminalNode
+	DYNAM() antlr.TerminalNode
+	DYN() antlr.TerminalNode
+	EDF() antlr.TerminalNode
+	EPILOG() antlr.TerminalNode
+	EXIT() antlr.TerminalNode
+	EXPORTALL() antlr.TerminalNode
+	EXP() antlr.TerminalNode
+	FASTSRT() antlr.TerminalNode
+	FSRT() antlr.TerminalNode
+	FEPI() antlr.TerminalNode
+	F_CHAR() antlr.TerminalNode
+	AllI_CHAR() []antlr.TerminalNode
+	I_CHAR(i int) antlr.TerminalNode
+	AllS_CHAR() []antlr.TerminalNode
+	S_CHAR(i int) antlr.TerminalNode
+	AllU_CHAR() []antlr.TerminalNode
+	U_CHAR(i int) antlr.TerminalNode
+	AllW_CHAR() []antlr.TerminalNode
+	W_CHAR(i int) antlr.TerminalNode
+	FLAGSTD() antlr.TerminalNode
+	M_CHAR() antlr.TerminalNode
+	H_CHAR() antlr.TerminalNode
+	DD() antlr.TerminalNode
+	N_CHAR() antlr.TerminalNode
+	NN() antlr.TerminalNode
+	SS() antlr.TerminalNode
+	GDS() antlr.TerminalNode
+	GRAPHIC() antlr.TerminalNode
+	INTDATE() antlr.TerminalNode
+	ANSI() antlr.TerminalNode
+	LILIAN() antlr.TerminalNode
+	LANGUAGE() antlr.TerminalNode
+	LANG() antlr.TerminalNode
+	ENGLISH() antlr.TerminalNode
+	CS() antlr.TerminalNode
+	EN() antlr.TerminalNode
+	JA() antlr.TerminalNode
+	JP() antlr.TerminalNode
+	KA() antlr.TerminalNode
+	UE() antlr.TerminalNode
+	LEASM() antlr.TerminalNode
+	LENGTH() antlr.TerminalNode
+	LIB() antlr.TerminalNode
+	LIN() antlr.TerminalNode
+	LINECOUNT() antlr.TerminalNode
+	LC() antlr.TerminalNode
+	LINKAGE() antlr.TerminalNode
+	LIST() antlr.TerminalNode
+	MAP() antlr.TerminalNode
+	MARGINS() antlr.TerminalNode
+	MDECK() antlr.TerminalNode
+	MD() antlr.TerminalNode
+	NOC() antlr.TerminalNode
+	NOCOMPILE() antlr.TerminalNode
+	NAME() antlr.TerminalNode
+	ALIAS() antlr.TerminalNode
+	NOALIAS() antlr.TerminalNode
+	NATLANG() antlr.TerminalNode
+	NOADATA() antlr.TerminalNode
+	NOADV() antlr.TerminalNode
+	NOAWO() antlr.TerminalNode
+	NOBLOCK0() antlr.TerminalNode
+	NOCBLCARD() antlr.TerminalNode
+	NOCICS() antlr.TerminalNode
+	NOCMPR2() antlr.TerminalNode
+	NOCPSM() antlr.TerminalNode
+	NOCURRENCY() antlr.TerminalNode
+	NOCURR() antlr.TerminalNode
+	NODATEPROC() antlr.TerminalNode
+	NODP() antlr.TerminalNode
+	NODBCS() antlr.TerminalNode
+	NODEBUG() antlr.TerminalNode
+	NODECK() antlr.TerminalNode
+	NOD() antlr.TerminalNode
+	NODLL() antlr.TerminalNode
+	NODE() antlr.TerminalNode
+	NODUMP() antlr.TerminalNode
+	NODU() antlr.TerminalNode
+	NODIAGTRUNC() antlr.TerminalNode
+	NODTR() antlr.TerminalNode
+	NODYNAM() antlr.TerminalNode
+	NODYN() antlr.TerminalNode
+	NOEDF() antlr.TerminalNode
+	NOEPILOG() antlr.TerminalNode
+	NOEXIT() antlr.TerminalNode
+	NOEXPORTALL() antlr.TerminalNode
+	NOEXP() antlr.TerminalNode
+	NOFASTSRT() antlr.TerminalNode
+	NOFSRT() antlr.TerminalNode
+	NOFEPI() antlr.TerminalNode
+	NOF() antlr.TerminalNode
+	NOFLAGMIG() antlr.TerminalNode
+	NOFLAGSTD() antlr.TerminalNode
+	NOGRAPHIC() antlr.TerminalNode
+	NOLENGTH() antlr.TerminalNode
+	NOLIB() antlr.TerminalNode
+	NOLINKAGE() antlr.TerminalNode
+	NOLIST() antlr.TerminalNode
+	NOMAP() antlr.TerminalNode
+	NOMDECK() antlr.TerminalNode
+	NOMD() antlr.TerminalNode
+	NONAME() antlr.TerminalNode
+	NONUMBER() antlr.TerminalNode
+	NONUM() antlr.TerminalNode
+	NOOBJECT() antlr.TerminalNode
+	NOOBJ() antlr.TerminalNode
+	NOOFFSET() antlr.TerminalNode
+	NOOFF() antlr.TerminalNode
+	NOOPSEQUENCE() antlr.TerminalNode
+	NOOPTIMIZE() antlr.TerminalNode
+	NOOPT() antlr.TerminalNode
+	NOOPTIONS() antlr.TerminalNode
+	NOP() antlr.TerminalNode
+	NOPROLOG() antlr.TerminalNode
+	NORENT() antlr.TerminalNode
+	NOSEQUENCE() antlr.TerminalNode
+	NOSEQ() antlr.TerminalNode
+	NOSOURCE() antlr.TerminalNode
+	NOS() antlr.TerminalNode
+	NOSPIE() antlr.TerminalNode
+	NOSQL() antlr.TerminalNode
+	NOSQLCCSID() antlr.TerminalNode
+	NOSQLC() antlr.TerminalNode
+	NOSSRANGE() antlr.TerminalNode
+	NOSSR() antlr.TerminalNode
+	NOSTDTRUNC() antlr.TerminalNode
+	NOTERMINAL() antlr.TerminalNode
+	NOTERM() antlr.TerminalNode
+	NOTEST() antlr.TerminalNode
+	NOTHREAD() antlr.TerminalNode
+	NOVBREF() antlr.TerminalNode
+	NOWORD() antlr.TerminalNode
+	NOWD() antlr.TerminalNode
+	NSEQ() antlr.TerminalNode
+	NSYMBOL() antlr.TerminalNode
+	NS() antlr.TerminalNode
+	NATIONAL() antlr.TerminalNode
+	NAT() antlr.TerminalNode
+	NOXREF() antlr.TerminalNode
+	NOX() antlr.TerminalNode
+	NOZWB() antlr.TerminalNode
+	NUMBER() antlr.TerminalNode
+	NUM() antlr.TerminalNode
+	NUMPROC() antlr.TerminalNode
+	MIG() antlr.TerminalNode
+	NOPFD() antlr.TerminalNode
+	PFD() antlr.TerminalNode
+	OBJECT() antlr.TerminalNode
+	OBJ() antlr.TerminalNode
+	OFFSET() antlr.TerminalNode
+	OFF() antlr.TerminalNode
+	OPMARGINS() antlr.TerminalNode
+	OPSEQUENCE() antlr.TerminalNode
+	OPTIMIZE() antlr.TerminalNode
+	OPT() antlr.TerminalNode
+	FULL() antlr.TerminalNode
+	STD() antlr.TerminalNode
+	OPTFILE() antlr.TerminalNode
+	OPTIONS() antlr.TerminalNode
+	OP() antlr.TerminalNode
+	CobolWord() ICobolWordContext
+	OUTDD() antlr.TerminalNode
+	OUT() antlr.TerminalNode
+	PGMNAME() antlr.TerminalNode
+	PGMN() antlr.TerminalNode
+	CO() antlr.TerminalNode
+	LM() antlr.TerminalNode
+	LONGMIXED() antlr.TerminalNode
+	LONGUPPER() antlr.TerminalNode
+	LU() antlr.TerminalNode
+	MIXED() antlr.TerminalNode
+	UPPER() antlr.TerminalNode
+	PROLOG() antlr.TerminalNode
+	QUOTE() antlr.TerminalNode
+	Q_CHAR() antlr.TerminalNode
+	RENT() antlr.TerminalNode
+	RMODE() antlr.TerminalNode
+	ANY() antlr.TerminalNode
+	AUTO() antlr.TerminalNode
+	SEQUENCE() antlr.TerminalNode
+	SEQ() antlr.TerminalNode
+	SIZE() antlr.TerminalNode
+	SZ() antlr.TerminalNode
+	MAX() antlr.TerminalNode
+	SOURCE() antlr.TerminalNode
+	SP() antlr.TerminalNode
+	SPACE() antlr.TerminalNode
+	SPIE() antlr.TerminalNode
+	SQL() antlr.TerminalNode
+	SQLCCSID() antlr.TerminalNode
+	SQLC() antlr.TerminalNode
+	SSRANGE() antlr.TerminalNode
+	SSR() antlr.TerminalNode
+	SYSEIB() antlr.TerminalNode
+	TERMINAL() antlr.TerminalNode
+	TERM() antlr.TerminalNode
+	TEST() antlr.TerminalNode
+	HOOK() antlr.TerminalNode
+	NOHOOK() antlr.TerminalNode
+	SEP() antlr.TerminalNode
+	SEPARATE() antlr.TerminalNode
+	NOSEP() antlr.TerminalNode
+	NOSEPARATE() antlr.TerminalNode
+	EJPD() antlr.TerminalNode
+	NOEJPD() antlr.TerminalNode
+	THREAD() antlr.TerminalNode
+	TRUNC() antlr.TerminalNode
+	BIN() antlr.TerminalNode
+	VBREF() antlr.TerminalNode
+	WORD() antlr.TerminalNode
+	WD() antlr.TerminalNode
+	XMLPARSE() antlr.TerminalNode
+	XP() antlr.TerminalNode
+	XMLSS() antlr.TerminalNode
+	X_CHAR() antlr.TerminalNode
+	XREF() antlr.TerminalNode
+	SHORT() antlr.TerminalNode
+	YEARWINDOW() antlr.TerminalNode
+	YW() antlr.TerminalNode
+	ZWB() antlr.TerminalNode
+
 	// IsCompilerOptionContext differentiates from other interfaces.
 	IsCompilerOptionContext()
 }
 
 type CompilerOptionContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyCompilerOptionContext() *CompilerOptionContext {
 	var p = new(CompilerOptionContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_compilerOption
 	return p
+}
+
+func InitEmptyCompilerOptionContext(p *CompilerOptionContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_compilerOption
 }
 
 func (*CompilerOptionContext) IsCompilerOptionContext() {}
@@ -1988,7 +2359,7 @@ func (*CompilerOptionContext) IsCompilerOptionContext() {}
 func NewCompilerOptionContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CompilerOptionContext {
 	var p = new(CompilerOptionContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_compilerOption
@@ -3142,37 +3513,26 @@ func (s *CompilerOptionContext) Accept(visitor antlr.ParseTreeVisitor) interface
 }
 
 func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionContext) {
-	this := p
-	_ = this
-
 	localctx = NewCompilerOptionContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 6, Cobol85PreprocessorParserRULE_compilerOption)
 	var _la int
 
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.SetState(449)
 	p.GetErrorHandler().Sync(p)
-	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 32, p.GetParserRuleContext()) {
+	if p.HasError() {
+		goto errorExit
+	}
+
+	switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 32, p.GetParserRuleContext()) {
 	case 1:
 		p.EnterOuterAlt(localctx, 1)
 		{
 			p.SetState(107)
 			p.Match(Cobol85PreprocessorParserADATA)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 2:
@@ -3180,6 +3540,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(108)
 			p.Match(Cobol85PreprocessorParserADV)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 3:
@@ -3187,6 +3551,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(109)
 			p.Match(Cobol85PreprocessorParserAPOST)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 4:
@@ -3205,6 +3573,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(111)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(112)
@@ -3220,6 +3592,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(113)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 5:
@@ -3227,6 +3603,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(114)
 			p.Match(Cobol85PreprocessorParserAWO)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 6:
@@ -3234,6 +3614,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(115)
 			p.Match(Cobol85PreprocessorParserBLOCK0)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 7:
@@ -3252,6 +3636,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(117)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(118)
@@ -3260,6 +3648,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(119)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 8:
@@ -3267,6 +3659,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(121)
 			p.Match(Cobol85PreprocessorParserCBLCARD)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 9:
@@ -3274,14 +3670,22 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(122)
 			p.Match(Cobol85PreprocessorParserCICS)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		p.SetState(127)
 		p.GetErrorHandler().Sync(p)
 
-		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 7, p.GetParserRuleContext()) == 1 {
+		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 7, p.GetParserRuleContext()) == 1 {
 			{
 				p.SetState(123)
 				p.Match(Cobol85PreprocessorParserLPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(124)
@@ -3290,8 +3694,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			{
 				p.SetState(125)
 				p.Match(Cobol85PreprocessorParserRPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
 
 	case 10:
@@ -3299,6 +3709,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(129)
 			p.Match(Cobol85PreprocessorParserCOBOL2)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 11:
@@ -3306,6 +3720,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(130)
 			p.Match(Cobol85PreprocessorParserCOBOL3)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 12:
@@ -3324,6 +3742,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(132)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(133)
@@ -3332,6 +3754,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(134)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 13:
@@ -3353,6 +3779,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(137)
 			p.Match(Cobol85PreprocessorParserCPP)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 15:
@@ -3360,6 +3790,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(138)
 			p.Match(Cobol85PreprocessorParserCPSM)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 16:
@@ -3378,6 +3812,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(140)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(141)
@@ -3386,6 +3824,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(142)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 17:
@@ -3393,10 +3835,18 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(144)
 			p.Match(Cobol85PreprocessorParserDATA)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(145)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(146)
@@ -3405,6 +3855,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(147)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 18:
@@ -3423,13 +3877,20 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		p.SetState(161)
 		p.GetErrorHandler().Sync(p)
 
-		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 11, p.GetParserRuleContext()) == 1 {
+		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 11, p.GetParserRuleContext()) == 1 {
 			{
 				p.SetState(150)
 				p.Match(Cobol85PreprocessorParserLPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			p.SetState(152)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 
 			if _la == Cobol85PreprocessorParserFLAG || _la == Cobol85PreprocessorParserNOFLAG {
@@ -3448,17 +3909,27 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			}
 			p.SetState(155)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 
 			if _la == Cobol85PreprocessorParserCOMMACHAR {
 				{
 					p.SetState(154)
 					p.Match(Cobol85PreprocessorParserCOMMACHAR)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
 			}
 			p.SetState(158)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 
 			if _la == Cobol85PreprocessorParserNOTRIG || _la == Cobol85PreprocessorParserTRIG {
@@ -3478,8 +3949,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			{
 				p.SetState(160)
 				p.Match(Cobol85PreprocessorParserRPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
 
 	case 19:
@@ -3487,6 +3964,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(163)
 			p.Match(Cobol85PreprocessorParserDBCS)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 20:
@@ -3508,6 +3989,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(165)
 			p.Match(Cobol85PreprocessorParserDEBUG)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 22:
@@ -3529,6 +4014,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(167)
 			p.Match(Cobol85PreprocessorParserDLL)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 24:
@@ -3564,6 +4053,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(170)
 			p.Match(Cobol85PreprocessorParserEDF)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 27:
@@ -3571,6 +4064,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(171)
 			p.Match(Cobol85PreprocessorParserEPILOG)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 28:
@@ -3578,6 +4075,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(172)
 			p.Match(Cobol85PreprocessorParserEXIT)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 29:
@@ -3613,6 +4114,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(175)
 			p.Match(Cobol85PreprocessorParserFEPI)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 32:
@@ -3631,6 +4136,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(177)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(178)
@@ -3645,12 +4154,19 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		}
 		p.SetState(181)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 
 		if _la == Cobol85PreprocessorParserCOMMACHAR {
 			{
 				p.SetState(179)
 				p.Match(Cobol85PreprocessorParserCOMMACHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(180)
@@ -3668,6 +4184,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(183)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 33:
@@ -3675,10 +4195,18 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(184)
 			p.Match(Cobol85PreprocessorParserFLAGSTD)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(185)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(186)
@@ -3693,18 +4221,25 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		}
 		p.SetState(189)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 
 		if _la == Cobol85PreprocessorParserCOMMACHAR {
 			{
 				p.SetState(187)
 				p.Match(Cobol85PreprocessorParserCOMMACHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(188)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(_la == Cobol85PreprocessorParserDD || _la == Cobol85PreprocessorParserNN || (int64((_la-242)) & ^0x3f) == 0 && ((int64(1)<<(_la-242))&86167781377) != 0) {
+				if !(_la == Cobol85PreprocessorParserDD || _la == Cobol85PreprocessorParserNN || ((int64((_la-242)) & ^0x3f) == 0 && ((int64(1)<<(_la-242))&86167781377) != 0)) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -3716,6 +4251,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(191)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 34:
@@ -3723,6 +4262,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(192)
 			p.Match(Cobol85PreprocessorParserGDS)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 35:
@@ -3730,6 +4273,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(193)
 			p.Match(Cobol85PreprocessorParserGRAPHIC)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 36:
@@ -3737,10 +4284,18 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(194)
 			p.Match(Cobol85PreprocessorParserINTDATE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(195)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(196)
@@ -3756,6 +4311,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(197)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 37:
@@ -3774,12 +4333,16 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(199)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(200)
 			_la = p.GetTokenStream().LA(1)
 
-			if !((int64((_la-29)) & ^0x3f) == 0 && ((int64(1)<<(_la-29))&30786331869185) != 0 || _la == Cobol85PreprocessorParserUE) {
+			if !(((int64((_la-29)) & ^0x3f) == 0 && ((int64(1)<<(_la-29))&30786331869185) != 0) || _la == Cobol85PreprocessorParserUE) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -3789,6 +4352,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(201)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 38:
@@ -3796,6 +4363,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(202)
 			p.Match(Cobol85PreprocessorParserLEASM)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 39:
@@ -3803,6 +4374,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(203)
 			p.Match(Cobol85PreprocessorParserLENGTH)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 40:
@@ -3810,6 +4385,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(204)
 			p.Match(Cobol85PreprocessorParserLIB)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 41:
@@ -3817,6 +4396,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(205)
 			p.Match(Cobol85PreprocessorParserLIN)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 42:
@@ -3835,6 +4418,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(207)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(208)
@@ -3843,6 +4430,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(209)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 43:
@@ -3850,6 +4441,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(211)
 			p.Match(Cobol85PreprocessorParserLINKAGE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 44:
@@ -3857,6 +4452,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(212)
 			p.Match(Cobol85PreprocessorParserLIST)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 45:
@@ -3864,6 +4463,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(213)
 			p.Match(Cobol85PreprocessorParserMAP)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 46:
@@ -3871,10 +4474,18 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(214)
 			p.Match(Cobol85PreprocessorParserMARGINS)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(215)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(216)
@@ -3883,6 +4494,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(217)
 			p.Match(Cobol85PreprocessorParserCOMMACHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(218)
@@ -3890,12 +4505,19 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		}
 		p.SetState(221)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 
 		if _la == Cobol85PreprocessorParserCOMMACHAR {
 			{
 				p.SetState(219)
 				p.Match(Cobol85PreprocessorParserCOMMACHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(220)
@@ -3906,6 +4528,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(223)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 47:
@@ -3924,10 +4550,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		p.SetState(229)
 		p.GetErrorHandler().Sync(p)
 
-		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 15, p.GetParserRuleContext()) == 1 {
+		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 15, p.GetParserRuleContext()) == 1 {
 			{
 				p.SetState(226)
 				p.Match(Cobol85PreprocessorParserLPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(227)
@@ -3943,8 +4573,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			{
 				p.SetState(228)
 				p.Match(Cobol85PreprocessorParserRPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
 
 	case 48:
@@ -3952,14 +4588,22 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(231)
 			p.Match(Cobol85PreprocessorParserNAME)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		p.SetState(235)
 		p.GetErrorHandler().Sync(p)
 
-		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 16, p.GetParserRuleContext()) == 1 {
+		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 16, p.GetParserRuleContext()) == 1 {
 			{
 				p.SetState(232)
 				p.Match(Cobol85PreprocessorParserLPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(233)
@@ -3975,8 +4619,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			{
 				p.SetState(234)
 				p.Match(Cobol85PreprocessorParserRPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
 
 	case 49:
@@ -3984,10 +4634,18 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(237)
 			p.Match(Cobol85PreprocessorParserNATLANG)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(238)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(239)
@@ -4003,6 +4661,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(240)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 50:
@@ -4010,6 +4672,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(241)
 			p.Match(Cobol85PreprocessorParserNOADATA)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 51:
@@ -4017,6 +4683,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(242)
 			p.Match(Cobol85PreprocessorParserNOADV)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 52:
@@ -4024,6 +4694,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(243)
 			p.Match(Cobol85PreprocessorParserNOAWO)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 53:
@@ -4031,6 +4705,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(244)
 			p.Match(Cobol85PreprocessorParserNOBLOCK0)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 54:
@@ -4038,6 +4716,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(245)
 			p.Match(Cobol85PreprocessorParserNOCBLCARD)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 55:
@@ -4045,6 +4727,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(246)
 			p.Match(Cobol85PreprocessorParserNOCICS)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 56:
@@ -4052,6 +4738,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(247)
 			p.Match(Cobol85PreprocessorParserNOCMPR2)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 57:
@@ -4070,10 +4760,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		p.SetState(252)
 		p.GetErrorHandler().Sync(p)
 
-		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 17, p.GetParserRuleContext()) == 1 {
+		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 17, p.GetParserRuleContext()) == 1 {
 			{
 				p.SetState(249)
 				p.Match(Cobol85PreprocessorParserLPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(250)
@@ -4089,8 +4783,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			{
 				p.SetState(251)
 				p.Match(Cobol85PreprocessorParserRPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
 
 	case 58:
@@ -4098,6 +4798,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(254)
 			p.Match(Cobol85PreprocessorParserNOCPSM)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 59:
@@ -4133,6 +4837,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(257)
 			p.Match(Cobol85PreprocessorParserNODBCS)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 62:
@@ -4140,6 +4848,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(258)
 			p.Match(Cobol85PreprocessorParserNODEBUG)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 63:
@@ -4161,6 +4873,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(260)
 			p.Match(Cobol85PreprocessorParserNODLL)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 65:
@@ -4168,6 +4884,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(261)
 			p.Match(Cobol85PreprocessorParserNODE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 66:
@@ -4217,6 +4937,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(265)
 			p.Match(Cobol85PreprocessorParserNOEDF)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 70:
@@ -4224,6 +4948,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(266)
 			p.Match(Cobol85PreprocessorParserNOEPILOG)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 71:
@@ -4231,6 +4959,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(267)
 			p.Match(Cobol85PreprocessorParserNOEXIT)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 72:
@@ -4266,6 +4998,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(270)
 			p.Match(Cobol85PreprocessorParserNOFEPI)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 75:
@@ -4287,6 +5023,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(272)
 			p.Match(Cobol85PreprocessorParserNOFLAGMIG)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 77:
@@ -4294,6 +5034,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(273)
 			p.Match(Cobol85PreprocessorParserNOFLAGSTD)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 78:
@@ -4301,6 +5045,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(274)
 			p.Match(Cobol85PreprocessorParserNOGRAPHIC)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 79:
@@ -4308,6 +5056,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(275)
 			p.Match(Cobol85PreprocessorParserNOLENGTH)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 80:
@@ -4315,6 +5067,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(276)
 			p.Match(Cobol85PreprocessorParserNOLIB)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 81:
@@ -4322,6 +5078,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(277)
 			p.Match(Cobol85PreprocessorParserNOLINKAGE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 82:
@@ -4329,6 +5089,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(278)
 			p.Match(Cobol85PreprocessorParserNOLIST)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 83:
@@ -4336,6 +5100,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(279)
 			p.Match(Cobol85PreprocessorParserNOMAP)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 84:
@@ -4357,6 +5125,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(281)
 			p.Match(Cobol85PreprocessorParserNONAME)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 86:
@@ -4406,6 +5178,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(285)
 			p.Match(Cobol85PreprocessorParserNOOPSEQUENCE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 90:
@@ -4427,6 +5203,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(287)
 			p.Match(Cobol85PreprocessorParserNOOPTIONS)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 92:
@@ -4434,6 +5214,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(288)
 			p.Match(Cobol85PreprocessorParserNOP)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 93:
@@ -4441,6 +5225,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(289)
 			p.Match(Cobol85PreprocessorParserNOPROLOG)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 94:
@@ -4448,6 +5236,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(290)
 			p.Match(Cobol85PreprocessorParserNORENT)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 95:
@@ -4483,6 +5275,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(293)
 			p.Match(Cobol85PreprocessorParserNOSPIE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 98:
@@ -4490,6 +5286,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(294)
 			p.Match(Cobol85PreprocessorParserNOSQL)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 99:
@@ -4525,6 +5325,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(297)
 			p.Match(Cobol85PreprocessorParserNOSTDTRUNC)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 102:
@@ -4546,6 +5350,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(299)
 			p.Match(Cobol85PreprocessorParserNOTEST)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 104:
@@ -4553,6 +5361,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(300)
 			p.Match(Cobol85PreprocessorParserNOTHREAD)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 105:
@@ -4560,6 +5372,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(301)
 			p.Match(Cobol85PreprocessorParserNOVBREF)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 106:
@@ -4581,6 +5397,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(303)
 			p.Match(Cobol85PreprocessorParserNSEQ)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 108:
@@ -4599,6 +5419,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(305)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(306)
@@ -4614,6 +5438,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(307)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 109:
@@ -4621,6 +5449,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(308)
 			p.Match(Cobol85PreprocessorParserNOVBREF)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 110:
@@ -4642,6 +5474,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(310)
 			p.Match(Cobol85PreprocessorParserNOZWB)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 112:
@@ -4663,10 +5499,18 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(312)
 			p.Match(Cobol85PreprocessorParserNUMPROC)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(313)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(314)
@@ -4682,6 +5526,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(315)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 114:
@@ -4717,10 +5565,18 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(318)
 			p.Match(Cobol85PreprocessorParserOPMARGINS)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(319)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(320)
@@ -4729,6 +5585,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(321)
 			p.Match(Cobol85PreprocessorParserCOMMACHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(322)
@@ -4736,12 +5596,19 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		}
 		p.SetState(325)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 
 		if _la == Cobol85PreprocessorParserCOMMACHAR {
 			{
 				p.SetState(323)
 				p.Match(Cobol85PreprocessorParserCOMMACHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(324)
@@ -4752,6 +5619,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(327)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 117:
@@ -4759,10 +5630,18 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(329)
 			p.Match(Cobol85PreprocessorParserOPSEQUENCE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(330)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(331)
@@ -4771,6 +5650,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(332)
 			p.Match(Cobol85PreprocessorParserCOMMACHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(333)
@@ -4779,6 +5662,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(334)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 118:
@@ -4797,10 +5684,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		p.SetState(340)
 		p.GetErrorHandler().Sync(p)
 
-		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 19, p.GetParserRuleContext()) == 1 {
+		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 19, p.GetParserRuleContext()) == 1 {
 			{
 				p.SetState(337)
 				p.Match(Cobol85PreprocessorParserLPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(338)
@@ -4816,8 +5707,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			{
 				p.SetState(339)
 				p.Match(Cobol85PreprocessorParserRPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
 
 	case 119:
@@ -4825,6 +5722,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(342)
 			p.Match(Cobol85PreprocessorParserOPTFILE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 120:
@@ -4832,6 +5733,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(343)
 			p.Match(Cobol85PreprocessorParserOPTIONS)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 121:
@@ -4839,6 +5744,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(344)
 			p.Match(Cobol85PreprocessorParserOP)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 122:
@@ -4857,6 +5766,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(346)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(347)
@@ -4865,6 +5778,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(348)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 123:
@@ -4883,12 +5800,16 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(351)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(352)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(_la == Cobol85PreprocessorParserCO || _la == Cobol85PreprocessorParserCOMPAT || (int64((_la-85)) & ^0x3f) == 0 && ((int64(1)<<(_la-85))&2071) != 0 || (int64((_la-257)) & ^0x3f) == 0 && ((int64(1)<<(_la-257))&4456449) != 0) {
+			if !(_la == Cobol85PreprocessorParserCO || _la == Cobol85PreprocessorParserCOMPAT || ((int64((_la-85)) & ^0x3f) == 0 && ((int64(1)<<(_la-85))&2071) != 0) || ((int64((_la-257)) & ^0x3f) == 0 && ((int64(1)<<(_la-257))&4456449) != 0)) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -4898,6 +5819,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(353)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 124:
@@ -4905,6 +5830,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(354)
 			p.Match(Cobol85PreprocessorParserPROLOG)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 125:
@@ -4926,6 +5855,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(356)
 			p.Match(Cobol85PreprocessorParserRENT)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 127:
@@ -4933,25 +5866,44 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(357)
 			p.Match(Cobol85PreprocessorParserRMODE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(358)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		p.SetState(362)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 
 		switch p.GetTokenStream().LA(1) {
 		case Cobol85PreprocessorParserANY:
 			{
 				p.SetState(359)
 				p.Match(Cobol85PreprocessorParserANY)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
 		case Cobol85PreprocessorParserAUTO:
 			{
 				p.SetState(360)
 				p.Match(Cobol85PreprocessorParserAUTO)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
 		case Cobol85PreprocessorParserNONNUMERICLITERAL, Cobol85PreprocessorParserNUMERICLITERAL:
@@ -4961,11 +5913,16 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			}
 
 		default:
-			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			goto errorExit
 		}
 		{
 			p.SetState(364)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 128:
@@ -4984,10 +5941,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		p.SetState(372)
 		p.GetErrorHandler().Sync(p)
 
-		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 21, p.GetParserRuleContext()) == 1 {
+		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 21, p.GetParserRuleContext()) == 1 {
 			{
 				p.SetState(366)
 				p.Match(Cobol85PreprocessorParserLPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(367)
@@ -4996,6 +5957,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			{
 				p.SetState(368)
 				p.Match(Cobol85PreprocessorParserCOMMACHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(369)
@@ -5004,8 +5969,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			{
 				p.SetState(370)
 				p.Match(Cobol85PreprocessorParserRPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
 
 	case 129:
@@ -5024,15 +5995,26 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(375)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		p.SetState(378)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 
 		switch p.GetTokenStream().LA(1) {
 		case Cobol85PreprocessorParserMAX:
 			{
 				p.SetState(376)
 				p.Match(Cobol85PreprocessorParserMAX)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
 		case Cobol85PreprocessorParserNONNUMERICLITERAL, Cobol85PreprocessorParserNUMERICLITERAL:
@@ -5042,11 +6024,16 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			}
 
 		default:
-			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			goto errorExit
 		}
 		{
 			p.SetState(380)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 130:
@@ -5068,6 +6055,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(382)
 			p.Match(Cobol85PreprocessorParserSP)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 132:
@@ -5075,10 +6066,18 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(383)
 			p.Match(Cobol85PreprocessorParserSPACE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(384)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(385)
@@ -5087,6 +6086,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(386)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 133:
@@ -5094,6 +6097,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(388)
 			p.Match(Cobol85PreprocessorParserSPIE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 134:
@@ -5101,14 +6108,22 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(389)
 			p.Match(Cobol85PreprocessorParserSQL)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		p.SetState(394)
 		p.GetErrorHandler().Sync(p)
 
-		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 23, p.GetParserRuleContext()) == 1 {
+		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 23, p.GetParserRuleContext()) == 1 {
 			{
 				p.SetState(390)
 				p.Match(Cobol85PreprocessorParserLPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			{
 				p.SetState(391)
@@ -5117,8 +6132,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			{
 				p.SetState(392)
 				p.Match(Cobol85PreprocessorParserRPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
 
 	case 135:
@@ -5154,6 +6175,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(398)
 			p.Match(Cobol85PreprocessorParserSYSEIB)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 138:
@@ -5175,17 +6200,28 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(400)
 			p.Match(Cobol85PreprocessorParserTEST)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		p.SetState(418)
 		p.GetErrorHandler().Sync(p)
 
-		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 29, p.GetParserRuleContext()) == 1 {
+		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 29, p.GetParserRuleContext()) == 1 {
 			{
 				p.SetState(401)
 				p.Match(Cobol85PreprocessorParserLPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			p.SetState(403)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 
 			if _la == Cobol85PreprocessorParserHOOK || _la == Cobol85PreprocessorParserNOHOOK {
@@ -5205,15 +6241,24 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			p.SetState(406)
 			p.GetErrorHandler().Sync(p)
 
-			if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 25, p.GetParserRuleContext()) == 1 {
+			if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 25, p.GetParserRuleContext()) == 1 {
 				{
 					p.SetState(405)
 					p.Match(Cobol85PreprocessorParserCOMMACHAR)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
+			} else if p.HasError() { // JIM
+				goto errorExit
 			}
 			p.SetState(409)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 
 			if (int64((_la-168)) & ^0x3f) == 0 && ((int64(1)<<(_la-168))&432345564227567619) != 0 {
@@ -5232,17 +6277,27 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			}
 			p.SetState(412)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 
 			if _la == Cobol85PreprocessorParserCOMMACHAR {
 				{
 					p.SetState(411)
 					p.Match(Cobol85PreprocessorParserCOMMACHAR)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
 			}
 			p.SetState(415)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 
 			if _la == Cobol85PreprocessorParserEJPD || _la == Cobol85PreprocessorParserNOEJPD {
@@ -5262,8 +6317,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			{
 				p.SetState(417)
 				p.Match(Cobol85PreprocessorParserRPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
 
 	case 140:
@@ -5271,6 +6332,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(420)
 			p.Match(Cobol85PreprocessorParserTHREAD)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 141:
@@ -5278,10 +6343,18 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(421)
 			p.Match(Cobol85PreprocessorParserTRUNC)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(422)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(423)
@@ -5297,6 +6370,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(424)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 142:
@@ -5304,6 +6381,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(425)
 			p.Match(Cobol85PreprocessorParserVBREF)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 143:
@@ -5322,6 +6403,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(427)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(428)
@@ -5330,6 +6415,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(429)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 144:
@@ -5348,12 +6437,16 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(432)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(433)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(_la == Cobol85PreprocessorParserCOMPAT || (int64((_la-262)) & ^0x3f) == 0 && ((int64(1)<<(_la-262))&524417) != 0) {
+			if !(_la == Cobol85PreprocessorParserCOMPAT || ((int64((_la-262)) & ^0x3f) == 0 && ((int64(1)<<(_la-262))&524417) != 0)) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -5363,6 +6456,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(434)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 145:
@@ -5381,13 +6478,20 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		p.SetState(441)
 		p.GetErrorHandler().Sync(p)
 
-		if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 31, p.GetParserRuleContext()) == 1 {
+		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 31, p.GetParserRuleContext()) == 1 {
 			{
 				p.SetState(436)
 				p.Match(Cobol85PreprocessorParserLPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 			p.SetState(438)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 
 			if _la == Cobol85PreprocessorParserFULL || _la == Cobol85PreprocessorParserSHORT {
@@ -5407,8 +6511,14 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 			{
 				p.SetState(440)
 				p.Match(Cobol85PreprocessorParserRPARENCHAR)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
 
 	case 146:
@@ -5427,6 +6537,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(444)
 			p.Match(Cobol85PreprocessorParserLPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 		{
 			p.SetState(445)
@@ -5435,6 +6549,10 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(446)
 			p.Match(Cobol85PreprocessorParserRPARENCHAR)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case 147:
@@ -5442,11 +6560,27 @@ func (p *Cobol85PreprocessorParser) CompilerOption() (localctx ICompilerOptionCo
 		{
 			p.SetState(448)
 			p.Match(Cobol85PreprocessorParserZWB)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
+	case antlr.ATNInvalidAltNumber:
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IExecCicsStatementContext is an interface to support dynamic dispatch.
@@ -5456,20 +6590,32 @@ type IExecCicsStatementContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EXEC() antlr.TerminalNode
+	CICS() antlr.TerminalNode
+	CharData() ICharDataContext
+	END_EXEC() antlr.TerminalNode
+	DOT() antlr.TerminalNode
+
 	// IsExecCicsStatementContext differentiates from other interfaces.
 	IsExecCicsStatementContext()
 }
 
 type ExecCicsStatementContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyExecCicsStatementContext() *ExecCicsStatementContext {
 	var p = new(ExecCicsStatementContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_execCicsStatement
 	return p
+}
+
+func InitEmptyExecCicsStatementContext(p *ExecCicsStatementContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_execCicsStatement
 }
 
 func (*ExecCicsStatementContext) IsExecCicsStatementContext() {}
@@ -5477,7 +6623,7 @@ func (*ExecCicsStatementContext) IsExecCicsStatementContext() {}
 func NewExecCicsStatementContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ExecCicsStatementContext {
 	var p = new(ExecCicsStatementContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_execCicsStatement
@@ -5550,36 +6696,24 @@ func (s *ExecCicsStatementContext) Accept(visitor antlr.ParseTreeVisitor) interf
 }
 
 func (p *Cobol85PreprocessorParser) ExecCicsStatement() (localctx IExecCicsStatementContext) {
-	this := p
-	_ = this
-
 	localctx = NewExecCicsStatementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 8, Cobol85PreprocessorParserRULE_execCicsStatement)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(451)
 		p.Match(Cobol85PreprocessorParserEXEC)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(452)
 		p.Match(Cobol85PreprocessorParserCICS)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(453)
@@ -5588,19 +6722,39 @@ func (p *Cobol85PreprocessorParser) ExecCicsStatement() (localctx IExecCicsState
 	{
 		p.SetState(454)
 		p.Match(Cobol85PreprocessorParserEND_EXEC)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	p.SetState(456)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 33, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 33, p.GetParserRuleContext()) == 1 {
 		{
 			p.SetState(455)
 			p.Match(Cobol85PreprocessorParserDOT)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IExecSqlStatementContext is an interface to support dynamic dispatch.
@@ -5610,20 +6764,32 @@ type IExecSqlStatementContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EXEC() antlr.TerminalNode
+	SQL() antlr.TerminalNode
+	CharDataSql() ICharDataSqlContext
+	END_EXEC() antlr.TerminalNode
+	DOT() antlr.TerminalNode
+
 	// IsExecSqlStatementContext differentiates from other interfaces.
 	IsExecSqlStatementContext()
 }
 
 type ExecSqlStatementContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyExecSqlStatementContext() *ExecSqlStatementContext {
 	var p = new(ExecSqlStatementContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_execSqlStatement
 	return p
+}
+
+func InitEmptyExecSqlStatementContext(p *ExecSqlStatementContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_execSqlStatement
 }
 
 func (*ExecSqlStatementContext) IsExecSqlStatementContext() {}
@@ -5631,7 +6797,7 @@ func (*ExecSqlStatementContext) IsExecSqlStatementContext() {}
 func NewExecSqlStatementContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ExecSqlStatementContext {
 	var p = new(ExecSqlStatementContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_execSqlStatement
@@ -5704,36 +6870,24 @@ func (s *ExecSqlStatementContext) Accept(visitor antlr.ParseTreeVisitor) interfa
 }
 
 func (p *Cobol85PreprocessorParser) ExecSqlStatement() (localctx IExecSqlStatementContext) {
-	this := p
-	_ = this
-
 	localctx = NewExecSqlStatementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 10, Cobol85PreprocessorParserRULE_execSqlStatement)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(458)
 		p.Match(Cobol85PreprocessorParserEXEC)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(459)
 		p.Match(Cobol85PreprocessorParserSQL)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(460)
@@ -5742,19 +6896,39 @@ func (p *Cobol85PreprocessorParser) ExecSqlStatement() (localctx IExecSqlStateme
 	{
 		p.SetState(461)
 		p.Match(Cobol85PreprocessorParserEND_EXEC)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	p.SetState(463)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 34, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 34, p.GetParserRuleContext()) == 1 {
 		{
 			p.SetState(462)
 			p.Match(Cobol85PreprocessorParserDOT)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IExecSqlImsStatementContext is an interface to support dynamic dispatch.
@@ -5764,20 +6938,32 @@ type IExecSqlImsStatementContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EXEC() antlr.TerminalNode
+	SQLIMS() antlr.TerminalNode
+	CharData() ICharDataContext
+	END_EXEC() antlr.TerminalNode
+	DOT() antlr.TerminalNode
+
 	// IsExecSqlImsStatementContext differentiates from other interfaces.
 	IsExecSqlImsStatementContext()
 }
 
 type ExecSqlImsStatementContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyExecSqlImsStatementContext() *ExecSqlImsStatementContext {
 	var p = new(ExecSqlImsStatementContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_execSqlImsStatement
 	return p
+}
+
+func InitEmptyExecSqlImsStatementContext(p *ExecSqlImsStatementContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_execSqlImsStatement
 }
 
 func (*ExecSqlImsStatementContext) IsExecSqlImsStatementContext() {}
@@ -5785,7 +6971,7 @@ func (*ExecSqlImsStatementContext) IsExecSqlImsStatementContext() {}
 func NewExecSqlImsStatementContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ExecSqlImsStatementContext {
 	var p = new(ExecSqlImsStatementContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_execSqlImsStatement
@@ -5858,36 +7044,24 @@ func (s *ExecSqlImsStatementContext) Accept(visitor antlr.ParseTreeVisitor) inte
 }
 
 func (p *Cobol85PreprocessorParser) ExecSqlImsStatement() (localctx IExecSqlImsStatementContext) {
-	this := p
-	_ = this
-
 	localctx = NewExecSqlImsStatementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 12, Cobol85PreprocessorParserRULE_execSqlImsStatement)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(465)
 		p.Match(Cobol85PreprocessorParserEXEC)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(466)
 		p.Match(Cobol85PreprocessorParserSQLIMS)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(467)
@@ -5896,19 +7070,39 @@ func (p *Cobol85PreprocessorParser) ExecSqlImsStatement() (localctx IExecSqlImsS
 	{
 		p.SetState(468)
 		p.Match(Cobol85PreprocessorParserEND_EXEC)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	p.SetState(470)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 35, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 35, p.GetParserRuleContext()) == 1 {
 		{
 			p.SetState(469)
 			p.Match(Cobol85PreprocessorParserDOT)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ICopyStatementContext is an interface to support dynamic dispatch.
@@ -5918,20 +7112,42 @@ type ICopyStatementContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	COPY() antlr.TerminalNode
+	CopySource() ICopySourceContext
+	DOT() antlr.TerminalNode
+	AllNEWLINE() []antlr.TerminalNode
+	NEWLINE(i int) antlr.TerminalNode
+	AllDirectoryPhrase() []IDirectoryPhraseContext
+	DirectoryPhrase(i int) IDirectoryPhraseContext
+	AllFamilyPhrase() []IFamilyPhraseContext
+	FamilyPhrase(i int) IFamilyPhraseContext
+	AllPrefixingPhrase() []IPrefixingPhraseContext
+	PrefixingPhrase(i int) IPrefixingPhraseContext
+	AllReplacingPhrase() []IReplacingPhraseContext
+	ReplacingPhrase(i int) IReplacingPhraseContext
+	AllSUPPRESS() []antlr.TerminalNode
+	SUPPRESS(i int) antlr.TerminalNode
+
 	// IsCopyStatementContext differentiates from other interfaces.
 	IsCopyStatementContext()
 }
 
 type CopyStatementContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyCopyStatementContext() *CopyStatementContext {
 	var p = new(CopyStatementContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_copyStatement
 	return p
+}
+
+func InitEmptyCopyStatementContext(p *CopyStatementContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_copyStatement
 }
 
 func (*CopyStatementContext) IsCopyStatementContext() {}
@@ -5939,7 +7155,7 @@ func (*CopyStatementContext) IsCopyStatementContext() {}
 func NewCopyStatementContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CopyStatementContext {
 	var p = new(CopyStatementContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_copyStatement
@@ -6184,28 +7400,9 @@ func (s *CopyStatementContext) Accept(visitor antlr.ParseTreeVisitor) interface{
 }
 
 func (p *Cobol85PreprocessorParser) CopyStatement() (localctx ICopyStatementContext) {
-	this := p
-	_ = this
-
 	localctx = NewCopyStatementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 14, Cobol85PreprocessorParserRULE_copyStatement)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	var _alt int
 
@@ -6213,6 +7410,10 @@ func (p *Cobol85PreprocessorParser) CopyStatement() (localctx ICopyStatementCont
 	{
 		p.SetState(472)
 		p.Match(Cobol85PreprocessorParserCOPY)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(473)
@@ -6220,26 +7421,44 @@ func (p *Cobol85PreprocessorParser) CopyStatement() (localctx ICopyStatementCont
 	}
 	p.SetState(489)
 	p.GetErrorHandler().Sync(p)
-	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 38, p.GetParserRuleContext())
-
+	if p.HasError() {
+		goto errorExit
+	}
+	_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 38, p.GetParserRuleContext())
+	if p.HasError() {
+		goto errorExit
+	}
 	for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
 		if _alt == 1 {
 			p.SetState(477)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 
 			for _la == Cobol85PreprocessorParserNEWLINE {
 				{
 					p.SetState(474)
 					p.Match(Cobol85PreprocessorParserNEWLINE)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
 				p.SetState(479)
 				p.GetErrorHandler().Sync(p)
+				if p.HasError() {
+					goto errorExit
+				}
 				_la = p.GetTokenStream().LA(1)
 			}
 			p.SetState(485)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 
 			switch p.GetTokenStream().LA(1) {
 			case Cobol85PreprocessorParserIN, Cobol85PreprocessorParserOF:
@@ -6270,37 +7489,72 @@ func (p *Cobol85PreprocessorParser) CopyStatement() (localctx ICopyStatementCont
 				{
 					p.SetState(484)
 					p.Match(Cobol85PreprocessorParserSUPPRESS)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
 			default:
-				panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+				p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+				goto errorExit
 			}
 
 		}
 		p.SetState(491)
 		p.GetErrorHandler().Sync(p)
-		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 38, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 38, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
 	}
 	p.SetState(495)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == Cobol85PreprocessorParserNEWLINE {
 		{
 			p.SetState(492)
 			p.Match(Cobol85PreprocessorParserNEWLINE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 		p.SetState(497)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
 		p.SetState(498)
 		p.Match(Cobol85PreprocessorParserDOT)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ICopySourceContext is an interface to support dynamic dispatch.
@@ -6310,20 +7564,33 @@ type ICopySourceContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	Literal() ILiteralContext
+	CobolWord() ICobolWordContext
+	Filename() IFilenameContext
+	CopyLibrary() ICopyLibraryContext
+	OF() antlr.TerminalNode
+	IN() antlr.TerminalNode
+
 	// IsCopySourceContext differentiates from other interfaces.
 	IsCopySourceContext()
 }
 
 type CopySourceContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyCopySourceContext() *CopySourceContext {
 	var p = new(CopySourceContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_copySource
 	return p
+}
+
+func InitEmptyCopySourceContext(p *CopySourceContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_copySource
 }
 
 func (*CopySourceContext) IsCopySourceContext() {}
@@ -6331,7 +7598,7 @@ func (*CopySourceContext) IsCopySourceContext() {}
 func NewCopySourceContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CopySourceContext {
 	var p = new(CopySourceContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_copySource
@@ -6444,32 +7711,16 @@ func (s *CopySourceContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 }
 
 func (p *Cobol85PreprocessorParser) CopySource() (localctx ICopySourceContext) {
-	this := p
-	_ = this
-
 	localctx = NewCopySourceContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 16, Cobol85PreprocessorParserRULE_copySource)
 	var _la int
 
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.EnterOuterAlt(localctx, 1)
 	p.SetState(503)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 
 	switch p.GetTokenStream().LA(1) {
 	case Cobol85PreprocessorParserNONNUMERICLITERAL, Cobol85PreprocessorParserNUMERICLITERAL:
@@ -6491,12 +7742,13 @@ func (p *Cobol85PreprocessorParser) CopySource() (localctx ICopySourceContext) {
 		}
 
 	default:
-		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		goto errorExit
 	}
 	p.SetState(507)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 41, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 41, p.GetParserRuleContext()) == 1 {
 		{
 			p.SetState(505)
 			_la = p.GetTokenStream().LA(1)
@@ -6513,9 +7765,21 @@ func (p *Cobol85PreprocessorParser) CopySource() (localctx ICopySourceContext) {
 			p.CopyLibrary()
 		}
 
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ICopyLibraryContext is an interface to support dynamic dispatch.
@@ -6525,20 +7789,29 @@ type ICopyLibraryContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	Literal() ILiteralContext
+	CobolWord() ICobolWordContext
+
 	// IsCopyLibraryContext differentiates from other interfaces.
 	IsCopyLibraryContext()
 }
 
 type CopyLibraryContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyCopyLibraryContext() *CopyLibraryContext {
 	var p = new(CopyLibraryContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_copyLibrary
 	return p
+}
+
+func InitEmptyCopyLibraryContext(p *CopyLibraryContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_copyLibrary
 }
 
 func (*CopyLibraryContext) IsCopyLibraryContext() {}
@@ -6546,7 +7819,7 @@ func (*CopyLibraryContext) IsCopyLibraryContext() {}
 func NewCopyLibraryContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CopyLibraryContext {
 	var p = new(CopyLibraryContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_copyLibrary
@@ -6619,30 +7892,13 @@ func (s *CopyLibraryContext) Accept(visitor antlr.ParseTreeVisitor) interface{} 
 }
 
 func (p *Cobol85PreprocessorParser) CopyLibrary() (localctx ICopyLibraryContext) {
-	this := p
-	_ = this
-
 	localctx = NewCopyLibraryContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 18, Cobol85PreprocessorParserRULE_copyLibrary)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.SetState(511)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 
 	switch p.GetTokenStream().LA(1) {
 	case Cobol85PreprocessorParserNONNUMERICLITERAL, Cobol85PreprocessorParserNUMERICLITERAL:
@@ -6660,10 +7916,21 @@ func (p *Cobol85PreprocessorParser) CopyLibrary() (localctx ICopyLibraryContext)
 		}
 
 	default:
-		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IPrefixingPhraseContext is an interface to support dynamic dispatch.
@@ -6673,20 +7940,31 @@ type IPrefixingPhraseContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	PREFIXING() antlr.TerminalNode
+	PrefixWord() IPrefixWordContext
+	AllNEWLINE() []antlr.TerminalNode
+	NEWLINE(i int) antlr.TerminalNode
+
 	// IsPrefixingPhraseContext differentiates from other interfaces.
 	IsPrefixingPhraseContext()
 }
 
 type PrefixingPhraseContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyPrefixingPhraseContext() *PrefixingPhraseContext {
 	var p = new(PrefixingPhraseContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_prefixingPhrase
 	return p
+}
+
+func InitEmptyPrefixingPhraseContext(p *PrefixingPhraseContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_prefixingPhrase
 }
 
 func (*PrefixingPhraseContext) IsPrefixingPhraseContext() {}
@@ -6694,7 +7972,7 @@ func (*PrefixingPhraseContext) IsPrefixingPhraseContext() {}
 func NewPrefixingPhraseContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *PrefixingPhraseContext {
 	var p = new(PrefixingPhraseContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_prefixingPhrase
@@ -6763,46 +8041,41 @@ func (s *PrefixingPhraseContext) Accept(visitor antlr.ParseTreeVisitor) interfac
 }
 
 func (p *Cobol85PreprocessorParser) PrefixingPhrase() (localctx IPrefixingPhraseContext) {
-	this := p
-	_ = this
-
 	localctx = NewPrefixingPhraseContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 20, Cobol85PreprocessorParserRULE_prefixingPhrase)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(513)
 		p.Match(Cobol85PreprocessorParserPREFIXING)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	p.SetState(517)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == Cobol85PreprocessorParserNEWLINE {
 		{
 			p.SetState(514)
 			p.Match(Cobol85PreprocessorParserNEWLINE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 		p.SetState(519)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
@@ -6810,7 +8083,17 @@ func (p *Cobol85PreprocessorParser) PrefixingPhrase() (localctx IPrefixingPhrase
 		p.PrefixWord()
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IReplacingPhraseContext is an interface to support dynamic dispatch.
@@ -6820,20 +8103,32 @@ type IReplacingPhraseContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	REPLACING() antlr.TerminalNode
+	AllReplaceClause() []IReplaceClauseContext
+	ReplaceClause(i int) IReplaceClauseContext
+	AllNEWLINE() []antlr.TerminalNode
+	NEWLINE(i int) antlr.TerminalNode
+
 	// IsReplacingPhraseContext differentiates from other interfaces.
 	IsReplacingPhraseContext()
 }
 
 type ReplacingPhraseContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyReplacingPhraseContext() *ReplacingPhraseContext {
 	var p = new(ReplacingPhraseContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replacingPhrase
 	return p
+}
+
+func InitEmptyReplacingPhraseContext(p *ReplacingPhraseContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_replacingPhrase
 }
 
 func (*ReplacingPhraseContext) IsReplacingPhraseContext() {}
@@ -6841,7 +8136,7 @@ func (*ReplacingPhraseContext) IsReplacingPhraseContext() {}
 func NewReplacingPhraseContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ReplacingPhraseContext {
 	var p = new(ReplacingPhraseContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replacingPhrase
@@ -6935,28 +8230,9 @@ func (s *ReplacingPhraseContext) Accept(visitor antlr.ParseTreeVisitor) interfac
 }
 
 func (p *Cobol85PreprocessorParser) ReplacingPhrase() (localctx IReplacingPhraseContext) {
-	this := p
-	_ = this
-
 	localctx = NewReplacingPhraseContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 22, Cobol85PreprocessorParserRULE_replacingPhrase)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	var _alt int
 
@@ -6964,19 +8240,33 @@ func (p *Cobol85PreprocessorParser) ReplacingPhrase() (localctx IReplacingPhrase
 	{
 		p.SetState(522)
 		p.Match(Cobol85PreprocessorParserREPLACING)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	p.SetState(526)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == Cobol85PreprocessorParserNEWLINE {
 		{
 			p.SetState(523)
 			p.Match(Cobol85PreprocessorParserNEWLINE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 		p.SetState(528)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
@@ -6985,22 +8275,37 @@ func (p *Cobol85PreprocessorParser) ReplacingPhrase() (localctx IReplacingPhrase
 	}
 	p.SetState(538)
 	p.GetErrorHandler().Sync(p)
-	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 46, p.GetParserRuleContext())
-
+	if p.HasError() {
+		goto errorExit
+	}
+	_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 46, p.GetParserRuleContext())
+	if p.HasError() {
+		goto errorExit
+	}
 	for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
 		if _alt == 1 {
 			p.SetState(531)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 
 			for ok := true; ok; ok = _la == Cobol85PreprocessorParserNEWLINE {
 				{
 					p.SetState(530)
 					p.Match(Cobol85PreprocessorParserNEWLINE)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
 				p.SetState(533)
 				p.GetErrorHandler().Sync(p)
+				if p.HasError() {
+					goto errorExit
+				}
 				_la = p.GetTokenStream().LA(1)
 			}
 			{
@@ -7011,10 +8316,26 @@ func (p *Cobol85PreprocessorParser) ReplacingPhrase() (localctx IReplacingPhrase
 		}
 		p.SetState(540)
 		p.GetErrorHandler().Sync(p)
-		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 46, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 46, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IReplaceAreaContext is an interface to support dynamic dispatch.
@@ -7024,20 +8345,33 @@ type IReplaceAreaContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	ReplaceByStatement() IReplaceByStatementContext
+	AllCopyStatement() []ICopyStatementContext
+	CopyStatement(i int) ICopyStatementContext
+	AllCharData() []ICharDataContext
+	CharData(i int) ICharDataContext
+	ReplaceOffStatement() IReplaceOffStatementContext
+
 	// IsReplaceAreaContext differentiates from other interfaces.
 	IsReplaceAreaContext()
 }
 
 type ReplaceAreaContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyReplaceAreaContext() *ReplaceAreaContext {
 	var p = new(ReplaceAreaContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceArea
 	return p
+}
+
+func InitEmptyReplaceAreaContext(p *ReplaceAreaContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceArea
 }
 
 func (*ReplaceAreaContext) IsReplaceAreaContext() {}
@@ -7045,7 +8379,7 @@ func (*ReplaceAreaContext) IsReplaceAreaContext() {}
 func NewReplaceAreaContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ReplaceAreaContext {
 	var p = new(ReplaceAreaContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceArea
@@ -7200,28 +8534,8 @@ func (s *ReplaceAreaContext) Accept(visitor antlr.ParseTreeVisitor) interface{} 
 }
 
 func (p *Cobol85PreprocessorParser) ReplaceArea() (localctx IReplaceAreaContext) {
-	this := p
-	_ = this
-
 	localctx = NewReplaceAreaContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 24, Cobol85PreprocessorParserRULE_replaceArea)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	var _alt int
 
 	p.EnterOuterAlt(localctx, 1)
@@ -7231,12 +8545,20 @@ func (p *Cobol85PreprocessorParser) ReplaceArea() (localctx IReplaceAreaContext)
 	}
 	p.SetState(546)
 	p.GetErrorHandler().Sync(p)
-	_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 48, p.GetParserRuleContext())
-
+	if p.HasError() {
+		goto errorExit
+	}
+	_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 48, p.GetParserRuleContext())
+	if p.HasError() {
+		goto errorExit
+	}
 	for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
 		if _alt == 1 {
 			p.SetState(544)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 
 			switch p.GetTokenStream().LA(1) {
 			case Cobol85PreprocessorParserCOPY:
@@ -7252,26 +8574,45 @@ func (p *Cobol85PreprocessorParser) ReplaceArea() (localctx IReplaceAreaContext)
 				}
 
 			default:
-				panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+				p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+				goto errorExit
 			}
 
 		}
 		p.SetState(548)
 		p.GetErrorHandler().Sync(p)
-		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 48, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 48, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
 	}
 	p.SetState(550)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 49, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 49, p.GetParserRuleContext()) == 1 {
 		{
 			p.SetState(549)
 			p.ReplaceOffStatement()
 		}
 
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IReplaceByStatementContext is an interface to support dynamic dispatch.
@@ -7281,20 +8622,33 @@ type IReplaceByStatementContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	REPLACE() antlr.TerminalNode
+	DOT() antlr.TerminalNode
+	AllReplaceClause() []IReplaceClauseContext
+	ReplaceClause(i int) IReplaceClauseContext
+	AllNEWLINE() []antlr.TerminalNode
+	NEWLINE(i int) antlr.TerminalNode
+
 	// IsReplaceByStatementContext differentiates from other interfaces.
 	IsReplaceByStatementContext()
 }
 
 type ReplaceByStatementContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyReplaceByStatementContext() *ReplaceByStatementContext {
 	var p = new(ReplaceByStatementContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceByStatement
 	return p
+}
+
+func InitEmptyReplaceByStatementContext(p *ReplaceByStatementContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceByStatement
 }
 
 func (*ReplaceByStatementContext) IsReplaceByStatementContext() {}
@@ -7302,7 +8656,7 @@ func (*ReplaceByStatementContext) IsReplaceByStatementContext() {}
 func NewReplaceByStatementContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ReplaceByStatementContext {
 	var p = new(ReplaceByStatementContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceByStatement
@@ -7400,28 +8754,9 @@ func (s *ReplaceByStatementContext) Accept(visitor antlr.ParseTreeVisitor) inter
 }
 
 func (p *Cobol85PreprocessorParser) ReplaceByStatement() (localctx IReplaceByStatementContext) {
-	this := p
-	_ = this
-
 	localctx = NewReplaceByStatementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 26, Cobol85PreprocessorParserRULE_replaceByStatement)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	var _alt int
 
@@ -7429,25 +8764,42 @@ func (p *Cobol85PreprocessorParser) ReplaceByStatement() (localctx IReplaceBySta
 	{
 		p.SetState(552)
 		p.Match(Cobol85PreprocessorParserREPLACE)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	p.SetState(560)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_alt = 1
 	for ok := true; ok; ok = _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
 		switch _alt {
 		case 1:
 			p.SetState(556)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 
 			for _la == Cobol85PreprocessorParserNEWLINE {
 				{
 					p.SetState(553)
 					p.Match(Cobol85PreprocessorParserNEWLINE)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
 				p.SetState(558)
 				p.GetErrorHandler().Sync(p)
+				if p.HasError() {
+					goto errorExit
+				}
 				_la = p.GetTokenStream().LA(1)
 			}
 			{
@@ -7456,19 +8808,37 @@ func (p *Cobol85PreprocessorParser) ReplaceByStatement() (localctx IReplaceBySta
 			}
 
 		default:
-			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			goto errorExit
 		}
 
 		p.SetState(562)
 		p.GetErrorHandler().Sync(p)
-		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 51, p.GetParserRuleContext())
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 51, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(564)
 		p.Match(Cobol85PreprocessorParserDOT)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IReplaceOffStatementContext is an interface to support dynamic dispatch.
@@ -7478,20 +8848,30 @@ type IReplaceOffStatementContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	REPLACE() antlr.TerminalNode
+	OFF() antlr.TerminalNode
+	DOT() antlr.TerminalNode
+
 	// IsReplaceOffStatementContext differentiates from other interfaces.
 	IsReplaceOffStatementContext()
 }
 
 type ReplaceOffStatementContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyReplaceOffStatementContext() *ReplaceOffStatementContext {
 	var p = new(ReplaceOffStatementContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceOffStatement
 	return p
+}
+
+func InitEmptyReplaceOffStatementContext(p *ReplaceOffStatementContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceOffStatement
 }
 
 func (*ReplaceOffStatementContext) IsReplaceOffStatementContext() {}
@@ -7499,7 +8879,7 @@ func (*ReplaceOffStatementContext) IsReplaceOffStatementContext() {}
 func NewReplaceOffStatementContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ReplaceOffStatementContext {
 	var p = new(ReplaceOffStatementContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceOffStatement
@@ -7552,43 +8932,45 @@ func (s *ReplaceOffStatementContext) Accept(visitor antlr.ParseTreeVisitor) inte
 }
 
 func (p *Cobol85PreprocessorParser) ReplaceOffStatement() (localctx IReplaceOffStatementContext) {
-	this := p
-	_ = this
-
 	localctx = NewReplaceOffStatementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 28, Cobol85PreprocessorParserRULE_replaceOffStatement)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(566)
 		p.Match(Cobol85PreprocessorParserREPLACE)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(567)
 		p.Match(Cobol85PreprocessorParserOFF)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(568)
 		p.Match(Cobol85PreprocessorParserDOT)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IReplaceClauseContext is an interface to support dynamic dispatch.
@@ -7598,20 +8980,34 @@ type IReplaceClauseContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	Replaceable() IReplaceableContext
+	BY() antlr.TerminalNode
+	Replacement() IReplacementContext
+	AllNEWLINE() []antlr.TerminalNode
+	NEWLINE(i int) antlr.TerminalNode
+	DirectoryPhrase() IDirectoryPhraseContext
+	FamilyPhrase() IFamilyPhraseContext
+
 	// IsReplaceClauseContext differentiates from other interfaces.
 	IsReplaceClauseContext()
 }
 
 type ReplaceClauseContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyReplaceClauseContext() *ReplaceClauseContext {
 	var p = new(ReplaceClauseContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceClause
 	return p
+}
+
+func InitEmptyReplaceClauseContext(p *ReplaceClauseContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceClause
 }
 
 func (*ReplaceClauseContext) IsReplaceClauseContext() {}
@@ -7619,7 +9015,7 @@ func (*ReplaceClauseContext) IsReplaceClauseContext() {}
 func NewReplaceClauseContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ReplaceClauseContext {
 	var p = new(ReplaceClauseContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceClause
@@ -7736,28 +9132,9 @@ func (s *ReplaceClauseContext) Accept(visitor antlr.ParseTreeVisitor) interface{
 }
 
 func (p *Cobol85PreprocessorParser) ReplaceClause() (localctx IReplaceClauseContext) {
-	this := p
-	_ = this
-
 	localctx = NewReplaceClauseContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 30, Cobol85PreprocessorParserRULE_replaceClause)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	p.EnterOuterAlt(localctx, 1)
 	{
@@ -7766,34 +9143,58 @@ func (p *Cobol85PreprocessorParser) ReplaceClause() (localctx IReplaceClauseCont
 	}
 	p.SetState(574)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == Cobol85PreprocessorParserNEWLINE {
 		{
 			p.SetState(571)
 			p.Match(Cobol85PreprocessorParserNEWLINE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 		p.SetState(576)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
 		p.SetState(577)
 		p.Match(Cobol85PreprocessorParserBY)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	p.SetState(581)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == Cobol85PreprocessorParserNEWLINE {
 		{
 			p.SetState(578)
 			p.Match(Cobol85PreprocessorParserNEWLINE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 		p.SetState(583)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
@@ -7803,19 +9204,29 @@ func (p *Cobol85PreprocessorParser) ReplaceClause() (localctx IReplaceClauseCont
 	p.SetState(592)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 55, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 55, p.GetParserRuleContext()) == 1 {
 		p.SetState(588)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 
 		for _la == Cobol85PreprocessorParserNEWLINE {
 			{
 				p.SetState(585)
 				p.Match(Cobol85PreprocessorParserNEWLINE)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
 			p.SetState(590)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 		}
 		{
@@ -7823,23 +9234,35 @@ func (p *Cobol85PreprocessorParser) ReplaceClause() (localctx IReplaceClauseCont
 			p.DirectoryPhrase()
 		}
 
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
 	p.SetState(601)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 57, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 57, p.GetParserRuleContext()) == 1 {
 		p.SetState(597)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 
 		for _la == Cobol85PreprocessorParserNEWLINE {
 			{
 				p.SetState(594)
 				p.Match(Cobol85PreprocessorParserNEWLINE)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
 			p.SetState(599)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 		}
 		{
@@ -7847,9 +9270,21 @@ func (p *Cobol85PreprocessorParser) ReplaceClause() (localctx IReplaceClauseCont
 			p.FamilyPhrase()
 		}
 
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IDirectoryPhraseContext is an interface to support dynamic dispatch.
@@ -7859,20 +9294,33 @@ type IDirectoryPhraseContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	OF() antlr.TerminalNode
+	IN() antlr.TerminalNode
+	Literal() ILiteralContext
+	CobolWord() ICobolWordContext
+	AllNEWLINE() []antlr.TerminalNode
+	NEWLINE(i int) antlr.TerminalNode
+
 	// IsDirectoryPhraseContext differentiates from other interfaces.
 	IsDirectoryPhraseContext()
 }
 
 type DirectoryPhraseContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyDirectoryPhraseContext() *DirectoryPhraseContext {
 	var p = new(DirectoryPhraseContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_directoryPhrase
 	return p
+}
+
+func InitEmptyDirectoryPhraseContext(p *DirectoryPhraseContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_directoryPhrase
 }
 
 func (*DirectoryPhraseContext) IsDirectoryPhraseContext() {}
@@ -7880,7 +9328,7 @@ func (*DirectoryPhraseContext) IsDirectoryPhraseContext() {}
 func NewDirectoryPhraseContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *DirectoryPhraseContext {
 	var p = new(DirectoryPhraseContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_directoryPhrase
@@ -7969,28 +9417,9 @@ func (s *DirectoryPhraseContext) Accept(visitor antlr.ParseTreeVisitor) interfac
 }
 
 func (p *Cobol85PreprocessorParser) DirectoryPhrase() (localctx IDirectoryPhraseContext) {
-	this := p
-	_ = this
-
 	localctx = NewDirectoryPhraseContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 32, Cobol85PreprocessorParserRULE_directoryPhrase)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	p.EnterOuterAlt(localctx, 1)
 	{
@@ -8006,20 +9435,33 @@ func (p *Cobol85PreprocessorParser) DirectoryPhrase() (localctx IDirectoryPhrase
 	}
 	p.SetState(607)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == Cobol85PreprocessorParserNEWLINE {
 		{
 			p.SetState(604)
 			p.Match(Cobol85PreprocessorParserNEWLINE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 		p.SetState(609)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
 	p.SetState(612)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 
 	switch p.GetTokenStream().LA(1) {
 	case Cobol85PreprocessorParserNONNUMERICLITERAL, Cobol85PreprocessorParserNUMERICLITERAL:
@@ -8035,10 +9477,21 @@ func (p *Cobol85PreprocessorParser) DirectoryPhrase() (localctx IDirectoryPhrase
 		}
 
 	default:
-		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IFamilyPhraseContext is an interface to support dynamic dispatch.
@@ -8048,20 +9501,32 @@ type IFamilyPhraseContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	ON() antlr.TerminalNode
+	Literal() ILiteralContext
+	CobolWord() ICobolWordContext
+	AllNEWLINE() []antlr.TerminalNode
+	NEWLINE(i int) antlr.TerminalNode
+
 	// IsFamilyPhraseContext differentiates from other interfaces.
 	IsFamilyPhraseContext()
 }
 
 type FamilyPhraseContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyFamilyPhraseContext() *FamilyPhraseContext {
 	var p = new(FamilyPhraseContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_familyPhrase
 	return p
+}
+
+func InitEmptyFamilyPhraseContext(p *FamilyPhraseContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_familyPhrase
 }
 
 func (*FamilyPhraseContext) IsFamilyPhraseContext() {}
@@ -8069,7 +9534,7 @@ func (*FamilyPhraseContext) IsFamilyPhraseContext() {}
 func NewFamilyPhraseContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *FamilyPhraseContext {
 	var p = new(FamilyPhraseContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_familyPhrase
@@ -8154,50 +9619,48 @@ func (s *FamilyPhraseContext) Accept(visitor antlr.ParseTreeVisitor) interface{}
 }
 
 func (p *Cobol85PreprocessorParser) FamilyPhrase() (localctx IFamilyPhraseContext) {
-	this := p
-	_ = this
-
 	localctx = NewFamilyPhraseContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 34, Cobol85PreprocessorParserRULE_familyPhrase)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(614)
 		p.Match(Cobol85PreprocessorParserON)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	p.SetState(618)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_la = p.GetTokenStream().LA(1)
 
 	for _la == Cobol85PreprocessorParserNEWLINE {
 		{
 			p.SetState(615)
 			p.Match(Cobol85PreprocessorParserNEWLINE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 		p.SetState(620)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
 	p.SetState(623)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 
 	switch p.GetTokenStream().LA(1) {
 	case Cobol85PreprocessorParserNONNUMERICLITERAL, Cobol85PreprocessorParserNUMERICLITERAL:
@@ -8213,10 +9676,21 @@ func (p *Cobol85PreprocessorParser) FamilyPhrase() (localctx IFamilyPhraseContex
 		}
 
 	default:
-		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IReplaceableContext is an interface to support dynamic dispatch.
@@ -8226,20 +9700,31 @@ type IReplaceableContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	Literal() ILiteralContext
+	CobolWord() ICobolWordContext
+	PseudoText() IPseudoTextContext
+	CharDataLine() ICharDataLineContext
+
 	// IsReplaceableContext differentiates from other interfaces.
 	IsReplaceableContext()
 }
 
 type ReplaceableContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyReplaceableContext() *ReplaceableContext {
 	var p = new(ReplaceableContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceable
 	return p
+}
+
+func InitEmptyReplaceableContext(p *ReplaceableContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceable
 }
 
 func (*ReplaceableContext) IsReplaceableContext() {}
@@ -8247,7 +9732,7 @@ func (*ReplaceableContext) IsReplaceableContext() {}
 func NewReplaceableContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ReplaceableContext {
 	var p = new(ReplaceableContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replaceable
@@ -8352,31 +9837,15 @@ func (s *ReplaceableContext) Accept(visitor antlr.ParseTreeVisitor) interface{} 
 }
 
 func (p *Cobol85PreprocessorParser) Replaceable() (localctx IReplaceableContext) {
-	this := p
-	_ = this
-
 	localctx = NewReplaceableContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 36, Cobol85PreprocessorParserRULE_replaceable)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.SetState(629)
 	p.GetErrorHandler().Sync(p)
-	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 62, p.GetParserRuleContext()) {
+	if p.HasError() {
+		goto errorExit
+	}
+
+	switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 62, p.GetParserRuleContext()) {
 	case 1:
 		p.EnterOuterAlt(localctx, 1)
 		{
@@ -8405,9 +9874,21 @@ func (p *Cobol85PreprocessorParser) Replaceable() (localctx IReplaceableContext)
 			p.CharDataLine()
 		}
 
+	case antlr.ATNInvalidAltNumber:
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IReplacementContext is an interface to support dynamic dispatch.
@@ -8417,20 +9898,31 @@ type IReplacementContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	Literal() ILiteralContext
+	CobolWord() ICobolWordContext
+	PseudoText() IPseudoTextContext
+	CharDataLine() ICharDataLineContext
+
 	// IsReplacementContext differentiates from other interfaces.
 	IsReplacementContext()
 }
 
 type ReplacementContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyReplacementContext() *ReplacementContext {
 	var p = new(ReplacementContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replacement
 	return p
+}
+
+func InitEmptyReplacementContext(p *ReplacementContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_replacement
 }
 
 func (*ReplacementContext) IsReplacementContext() {}
@@ -8438,7 +9930,7 @@ func (*ReplacementContext) IsReplacementContext() {}
 func NewReplacementContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *ReplacementContext {
 	var p = new(ReplacementContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_replacement
@@ -8543,31 +10035,15 @@ func (s *ReplacementContext) Accept(visitor antlr.ParseTreeVisitor) interface{} 
 }
 
 func (p *Cobol85PreprocessorParser) Replacement() (localctx IReplacementContext) {
-	this := p
-	_ = this
-
 	localctx = NewReplacementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 38, Cobol85PreprocessorParserRULE_replacement)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.SetState(635)
 	p.GetErrorHandler().Sync(p)
-	switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 63, p.GetParserRuleContext()) {
+	if p.HasError() {
+		goto errorExit
+	}
+
+	switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 63, p.GetParserRuleContext()) {
 	case 1:
 		p.EnterOuterAlt(localctx, 1)
 		{
@@ -8596,9 +10072,21 @@ func (p *Cobol85PreprocessorParser) Replacement() (localctx IReplacementContext)
 			p.CharDataLine()
 		}
 
+	case antlr.ATNInvalidAltNumber:
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IEjectStatementContext is an interface to support dynamic dispatch.
@@ -8608,20 +10096,29 @@ type IEjectStatementContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EJECT() antlr.TerminalNode
+	DOT() antlr.TerminalNode
+
 	// IsEjectStatementContext differentiates from other interfaces.
 	IsEjectStatementContext()
 }
 
 type EjectStatementContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyEjectStatementContext() *EjectStatementContext {
 	var p = new(EjectStatementContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_ejectStatement
 	return p
+}
+
+func InitEmptyEjectStatementContext(p *EjectStatementContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_ejectStatement
 }
 
 func (*EjectStatementContext) IsEjectStatementContext() {}
@@ -8629,7 +10126,7 @@ func (*EjectStatementContext) IsEjectStatementContext() {}
 func NewEjectStatementContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *EjectStatementContext {
 	var p = new(EjectStatementContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_ejectStatement
@@ -8678,45 +10175,45 @@ func (s *EjectStatementContext) Accept(visitor antlr.ParseTreeVisitor) interface
 }
 
 func (p *Cobol85PreprocessorParser) EjectStatement() (localctx IEjectStatementContext) {
-	this := p
-	_ = this
-
 	localctx = NewEjectStatementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 40, Cobol85PreprocessorParserRULE_ejectStatement)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(637)
 		p.Match(Cobol85PreprocessorParserEJECT)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	p.SetState(639)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 64, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 64, p.GetParserRuleContext()) == 1 {
 		{
 			p.SetState(638)
 			p.Match(Cobol85PreprocessorParserDOT)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ISkipStatementContext is an interface to support dynamic dispatch.
@@ -8726,20 +10223,31 @@ type ISkipStatementContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	SKIP1() antlr.TerminalNode
+	SKIP2() antlr.TerminalNode
+	SKIP3() antlr.TerminalNode
+	DOT() antlr.TerminalNode
+
 	// IsSkipStatementContext differentiates from other interfaces.
 	IsSkipStatementContext()
 }
 
 type SkipStatementContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptySkipStatementContext() *SkipStatementContext {
 	var p = new(SkipStatementContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_skipStatement
 	return p
+}
+
+func InitEmptySkipStatementContext(p *SkipStatementContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_skipStatement
 }
 
 func (*SkipStatementContext) IsSkipStatementContext() {}
@@ -8747,7 +10255,7 @@ func (*SkipStatementContext) IsSkipStatementContext() {}
 func NewSkipStatementContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *SkipStatementContext {
 	var p = new(SkipStatementContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_skipStatement
@@ -8804,28 +10312,9 @@ func (s *SkipStatementContext) Accept(visitor antlr.ParseTreeVisitor) interface{
 }
 
 func (p *Cobol85PreprocessorParser) SkipStatement() (localctx ISkipStatementContext) {
-	this := p
-	_ = this
-
 	localctx = NewSkipStatementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 42, Cobol85PreprocessorParserRULE_skipStatement)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	p.EnterOuterAlt(localctx, 1)
 	{
@@ -8842,15 +10331,31 @@ func (p *Cobol85PreprocessorParser) SkipStatement() (localctx ISkipStatementCont
 	p.SetState(643)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 65, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 65, p.GetParserRuleContext()) == 1 {
 		{
 			p.SetState(642)
 			p.Match(Cobol85PreprocessorParserDOT)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ITitleStatementContext is an interface to support dynamic dispatch.
@@ -8860,20 +10365,30 @@ type ITitleStatementContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	TITLE() antlr.TerminalNode
+	Literal() ILiteralContext
+	DOT() antlr.TerminalNode
+
 	// IsTitleStatementContext differentiates from other interfaces.
 	IsTitleStatementContext()
 }
 
 type TitleStatementContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyTitleStatementContext() *TitleStatementContext {
 	var p = new(TitleStatementContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_titleStatement
 	return p
+}
+
+func InitEmptyTitleStatementContext(p *TitleStatementContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_titleStatement
 }
 
 func (*TitleStatementContext) IsTitleStatementContext() {}
@@ -8881,7 +10396,7 @@ func (*TitleStatementContext) IsTitleStatementContext() {}
 func NewTitleStatementContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *TitleStatementContext {
 	var p = new(TitleStatementContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_titleStatement
@@ -8946,32 +10461,16 @@ func (s *TitleStatementContext) Accept(visitor antlr.ParseTreeVisitor) interface
 }
 
 func (p *Cobol85PreprocessorParser) TitleStatement() (localctx ITitleStatementContext) {
-	this := p
-	_ = this
-
 	localctx = NewTitleStatementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 44, Cobol85PreprocessorParserRULE_titleStatement)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(645)
 		p.Match(Cobol85PreprocessorParserTITLE)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	{
 		p.SetState(646)
@@ -8980,15 +10479,31 @@ func (p *Cobol85PreprocessorParser) TitleStatement() (localctx ITitleStatementCo
 	p.SetState(648)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 66, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 66, p.GetParserRuleContext()) == 1 {
 		{
 			p.SetState(647)
 			p.Match(Cobol85PreprocessorParserDOT)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IPseudoTextContext is an interface to support dynamic dispatch.
@@ -8998,20 +10513,30 @@ type IPseudoTextContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	AllDOUBLEEQUALCHAR() []antlr.TerminalNode
+	DOUBLEEQUALCHAR(i int) antlr.TerminalNode
+	CharData() ICharDataContext
+
 	// IsPseudoTextContext differentiates from other interfaces.
 	IsPseudoTextContext()
 }
 
 type PseudoTextContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyPseudoTextContext() *PseudoTextContext {
 	var p = new(PseudoTextContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_pseudoText
 	return p
+}
+
+func InitEmptyPseudoTextContext(p *PseudoTextContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_pseudoText
 }
 
 func (*PseudoTextContext) IsPseudoTextContext() {}
@@ -9019,7 +10544,7 @@ func (*PseudoTextContext) IsPseudoTextContext() {}
 func NewPseudoTextContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *PseudoTextContext {
 	var p = new(PseudoTextContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_pseudoText
@@ -9084,39 +10609,27 @@ func (s *PseudoTextContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 }
 
 func (p *Cobol85PreprocessorParser) PseudoText() (localctx IPseudoTextContext) {
-	this := p
-	_ = this
-
 	localctx = NewPseudoTextContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 46, Cobol85PreprocessorParserRULE_pseudoText)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(650)
 		p.Match(Cobol85PreprocessorParserDOUBLEEQUALCHAR)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 	p.SetState(652)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_la = p.GetTokenStream().LA(1)
 
-	if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&-2346375405893844994) != 0 || (int64((_la-64)) & ^0x3f) == 0 && ((int64(1)<<(_la-64))&-8193) != 0 || (int64((_la-128)) & ^0x3f) == 0 && ((int64(1)<<(_la-128))&-288230376151711745) != 0 || (int64((_la-192)) & ^0x3f) == 0 && ((int64(1)<<(_la-192))&-19069930225795073) != 0 || (int64((_la-256)) & ^0x3f) == 0 && ((int64(1)<<(_la-256))&325813534447) != 0 {
+	if ((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&-2346375405893844994) != 0) || ((int64((_la-64)) & ^0x3f) == 0 && ((int64(1)<<(_la-64))&-8193) != 0) || ((int64((_la-128)) & ^0x3f) == 0 && ((int64(1)<<(_la-128))&-288230376151711745) != 0) || ((int64((_la-192)) & ^0x3f) == 0 && ((int64(1)<<(_la-192))&-19069930225795073) != 0) || ((int64((_la-256)) & ^0x3f) == 0 && ((int64(1)<<(_la-256))&325813534447) != 0) {
 		{
 			p.SetState(651)
 			p.CharData()
@@ -9126,9 +10639,23 @@ func (p *Cobol85PreprocessorParser) PseudoText() (localctx IPseudoTextContext) {
 	{
 		p.SetState(654)
 		p.Match(Cobol85PreprocessorParserDOUBLEEQUALCHAR)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ICharDataContext is an interface to support dynamic dispatch.
@@ -9138,20 +10665,31 @@ type ICharDataContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	AllCharDataLine() []ICharDataLineContext
+	CharDataLine(i int) ICharDataLineContext
+	AllNEWLINE() []antlr.TerminalNode
+	NEWLINE(i int) antlr.TerminalNode
+
 	// IsCharDataContext differentiates from other interfaces.
 	IsCharDataContext()
 }
 
 type CharDataContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyCharDataContext() *CharDataContext {
 	var p = new(CharDataContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_charData
 	return p
+}
+
+func InitEmptyCharDataContext(p *CharDataContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_charData
 }
 
 func (*CharDataContext) IsCharDataContext() {}
@@ -9159,7 +10697,7 @@ func (*CharDataContext) IsCharDataContext() {}
 func NewCharDataContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CharDataContext {
 	var p = new(CharDataContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_charData
@@ -9249,39 +10787,25 @@ func (s *CharDataContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 }
 
 func (p *Cobol85PreprocessorParser) CharData() (localctx ICharDataContext) {
-	this := p
-	_ = this
-
 	localctx = NewCharDataContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 48, Cobol85PreprocessorParserRULE_charData)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	var _alt int
 
 	p.EnterOuterAlt(localctx, 1)
 	p.SetState(658)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_alt = 1
 	for ok := true; ok; ok = _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
 		switch _alt {
 		case 1:
 			p.SetState(658)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 
 			switch p.GetTokenStream().LA(1) {
 			case Cobol85PreprocessorParserADATA, Cobol85PreprocessorParserADV, Cobol85PreprocessorParserALIAS, Cobol85PreprocessorParserANSI, Cobol85PreprocessorParserANY, Cobol85PreprocessorParserAPOST, Cobol85PreprocessorParserAR, Cobol85PreprocessorParserARITH, Cobol85PreprocessorParserAUTO, Cobol85PreprocessorParserAWO, Cobol85PreprocessorParserBIN, Cobol85PreprocessorParserBLOCK0, Cobol85PreprocessorParserBUF, Cobol85PreprocessorParserBUFSIZE, Cobol85PreprocessorParserBY, Cobol85PreprocessorParserCBL, Cobol85PreprocessorParserCBLCARD, Cobol85PreprocessorParserCO, Cobol85PreprocessorParserCOBOL2, Cobol85PreprocessorParserCOBOL3, Cobol85PreprocessorParserCODEPAGE, Cobol85PreprocessorParserCOMPAT, Cobol85PreprocessorParserCOMPILE, Cobol85PreprocessorParserCP, Cobol85PreprocessorParserCPP, Cobol85PreprocessorParserCPSM, Cobol85PreprocessorParserCS, Cobol85PreprocessorParserCURR, Cobol85PreprocessorParserCURRENCY, Cobol85PreprocessorParserDATA, Cobol85PreprocessorParserDATEPROC, Cobol85PreprocessorParserDBCS, Cobol85PreprocessorParserDD, Cobol85PreprocessorParserDEBUG, Cobol85PreprocessorParserDECK, Cobol85PreprocessorParserDIAGTRUNC, Cobol85PreprocessorParserDLI, Cobol85PreprocessorParserDLL, Cobol85PreprocessorParserDP, Cobol85PreprocessorParserDTR, Cobol85PreprocessorParserDU, Cobol85PreprocessorParserDUMP, Cobol85PreprocessorParserDYN, Cobol85PreprocessorParserDYNAM, Cobol85PreprocessorParserEDF, Cobol85PreprocessorParserEJECT, Cobol85PreprocessorParserEJPD, Cobol85PreprocessorParserEN, Cobol85PreprocessorParserENGLISH, Cobol85PreprocessorParserEPILOG, Cobol85PreprocessorParserEXCI, Cobol85PreprocessorParserEXIT, Cobol85PreprocessorParserEXP, Cobol85PreprocessorParserEXPORTALL, Cobol85PreprocessorParserEXTEND, Cobol85PreprocessorParserFASTSRT, Cobol85PreprocessorParserFLAG, Cobol85PreprocessorParserFLAGSTD, Cobol85PreprocessorParserFSRT, Cobol85PreprocessorParserFULL, Cobol85PreprocessorParserGDS, Cobol85PreprocessorParserGRAPHIC, Cobol85PreprocessorParserHOOK, Cobol85PreprocessorParserIN, Cobol85PreprocessorParserINTDATE, Cobol85PreprocessorParserJA, Cobol85PreprocessorParserJP, Cobol85PreprocessorParserKA, Cobol85PreprocessorParserLANG, Cobol85PreprocessorParserLANGUAGE, Cobol85PreprocessorParserLC, Cobol85PreprocessorParserLENGTH, Cobol85PreprocessorParserLIB, Cobol85PreprocessorParserLILIAN, Cobol85PreprocessorParserLIN, Cobol85PreprocessorParserLINECOUNT, Cobol85PreprocessorParserLINKAGE, Cobol85PreprocessorParserLIST, Cobol85PreprocessorParserLM, Cobol85PreprocessorParserLONGMIXED, Cobol85PreprocessorParserLONGUPPER, Cobol85PreprocessorParserLPARENCHAR, Cobol85PreprocessorParserLU, Cobol85PreprocessorParserMAP, Cobol85PreprocessorParserMARGINS, Cobol85PreprocessorParserMAX, Cobol85PreprocessorParserMD, Cobol85PreprocessorParserMDECK, Cobol85PreprocessorParserMIG, Cobol85PreprocessorParserMIXED, Cobol85PreprocessorParserNAME, Cobol85PreprocessorParserNAT, Cobol85PreprocessorParserNATIONAL, Cobol85PreprocessorParserNATLANG, Cobol85PreprocessorParserNN, Cobol85PreprocessorParserNO, Cobol85PreprocessorParserNOADATA, Cobol85PreprocessorParserNOADV, Cobol85PreprocessorParserNOALIAS, Cobol85PreprocessorParserNOAWO, Cobol85PreprocessorParserNOBLOCK0, Cobol85PreprocessorParserNOC, Cobol85PreprocessorParserNOCBLCARD, Cobol85PreprocessorParserNOCICS, Cobol85PreprocessorParserNOCMPR2, Cobol85PreprocessorParserNOCOMPILE, Cobol85PreprocessorParserNOCPSM, Cobol85PreprocessorParserNOCURR, Cobol85PreprocessorParserNOCURRENCY, Cobol85PreprocessorParserNOD, Cobol85PreprocessorParserNODATEPROC, Cobol85PreprocessorParserNODBCS, Cobol85PreprocessorParserNODE, Cobol85PreprocessorParserNODEBUG, Cobol85PreprocessorParserNODECK, Cobol85PreprocessorParserNODIAGTRUNC, Cobol85PreprocessorParserNODLL, Cobol85PreprocessorParserNODU, Cobol85PreprocessorParserNODUMP, Cobol85PreprocessorParserNODP, Cobol85PreprocessorParserNODTR, Cobol85PreprocessorParserNODYN, Cobol85PreprocessorParserNODYNAM, Cobol85PreprocessorParserNOEDF, Cobol85PreprocessorParserNOEJPD, Cobol85PreprocessorParserNOEPILOG, Cobol85PreprocessorParserNOEXIT, Cobol85PreprocessorParserNOEXP, Cobol85PreprocessorParserNOEXPORTALL, Cobol85PreprocessorParserNOF, Cobol85PreprocessorParserNOFASTSRT, Cobol85PreprocessorParserNOFEPI, Cobol85PreprocessorParserNOFLAG, Cobol85PreprocessorParserNOFLAGMIG, Cobol85PreprocessorParserNOFLAGSTD, Cobol85PreprocessorParserNOFSRT, Cobol85PreprocessorParserNOGRAPHIC, Cobol85PreprocessorParserNOHOOK, Cobol85PreprocessorParserNOLENGTH, Cobol85PreprocessorParserNOLIB, Cobol85PreprocessorParserNOLINKAGE, Cobol85PreprocessorParserNOLIST, Cobol85PreprocessorParserNOMAP, Cobol85PreprocessorParserNOMD, Cobol85PreprocessorParserNOMDECK, Cobol85PreprocessorParserNONAME, Cobol85PreprocessorParserNONUM, Cobol85PreprocessorParserNONUMBER, Cobol85PreprocessorParserNOOBJ, Cobol85PreprocessorParserNOOBJECT, Cobol85PreprocessorParserNOOFF, Cobol85PreprocessorParserNOOFFSET, Cobol85PreprocessorParserNOOPSEQUENCE, Cobol85PreprocessorParserNOOPT, Cobol85PreprocessorParserNOOPTIMIZE, Cobol85PreprocessorParserNOOPTIONS, Cobol85PreprocessorParserNOP, Cobol85PreprocessorParserNOPFD, Cobol85PreprocessorParserNOPROLOG, Cobol85PreprocessorParserNORENT, Cobol85PreprocessorParserNOS, Cobol85PreprocessorParserNOSEP, Cobol85PreprocessorParserNOSEPARATE, Cobol85PreprocessorParserNOSEQ, Cobol85PreprocessorParserNOSOURCE, Cobol85PreprocessorParserNOSPIE, Cobol85PreprocessorParserNOSQL, Cobol85PreprocessorParserNOSQLC, Cobol85PreprocessorParserNOSQLCCSID, Cobol85PreprocessorParserNOSSR, Cobol85PreprocessorParserNOSSRANGE, Cobol85PreprocessorParserNOSTDTRUNC, Cobol85PreprocessorParserNOSEQUENCE, Cobol85PreprocessorParserNOTERM, Cobol85PreprocessorParserNOTERMINAL, Cobol85PreprocessorParserNOTEST, Cobol85PreprocessorParserNOTHREAD, Cobol85PreprocessorParserNOTRIG, Cobol85PreprocessorParserNOVBREF, Cobol85PreprocessorParserNOWORD, Cobol85PreprocessorParserNOX, Cobol85PreprocessorParserNOXREF, Cobol85PreprocessorParserNOZWB, Cobol85PreprocessorParserNS, Cobol85PreprocessorParserNSEQ, Cobol85PreprocessorParserNSYMBOL, Cobol85PreprocessorParserNUM, Cobol85PreprocessorParserNUMBER, Cobol85PreprocessorParserNUMPROC, Cobol85PreprocessorParserOBJ, Cobol85PreprocessorParserOBJECT, Cobol85PreprocessorParserOF, Cobol85PreprocessorParserOFF, Cobol85PreprocessorParserOFFSET, Cobol85PreprocessorParserON, Cobol85PreprocessorParserOP, Cobol85PreprocessorParserOPMARGINS, Cobol85PreprocessorParserOPSEQUENCE, Cobol85PreprocessorParserOPT, Cobol85PreprocessorParserOPTFILE, Cobol85PreprocessorParserOPTIMIZE, Cobol85PreprocessorParserOPTIONS, Cobol85PreprocessorParserOUT, Cobol85PreprocessorParserOUTDD, Cobol85PreprocessorParserPFD, Cobol85PreprocessorParserPPTDBG, Cobol85PreprocessorParserPGMN, Cobol85PreprocessorParserPGMNAME, Cobol85PreprocessorParserPROCESS, Cobol85PreprocessorParserPROLOG, Cobol85PreprocessorParserQUOTE, Cobol85PreprocessorParserRENT, Cobol85PreprocessorParserREPLACING, Cobol85PreprocessorParserRMODE, Cobol85PreprocessorParserRPARENCHAR, Cobol85PreprocessorParserSEP, Cobol85PreprocessorParserSEPARATE, Cobol85PreprocessorParserSEQ, Cobol85PreprocessorParserSEQUENCE, Cobol85PreprocessorParserSHORT, Cobol85PreprocessorParserSIZE, Cobol85PreprocessorParserSOURCE, Cobol85PreprocessorParserSP, Cobol85PreprocessorParserSPACE, Cobol85PreprocessorParserSPIE, Cobol85PreprocessorParserSQL, Cobol85PreprocessorParserSQLC, Cobol85PreprocessorParserSQLCCSID, Cobol85PreprocessorParserSS, Cobol85PreprocessorParserSSR, Cobol85PreprocessorParserSSRANGE, Cobol85PreprocessorParserSTD, Cobol85PreprocessorParserSYSEIB, Cobol85PreprocessorParserSZ, Cobol85PreprocessorParserTERM, Cobol85PreprocessorParserTERMINAL, Cobol85PreprocessorParserTEST, Cobol85PreprocessorParserTHREAD, Cobol85PreprocessorParserTITLE, Cobol85PreprocessorParserTRIG, Cobol85PreprocessorParserTRUNC, Cobol85PreprocessorParserUE, Cobol85PreprocessorParserUPPER, Cobol85PreprocessorParserVBREF, Cobol85PreprocessorParserWD, Cobol85PreprocessorParserXMLPARSE, Cobol85PreprocessorParserXMLSS, Cobol85PreprocessorParserXOPTS, Cobol85PreprocessorParserXREF, Cobol85PreprocessorParserYEARWINDOW, Cobol85PreprocessorParserYW, Cobol85PreprocessorParserZWB, Cobol85PreprocessorParserC_CHAR, Cobol85PreprocessorParserD_CHAR, Cobol85PreprocessorParserE_CHAR, Cobol85PreprocessorParserF_CHAR, Cobol85PreprocessorParserH_CHAR, Cobol85PreprocessorParserI_CHAR, Cobol85PreprocessorParserM_CHAR, Cobol85PreprocessorParserN_CHAR, Cobol85PreprocessorParserQ_CHAR, Cobol85PreprocessorParserS_CHAR, Cobol85PreprocessorParserU_CHAR, Cobol85PreprocessorParserW_CHAR, Cobol85PreprocessorParserX_CHAR, Cobol85PreprocessorParserCOMMACHAR, Cobol85PreprocessorParserDOT, Cobol85PreprocessorParserNONNUMERICLITERAL, Cobol85PreprocessorParserNUMERICLITERAL, Cobol85PreprocessorParserIDENTIFIER, Cobol85PreprocessorParserFILENAME, Cobol85PreprocessorParserTEXT:
@@ -9294,22 +10818,41 @@ func (p *Cobol85PreprocessorParser) CharData() (localctx ICharDataContext) {
 				{
 					p.SetState(657)
 					p.Match(Cobol85PreprocessorParserNEWLINE)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
 			default:
-				panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+				p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+				goto errorExit
 			}
 
 		default:
-			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			goto errorExit
 		}
 
 		p.SetState(660)
 		p.GetErrorHandler().Sync(p)
-		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 69, p.GetParserRuleContext())
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 69, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ICharDataSqlContext is an interface to support dynamic dispatch.
@@ -9319,20 +10862,35 @@ type ICharDataSqlContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	AllCharDataLine() []ICharDataLineContext
+	CharDataLine(i int) ICharDataLineContext
+	AllCOPY() []antlr.TerminalNode
+	COPY(i int) antlr.TerminalNode
+	AllREPLACE() []antlr.TerminalNode
+	REPLACE(i int) antlr.TerminalNode
+	AllNEWLINE() []antlr.TerminalNode
+	NEWLINE(i int) antlr.TerminalNode
+
 	// IsCharDataSqlContext differentiates from other interfaces.
 	IsCharDataSqlContext()
 }
 
 type CharDataSqlContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyCharDataSqlContext() *CharDataSqlContext {
 	var p = new(CharDataSqlContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_charDataSql
 	return p
+}
+
+func InitEmptyCharDataSqlContext(p *CharDataSqlContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_charDataSql
 }
 
 func (*CharDataSqlContext) IsCharDataSqlContext() {}
@@ -9340,7 +10898,7 @@ func (*CharDataSqlContext) IsCharDataSqlContext() {}
 func NewCharDataSqlContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CharDataSqlContext {
 	var p = new(CharDataSqlContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_charDataSql
@@ -9446,37 +11004,24 @@ func (s *CharDataSqlContext) Accept(visitor antlr.ParseTreeVisitor) interface{} 
 }
 
 func (p *Cobol85PreprocessorParser) CharDataSql() (localctx ICharDataSqlContext) {
-	this := p
-	_ = this
-
 	localctx = NewCharDataSqlContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 50, Cobol85PreprocessorParserRULE_charDataSql)
 	var _la int
 
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.EnterOuterAlt(localctx, 1)
 	p.SetState(666)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_la = p.GetTokenStream().LA(1)
 
-	for ok := true; ok; ok = (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&-2346375405860290562) != 0 || (int64((_la-64)) & ^0x3f) == 0 && ((int64(1)<<(_la-64))&-8193) != 0 || (int64((_la-128)) & ^0x3f) == 0 && ((int64(1)<<(_la-128))&-288230376151711745) != 0 || (int64((_la-192)) & ^0x3f) == 0 && ((int64(1)<<(_la-192))&-19069929688924161) != 0 || (int64((_la-256)) & ^0x3f) == 0 && ((int64(1)<<(_la-256))&325813534447) != 0 {
+	for ok := true; ok; ok = ((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&-2346375405860290562) != 0) || ((int64((_la-64)) & ^0x3f) == 0 && ((int64(1)<<(_la-64))&-8193) != 0) || ((int64((_la-128)) & ^0x3f) == 0 && ((int64(1)<<(_la-128))&-288230376151711745) != 0) || ((int64((_la-192)) & ^0x3f) == 0 && ((int64(1)<<(_la-192))&-19069929688924161) != 0) || ((int64((_la-256)) & ^0x3f) == 0 && ((int64(1)<<(_la-256))&325813534447) != 0) {
 		p.SetState(666)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 
 		switch p.GetTokenStream().LA(1) {
 		case Cobol85PreprocessorParserADATA, Cobol85PreprocessorParserADV, Cobol85PreprocessorParserALIAS, Cobol85PreprocessorParserANSI, Cobol85PreprocessorParserANY, Cobol85PreprocessorParserAPOST, Cobol85PreprocessorParserAR, Cobol85PreprocessorParserARITH, Cobol85PreprocessorParserAUTO, Cobol85PreprocessorParserAWO, Cobol85PreprocessorParserBIN, Cobol85PreprocessorParserBLOCK0, Cobol85PreprocessorParserBUF, Cobol85PreprocessorParserBUFSIZE, Cobol85PreprocessorParserBY, Cobol85PreprocessorParserCBL, Cobol85PreprocessorParserCBLCARD, Cobol85PreprocessorParserCO, Cobol85PreprocessorParserCOBOL2, Cobol85PreprocessorParserCOBOL3, Cobol85PreprocessorParserCODEPAGE, Cobol85PreprocessorParserCOMPAT, Cobol85PreprocessorParserCOMPILE, Cobol85PreprocessorParserCP, Cobol85PreprocessorParserCPP, Cobol85PreprocessorParserCPSM, Cobol85PreprocessorParserCS, Cobol85PreprocessorParserCURR, Cobol85PreprocessorParserCURRENCY, Cobol85PreprocessorParserDATA, Cobol85PreprocessorParserDATEPROC, Cobol85PreprocessorParserDBCS, Cobol85PreprocessorParserDD, Cobol85PreprocessorParserDEBUG, Cobol85PreprocessorParserDECK, Cobol85PreprocessorParserDIAGTRUNC, Cobol85PreprocessorParserDLI, Cobol85PreprocessorParserDLL, Cobol85PreprocessorParserDP, Cobol85PreprocessorParserDTR, Cobol85PreprocessorParserDU, Cobol85PreprocessorParserDUMP, Cobol85PreprocessorParserDYN, Cobol85PreprocessorParserDYNAM, Cobol85PreprocessorParserEDF, Cobol85PreprocessorParserEJECT, Cobol85PreprocessorParserEJPD, Cobol85PreprocessorParserEN, Cobol85PreprocessorParserENGLISH, Cobol85PreprocessorParserEPILOG, Cobol85PreprocessorParserEXCI, Cobol85PreprocessorParserEXIT, Cobol85PreprocessorParserEXP, Cobol85PreprocessorParserEXPORTALL, Cobol85PreprocessorParserEXTEND, Cobol85PreprocessorParserFASTSRT, Cobol85PreprocessorParserFLAG, Cobol85PreprocessorParserFLAGSTD, Cobol85PreprocessorParserFSRT, Cobol85PreprocessorParserFULL, Cobol85PreprocessorParserGDS, Cobol85PreprocessorParserGRAPHIC, Cobol85PreprocessorParserHOOK, Cobol85PreprocessorParserIN, Cobol85PreprocessorParserINTDATE, Cobol85PreprocessorParserJA, Cobol85PreprocessorParserJP, Cobol85PreprocessorParserKA, Cobol85PreprocessorParserLANG, Cobol85PreprocessorParserLANGUAGE, Cobol85PreprocessorParserLC, Cobol85PreprocessorParserLENGTH, Cobol85PreprocessorParserLIB, Cobol85PreprocessorParserLILIAN, Cobol85PreprocessorParserLIN, Cobol85PreprocessorParserLINECOUNT, Cobol85PreprocessorParserLINKAGE, Cobol85PreprocessorParserLIST, Cobol85PreprocessorParserLM, Cobol85PreprocessorParserLONGMIXED, Cobol85PreprocessorParserLONGUPPER, Cobol85PreprocessorParserLPARENCHAR, Cobol85PreprocessorParserLU, Cobol85PreprocessorParserMAP, Cobol85PreprocessorParserMARGINS, Cobol85PreprocessorParserMAX, Cobol85PreprocessorParserMD, Cobol85PreprocessorParserMDECK, Cobol85PreprocessorParserMIG, Cobol85PreprocessorParserMIXED, Cobol85PreprocessorParserNAME, Cobol85PreprocessorParserNAT, Cobol85PreprocessorParserNATIONAL, Cobol85PreprocessorParserNATLANG, Cobol85PreprocessorParserNN, Cobol85PreprocessorParserNO, Cobol85PreprocessorParserNOADATA, Cobol85PreprocessorParserNOADV, Cobol85PreprocessorParserNOALIAS, Cobol85PreprocessorParserNOAWO, Cobol85PreprocessorParserNOBLOCK0, Cobol85PreprocessorParserNOC, Cobol85PreprocessorParserNOCBLCARD, Cobol85PreprocessorParserNOCICS, Cobol85PreprocessorParserNOCMPR2, Cobol85PreprocessorParserNOCOMPILE, Cobol85PreprocessorParserNOCPSM, Cobol85PreprocessorParserNOCURR, Cobol85PreprocessorParserNOCURRENCY, Cobol85PreprocessorParserNOD, Cobol85PreprocessorParserNODATEPROC, Cobol85PreprocessorParserNODBCS, Cobol85PreprocessorParserNODE, Cobol85PreprocessorParserNODEBUG, Cobol85PreprocessorParserNODECK, Cobol85PreprocessorParserNODIAGTRUNC, Cobol85PreprocessorParserNODLL, Cobol85PreprocessorParserNODU, Cobol85PreprocessorParserNODUMP, Cobol85PreprocessorParserNODP, Cobol85PreprocessorParserNODTR, Cobol85PreprocessorParserNODYN, Cobol85PreprocessorParserNODYNAM, Cobol85PreprocessorParserNOEDF, Cobol85PreprocessorParserNOEJPD, Cobol85PreprocessorParserNOEPILOG, Cobol85PreprocessorParserNOEXIT, Cobol85PreprocessorParserNOEXP, Cobol85PreprocessorParserNOEXPORTALL, Cobol85PreprocessorParserNOF, Cobol85PreprocessorParserNOFASTSRT, Cobol85PreprocessorParserNOFEPI, Cobol85PreprocessorParserNOFLAG, Cobol85PreprocessorParserNOFLAGMIG, Cobol85PreprocessorParserNOFLAGSTD, Cobol85PreprocessorParserNOFSRT, Cobol85PreprocessorParserNOGRAPHIC, Cobol85PreprocessorParserNOHOOK, Cobol85PreprocessorParserNOLENGTH, Cobol85PreprocessorParserNOLIB, Cobol85PreprocessorParserNOLINKAGE, Cobol85PreprocessorParserNOLIST, Cobol85PreprocessorParserNOMAP, Cobol85PreprocessorParserNOMD, Cobol85PreprocessorParserNOMDECK, Cobol85PreprocessorParserNONAME, Cobol85PreprocessorParserNONUM, Cobol85PreprocessorParserNONUMBER, Cobol85PreprocessorParserNOOBJ, Cobol85PreprocessorParserNOOBJECT, Cobol85PreprocessorParserNOOFF, Cobol85PreprocessorParserNOOFFSET, Cobol85PreprocessorParserNOOPSEQUENCE, Cobol85PreprocessorParserNOOPT, Cobol85PreprocessorParserNOOPTIMIZE, Cobol85PreprocessorParserNOOPTIONS, Cobol85PreprocessorParserNOP, Cobol85PreprocessorParserNOPFD, Cobol85PreprocessorParserNOPROLOG, Cobol85PreprocessorParserNORENT, Cobol85PreprocessorParserNOS, Cobol85PreprocessorParserNOSEP, Cobol85PreprocessorParserNOSEPARATE, Cobol85PreprocessorParserNOSEQ, Cobol85PreprocessorParserNOSOURCE, Cobol85PreprocessorParserNOSPIE, Cobol85PreprocessorParserNOSQL, Cobol85PreprocessorParserNOSQLC, Cobol85PreprocessorParserNOSQLCCSID, Cobol85PreprocessorParserNOSSR, Cobol85PreprocessorParserNOSSRANGE, Cobol85PreprocessorParserNOSTDTRUNC, Cobol85PreprocessorParserNOSEQUENCE, Cobol85PreprocessorParserNOTERM, Cobol85PreprocessorParserNOTERMINAL, Cobol85PreprocessorParserNOTEST, Cobol85PreprocessorParserNOTHREAD, Cobol85PreprocessorParserNOTRIG, Cobol85PreprocessorParserNOVBREF, Cobol85PreprocessorParserNOWORD, Cobol85PreprocessorParserNOX, Cobol85PreprocessorParserNOXREF, Cobol85PreprocessorParserNOZWB, Cobol85PreprocessorParserNS, Cobol85PreprocessorParserNSEQ, Cobol85PreprocessorParserNSYMBOL, Cobol85PreprocessorParserNUM, Cobol85PreprocessorParserNUMBER, Cobol85PreprocessorParserNUMPROC, Cobol85PreprocessorParserOBJ, Cobol85PreprocessorParserOBJECT, Cobol85PreprocessorParserOF, Cobol85PreprocessorParserOFF, Cobol85PreprocessorParserOFFSET, Cobol85PreprocessorParserON, Cobol85PreprocessorParserOP, Cobol85PreprocessorParserOPMARGINS, Cobol85PreprocessorParserOPSEQUENCE, Cobol85PreprocessorParserOPT, Cobol85PreprocessorParserOPTFILE, Cobol85PreprocessorParserOPTIMIZE, Cobol85PreprocessorParserOPTIONS, Cobol85PreprocessorParserOUT, Cobol85PreprocessorParserOUTDD, Cobol85PreprocessorParserPFD, Cobol85PreprocessorParserPPTDBG, Cobol85PreprocessorParserPGMN, Cobol85PreprocessorParserPGMNAME, Cobol85PreprocessorParserPROCESS, Cobol85PreprocessorParserPROLOG, Cobol85PreprocessorParserQUOTE, Cobol85PreprocessorParserRENT, Cobol85PreprocessorParserREPLACING, Cobol85PreprocessorParserRMODE, Cobol85PreprocessorParserRPARENCHAR, Cobol85PreprocessorParserSEP, Cobol85PreprocessorParserSEPARATE, Cobol85PreprocessorParserSEQ, Cobol85PreprocessorParserSEQUENCE, Cobol85PreprocessorParserSHORT, Cobol85PreprocessorParserSIZE, Cobol85PreprocessorParserSOURCE, Cobol85PreprocessorParserSP, Cobol85PreprocessorParserSPACE, Cobol85PreprocessorParserSPIE, Cobol85PreprocessorParserSQL, Cobol85PreprocessorParserSQLC, Cobol85PreprocessorParserSQLCCSID, Cobol85PreprocessorParserSS, Cobol85PreprocessorParserSSR, Cobol85PreprocessorParserSSRANGE, Cobol85PreprocessorParserSTD, Cobol85PreprocessorParserSYSEIB, Cobol85PreprocessorParserSZ, Cobol85PreprocessorParserTERM, Cobol85PreprocessorParserTERMINAL, Cobol85PreprocessorParserTEST, Cobol85PreprocessorParserTHREAD, Cobol85PreprocessorParserTITLE, Cobol85PreprocessorParserTRIG, Cobol85PreprocessorParserTRUNC, Cobol85PreprocessorParserUE, Cobol85PreprocessorParserUPPER, Cobol85PreprocessorParserVBREF, Cobol85PreprocessorParserWD, Cobol85PreprocessorParserXMLPARSE, Cobol85PreprocessorParserXMLSS, Cobol85PreprocessorParserXOPTS, Cobol85PreprocessorParserXREF, Cobol85PreprocessorParserYEARWINDOW, Cobol85PreprocessorParserYW, Cobol85PreprocessorParserZWB, Cobol85PreprocessorParserC_CHAR, Cobol85PreprocessorParserD_CHAR, Cobol85PreprocessorParserE_CHAR, Cobol85PreprocessorParserF_CHAR, Cobol85PreprocessorParserH_CHAR, Cobol85PreprocessorParserI_CHAR, Cobol85PreprocessorParserM_CHAR, Cobol85PreprocessorParserN_CHAR, Cobol85PreprocessorParserQ_CHAR, Cobol85PreprocessorParserS_CHAR, Cobol85PreprocessorParserU_CHAR, Cobol85PreprocessorParserW_CHAR, Cobol85PreprocessorParserX_CHAR, Cobol85PreprocessorParserCOMMACHAR, Cobol85PreprocessorParserDOT, Cobol85PreprocessorParserNONNUMERICLITERAL, Cobol85PreprocessorParserNUMERICLITERAL, Cobol85PreprocessorParserIDENTIFIER, Cobol85PreprocessorParserFILENAME, Cobol85PreprocessorParserTEXT:
@@ -9489,30 +11034,56 @@ func (p *Cobol85PreprocessorParser) CharDataSql() (localctx ICharDataSqlContext)
 			{
 				p.SetState(663)
 				p.Match(Cobol85PreprocessorParserCOPY)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
 		case Cobol85PreprocessorParserREPLACE:
 			{
 				p.SetState(664)
 				p.Match(Cobol85PreprocessorParserREPLACE)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
 		case Cobol85PreprocessorParserNEWLINE:
 			{
 				p.SetState(665)
 				p.Match(Cobol85PreprocessorParserNEWLINE)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
 
 		default:
-			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			goto errorExit
 		}
 
 		p.SetState(668)
 		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ICharDataLineContext is an interface to support dynamic dispatch.
@@ -9522,20 +11093,41 @@ type ICharDataLineContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	AllCobolWord() []ICobolWordContext
+	CobolWord(i int) ICobolWordContext
+	AllLiteral() []ILiteralContext
+	Literal(i int) ILiteralContext
+	AllFilename() []IFilenameContext
+	Filename(i int) IFilenameContext
+	AllTEXT() []antlr.TerminalNode
+	TEXT(i int) antlr.TerminalNode
+	AllDOT() []antlr.TerminalNode
+	DOT(i int) antlr.TerminalNode
+	AllLPARENCHAR() []antlr.TerminalNode
+	LPARENCHAR(i int) antlr.TerminalNode
+	AllRPARENCHAR() []antlr.TerminalNode
+	RPARENCHAR(i int) antlr.TerminalNode
+
 	// IsCharDataLineContext differentiates from other interfaces.
 	IsCharDataLineContext()
 }
 
 type CharDataLineContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyCharDataLineContext() *CharDataLineContext {
 	var p = new(CharDataLineContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_charDataLine
 	return p
+}
+
+func InitEmptyCharDataLineContext(p *CharDataLineContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_charDataLine
 }
 
 func (*CharDataLineContext) IsCharDataLineContext() {}
@@ -9543,7 +11135,7 @@ func (*CharDataLineContext) IsCharDataLineContext() {}
 func NewCharDataLineContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CharDataLineContext {
 	var p = new(CharDataLineContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_charDataLine
@@ -9739,39 +11331,25 @@ func (s *CharDataLineContext) Accept(visitor antlr.ParseTreeVisitor) interface{}
 }
 
 func (p *Cobol85PreprocessorParser) CharDataLine() (localctx ICharDataLineContext) {
-	this := p
-	_ = this
-
 	localctx = NewCharDataLineContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 52, Cobol85PreprocessorParserRULE_charDataLine)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	var _alt int
 
 	p.EnterOuterAlt(localctx, 1)
 	p.SetState(677)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 	_alt = 1
 	for ok := true; ok; ok = _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
 		switch _alt {
 		case 1:
 			p.SetState(677)
 			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
 
 			switch p.GetTokenStream().LA(1) {
 			case Cobol85PreprocessorParserADATA, Cobol85PreprocessorParserADV, Cobol85PreprocessorParserALIAS, Cobol85PreprocessorParserANSI, Cobol85PreprocessorParserANY, Cobol85PreprocessorParserAPOST, Cobol85PreprocessorParserAR, Cobol85PreprocessorParserARITH, Cobol85PreprocessorParserAUTO, Cobol85PreprocessorParserAWO, Cobol85PreprocessorParserBIN, Cobol85PreprocessorParserBLOCK0, Cobol85PreprocessorParserBUF, Cobol85PreprocessorParserBUFSIZE, Cobol85PreprocessorParserBY, Cobol85PreprocessorParserCBL, Cobol85PreprocessorParserCBLCARD, Cobol85PreprocessorParserCO, Cobol85PreprocessorParserCOBOL2, Cobol85PreprocessorParserCOBOL3, Cobol85PreprocessorParserCODEPAGE, Cobol85PreprocessorParserCOMPAT, Cobol85PreprocessorParserCOMPILE, Cobol85PreprocessorParserCP, Cobol85PreprocessorParserCPP, Cobol85PreprocessorParserCPSM, Cobol85PreprocessorParserCS, Cobol85PreprocessorParserCURR, Cobol85PreprocessorParserCURRENCY, Cobol85PreprocessorParserDATA, Cobol85PreprocessorParserDATEPROC, Cobol85PreprocessorParserDBCS, Cobol85PreprocessorParserDD, Cobol85PreprocessorParserDEBUG, Cobol85PreprocessorParserDECK, Cobol85PreprocessorParserDIAGTRUNC, Cobol85PreprocessorParserDLI, Cobol85PreprocessorParserDLL, Cobol85PreprocessorParserDP, Cobol85PreprocessorParserDTR, Cobol85PreprocessorParserDU, Cobol85PreprocessorParserDUMP, Cobol85PreprocessorParserDYN, Cobol85PreprocessorParserDYNAM, Cobol85PreprocessorParserEDF, Cobol85PreprocessorParserEJECT, Cobol85PreprocessorParserEJPD, Cobol85PreprocessorParserEN, Cobol85PreprocessorParserENGLISH, Cobol85PreprocessorParserEPILOG, Cobol85PreprocessorParserEXCI, Cobol85PreprocessorParserEXIT, Cobol85PreprocessorParserEXP, Cobol85PreprocessorParserEXPORTALL, Cobol85PreprocessorParserEXTEND, Cobol85PreprocessorParserFASTSRT, Cobol85PreprocessorParserFLAG, Cobol85PreprocessorParserFLAGSTD, Cobol85PreprocessorParserFSRT, Cobol85PreprocessorParserFULL, Cobol85PreprocessorParserGDS, Cobol85PreprocessorParserGRAPHIC, Cobol85PreprocessorParserHOOK, Cobol85PreprocessorParserIN, Cobol85PreprocessorParserINTDATE, Cobol85PreprocessorParserJA, Cobol85PreprocessorParserJP, Cobol85PreprocessorParserKA, Cobol85PreprocessorParserLANG, Cobol85PreprocessorParserLANGUAGE, Cobol85PreprocessorParserLC, Cobol85PreprocessorParserLENGTH, Cobol85PreprocessorParserLIB, Cobol85PreprocessorParserLILIAN, Cobol85PreprocessorParserLIN, Cobol85PreprocessorParserLINECOUNT, Cobol85PreprocessorParserLINKAGE, Cobol85PreprocessorParserLIST, Cobol85PreprocessorParserLM, Cobol85PreprocessorParserLONGMIXED, Cobol85PreprocessorParserLONGUPPER, Cobol85PreprocessorParserLU, Cobol85PreprocessorParserMAP, Cobol85PreprocessorParserMARGINS, Cobol85PreprocessorParserMAX, Cobol85PreprocessorParserMD, Cobol85PreprocessorParserMDECK, Cobol85PreprocessorParserMIG, Cobol85PreprocessorParserMIXED, Cobol85PreprocessorParserNAME, Cobol85PreprocessorParserNAT, Cobol85PreprocessorParserNATIONAL, Cobol85PreprocessorParserNATLANG, Cobol85PreprocessorParserNN, Cobol85PreprocessorParserNO, Cobol85PreprocessorParserNOADATA, Cobol85PreprocessorParserNOADV, Cobol85PreprocessorParserNOALIAS, Cobol85PreprocessorParserNOAWO, Cobol85PreprocessorParserNOBLOCK0, Cobol85PreprocessorParserNOC, Cobol85PreprocessorParserNOCBLCARD, Cobol85PreprocessorParserNOCICS, Cobol85PreprocessorParserNOCMPR2, Cobol85PreprocessorParserNOCOMPILE, Cobol85PreprocessorParserNOCPSM, Cobol85PreprocessorParserNOCURR, Cobol85PreprocessorParserNOCURRENCY, Cobol85PreprocessorParserNOD, Cobol85PreprocessorParserNODATEPROC, Cobol85PreprocessorParserNODBCS, Cobol85PreprocessorParserNODE, Cobol85PreprocessorParserNODEBUG, Cobol85PreprocessorParserNODECK, Cobol85PreprocessorParserNODIAGTRUNC, Cobol85PreprocessorParserNODLL, Cobol85PreprocessorParserNODU, Cobol85PreprocessorParserNODUMP, Cobol85PreprocessorParserNODP, Cobol85PreprocessorParserNODTR, Cobol85PreprocessorParserNODYN, Cobol85PreprocessorParserNODYNAM, Cobol85PreprocessorParserNOEDF, Cobol85PreprocessorParserNOEJPD, Cobol85PreprocessorParserNOEPILOG, Cobol85PreprocessorParserNOEXIT, Cobol85PreprocessorParserNOEXP, Cobol85PreprocessorParserNOEXPORTALL, Cobol85PreprocessorParserNOF, Cobol85PreprocessorParserNOFASTSRT, Cobol85PreprocessorParserNOFEPI, Cobol85PreprocessorParserNOFLAG, Cobol85PreprocessorParserNOFLAGMIG, Cobol85PreprocessorParserNOFLAGSTD, Cobol85PreprocessorParserNOFSRT, Cobol85PreprocessorParserNOGRAPHIC, Cobol85PreprocessorParserNOHOOK, Cobol85PreprocessorParserNOLENGTH, Cobol85PreprocessorParserNOLIB, Cobol85PreprocessorParserNOLINKAGE, Cobol85PreprocessorParserNOLIST, Cobol85PreprocessorParserNOMAP, Cobol85PreprocessorParserNOMD, Cobol85PreprocessorParserNOMDECK, Cobol85PreprocessorParserNONAME, Cobol85PreprocessorParserNONUM, Cobol85PreprocessorParserNONUMBER, Cobol85PreprocessorParserNOOBJ, Cobol85PreprocessorParserNOOBJECT, Cobol85PreprocessorParserNOOFF, Cobol85PreprocessorParserNOOFFSET, Cobol85PreprocessorParserNOOPSEQUENCE, Cobol85PreprocessorParserNOOPT, Cobol85PreprocessorParserNOOPTIMIZE, Cobol85PreprocessorParserNOOPTIONS, Cobol85PreprocessorParserNOP, Cobol85PreprocessorParserNOPFD, Cobol85PreprocessorParserNOPROLOG, Cobol85PreprocessorParserNORENT, Cobol85PreprocessorParserNOS, Cobol85PreprocessorParserNOSEP, Cobol85PreprocessorParserNOSEPARATE, Cobol85PreprocessorParserNOSEQ, Cobol85PreprocessorParserNOSOURCE, Cobol85PreprocessorParserNOSPIE, Cobol85PreprocessorParserNOSQL, Cobol85PreprocessorParserNOSQLC, Cobol85PreprocessorParserNOSQLCCSID, Cobol85PreprocessorParserNOSSR, Cobol85PreprocessorParserNOSSRANGE, Cobol85PreprocessorParserNOSTDTRUNC, Cobol85PreprocessorParserNOSEQUENCE, Cobol85PreprocessorParserNOTERM, Cobol85PreprocessorParserNOTERMINAL, Cobol85PreprocessorParserNOTEST, Cobol85PreprocessorParserNOTHREAD, Cobol85PreprocessorParserNOTRIG, Cobol85PreprocessorParserNOVBREF, Cobol85PreprocessorParserNOWORD, Cobol85PreprocessorParserNOX, Cobol85PreprocessorParserNOXREF, Cobol85PreprocessorParserNOZWB, Cobol85PreprocessorParserNS, Cobol85PreprocessorParserNSEQ, Cobol85PreprocessorParserNSYMBOL, Cobol85PreprocessorParserNUM, Cobol85PreprocessorParserNUMBER, Cobol85PreprocessorParserNUMPROC, Cobol85PreprocessorParserOBJ, Cobol85PreprocessorParserOBJECT, Cobol85PreprocessorParserOF, Cobol85PreprocessorParserOFF, Cobol85PreprocessorParserOFFSET, Cobol85PreprocessorParserON, Cobol85PreprocessorParserOP, Cobol85PreprocessorParserOPMARGINS, Cobol85PreprocessorParserOPSEQUENCE, Cobol85PreprocessorParserOPT, Cobol85PreprocessorParserOPTFILE, Cobol85PreprocessorParserOPTIMIZE, Cobol85PreprocessorParserOPTIONS, Cobol85PreprocessorParserOUT, Cobol85PreprocessorParserOUTDD, Cobol85PreprocessorParserPFD, Cobol85PreprocessorParserPPTDBG, Cobol85PreprocessorParserPGMN, Cobol85PreprocessorParserPGMNAME, Cobol85PreprocessorParserPROCESS, Cobol85PreprocessorParserPROLOG, Cobol85PreprocessorParserQUOTE, Cobol85PreprocessorParserRENT, Cobol85PreprocessorParserREPLACING, Cobol85PreprocessorParserRMODE, Cobol85PreprocessorParserSEP, Cobol85PreprocessorParserSEPARATE, Cobol85PreprocessorParserSEQ, Cobol85PreprocessorParserSEQUENCE, Cobol85PreprocessorParserSHORT, Cobol85PreprocessorParserSIZE, Cobol85PreprocessorParserSOURCE, Cobol85PreprocessorParserSP, Cobol85PreprocessorParserSPACE, Cobol85PreprocessorParserSPIE, Cobol85PreprocessorParserSQL, Cobol85PreprocessorParserSQLC, Cobol85PreprocessorParserSQLCCSID, Cobol85PreprocessorParserSS, Cobol85PreprocessorParserSSR, Cobol85PreprocessorParserSSRANGE, Cobol85PreprocessorParserSTD, Cobol85PreprocessorParserSYSEIB, Cobol85PreprocessorParserSZ, Cobol85PreprocessorParserTERM, Cobol85PreprocessorParserTERMINAL, Cobol85PreprocessorParserTEST, Cobol85PreprocessorParserTHREAD, Cobol85PreprocessorParserTITLE, Cobol85PreprocessorParserTRIG, Cobol85PreprocessorParserTRUNC, Cobol85PreprocessorParserUE, Cobol85PreprocessorParserUPPER, Cobol85PreprocessorParserVBREF, Cobol85PreprocessorParserWD, Cobol85PreprocessorParserXMLPARSE, Cobol85PreprocessorParserXMLSS, Cobol85PreprocessorParserXOPTS, Cobol85PreprocessorParserXREF, Cobol85PreprocessorParserYEARWINDOW, Cobol85PreprocessorParserYW, Cobol85PreprocessorParserZWB, Cobol85PreprocessorParserC_CHAR, Cobol85PreprocessorParserD_CHAR, Cobol85PreprocessorParserE_CHAR, Cobol85PreprocessorParserF_CHAR, Cobol85PreprocessorParserH_CHAR, Cobol85PreprocessorParserI_CHAR, Cobol85PreprocessorParserM_CHAR, Cobol85PreprocessorParserN_CHAR, Cobol85PreprocessorParserQ_CHAR, Cobol85PreprocessorParserS_CHAR, Cobol85PreprocessorParserU_CHAR, Cobol85PreprocessorParserW_CHAR, Cobol85PreprocessorParserX_CHAR, Cobol85PreprocessorParserCOMMACHAR, Cobol85PreprocessorParserIDENTIFIER:
@@ -9796,40 +11374,71 @@ func (p *Cobol85PreprocessorParser) CharDataLine() (localctx ICharDataLineContex
 				{
 					p.SetState(673)
 					p.Match(Cobol85PreprocessorParserTEXT)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
 			case Cobol85PreprocessorParserDOT:
 				{
 					p.SetState(674)
 					p.Match(Cobol85PreprocessorParserDOT)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
 			case Cobol85PreprocessorParserLPARENCHAR:
 				{
 					p.SetState(675)
 					p.Match(Cobol85PreprocessorParserLPARENCHAR)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
 			case Cobol85PreprocessorParserRPARENCHAR:
 				{
 					p.SetState(676)
 					p.Match(Cobol85PreprocessorParserRPARENCHAR)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
 				}
 
 			default:
-				panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+				p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+				goto errorExit
 			}
 
 		default:
-			panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			goto errorExit
 		}
 
 		p.SetState(679)
 		p.GetErrorHandler().Sync(p)
-		_alt = p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 73, p.GetParserRuleContext())
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 73, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ICobolWordContext is an interface to support dynamic dispatch.
@@ -9839,20 +11448,29 @@ type ICobolWordContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	IDENTIFIER() antlr.TerminalNode
+	CharDataKeyword() ICharDataKeywordContext
+
 	// IsCobolWordContext differentiates from other interfaces.
 	IsCobolWordContext()
 }
 
 type CobolWordContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyCobolWordContext() *CobolWordContext {
 	var p = new(CobolWordContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_cobolWord
 	return p
+}
+
+func InitEmptyCobolWordContext(p *CobolWordContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_cobolWord
 }
 
 func (*CobolWordContext) IsCobolWordContext() {}
@@ -9860,7 +11478,7 @@ func (*CobolWordContext) IsCobolWordContext() {}
 func NewCobolWordContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CobolWordContext {
 	var p = new(CobolWordContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_cobolWord
@@ -9921,30 +11539,13 @@ func (s *CobolWordContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 }
 
 func (p *Cobol85PreprocessorParser) CobolWord() (localctx ICobolWordContext) {
-	this := p
-	_ = this
-
 	localctx = NewCobolWordContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 54, Cobol85PreprocessorParserRULE_cobolWord)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.SetState(683)
 	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
 
 	switch p.GetTokenStream().LA(1) {
 	case Cobol85PreprocessorParserIDENTIFIER:
@@ -9952,6 +11553,10 @@ func (p *Cobol85PreprocessorParser) CobolWord() (localctx ICobolWordContext) {
 		{
 			p.SetState(681)
 			p.Match(Cobol85PreprocessorParserIDENTIFIER)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
 	case Cobol85PreprocessorParserADATA, Cobol85PreprocessorParserADV, Cobol85PreprocessorParserALIAS, Cobol85PreprocessorParserANSI, Cobol85PreprocessorParserANY, Cobol85PreprocessorParserAPOST, Cobol85PreprocessorParserAR, Cobol85PreprocessorParserARITH, Cobol85PreprocessorParserAUTO, Cobol85PreprocessorParserAWO, Cobol85PreprocessorParserBIN, Cobol85PreprocessorParserBLOCK0, Cobol85PreprocessorParserBUF, Cobol85PreprocessorParserBUFSIZE, Cobol85PreprocessorParserBY, Cobol85PreprocessorParserCBL, Cobol85PreprocessorParserCBLCARD, Cobol85PreprocessorParserCO, Cobol85PreprocessorParserCOBOL2, Cobol85PreprocessorParserCOBOL3, Cobol85PreprocessorParserCODEPAGE, Cobol85PreprocessorParserCOMPAT, Cobol85PreprocessorParserCOMPILE, Cobol85PreprocessorParserCP, Cobol85PreprocessorParserCPP, Cobol85PreprocessorParserCPSM, Cobol85PreprocessorParserCS, Cobol85PreprocessorParserCURR, Cobol85PreprocessorParserCURRENCY, Cobol85PreprocessorParserDATA, Cobol85PreprocessorParserDATEPROC, Cobol85PreprocessorParserDBCS, Cobol85PreprocessorParserDD, Cobol85PreprocessorParserDEBUG, Cobol85PreprocessorParserDECK, Cobol85PreprocessorParserDIAGTRUNC, Cobol85PreprocessorParserDLI, Cobol85PreprocessorParserDLL, Cobol85PreprocessorParserDP, Cobol85PreprocessorParserDTR, Cobol85PreprocessorParserDU, Cobol85PreprocessorParserDUMP, Cobol85PreprocessorParserDYN, Cobol85PreprocessorParserDYNAM, Cobol85PreprocessorParserEDF, Cobol85PreprocessorParserEJECT, Cobol85PreprocessorParserEJPD, Cobol85PreprocessorParserEN, Cobol85PreprocessorParserENGLISH, Cobol85PreprocessorParserEPILOG, Cobol85PreprocessorParserEXCI, Cobol85PreprocessorParserEXIT, Cobol85PreprocessorParserEXP, Cobol85PreprocessorParserEXPORTALL, Cobol85PreprocessorParserEXTEND, Cobol85PreprocessorParserFASTSRT, Cobol85PreprocessorParserFLAG, Cobol85PreprocessorParserFLAGSTD, Cobol85PreprocessorParserFSRT, Cobol85PreprocessorParserFULL, Cobol85PreprocessorParserGDS, Cobol85PreprocessorParserGRAPHIC, Cobol85PreprocessorParserHOOK, Cobol85PreprocessorParserIN, Cobol85PreprocessorParserINTDATE, Cobol85PreprocessorParserJA, Cobol85PreprocessorParserJP, Cobol85PreprocessorParserKA, Cobol85PreprocessorParserLANG, Cobol85PreprocessorParserLANGUAGE, Cobol85PreprocessorParserLC, Cobol85PreprocessorParserLENGTH, Cobol85PreprocessorParserLIB, Cobol85PreprocessorParserLILIAN, Cobol85PreprocessorParserLIN, Cobol85PreprocessorParserLINECOUNT, Cobol85PreprocessorParserLINKAGE, Cobol85PreprocessorParserLIST, Cobol85PreprocessorParserLM, Cobol85PreprocessorParserLONGMIXED, Cobol85PreprocessorParserLONGUPPER, Cobol85PreprocessorParserLU, Cobol85PreprocessorParserMAP, Cobol85PreprocessorParserMARGINS, Cobol85PreprocessorParserMAX, Cobol85PreprocessorParserMD, Cobol85PreprocessorParserMDECK, Cobol85PreprocessorParserMIG, Cobol85PreprocessorParserMIXED, Cobol85PreprocessorParserNAME, Cobol85PreprocessorParserNAT, Cobol85PreprocessorParserNATIONAL, Cobol85PreprocessorParserNATLANG, Cobol85PreprocessorParserNN, Cobol85PreprocessorParserNO, Cobol85PreprocessorParserNOADATA, Cobol85PreprocessorParserNOADV, Cobol85PreprocessorParserNOALIAS, Cobol85PreprocessorParserNOAWO, Cobol85PreprocessorParserNOBLOCK0, Cobol85PreprocessorParserNOC, Cobol85PreprocessorParserNOCBLCARD, Cobol85PreprocessorParserNOCICS, Cobol85PreprocessorParserNOCMPR2, Cobol85PreprocessorParserNOCOMPILE, Cobol85PreprocessorParserNOCPSM, Cobol85PreprocessorParserNOCURR, Cobol85PreprocessorParserNOCURRENCY, Cobol85PreprocessorParserNOD, Cobol85PreprocessorParserNODATEPROC, Cobol85PreprocessorParserNODBCS, Cobol85PreprocessorParserNODE, Cobol85PreprocessorParserNODEBUG, Cobol85PreprocessorParserNODECK, Cobol85PreprocessorParserNODIAGTRUNC, Cobol85PreprocessorParserNODLL, Cobol85PreprocessorParserNODU, Cobol85PreprocessorParserNODUMP, Cobol85PreprocessorParserNODP, Cobol85PreprocessorParserNODTR, Cobol85PreprocessorParserNODYN, Cobol85PreprocessorParserNODYNAM, Cobol85PreprocessorParserNOEDF, Cobol85PreprocessorParserNOEJPD, Cobol85PreprocessorParserNOEPILOG, Cobol85PreprocessorParserNOEXIT, Cobol85PreprocessorParserNOEXP, Cobol85PreprocessorParserNOEXPORTALL, Cobol85PreprocessorParserNOF, Cobol85PreprocessorParserNOFASTSRT, Cobol85PreprocessorParserNOFEPI, Cobol85PreprocessorParserNOFLAG, Cobol85PreprocessorParserNOFLAGMIG, Cobol85PreprocessorParserNOFLAGSTD, Cobol85PreprocessorParserNOFSRT, Cobol85PreprocessorParserNOGRAPHIC, Cobol85PreprocessorParserNOHOOK, Cobol85PreprocessorParserNOLENGTH, Cobol85PreprocessorParserNOLIB, Cobol85PreprocessorParserNOLINKAGE, Cobol85PreprocessorParserNOLIST, Cobol85PreprocessorParserNOMAP, Cobol85PreprocessorParserNOMD, Cobol85PreprocessorParserNOMDECK, Cobol85PreprocessorParserNONAME, Cobol85PreprocessorParserNONUM, Cobol85PreprocessorParserNONUMBER, Cobol85PreprocessorParserNOOBJ, Cobol85PreprocessorParserNOOBJECT, Cobol85PreprocessorParserNOOFF, Cobol85PreprocessorParserNOOFFSET, Cobol85PreprocessorParserNOOPSEQUENCE, Cobol85PreprocessorParserNOOPT, Cobol85PreprocessorParserNOOPTIMIZE, Cobol85PreprocessorParserNOOPTIONS, Cobol85PreprocessorParserNOP, Cobol85PreprocessorParserNOPFD, Cobol85PreprocessorParserNOPROLOG, Cobol85PreprocessorParserNORENT, Cobol85PreprocessorParserNOS, Cobol85PreprocessorParserNOSEP, Cobol85PreprocessorParserNOSEPARATE, Cobol85PreprocessorParserNOSEQ, Cobol85PreprocessorParserNOSOURCE, Cobol85PreprocessorParserNOSPIE, Cobol85PreprocessorParserNOSQL, Cobol85PreprocessorParserNOSQLC, Cobol85PreprocessorParserNOSQLCCSID, Cobol85PreprocessorParserNOSSR, Cobol85PreprocessorParserNOSSRANGE, Cobol85PreprocessorParserNOSTDTRUNC, Cobol85PreprocessorParserNOSEQUENCE, Cobol85PreprocessorParserNOTERM, Cobol85PreprocessorParserNOTERMINAL, Cobol85PreprocessorParserNOTEST, Cobol85PreprocessorParserNOTHREAD, Cobol85PreprocessorParserNOTRIG, Cobol85PreprocessorParserNOVBREF, Cobol85PreprocessorParserNOWORD, Cobol85PreprocessorParserNOX, Cobol85PreprocessorParserNOXREF, Cobol85PreprocessorParserNOZWB, Cobol85PreprocessorParserNS, Cobol85PreprocessorParserNSEQ, Cobol85PreprocessorParserNSYMBOL, Cobol85PreprocessorParserNUM, Cobol85PreprocessorParserNUMBER, Cobol85PreprocessorParserNUMPROC, Cobol85PreprocessorParserOBJ, Cobol85PreprocessorParserOBJECT, Cobol85PreprocessorParserOF, Cobol85PreprocessorParserOFF, Cobol85PreprocessorParserOFFSET, Cobol85PreprocessorParserON, Cobol85PreprocessorParserOP, Cobol85PreprocessorParserOPMARGINS, Cobol85PreprocessorParserOPSEQUENCE, Cobol85PreprocessorParserOPT, Cobol85PreprocessorParserOPTFILE, Cobol85PreprocessorParserOPTIMIZE, Cobol85PreprocessorParserOPTIONS, Cobol85PreprocessorParserOUT, Cobol85PreprocessorParserOUTDD, Cobol85PreprocessorParserPFD, Cobol85PreprocessorParserPPTDBG, Cobol85PreprocessorParserPGMN, Cobol85PreprocessorParserPGMNAME, Cobol85PreprocessorParserPROCESS, Cobol85PreprocessorParserPROLOG, Cobol85PreprocessorParserQUOTE, Cobol85PreprocessorParserRENT, Cobol85PreprocessorParserREPLACING, Cobol85PreprocessorParserRMODE, Cobol85PreprocessorParserSEP, Cobol85PreprocessorParserSEPARATE, Cobol85PreprocessorParserSEQ, Cobol85PreprocessorParserSEQUENCE, Cobol85PreprocessorParserSHORT, Cobol85PreprocessorParserSIZE, Cobol85PreprocessorParserSOURCE, Cobol85PreprocessorParserSP, Cobol85PreprocessorParserSPACE, Cobol85PreprocessorParserSPIE, Cobol85PreprocessorParserSQL, Cobol85PreprocessorParserSQLC, Cobol85PreprocessorParserSQLCCSID, Cobol85PreprocessorParserSS, Cobol85PreprocessorParserSSR, Cobol85PreprocessorParserSSRANGE, Cobol85PreprocessorParserSTD, Cobol85PreprocessorParserSYSEIB, Cobol85PreprocessorParserSZ, Cobol85PreprocessorParserTERM, Cobol85PreprocessorParserTERMINAL, Cobol85PreprocessorParserTEST, Cobol85PreprocessorParserTHREAD, Cobol85PreprocessorParserTITLE, Cobol85PreprocessorParserTRIG, Cobol85PreprocessorParserTRUNC, Cobol85PreprocessorParserUE, Cobol85PreprocessorParserUPPER, Cobol85PreprocessorParserVBREF, Cobol85PreprocessorParserWD, Cobol85PreprocessorParserXMLPARSE, Cobol85PreprocessorParserXMLSS, Cobol85PreprocessorParserXOPTS, Cobol85PreprocessorParserXREF, Cobol85PreprocessorParserYEARWINDOW, Cobol85PreprocessorParserYW, Cobol85PreprocessorParserZWB, Cobol85PreprocessorParserC_CHAR, Cobol85PreprocessorParserD_CHAR, Cobol85PreprocessorParserE_CHAR, Cobol85PreprocessorParserF_CHAR, Cobol85PreprocessorParserH_CHAR, Cobol85PreprocessorParserI_CHAR, Cobol85PreprocessorParserM_CHAR, Cobol85PreprocessorParserN_CHAR, Cobol85PreprocessorParserQ_CHAR, Cobol85PreprocessorParserS_CHAR, Cobol85PreprocessorParserU_CHAR, Cobol85PreprocessorParserW_CHAR, Cobol85PreprocessorParserX_CHAR, Cobol85PreprocessorParserCOMMACHAR:
@@ -9962,10 +11567,21 @@ func (p *Cobol85PreprocessorParser) CobolWord() (localctx ICobolWordContext) {
 		}
 
 	default:
-		panic(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		goto errorExit
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IPrefixWordContext is an interface to support dynamic dispatch.
@@ -9975,20 +11591,28 @@ type IPrefixWordContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	PREFIX() antlr.TerminalNode
+
 	// IsPrefixWordContext differentiates from other interfaces.
 	IsPrefixWordContext()
 }
 
 type PrefixWordContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyPrefixWordContext() *PrefixWordContext {
 	var p = new(PrefixWordContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_prefixWord
 	return p
+}
+
+func InitEmptyPrefixWordContext(p *PrefixWordContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_prefixWord
 }
 
 func (*PrefixWordContext) IsPrefixWordContext() {}
@@ -9996,7 +11620,7 @@ func (*PrefixWordContext) IsPrefixWordContext() {}
 func NewPrefixWordContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *PrefixWordContext {
 	var p = new(PrefixWordContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_prefixWord
@@ -10041,35 +11665,29 @@ func (s *PrefixWordContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 }
 
 func (p *Cobol85PreprocessorParser) PrefixWord() (localctx IPrefixWordContext) {
-	this := p
-	_ = this
-
 	localctx = NewPrefixWordContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 56, Cobol85PreprocessorParserRULE_prefixWord)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(685)
 		p.Match(Cobol85PreprocessorParserPREFIX)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ILiteralContext is an interface to support dynamic dispatch.
@@ -10079,20 +11697,29 @@ type ILiteralContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	NONNUMERICLITERAL() antlr.TerminalNode
+	NUMERICLITERAL() antlr.TerminalNode
+
 	// IsLiteralContext differentiates from other interfaces.
 	IsLiteralContext()
 }
 
 type LiteralContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyLiteralContext() *LiteralContext {
 	var p = new(LiteralContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_literal
 	return p
+}
+
+func InitEmptyLiteralContext(p *LiteralContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_literal
 }
 
 func (*LiteralContext) IsLiteralContext() {}
@@ -10100,7 +11727,7 @@ func (*LiteralContext) IsLiteralContext() {}
 func NewLiteralContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *LiteralContext {
 	var p = new(LiteralContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_literal
@@ -10149,28 +11776,9 @@ func (s *LiteralContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 }
 
 func (p *Cobol85PreprocessorParser) Literal() (localctx ILiteralContext) {
-	this := p
-	_ = this
-
 	localctx = NewLiteralContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 58, Cobol85PreprocessorParserRULE_literal)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	p.EnterOuterAlt(localctx, 1)
 	{
@@ -10185,7 +11793,17 @@ func (p *Cobol85PreprocessorParser) Literal() (localctx ILiteralContext) {
 		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // IFilenameContext is an interface to support dynamic dispatch.
@@ -10195,20 +11813,28 @@ type IFilenameContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	FILENAME() antlr.TerminalNode
+
 	// IsFilenameContext differentiates from other interfaces.
 	IsFilenameContext()
 }
 
 type FilenameContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyFilenameContext() *FilenameContext {
 	var p = new(FilenameContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_filename
 	return p
+}
+
+func InitEmptyFilenameContext(p *FilenameContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_filename
 }
 
 func (*FilenameContext) IsFilenameContext() {}
@@ -10216,7 +11842,7 @@ func (*FilenameContext) IsFilenameContext() {}
 func NewFilenameContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *FilenameContext {
 	var p = new(FilenameContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_filename
@@ -10261,35 +11887,29 @@ func (s *FilenameContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 }
 
 func (p *Cobol85PreprocessorParser) Filename() (localctx IFilenameContext) {
-	this := p
-	_ = this
-
 	localctx = NewFilenameContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 60, Cobol85PreprocessorParserRULE_filename)
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
-
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(689)
 		p.Match(Cobol85PreprocessorParserFILENAME)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
 // ICharDataKeywordContext is an interface to support dynamic dispatch.
@@ -10299,20 +11919,291 @@ type ICharDataKeywordContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	ADATA() antlr.TerminalNode
+	ADV() antlr.TerminalNode
+	ALIAS() antlr.TerminalNode
+	ANSI() antlr.TerminalNode
+	ANY() antlr.TerminalNode
+	APOST() antlr.TerminalNode
+	AR() antlr.TerminalNode
+	ARITH() antlr.TerminalNode
+	AUTO() antlr.TerminalNode
+	AWO() antlr.TerminalNode
+	BIN() antlr.TerminalNode
+	BLOCK0() antlr.TerminalNode
+	BUF() antlr.TerminalNode
+	BUFSIZE() antlr.TerminalNode
+	BY() antlr.TerminalNode
+	CBL() antlr.TerminalNode
+	CBLCARD() antlr.TerminalNode
+	CO() antlr.TerminalNode
+	COBOL2() antlr.TerminalNode
+	COBOL3() antlr.TerminalNode
+	CODEPAGE() antlr.TerminalNode
+	COMMACHAR() antlr.TerminalNode
+	COMPAT() antlr.TerminalNode
+	COMPILE() antlr.TerminalNode
+	CP() antlr.TerminalNode
+	CPP() antlr.TerminalNode
+	CPSM() antlr.TerminalNode
+	CS() antlr.TerminalNode
+	CURR() antlr.TerminalNode
+	CURRENCY() antlr.TerminalNode
+	DATA() antlr.TerminalNode
+	DATEPROC() antlr.TerminalNode
+	DBCS() antlr.TerminalNode
+	DD() antlr.TerminalNode
+	DEBUG() antlr.TerminalNode
+	DECK() antlr.TerminalNode
+	DIAGTRUNC() antlr.TerminalNode
+	DLI() antlr.TerminalNode
+	DLL() antlr.TerminalNode
+	DP() antlr.TerminalNode
+	DTR() antlr.TerminalNode
+	DU() antlr.TerminalNode
+	DUMP() antlr.TerminalNode
+	DYN() antlr.TerminalNode
+	DYNAM() antlr.TerminalNode
+	EDF() antlr.TerminalNode
+	EJECT() antlr.TerminalNode
+	EJPD() antlr.TerminalNode
+	EN() antlr.TerminalNode
+	ENGLISH() antlr.TerminalNode
+	EPILOG() antlr.TerminalNode
+	EXCI() antlr.TerminalNode
+	EXIT() antlr.TerminalNode
+	EXP() antlr.TerminalNode
+	EXPORTALL() antlr.TerminalNode
+	EXTEND() antlr.TerminalNode
+	FASTSRT() antlr.TerminalNode
+	FLAG() antlr.TerminalNode
+	FLAGSTD() antlr.TerminalNode
+	FULL() antlr.TerminalNode
+	FSRT() antlr.TerminalNode
+	GDS() antlr.TerminalNode
+	GRAPHIC() antlr.TerminalNode
+	HOOK() antlr.TerminalNode
+	IN() antlr.TerminalNode
+	INTDATE() antlr.TerminalNode
+	JA() antlr.TerminalNode
+	JP() antlr.TerminalNode
+	KA() antlr.TerminalNode
+	LANG() antlr.TerminalNode
+	LANGUAGE() antlr.TerminalNode
+	LC() antlr.TerminalNode
+	LENGTH() antlr.TerminalNode
+	LIB() antlr.TerminalNode
+	LILIAN() antlr.TerminalNode
+	LIN() antlr.TerminalNode
+	LINECOUNT() antlr.TerminalNode
+	LINKAGE() antlr.TerminalNode
+	LIST() antlr.TerminalNode
+	LM() antlr.TerminalNode
+	LONGMIXED() antlr.TerminalNode
+	LONGUPPER() antlr.TerminalNode
+	LU() antlr.TerminalNode
+	MAP() antlr.TerminalNode
+	MARGINS() antlr.TerminalNode
+	MAX() antlr.TerminalNode
+	MD() antlr.TerminalNode
+	MDECK() antlr.TerminalNode
+	MIG() antlr.TerminalNode
+	MIXED() antlr.TerminalNode
+	NAME() antlr.TerminalNode
+	NAT() antlr.TerminalNode
+	NATIONAL() antlr.TerminalNode
+	NATLANG() antlr.TerminalNode
+	NN() antlr.TerminalNode
+	NO() antlr.TerminalNode
+	NOADATA() antlr.TerminalNode
+	NOADV() antlr.TerminalNode
+	NOALIAS() antlr.TerminalNode
+	NOAWO() antlr.TerminalNode
+	NOBLOCK0() antlr.TerminalNode
+	NOC() antlr.TerminalNode
+	NOCBLCARD() antlr.TerminalNode
+	NOCICS() antlr.TerminalNode
+	NOCMPR2() antlr.TerminalNode
+	NOCOMPILE() antlr.TerminalNode
+	NOCPSM() antlr.TerminalNode
+	NOCURR() antlr.TerminalNode
+	NOCURRENCY() antlr.TerminalNode
+	NOD() antlr.TerminalNode
+	NODATEPROC() antlr.TerminalNode
+	NODBCS() antlr.TerminalNode
+	NODE() antlr.TerminalNode
+	NODEBUG() antlr.TerminalNode
+	NODECK() antlr.TerminalNode
+	NODIAGTRUNC() antlr.TerminalNode
+	NODLL() antlr.TerminalNode
+	NODU() antlr.TerminalNode
+	NODUMP() antlr.TerminalNode
+	NODP() antlr.TerminalNode
+	NODTR() antlr.TerminalNode
+	NODYN() antlr.TerminalNode
+	NODYNAM() antlr.TerminalNode
+	NOEDF() antlr.TerminalNode
+	NOEJPD() antlr.TerminalNode
+	NOEPILOG() antlr.TerminalNode
+	NOEXIT() antlr.TerminalNode
+	NOEXP() antlr.TerminalNode
+	NOEXPORTALL() antlr.TerminalNode
+	NOF() antlr.TerminalNode
+	NOFASTSRT() antlr.TerminalNode
+	NOFEPI() antlr.TerminalNode
+	NOFLAG() antlr.TerminalNode
+	NOFLAGMIG() antlr.TerminalNode
+	NOFLAGSTD() antlr.TerminalNode
+	NOFSRT() antlr.TerminalNode
+	NOGRAPHIC() antlr.TerminalNode
+	NOHOOK() antlr.TerminalNode
+	NOLENGTH() antlr.TerminalNode
+	NOLIB() antlr.TerminalNode
+	NOLINKAGE() antlr.TerminalNode
+	NOLIST() antlr.TerminalNode
+	NOMAP() antlr.TerminalNode
+	NOMD() antlr.TerminalNode
+	NOMDECK() antlr.TerminalNode
+	NONAME() antlr.TerminalNode
+	NONUM() antlr.TerminalNode
+	NONUMBER() antlr.TerminalNode
+	NOOBJ() antlr.TerminalNode
+	NOOBJECT() antlr.TerminalNode
+	NOOFF() antlr.TerminalNode
+	NOOFFSET() antlr.TerminalNode
+	NOOPSEQUENCE() antlr.TerminalNode
+	NOOPT() antlr.TerminalNode
+	NOOPTIMIZE() antlr.TerminalNode
+	NOOPTIONS() antlr.TerminalNode
+	NOP() antlr.TerminalNode
+	NOPFD() antlr.TerminalNode
+	NOPROLOG() antlr.TerminalNode
+	NORENT() antlr.TerminalNode
+	NOS() antlr.TerminalNode
+	NOSEP() antlr.TerminalNode
+	NOSEPARATE() antlr.TerminalNode
+	NOSEQ() antlr.TerminalNode
+	NOSEQUENCE() antlr.TerminalNode
+	NOSOURCE() antlr.TerminalNode
+	NOSPIE() antlr.TerminalNode
+	NOSQL() antlr.TerminalNode
+	NOSQLC() antlr.TerminalNode
+	NOSQLCCSID() antlr.TerminalNode
+	NOSSR() antlr.TerminalNode
+	NOSSRANGE() antlr.TerminalNode
+	NOSTDTRUNC() antlr.TerminalNode
+	NOTERM() antlr.TerminalNode
+	NOTERMINAL() antlr.TerminalNode
+	NOTEST() antlr.TerminalNode
+	NOTHREAD() antlr.TerminalNode
+	NOTRIG() antlr.TerminalNode
+	NOVBREF() antlr.TerminalNode
+	NOWORD() antlr.TerminalNode
+	NOX() antlr.TerminalNode
+	NOXREF() antlr.TerminalNode
+	NOZWB() antlr.TerminalNode
+	NSEQ() antlr.TerminalNode
+	NSYMBOL() antlr.TerminalNode
+	NS() antlr.TerminalNode
+	NUM() antlr.TerminalNode
+	NUMBER() antlr.TerminalNode
+	NUMPROC() antlr.TerminalNode
+	OBJ() antlr.TerminalNode
+	OBJECT() antlr.TerminalNode
+	ON() antlr.TerminalNode
+	OF() antlr.TerminalNode
+	OFF() antlr.TerminalNode
+	OFFSET() antlr.TerminalNode
+	OPMARGINS() antlr.TerminalNode
+	OPSEQUENCE() antlr.TerminalNode
+	OPTIMIZE() antlr.TerminalNode
+	OP() antlr.TerminalNode
+	OPT() antlr.TerminalNode
+	OPTFILE() antlr.TerminalNode
+	OPTIONS() antlr.TerminalNode
+	OUT() antlr.TerminalNode
+	OUTDD() antlr.TerminalNode
+	PFD() antlr.TerminalNode
+	PGMN() antlr.TerminalNode
+	PGMNAME() antlr.TerminalNode
+	PPTDBG() antlr.TerminalNode
+	PROCESS() antlr.TerminalNode
+	PROLOG() antlr.TerminalNode
+	QUOTE() antlr.TerminalNode
+	RENT() antlr.TerminalNode
+	REPLACING() antlr.TerminalNode
+	RMODE() antlr.TerminalNode
+	SEQ() antlr.TerminalNode
+	SEQUENCE() antlr.TerminalNode
+	SEP() antlr.TerminalNode
+	SEPARATE() antlr.TerminalNode
+	SHORT() antlr.TerminalNode
+	SIZE() antlr.TerminalNode
+	SOURCE() antlr.TerminalNode
+	SP() antlr.TerminalNode
+	SPACE() antlr.TerminalNode
+	SPIE() antlr.TerminalNode
+	SQL() antlr.TerminalNode
+	SQLC() antlr.TerminalNode
+	SQLCCSID() antlr.TerminalNode
+	SS() antlr.TerminalNode
+	SSR() antlr.TerminalNode
+	SSRANGE() antlr.TerminalNode
+	STD() antlr.TerminalNode
+	SYSEIB() antlr.TerminalNode
+	SZ() antlr.TerminalNode
+	TERM() antlr.TerminalNode
+	TERMINAL() antlr.TerminalNode
+	TEST() antlr.TerminalNode
+	THREAD() antlr.TerminalNode
+	TITLE() antlr.TerminalNode
+	TRIG() antlr.TerminalNode
+	TRUNC() antlr.TerminalNode
+	UE() antlr.TerminalNode
+	UPPER() antlr.TerminalNode
+	VBREF() antlr.TerminalNode
+	WD() antlr.TerminalNode
+	XMLPARSE() antlr.TerminalNode
+	XMLSS() antlr.TerminalNode
+	XOPTS() antlr.TerminalNode
+	XREF() antlr.TerminalNode
+	YEARWINDOW() antlr.TerminalNode
+	YW() antlr.TerminalNode
+	ZWB() antlr.TerminalNode
+	C_CHAR() antlr.TerminalNode
+	D_CHAR() antlr.TerminalNode
+	E_CHAR() antlr.TerminalNode
+	F_CHAR() antlr.TerminalNode
+	H_CHAR() antlr.TerminalNode
+	I_CHAR() antlr.TerminalNode
+	M_CHAR() antlr.TerminalNode
+	N_CHAR() antlr.TerminalNode
+	Q_CHAR() antlr.TerminalNode
+	S_CHAR() antlr.TerminalNode
+	U_CHAR() antlr.TerminalNode
+	W_CHAR() antlr.TerminalNode
+	X_CHAR() antlr.TerminalNode
+
 	// IsCharDataKeywordContext differentiates from other interfaces.
 	IsCharDataKeywordContext()
 }
 
 type CharDataKeywordContext struct {
-	*antlr.BaseParserRuleContext
+	antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
 func NewEmptyCharDataKeywordContext() *CharDataKeywordContext {
 	var p = new(CharDataKeywordContext)
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = Cobol85PreprocessorParserRULE_charDataKeyword
 	return p
+}
+
+func InitEmptyCharDataKeywordContext(p *CharDataKeywordContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = Cobol85PreprocessorParserRULE_charDataKeyword
 }
 
 func (*CharDataKeywordContext) IsCharDataKeywordContext() {}
@@ -10320,7 +12211,7 @@ func (*CharDataKeywordContext) IsCharDataKeywordContext() {}
 func NewCharDataKeywordContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CharDataKeywordContext {
 	var p = new(CharDataKeywordContext)
 
-	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
 
 	p.parser = parser
 	p.RuleIndex = Cobol85PreprocessorParserRULE_charDataKeyword
@@ -11417,35 +13308,16 @@ func (s *CharDataKeywordContext) Accept(visitor antlr.ParseTreeVisitor) interfac
 }
 
 func (p *Cobol85PreprocessorParser) CharDataKeyword() (localctx ICharDataKeywordContext) {
-	this := p
-	_ = this
-
 	localctx = NewCharDataKeywordContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 62, Cobol85PreprocessorParserRULE_charDataKeyword)
 	var _la int
-
-	defer func() {
-		p.ExitRule()
-	}()
-
-	defer func() {
-		if err := recover(); err != nil {
-			if v, ok := err.(antlr.RecognitionException); ok {
-				localctx.SetException(v)
-				p.GetErrorHandler().ReportError(p, v)
-				p.GetErrorHandler().Recover(p, v)
-			} else {
-				panic(err)
-			}
-		}
-	}()
 
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(691)
 		_la = p.GetTokenStream().LA(1)
 
-		if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&-2346375405893844994) != 0 || (int64((_la-64)) & ^0x3f) == 0 && ((int64(1)<<(_la-64))&-16785409) != 0 || (int64((_la-128)) & ^0x3f) == 0 && ((int64(1)<<(_la-128))&-288230376151711745) != 0 || (int64((_la-192)) & ^0x3f) == 0 && ((int64(1)<<(_la-192))&-19069934520762369) != 0 || (int64((_la-256)) & ^0x3f) == 0 && ((int64(1)<<(_la-256))&201326319) != 0) {
+		if !(((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&-2346375405893844994) != 0) || ((int64((_la-64)) & ^0x3f) == 0 && ((int64(1)<<(_la-64))&-16785409) != 0) || ((int64((_la-128)) & ^0x3f) == 0 && ((int64(1)<<(_la-128))&-288230376151711745) != 0) || ((int64((_la-192)) & ^0x3f) == 0 && ((int64(1)<<(_la-192))&-19069934520762369) != 0) || ((int64((_la-256)) & ^0x3f) == 0 && ((int64(1)<<(_la-256))&201326319) != 0)) {
 			p.GetErrorHandler().RecoverInline(p)
 		} else {
 			p.GetErrorHandler().ReportMatch(p)
@@ -11453,5 +13325,15 @@ func (p *Cobol85PreprocessorParser) CharDataKeyword() (localctx ICharDataKeyword
 		}
 	}
 
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
 	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
 }

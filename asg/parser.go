@@ -5,7 +5,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
+	"github.com/antlr4-go/antlr/v4"
 	"github.com/kaisawind/cobol/asg/conv"
 	"github.com/kaisawind/cobol/asg/visitor"
 	"github.com/kaisawind/cobol/document"

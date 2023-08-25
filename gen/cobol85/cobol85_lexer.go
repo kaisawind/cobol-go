@@ -1,13 +1,12 @@
-// Code generated from java-escape by ANTLR 4.11.1. DO NOT EDIT.
+// Code generated from cobol85/Cobol85.g4 by ANTLR 4.13.0. DO NOT EDIT.
 
 package cobol85
 
 import (
 	"fmt"
+	"github.com/antlr4-go/antlr/v4"
 	"sync"
 	"unicode"
-
-	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
 )
 
 // Suppress unused import error
@@ -22,28 +21,28 @@ type Cobol85Lexer struct {
 	// TODO: EOF string
 }
 
-var cobol85lexerLexerStaticData struct {
+var Cobol85LexerLexerStaticData struct {
 	once                   sync.Once
 	serializedATN          []int32
-	channelNames           []string
-	modeNames              []string
-	literalNames           []string
-	symbolicNames          []string
-	ruleNames              []string
-	predictionContextCache *antlr.PredictionContextCache
+	ChannelNames           []string
+	ModeNames              []string
+	LiteralNames           []string
+	SymbolicNames          []string
+	RuleNames              []string
+	PredictionContextCache *antlr.PredictionContextCache
 	atn                    *antlr.ATN
 	decisionToDFA          []*antlr.DFA
 }
 
 func cobol85lexerLexerInit() {
-	staticData := &cobol85lexerLexerStaticData
-	staticData.channelNames = []string{
+	staticData := &Cobol85LexerLexerStaticData
+	staticData.ChannelNames = []string{
 		"DEFAULT_TOKEN_CHANNEL", "HIDDEN",
 	}
-	staticData.modeNames = []string{
+	staticData.ModeNames = []string{
 		"DEFAULT_MODE",
 	}
-	staticData.literalNames = []string{
+	staticData.LiteralNames = []string{
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
@@ -81,7 +80,7 @@ func cobol85lexerLexerInit() {
 		"'/'", "", "'66'", "'77'", "'88'", "", "", "", "", "", "", "", "", "",
 		"", "', '",
 	}
-	staticData.symbolicNames = []string{
+	staticData.SymbolicNames = []string{
 		"", "ABORT", "ACCEPT", "ACCESS", "ADD", "ADDRESS", "ADVANCING", "AFTER",
 		"ALIGNED", "ALL", "ALPHABET", "ALPHABETIC", "ALPHABETIC_LOWER", "ALPHABETIC_UPPER",
 		"ALPHANUMERIC", "ALPHANUMERIC_EDITED", "ALSO", "ALTER", "ALTERNATE",
@@ -173,7 +172,7 @@ func cobol85lexerLexerInit() {
 		"NEWLINE", "EXECCICSLINE", "EXECSQLIMSLINE", "EXECSQLLINE", "COMMENTENTRYLINE",
 		"COMMENTLINE", "WS", "SEPARATOR",
 	}
-	staticData.ruleNames = []string{
+	staticData.RuleNames = []string{
 		"ABORT", "ACCEPT", "ACCESS", "ADD", "ADDRESS", "ADVANCING", "AFTER",
 		"ALIGNED", "ALL", "ALPHABET", "ALPHABETIC", "ALPHABETIC_LOWER", "ALPHABETIC_UPPER",
 		"ALPHANUMERIC", "ALPHANUMERIC_EDITED", "ALSO", "ALTER", "ALTERNATE",
@@ -268,7 +267,7 @@ func cobol85lexerLexerInit() {
 		"K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
 		"Y", "Z",
 	}
-	staticData.predictionContextCache = antlr.NewPredictionContextCache()
+	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
 		4, 0, 571, 5973, 6, -1, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3,
 		2, 4, 7, 4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9,
@@ -3231,7 +3230,7 @@ func cobol85lexerLexerInit() {
 // NewCobol85Lexer(). You can call this function if you wish to initialize the static state ahead
 // of time.
 func Cobol85LexerInit() {
-	staticData := &cobol85lexerLexerStaticData
+	staticData := &Cobol85LexerLexerStaticData
 	staticData.once.Do(cobol85lexerLexerInit)
 }
 
@@ -3240,13 +3239,13 @@ func NewCobol85Lexer(input antlr.CharStream) *Cobol85Lexer {
 	Cobol85LexerInit()
 	l := new(Cobol85Lexer)
 	l.BaseLexer = antlr.NewBaseLexer(input)
-	staticData := &cobol85lexerLexerStaticData
-	l.Interpreter = antlr.NewLexerATNSimulator(l, staticData.atn, staticData.decisionToDFA, staticData.predictionContextCache)
-	l.channelNames = staticData.channelNames
-	l.modeNames = staticData.modeNames
-	l.RuleNames = staticData.ruleNames
-	l.LiteralNames = staticData.literalNames
-	l.SymbolicNames = staticData.symbolicNames
+	staticData := &Cobol85LexerLexerStaticData
+	l.Interpreter = antlr.NewLexerATNSimulator(l, staticData.atn, staticData.decisionToDFA, staticData.PredictionContextCache)
+	l.channelNames = staticData.ChannelNames
+	l.modeNames = staticData.ModeNames
+	l.RuleNames = staticData.RuleNames
+	l.LiteralNames = staticData.LiteralNames
+	l.SymbolicNames = staticData.SymbolicNames
 	l.GrammarFileName = "Cobol85.g4"
 	// TODO: l.EOF = antlr.TokenEOF
 
