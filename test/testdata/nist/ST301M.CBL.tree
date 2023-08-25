@@ -1,0 +1,267 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n             
+					(programName 
+						(cobolWord ST301M)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       )))) 
+				(environmentDivisionBody 
+					(inputOutputSection INPUT-OUTPUT SECTION .\n        
+						(inputOutputSectionParagraph 
+							(fileControlParagraph FILE-CONTROL .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord TFIL))) 
+									(fileControlClause 
+										(assignClause ASSIGN 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX027)))))) .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord TFIL-2))) 
+									(fileControlClause 
+										(assignClause ASSIGN 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX001))))) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS SEQUENTIAL))) .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord TFIL-3))) 
+									(fileControlClause 
+										(assignClause ASSIGN 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX002))))) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS SEQUENTIAL))) .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord TFIL-4))) 
+									(fileControlClause 
+										(assignClause ASSIGN 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX003))))) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS SEQUENTIAL))) .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord TFIL-5))) 
+									(fileControlClause 
+										(assignClause ASSIGN 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX004))))) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS SEQUENTIAL))) .\n       \n       )) 
+						(inputOutputSectionParagraph 
+							(ioControlParagraph I-O-CONTROL .\n            
+								(ioControlClause 
+									(sameClause SAME SORT-MERGE AREA FOR 
+										(fileName 
+											(cobolWord TFIL-5)) 
+										(fileName 
+											(cobolWord TFIL)))) .\n      ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(fileSection FILE SECTION .\n        
+						(fileDescriptionEntry SD 
+							(fileName 
+								(cobolWord TFIL)) .\n       
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord FREC)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord DATA-1)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 80)) 
+											(pictureChars )))) .\n       \n       ))) 
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord TFIL-2)) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord FREC-2)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord DATA-2)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 80)) 
+											(pictureChars )))) .\n       \n       ))) 
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord TFIL-3)) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord FREC-3)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord DATA-3)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 80)) 
+											(pictureChars )))) .\n       \n       ))) 
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord TFIL-4)) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord FREC-4)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord DATA-4)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 80)) 
+											(pictureChars )))) .\n       \n       ))) 
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord TFIL-5)) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord FREC-5)) .\n          )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord DATA-5)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 80)) 
+											(pictureChars )))) .\n       \n       )))))) 
+			(procedureDivision PROCEDURE DIVISION .\n       \n        
+				(procedureDivisionBody 
+					(paragraphs 
+						(paragraph 
+							(paragraphName 
+								(cobolWord ST301M-CONTROL)) .\n            
+							(sentence 
+								(statement 
+									(performStatement PERFORM 
+										(performProcedureStatement 
+											(procedureName 
+												(paragraphName 
+													(cobolWord ST301M-MERGE))) THRU 
+											(procedureName 
+												(paragraphName 
+													(cobolWord ST301M-SORT))) 
+											(performType 
+												(performTimes 
+													(integerLiteral 1) TIMES))))) .\n           ) 
+							(sentence 
+								(statement 
+									(stopStatement STOP RUN)) .\n       \n       )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord ST301M-MERGE)) .\n            
+							(sentence 
+								(statement 
+									(mergeStatement MERGE 
+										(fileName 
+											(cobolWord TFIL)) 
+										(mergeOnKeyClause ON ASCENDING KEY 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord DATA-1))))) 
+										(mergeUsing USING 
+											(fileName 
+												(cobolWord TFIL-2)) 
+											(fileName 
+												(cobolWord TFIL-3))) 
+										(mergeOutputProcedurePhrase OUTPUT PROCEDURE IS 
+											(procedureName 
+												(paragraphName 
+													(cobolWord ST301M-RETURN)))))) .\n       \n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord ST301M-RELEASE)) .\n            
+							(sentence 
+								(statement 
+									(releaseStatement RELEASE 
+										(recordName 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord FREC))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord ST301M-RETURN)) .\n            
+							(sentence 
+								(statement 
+									(returnStatement RETURN 
+										(fileName 
+											(cobolWord TFIL)) RECORD 
+										(atEndPhrase AT END 
+											(statement 
+												(displayStatement DISPLAY 
+													(displayOperand 
+														(literal "AT END"))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord ST301M-SORT)) .\n            
+							(sentence 
+								(statement 
+									(sortStatement SORT 
+										(fileName 
+											(cobolWord TFIL)) 
+										(sortOnKeyClause ON ASCENDING KEY 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord DATA-1))))) 
+										(sortInputProcedurePhrase INPUT PROCEDURE IS 
+											(procedureName 
+												(paragraphName 
+													(cobolWord ST301M-RELEASE)))) 
+										(sortGivingPhrase GIVING 
+											(sortGiving 
+												(fileName 
+													(cobolWord TFIL-4)))))) .\n      ))))))) <EOF>)

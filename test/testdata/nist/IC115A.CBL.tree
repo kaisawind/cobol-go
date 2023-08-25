@@ -1,0 +1,1316 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n            
+					(programName 
+						(cobolWord IC115A)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       )))) 
+				(environmentDivisionBody 
+					(inputOutputSection INPUT-OUTPUT SECTION .\n        
+						(inputOutputSectionParagraph 
+							(fileControlParagraph FILE-CONTROL .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord SQ-FS3))) 
+									(fileControlClause 
+										(assignClause ASSIGN TO 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX014))))) 
+									(fileControlClause 
+										(organizationClause ORGANIZATION IS SEQUENTIAL)) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS SEQUENTIAL))) .\n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(fileSection FILE SECTION .\n        
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord SQ-FS3)) 
+							(fileDescriptionEntryClause 
+								(blockContainsClause BLOCK CONTAINS 
+									(integerLiteral 120) CHARACTERS)) 
+							(fileDescriptionEntryClause 
+								(recordContainsClause RECORD 
+									(recordContainsClauseFormat1 CONTAINS 
+										(integerLiteral 120) CHARACTERS))) 
+							(fileDescriptionEntryClause 
+								(labelRecordsClause LABEL RECORDS ARE STANDARD)) 
+							(fileDescriptionEntryClause 
+								(valueOfClause VALUE OF 
+									(valuePair 
+										(systemName 
+											(cobolWord XXXXX074)) IS 
+										(qualifiedDataName 
+											(qualifiedDataNameFormat1 
+												(dataName 
+													(cobolWord XXXXX075))))))) 
+							(fileDescriptionEntryClause 
+								(dataRecordsClause DATA RECORD 
+									(dataName 
+										(cobolWord SQ-FS3R1-F-G-120)))) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord SQ-FS3R1-F-G-120)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 FILLER 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 120)) 
+											(pictureChars )))) .\n       ))))) 
+				(dataDivisionSection 
+					(workingStorageSection WORKING-STORAGE SECTION .\n        
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord FILE-RECORD-INFORMATION-REC)) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 03 
+								(dataName 
+									(cobolWord FILE-RECORD-INFO-SKELETON)) .\n              )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 05 FILLER 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 48)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00")))) .\n              )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 05 FILLER 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 46)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000")))) .\n              )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 05 FILLER 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 26)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal ",LFIL=000000,ORG=  ,LBLR= ")))) .\n              )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 05 FILLER 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 37)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal ",RECKEY=                             ")))) .\n              )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 05 FILLER 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 38)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal ",ALTKEY1=                             ")))) .\n              )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 05 FILLER 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 38)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal ",ALTKEY2=                             ")))) .\n              )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 05 FILLER 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 7)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal 
+												(figurativeConstant SPACE))))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 03 
+								(dataName 
+									(cobolWord FILE-RECORD-INFO)) 
+								(dataOccursClause OCCURS 
+									(integerLiteral 10) TIMES) .\n              )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 05 
+								(dataName 
+									(cobolWord FILE-RECORD-INFO-P1-120)) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 5)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord XFILE-NAME)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 8)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord XRECORD-NAME)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 1)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord REELUNIT-NUMBER)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 1)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 7)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord XRECORD-NUMBER)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord UPDATE-NUMBER)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 2)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 5)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord ODO-NUMBER)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 4)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 5)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord XPROGRAM-NAME)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 5)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 7)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord XRECORD-LENGTH)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 7)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord CHARS-OR-RECORDS)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 2)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 1)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord XBLOCK-SIZE)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 4)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord RECORDS-IN-FILE)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 5)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord XFILE-ORGANIZATION)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 2)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord XLABEL-TYPE)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 1)) 
+										(pictureChars )))) .\n              )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 05 
+								(dataName 
+									(cobolWord FILE-RECORD-INFO-P121-240)) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 8)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord XRECORD-KEY)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 29)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord ALTERNATE-KEY1)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 29)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 
+								(dataName 
+									(cobolWord ALTERNATE-KEY2)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 29)) 
+										(pictureChars )))) .\n                 )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 07 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 7)) 
+										(pictureChars )))) .\n       )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord CCVS-PGM-ID)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal "IC115A")))) .\n       )))) 
+				(dataDivisionSection 
+					(linkageSection LINKAGE SECTION .\n        
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord GROUP-LINKAGE-VARIABLES)) .\n               )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord COUNT-OF-RECORDS)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord RECORDS-IN-ERROR)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord ERROR-FLAG)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord EOF-FLAG)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord CALL-FLAG)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)))) .\n       )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord FILE-REC-SQ-FS3)) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 FILLER 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 120)) 
+										(pictureChars )))) .\n       ))))) 
+			(procedureDivision PROCEDURE DIVISION 
+				(procedureDivisionUsingClause USING 
+					(procedureDivisionUsingParameter 
+						(procedureDivisionByReferencePhrase 
+							(procedureDivisionByReference 
+								(identifier 
+									(qualifiedDataName 
+										(qualifiedDataNameFormat1 
+											(dataName 
+												(cobolWord GROUP-LINKAGE-VARIABLES)))))) 
+							(procedureDivisionByReference 
+								(identifier 
+									(qualifiedDataName 
+										(qualifiedDataNameFormat1 
+											(dataName 
+												(cobolWord FILE-REC-SQ-FS3))))))))) .\n        
+				(procedureDivisionBody paragraphs 
+					(procedureSection 
+						(procedureSectionHeader 
+							(sectionName 
+								(cobolWord SECT-IC115-0001)) SECTION) .\n        
+						(paragraphs 
+							(paragraph 
+								(paragraphName 
+									(cobolWord INIT-PARAGRAPH)) .\n            
+								(sentence 
+									(statement 
+										(goToStatement GO TO 
+											(goToDependingOnStatement 
+												(procedureName 
+													(paragraphName 
+														(cobolWord SECT-IC115-0002))) 
+												(procedureName 
+													(paragraphName 
+														(cobolWord SECT-IC115-0003))) 
+												(procedureName 
+													(paragraphName 
+														(cobolWord SECT-IC115-0004))) 
+												(procedureName 
+													(paragraphName 
+														(cobolWord SECT-IC115-0005))) 
+												(procedureName 
+													(paragraphName 
+														(cobolWord SECT-IC115-0006))) DEPENDING ON 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord CALL-FLAG)))))))) .\n      )))) 
+					(procedureSection 
+						(procedureSectionHeader 
+							(sectionName 
+								(cobolWord SECT-IC115-0002)) SECTION) .\n        
+						(paragraphs 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-INIT-10)) .\n            
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord FILE-RECORD-INFO-SKELETON)))))) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord FILE-RECORD-INFO)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal "SQ-FS3")) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord XFILE-NAME)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal "R1-F-G")) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord XRECORD-NAME)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord CCVS-PGM-ID)))))) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord XPROGRAM-NAME)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 120)))) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord XRECORD-LENGTH)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal "CH")) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord CHARS-OR-RECORDS)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 120)))) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord XBLOCK-SIZE)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 000649)))) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord RECORDS-IN-FILE)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal "SQ")) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord XFILE-ORGANIZATION)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal "S")) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord XLABEL-TYPE)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 000001)))) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord XRECORD-NUMBER)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(openStatement OPEN 
+											(openOutputStatement OUTPUT 
+												(openOutput 
+													(fileName 
+														(cobolWord SQ-FS3)))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-TEST-10)) .\n            
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(identifier 
+														(tableCall 
+															(qualifiedDataName 
+																(qualifiedDataNameFormat1 
+																	(dataName 
+																		(cobolWord FILE-RECORD-INFO-P1-120)))) ( 
+															(subscript 
+																(integerLiteral 1)) )))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord SQ-FS3R1-F-G-120)))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(writeStatement WRITE 
+											(recordName 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord SQ-FS3R1-F-G-120))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(ifStatement IF 
+											(condition 
+												(combinableCondition 
+													(simpleCondition 
+														(relationCondition 
+															(relationArithmeticComparison 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(identifier 
+																					(tableCall 
+																						(qualifiedDataName 
+																							(qualifiedDataNameFormat1 
+																								(dataName 
+																									(cobolWord XRECORD-NUMBER)))) ( 
+																						(subscript 
+																							(integerLiteral 1)) ))))))) 
+																(relationalOperator EQUAL TO) 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(literal 
+																					(numericLiteral 
+																						(integerLiteral 649)))))))))))) 
+											(ifThen 
+												(statement 
+													(goToStatement GO TO 
+														(goToStatementSimple 
+															(procedureName 
+																(paragraphName 
+																	(cobolWord LINK-TEST-10-01))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(addStatement ADD 
+											(addToStatement 
+												(addFrom 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 1)))) TO 
+												(addTo 
+													(identifier 
+														(tableCall 
+															(qualifiedDataName 
+																(qualifiedDataNameFormat1 
+																	(dataName 
+																		(cobolWord XRECORD-NUMBER)))) ( 
+															(subscript 
+																(integerLiteral 1)) ))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(goToStatement GO TO 
+											(goToStatementSimple 
+												(procedureName 
+													(paragraphName 
+														(cobolWord LINK-TEST-10)))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-TEST-10-01)) .\n            
+								(sentence 
+									(statement 
+										(closeStatement CLOSE 
+											(closeFile 
+												(fileName 
+													(cobolWord SQ-FS3))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(identifier 
+														(tableCall 
+															(qualifiedDataName 
+																(qualifiedDataNameFormat1 
+																	(dataName 
+																		(cobolWord XRECORD-NUMBER)))) ( 
+															(subscript 
+																(integerLiteral 1)) )))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord COUNT-OF-RECORDS)))))))) .\n      )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-EXIT-10)) .\n            
+								(sentence 
+									(statement 
+										(exitStatement EXIT PROGRAM)) .\n       )))) 
+					(procedureSection 
+						(procedureSectionHeader 
+							(sectionName 
+								(cobolWord SECT-IC115-0003)) SECTION) .\n        
+						(paragraphs 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-INIT-11)) .\n       
+								(sentence 
+									(statement 
+										(openStatement OPEN 
+											(openInputStatement INPUT 
+												(openInput 
+													(fileName 
+														(cobolWord SQ-FS3)))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-TEST-11)) .\n            
+								(sentence 
+									(statement 
+										(readStatement READ 
+											(fileName 
+												(cobolWord SQ-FS3)) RECORD 
+											(atEndPhrase AT END 
+												(statement 
+													(goToStatement GO TO 
+														(goToStatementSimple 
+															(procedureName 
+																(paragraphName 
+																	(cobolWord LINK-CLOSE-11))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord SQ-FS3R1-F-G-120)))))) TO 
+												(identifier 
+													(tableCall 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord FILE-RECORD-INFO-P1-120)))) ( 
+														(subscript 
+															(integerLiteral 1)) )))))) .\n           ) 
+								(sentence 
+									(statement 
+										(addStatement ADD 
+											(addToStatement 
+												(addFrom 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 1)))) TO 
+												(addTo 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord COUNT-OF-RECORDS))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(ifStatement IF 
+											(condition 
+												(combinableCondition 
+													(simpleCondition 
+														(relationCondition 
+															(relationArithmeticComparison 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(identifier 
+																					(qualifiedDataName 
+																						(qualifiedDataNameFormat1 
+																							(dataName 
+																								(cobolWord COUNT-OF-RECORDS))))))))) 
+																(relationalOperator GREATER THAN) 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(literal 
+																					(numericLiteral 
+																						(integerLiteral 649)))))))))))) 
+											(ifThen 
+												(statement 
+													(moveStatement MOVE 
+														(moveToStatement 
+															(moveToSendingArea 
+																(literal 
+																	(numericLiteral 
+																		(integerLiteral 1)))) TO 
+															(identifier 
+																(qualifiedDataName 
+																	(qualifiedDataNameFormat1 
+																		(dataName 
+																			(cobolWord ERROR-FLAG)))))))) 
+												(statement 
+													(goToStatement GO TO 
+														(goToStatementSimple 
+															(procedureName 
+																(paragraphName 
+																	(cobolWord LINK-CLOSE-11))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(ifStatement IF 
+											(condition 
+												(combinableCondition 
+													(simpleCondition 
+														(relationCondition 
+															(relationArithmeticComparison 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(identifier 
+																					(qualifiedDataName 
+																						(qualifiedDataNameFormat1 
+																							(dataName 
+																								(cobolWord COUNT-OF-RECORDS))))))))) 
+																(relationalOperator NOT EQUAL TO) 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(identifier 
+																					(tableCall 
+																						(qualifiedDataName 
+																							(qualifiedDataNameFormat1 
+																								(dataName 
+																									(cobolWord XRECORD-NUMBER)))) ( 
+																						(subscript 
+																							(integerLiteral 1)) )))))))))))) 
+											(ifThen 
+												(statement 
+													(goToStatement GO TO 
+														(goToStatementSimple 
+															(procedureName 
+																(paragraphName 
+																	(cobolWord LINK-FAIL-11))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(ifStatement IF 
+											(condition 
+												(combinableCondition 
+													(simpleCondition 
+														(relationCondition 
+															(relationArithmeticComparison 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(identifier 
+																					(tableCall 
+																						(qualifiedDataName 
+																							(qualifiedDataNameFormat1 
+																								(dataName 
+																									(cobolWord XFILE-NAME)))) ( 
+																						(subscript 
+																							(integerLiteral 1)) ))))))) 
+																(relationalOperator NOT EQUAL TO) 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(literal "SQ-FS3")))))))))) 
+											(ifThen 
+												(statement 
+													(goToStatement GO TO 
+														(goToStatementSimple 
+															(procedureName 
+																(paragraphName 
+																	(cobolWord LINK-FAIL-11))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(ifStatement IF 
+											(condition 
+												(combinableCondition 
+													(simpleCondition 
+														(relationCondition 
+															(relationArithmeticComparison 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(identifier 
+																					(tableCall 
+																						(qualifiedDataName 
+																							(qualifiedDataNameFormat1 
+																								(dataName 
+																									(cobolWord XLABEL-TYPE)))) ( 
+																						(subscript 
+																							(integerLiteral 1)) ))))))) 
+																(relationalOperator NOT EQUAL TO) 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(literal "S")))))))))) 
+											(ifThen 
+												(statement 
+													(goToStatement GO TO 
+														(goToStatementSimple 
+															(procedureName 
+																(paragraphName 
+																	(cobolWord LINK-FAIL-11))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(goToStatement GO TO 
+											(goToStatementSimple 
+												(procedureName 
+													(paragraphName 
+														(cobolWord LINK-TEST-11)))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-FAIL-11)) .\n            
+								(sentence 
+									(statement 
+										(addStatement ADD 
+											(addToStatement 
+												(addFrom 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 1)))) TO 
+												(addTo 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord RECORDS-IN-ERROR))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 1)))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord ERROR-FLAG)))))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-CLOSE-11)) .\n            
+								(sentence 
+									(statement 
+										(closeStatement CLOSE 
+											(closeFile 
+												(fileName 
+													(cobolWord SQ-FS3))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-EXIT-11)) .\n            
+								(sentence 
+									(statement 
+										(exitStatement EXIT PROGRAM)) .\n       )))) 
+					(procedureSection 
+						(procedureSectionHeader 
+							(sectionName 
+								(cobolWord SECT-IC115-0004)) SECTION) .\n        
+						(paragraphs 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-INIT-12)) .\n            
+								(sentence 
+									(statement 
+										(openStatement OPEN 
+											(openInputStatement INPUT 
+												(openInput 
+													(fileName 
+														(cobolWord SQ-FS3)))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-INIT-12-EXIT)) .\n            
+								(sentence 
+									(statement 
+										(exitStatement EXIT PROGRAM)) .\n       )))) 
+					(procedureSection 
+						(procedureSectionHeader 
+							(sectionName 
+								(cobolWord SECT-IC115-0005)) SECTION) .\n        
+						(paragraphs 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-TEST-12)) .\n            
+								(sentence 
+									(statement 
+										(readStatement READ 
+											(fileName 
+												(cobolWord SQ-FS3)) RECORD 
+											(atEndPhrase AT END 
+												(statement 
+													(moveStatement MOVE 
+														(moveToStatement 
+															(moveToSendingArea 
+																(literal 
+																	(numericLiteral 
+																		(integerLiteral 1)))) TO 
+															(identifier 
+																(qualifiedDataName 
+																	(qualifiedDataNameFormat1 
+																		(dataName 
+																			(cobolWord EOF-FLAG))))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord SQ-FS3R1-F-G-120)))))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord FILE-REC-SQ-FS3)))))))) .\n      )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-EXIT-12)) .\n            
+								(sentence 
+									(statement 
+										(exitStatement EXIT PROGRAM)) .\n       )))) 
+					(procedureSection 
+						(procedureSectionHeader 
+							(sectionName 
+								(cobolWord SECT-IC115-0006)) SECTION) .\n        
+						(paragraphs 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-CLOSE-12)) .\n            
+								(sentence 
+									(statement 
+										(closeStatement CLOSE 
+											(closeFile 
+												(fileName 
+													(cobolWord SQ-FS3))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord LINK-CLOSE-EXIT-12)) .\n            
+								(sentence 
+									(statement 
+										(exitStatement EXIT PROGRAM)) .\n      )))))))) <EOF>)

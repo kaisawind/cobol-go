@@ -1,0 +1,50 @@
+      *> HEADER,COBOL,IC216A,SUBRTN,IC217A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC217A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>     THIS IS SUBPROGRAM IC217.
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       LINKAGE SECTION.
+       01  DN1.
+           02  DN2                     PICTURE X(5).
+           02  DN3                     REDEFINES DN2   PICTURE 9(5).
+       01  DN4.
+           02  DN5.
+               03  DN6                 PICTURE X(3).
+               03  DN7                 PICTURE X(3).
+               03  DN8                 REDEFINES DN7   PICTURE 9(3).
+           02  DN9                     PICTURE XX.
+       PROCEDURE DIVISION USING DN1, DN4.
+       CALL-TEST-1.
+           MOVE 12345 TO DN3.
+       CALL-TEST-2.
+           MOVE "YES" TO DN6.
+           MOVE 987 TO DN8.
+           MOVE "NO" TO DN9.
+       IC217-EXIT.
+           EXIT PROGRAM.
+      *> END-OF,IC217A

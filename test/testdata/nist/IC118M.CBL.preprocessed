@@ -1,0 +1,57 @@
+      *> HEADER,COBOL,IC116M,SUBRTN,IC118M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC118M.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>         THE SUBPROGRAM IC118 IS CALLED BY THE SUBPROGRAM IC117.
+      *>     THE SUBPROGRAM IC118 DOES NOT CONTAIN A LINKAGE SECTION OR
+      *>     AN USING PHRASE IN THE PROCEDURE DIVISION HEADER.  A DISPLAY
+      *>     STATEMENT IS EXECUTED TO VERIFY THAT THIS SUBPROGRAM WAS
+      *>     EXECUTED.
+      *> 
+      *> *****************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  IC118-TEMP1         PICTURE 9.
+       01  TWO                 PICTURE 9   VALUE 2.
+       01  IC118-TEMP2         PICTURE 99   VALUE 97.
+       PROCEDURE DIVISION.
+      *> USNG-TEST-04.
+      *> 
+      *>     THIS TEST VERIFIES THAT A SUBPROGRAM PROCEDURE DIVISION
+      *>     HEADER IS NOT REQUIRED TO HAVE THE OPTIONAL USING PHRASE.
+      *> 
+       USNG-VERIFY-04.
+           MOVE 2 TO IC118-TEMP1.
+           ADD TWO TO IC118-TEMP2.
+      *> 
+      *>     THE RESULTS OF THE ABOVE STATEMENTS ARE NOT TESTED.
+      *> 
+       USNG-DISPLAY-04.
+           DISPLAY "IC118M CALLED".
+       IC118-EXIT.
+           EXIT PROGRAM.
+      *> END-OF,IC118M

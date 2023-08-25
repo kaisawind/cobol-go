@@ -1,0 +1,711 @@
+      *> HEADER,COBOL,NC134A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC134A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>    PROGRAM NC134A TESTS THE ACCESSING OF A THREE-DIMENSIONAL
+      *>    TABLE USING NUMERIC LITERALS AND DATA-NAMES AS SUBSCRIPTS.
+      *>    RELATIVE SUBSCRIPTING IS ALSO USED.
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  A-NAME-30-CHARACTERS-IN-LENGTH PICTURE IS XXX VALUE IS "END".
+       77  LONG-PICTURE PICTURE IS XXXXXXXXXXXXXXXXXXXXXXXXXXXXX.
+       77  ONE      PICTURE IS 9 VALUE IS 1 USAGE IS COMPUTATIONAL.
+       77  TWO      PICTURE IS 9 VALUE IS 2 USAGE IS COMPUTATIONAL.
+       77  THREE    PICTURE IS 9 VALUE IS 3 COMPUTATIONAL.
+       77  FOUR     PICTURE IS 9 VALUE IS 4 COMPUTATIONAL.
+       77  FIVE     PICTURE IS 9 VALUE IS 5 COMPUTATIONAL.
+       77  SIX      PICTURE IS 9 VALUE IS 6 COMPUTATIONAL.
+       77  SEVEN    PICTURE IS 9 VALUE IS 7 COMPUTATIONAL.
+       77  EIGHT    PICTURE IS 9 VALUE    8 COMPUTATIONAL.
+       77  NINE     PICTURE IS 9 VALUE    9 USAGE IS COMPUTATIONAL.
+       77  TEN      PICTURE   99 VALUE   10 USAGE COMPUTATIONAL.
+       77  FIFTEEN  PICTURE   99 VALUE   15 USAGE COMPUTATIONAL.
+       77  TWENTY   PICTURE   99 VALUE   20 USAGE IS COMPUTATIONAL.
+       77  TWENTY-5 PICTURE   99 VALUE   25.
+       77  D-1 PICTURE IS S9V99 VALUE IS 1.06.
+       77  D-2 PICTURE IS S9V99 VALUE IS -1.06.
+       77  D-3 PICTURE IS 9(18) VALUE IS 979797979797979798.
+       77  D-4 PICTURE IS S99V99 VALUE IS +10.1.
+       77  D-5 PICTURE IS S999 VALUE IS -1.
+       77  D-6 PICTURE IS S999P VALUE IS 10.
+       77  D-7 PICTURE IS S99V99 VALUE IS 1.09.
+       77  D-8 PICTURE IS S999V9 VALUE 175.
+       77  D-9 PICTURE IS 9(4)V9(4) VALUE IS 111.1189.
+       77  D-10 PICTURE 999 VALUE 100.
+       77  D-11 PICTURE 999 VALUE 300.
+       77  D-12 PICTURE 999 VALUE 900.
+       77  W-1 PICTURE IS 9.
+       77  W-2 PICTURE IS 99.
+       77  W-3 PICTURE IS 999.
+       77  W-4 PICTURE IS 9 VALUE IS ZERO.
+       77  W-5 PICTURE IS 99 VALUE IS ZERO.
+       77  W-6 PICTURE IS 999 VALUE IS ZERO.
+       77  W-7 PICTURE IS 9.
+       77  W-8 PICTURE    99 BLANK ZERO.
+       77  W-9 PICTURE    999.
+       77  W-10 PICTURE 99V9.
+       77  W-11 PICTURE S99V9.
+       77  W-12 PICTURE S9V99.
+       77  W-13 PICTURE S9(2)V9(2).
+       77  W-14 PICTURE IS S99V99.
+       77  XRAY PICTURE IS 9.
+       77  CTR-1 PICTURE IS 999.
+       77  SUBSCRIPT-1 PICTURE IS 999.
+       77  SUBSCRIPT-2 PICTURE IS 999.
+       77  SUBSCRIPT-3  PICTURE IS 999.
+       01  TABLE-10.
+           02 STATE-1 OCCURS 10 TIMES.
+             03  YEAR-1 OCCURS 10 TIMES.
+               04 ANIMAL PICTURE IS 999 OCCURS 03 TIMES.
+       01  NUMBER-LIST.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 LINE-1 OCCURS 20 TIMES.
+             03 BLANKSPACE PICTURE IS XX.
+             03 PRINT-ELE PICTURE IS 999.
+       01  TABLE-1.
+           02  TAB-ELE PICTURE IS 999 OCCURS 100 TIMES.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC134A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC134A-001 SECTION.
+       NC-05-001.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE 1 TO SUBSCRIPT-1.
+           MOVE 1 TO W-3.
+           PERFORM BUILD-TABLE 100 TIMES.
+      *>     NOTE TABLE IS CONSTRUCTED WITH VALUES FROM 1 TO 100.
+           MOVE "SUBSCRIPTING" TO FEATURE.
+       TEST-1.
+           IF TAB-ELE (50) EQUAL TO 50 PERFORM PASS ELSE GO TO TST-11.
+           GO TO TST-12.
+       TST-11.
+           PERFORM FAIL.
+           MOVE TAB-ELE (50) TO COMPUTED-A.
+           MOVE "50" TO CORRECT-A.
+       TST-12.
+           MOVE "TEST-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TEST-2.
+           IF TAB-ELE (TWENTY-5) EQUAL TO 25 PERFORM PASS ELSE GO TO
+           TST-21.
+           GO TO TST-22.
+       TST-21.
+           PERFORM FAIL.
+           MOVE TAB-ELE (TWENTY-5) TO COMPUTED-A.
+           MOVE "25" TO CORRECT-A.
+       TST-22.
+           MOVE "TEST-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TEST-3.
+           IF TAB-ELE (99) EQUAL TO 99 PERFORM PASS ELSE GO TO TST-31.
+           GO TO TST-32.
+       TST-31.
+           PERFORM FAIL.
+           MOVE TAB-ELE (99) TO COMPUTED-A.
+           MOVE "99" TO CORRECT-A.
+       TST-32.
+           MOVE "TEST-3" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       WRITE-TABLE-OUT.
+           MOVE 1 TO SUBSCRIPT-2.
+           MOVE 1 TO CTR-1.
+           PERFORM TABLE-WRITE THRU END-OF 100 TIMES.
+           GO TO CONSTRUCTION.
+       BUILD-TABLE.
+           MOVE W-3 TO TAB-ELE (SUBSCRIPT-1).
+           ADD 1 TO SUBSCRIPT-1.
+           ADD 1 TO W-3.
+       TABLE-WRITE.
+           MOVE TAB-ELE (SUBSCRIPT-2) TO PRINT-ELE (CTR-1)
+           MOVE SPACE TO BLANKSPACE (CTR-1).
+           ADD 1 TO SUBSCRIPT-2.
+           ADD 1 TO CTR-1.
+           IF CTR-1 IS EQUAL TO 21 PERFORM TABLE-DUMP.
+       END-OF.
+           EXIT.
+       TABLE-DUMP.
+           MOVE SPACE TO PRINT-REC.
+           MOVE NUMBER-LIST TO PRINT-REC.
+           PERFORM WRITE-LINE.
+           MOVE 01 TO CTR-1.
+       CONSTRUCTION.
+           MOVE 1    TO SUBSCRIPT-1.
+           MOVE 1    TO SUBSCRIPT-2.
+           MOVE 1 TO SUBSCRIPT-3.
+           MOVE 1 TO W-3.
+           PERFORM TABLE-BUILD-2 THROUGH FINE 300 TIMES.
+       TABTEST-1.
+           IF ANIMAL (1  1  1) EQUAL TO 1 PERFORM PASS ELSE GO TO
+           TTST-11.
+           GO TO TTST-12.
+       TTST-11.
+           PERFORM FAIL.
+           MOVE ANIMAL (1  1  1) TO COMPUTED-A.
+           MOVE "001" TO CORRECT-A.
+       TTST-12.
+           MOVE "TABTEST-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TABTEST-2.
+           MOVE 1 TO W-1.
+           MOVE 1 TO W-2.
+           MOVE 1 TO W-3.
+           IF ANIMAL (W-1  W-2  W-3)  EQUAL TO 1   PERFORM PASS ELSE GO
+           TO TTST-21.
+           GO TO TTST-22.
+       TTST-21.
+           PERFORM FAIL.
+           MOVE ANIMAL (W-1  W-2  W-3) TO COMPUTED-A.
+           MOVE "001" TO CORRECT-A.
+       TTST-22.
+           MOVE "TABTEST-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TABTEST-3.
+           MOVE 3 TO W-3.
+           MOVE 3 TO W-2.
+           MOVE 1 TO W-1.
+           IF ANIMAL (W-1  W-2  W-3) EQUAL TO 9 PERFORM PASS ELSE GO
+           TO TTST-31.
+           GO TO TTST-32.
+       TTST-31.
+           PERFORM FAIL.
+           MOVE ANIMAL (W-1  W-2  W-3) TO COMPUTED-A.
+           MOVE "009" TO CORRECT-A.
+       TTST-32.
+           MOVE "TABTEST-3" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TABTEST-4.
+           IF ANIMAL (10  10  1)    EQUAL TO 298 PERFORM PASS ELSE GO TO
+           TTST-41.
+           GO TO TTST-42.
+       TTST-41.
+           PERFORM FAIL.
+           MOVE ANIMAL (10  10  1) TO COMPUTED-A.
+           MOVE "298" TO CORRECT-A.
+       TTST-42.
+           MOVE "TABTEST-4" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TABTEST-5.
+           MOVE 3 TO W-1.
+           MOVE 10 TO W-2.
+           MOVE 10 TO W-3.
+           IF ANIMAL (W-3  W-2  W-1) EQUAL TO 300 PERFORM PASS ELSE GO
+           TO TTST-51.
+           GO TO TTST-52.
+       TTST-51.
+           PERFORM FAIL.
+           MOVE ANIMAL (W-3  W-2  W-1) TO COMPUTED-A.
+           MOVE "300" TO CORRECT-A.
+       TTST-52.
+           MOVE "TABTEST-5" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TABTEST-6.
+            IF YEAR-1 (1  1) EQUAL TO "001002003" PERFORM PASS ELSE GO
+           TO TTST-61.
+           GO TO TTST-62.
+       TTST-61.
+           PERFORM FAIL.
+           MOVE YEAR-1 (1  1) TO COMPUTED-A.
+           MOVE "001002003" TO CORRECT-A.
+       TTST-62.
+           MOVE "TABTEST-6" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TABTEST-7.
+            IF YEAR-1 (10  10) EQUAL TO "298299300" PERFORM PASS ELSE GO
+           TO TTST-71.
+           GO TO TTST-72.
+       TTST-71.
+           MOVE YEAR-1 (10  10) TO COMPUTED-A.
+           MOVE "298299300" TO CORRECT-A.
+           PERFORM FAIL.
+       TTST-72.
+           MOVE "TABTEST-7" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TABTEST-8.
+           MOVE 02 TO W-1.
+           MOVE 07  TO W-2.
+           IF ANIMAL (W-1  W-2  1) EQUAL TO 49 PERFORM PASS ELSE GO TO
+           TTST-81.
+           GO TO TTST-82.
+       TTST-81.
+           PERFORM FAIL.
+           MOVE ANIMAL (W-1  W-2  1) TO COMPUTED-A.
+           MOVE "049" TO CORRECT-A.
+       TTST-82.
+           MOVE "TABTEST-8" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TABTEST-9.
+           MOVE 08 TO W-1.
+           MOVE 03 TO W-3.
+           IF ANIMAL (W-1  1  W-3) EQUAL TO 213 PERFORM PASS ELSE GO TO
+           TTST-91.
+           GO TO TTST-92.
+       TTST-91.
+           PERFORM FAIL.
+           MOVE ANIMAL (W-1  1  W-3) TO COMPUTED-A.
+           MOVE "213" TO CORRECT-A.
+       TTST-92.
+           MOVE "TABTEST-9" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TABTEST-10.
+           MOVE 5 TO W-1.
+           IF YEAR-1 (W-1  10) EQUAL TO "148149150" PERFORM PASS ELSE
+           GO TO TTST-101.
+           GO TO TTST-102.
+       TTST-101.
+           PERFORM FAIL.
+           MOVE     YEAR-1 (W-1  10) TO COMPUTED-A.
+           MOVE "148149150" TO CORRECT-A.
+       TTST-102.
+           MOVE "TABTEST-10" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TABTEST-11.
+           IF YEAR-1 (+10  +10) EQUAL TO "298299300"
+                   PERFORM PASS
+                   GO TO TABTEST-11B.
+           MOVE YEAR-1 (+10  +10) TO COMPUTED-A.
+           MOVE "298299300" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TABTEST-11B.
+       TABTEST-11A.
+           PERFORM DE-LETE.
+       TABTEST-11B.
+           MOVE "TABTEST-11" TO PAR-NAME.
+      *>     NOTE SIGNED NUMERIC LITERALS AS SUBSCRIPTS.
+           PERFORM PRINT-DETAIL.
+       TABTEST-12.
+           MOVE 1 TO W-1.
+           IF YEAR-1 (W-1  +1) EQUAL TO "001002003"
+                   PERFORM PASS
+                   GO TO TABTEST-12B.
+           MOVE YEAR-1 (W-1  +1) TO COMPUTED-A.
+           MOVE "001002003" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TABTEST-12B.
+       TABTEST-12A.
+           PERFORM DE-LETE.
+       TABTEST-12B.
+           MOVE "TABTEST-12" TO PAR-NAME.
+      *>     NOTE SIGNED NUMERIC LITERAL AND
+      *>           UNSIGNED NUMERIC ITEM AS SUBSCRIPTS.
+           PERFORM PRINT-DETAIL.
+       TABTEST-13.
+           IF ANIMAL (+8  +1  +3) EQUAL TO 213
+                   PERFORM PASS
+                   GO TO TABTEST-13B.
+           MOVE ANIMAL (+8  +1   +3) TO COMPUTED-A.
+           MOVE "213" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TABTEST-13B.
+       TABTEST-13A.
+           PERFORM DE-LETE.
+       TABTEST-13B.
+           MOVE "TABTEST-13" TO PAR-NAME.
+      *>     NOTE SIGNED NUMERIC LITERALS AS SUBSCRIPTS.
+           PERFORM PRINT-DETAIL.
+       TABTEST-14.
+           MOVE 1 TO W-2.
+           IF ANIMAL (+8  W-2  +3) EQUAL TO 213
+                   PERFORM PASS
+                   GO TO TABTEST-14B.
+           MOVE ANIMAL (+8  W-2  +3) TO COMPUTED-A.
+           MOVE "213" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TABTEST-14B.
+       TABTEST-14A.
+           PERFORM DE-LETE.
+       TABTEST-14B.
+           MOVE "TABTEST-14" TO PAR-NAME.
+      *>     NOTE SIGNED NUMERIC LITERALS AND
+      *>          UNSIGNED NUMERIC ITEM AS SUBSCRIPTS.
+           PERFORM PRINT-DETAIL.
+       TABTEST-15.
+           MOVE 8 TO W-1.
+           MOVE 3 TO W-3.
+           IF ANIMAL (W-1  +1  W-3) EQUAL TO 213
+                   PERFORM PASS
+                   GO TO TABTEST-15B.
+           MOVE ANIMAL (W-1  +1  W-3) TO COMPUTED-A.
+           MOVE "213" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TABTEST-15B.
+       TABTEST-15A.
+           PERFORM DE-LETE.
+       TABTEST-15B.
+           MOVE "TABTEST-15" TO PAR-NAME.
+      *>     NOTE UNSIGNED NUMERIC ITEMS AND SIGNED NUMERIC LITERAL
+           PERFORM PRINT-DETAIL.
+       TABINIT-16.
+      *>     ==-->  RELATIVE SUBSCRIPTING  <--==
+           MOVE   "IV-22 4.3.8.4 GR4" TO ANSI-REFERENCE.
+           MOVE 1  TO W-1.
+           MOVE 20 TO W-2.
+           MOVE 5  TO W-3.
+       TABTEST-16.
+           IF      ANIMAL (W-3 + 5  W-2 - 10  W-1 + 2) = 300
+                   PERFORM PASS
+           ELSE
+                   GO TO TTST-161.
+           GO TO TTST-162.
+       TTST-161.
+           PERFORM FAIL.
+           MOVE    ANIMAL (W-3 + 5  W-2 - 10  W-1 + 2) TO COMPUTED-A.
+           MOVE "300" TO CORRECT-A.
+       TTST-162.
+           MOVE "TABTEST-16" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       TABINIT-17.
+      *>     ==-->  RELATIVE SUBSCRIPTING  <--==
+           MOVE   "IV-22 4.3.8.4 GR4" TO ANSI-REFERENCE.
+           MOVE   9 TO W-1.
+           MOVE   6 TO W-2.
+           MOVE 999 TO W-3.
+       TABTEST-17.
+           IF      ANIMAL (W-1 - 7  W-2 + 1 W-3 - 998) EQUAL TO 49
+                   PERFORM PASS
+           ELSE
+                   GO TO   TTST-171.
+           GO TO   TTST-172.
+       TTST-171.
+           PERFORM FAIL.
+           MOVE    ANIMAL (W-1 - 7  W-2 + 1 W-3 - 998) TO COMPUTED-A.
+           MOVE "049" TO CORRECT-A.
+       TTST-172.
+           MOVE "TABTEST-17" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     USED AS SUBSCRIPT.
+       WRITE-TABLE.
+           PERFORM BLANK-LINE-PRINT 2 TIMES.
+           MOVE 1 TO SUBSCRIPT-3
+           MOVE  1  TO SUBSCRIPT-2.
+           MOVE  1  TO  SUBSCRIPT-1.
+           MOVE 1 TO CTR-1
+           PERFORM PRINT-TABLE THROUGH END-TAB 300 TIMES.
+           GO TO EXIT-NOTE.
+       EXIT-NOTE.
+           GO TO FIN-WRAPUP.
+       PRINT-TABLE.
+           MOVE ANIMAL (SUBSCRIPT-1  SUBSCRIPT-2  SUBSCRIPT-3) TO
+           PRINT-ELE (CTR-1).
+           ADD 1 TO CTR-1
+           IF CTR-1 EQUAL TO 21 PERFORM TABLE-DUMP.
+           ADD 1 TO SUBSCRIPT-3.
+           IF SUBSCRIPT-3 GREATER THAN 3 GO TO CCCC ELSE GO TO END-TAB.
+       CCCC.
+           ADD 1 TO  SUBSCRIPT-2
+           MOVE 1 TO SUBSCRIPT-3.
+           IF SUBSCRIPT-2 GREATER THAN 10 GO TO DDD ELSE GO TO END-TAB.
+       DDD.
+           ADD 1 TO SUBSCRIPT-1.
+           MOVE 1 TO SUBSCRIPT-2.
+       END-TAB.
+           EXIT.
+       
+       TABLE-BUILD-2.
+           MOVE W-3 TO ANIMAL (SUBSCRIPT-1  SUBSCRIPT-2  SUBSCRIPT-3).
+           ADD 01 TO W-3.
+           ADD 01 TO SUBSCRIPT-3.
+           IF SUBSCRIPT-3 IS GREATER THAN 3 GO TO   AAAA ELSE GO TO
+           FINE.
+       AAAA.
+           ADD 1 TO SUBSCRIPT-2.
+           MOVE  1   TO SUBSCRIPT-3.
+           IF SUBSCRIPT-2 IS GREATER THAN 10 GO TO BBB ELSE GO TO FINE.
+       BBB.
+           ADD 1 TO SUBSCRIPT-1.
+           MOVE   1   TO  SUBSCRIPT-2.
+       FINE.
+           EXIT.
+       FIN-WRAPUP.
+           EXIT.
+       END-JOB.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC134A

@@ -1,0 +1,86 @@
+      *> HEADER,COBOL,IX401M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IX401M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF HIGH
+      *> SUBSET FEATURES THAT ARE USED IN INDEXED
+      *> INPUT-OUTPUT.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT OPTIONAL TFIL ASSIGN
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+           XXXXX025
+               RESERVE 2 AREAS
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS DYNAMIC
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+               RECORD KEY IS RKEY
+               ALTERNATE RECORD KEY IS BEANO.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+           SELECT TFIL2 ASSIGN
+           XXXXX026
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS SEQUENTIAL
+               RECORD KEY IS RKEY2.
+       
+       DATA DIVISION.
+       FILE SECTION.
+       FD TFIL
+           RECORD IS VARYING IN SIZE FROM 18 TO 36 CHARACTERS.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       01 FREC.
+           03 RKEY PIC X(8).
+           03 BEANO PIC X(10).
+       
+       FD TFIL2.
+       01 FREC2.
+           03 RKEY2 PIC X(8).
+       
+       PROCEDURE DIVISION.
+       
+       IX401M-CONTROL.
+           OPEN INPUT TFIL.
+           PERFORM IX401M-CLOSE THRU IX401M-START.
+           CLOSE TFIL.
+           CLOSE TFIL2.
+           STOP RUN.
+       
+       IX401M-CLOSE.
+           CLOSE TFIL WITH LOCK.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       IX401M-OPENEXT.
+           OPEN EXTEND TFIL2.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       IX401M-READNEXT.
+           OPEN INPUT TFIL.
+           READ TFIL NEXT RECORD
+               AT END DISPLAY "AT END".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       IX401M-READKEY.
+           READ TFIL RECORD
+               KEY IS RKEY
+           INVALID KEY DISPLAY "INVALID".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       IX401M-START.
+           START TFIL KEY IS EQUAL TO RKEY
+               INVALID KEY DISPLAY "INVALID".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 10.
+      *> END-OF,IX401M

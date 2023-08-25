@@ -1,0 +1,70 @@
+      *> HEADER,COBOL,SQ302M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SQ302M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF
+      *> OBSOLETE FEATURES THAT ARE USED IN MINIMUM SUBSET
+      *> SEQUENTIAL INPUT-OUTPUT.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT TFIL ASSIGN
+           XXXXX014
+           ORGANIZATION IS SEQUENTIAL
+           ACCESS MODE IS SEQUENTIAL.
+       
+           SELECT SQ-FRR ASSIGN
+           XXXXX013
+               ORGANIZATION IS SEQUENTIAL.
+       
+           SELECT RR-FS1 ASSIGN
+           XXXXX014
+               ORGANIZATION IS SEQUENTIAL.
+       
+       I-O-CONTROL.
+           XXXXX053.
+      *> Message expected for above statement: OBSOLETE
+       
+       DATA DIVISION.
+       FILE SECTION.
+       FD TFIL
+           LABEL RECORDS STANDARD
+      *> Message expected for above statement: OBSOLETE
+           VALUE OF
+           XXXXX074
+           IS
+           XXXXX075
+      *> Message expected for above statement: OBSOLETE
+           DATA RECORDS ARE FREC.
+      *> Message expected for above statement: OBSOLETE
+       
+       01 FREC.
+           03 RKEY PIC 9(8).
+       
+       FD SQ-FRR.
+       01 SREC.
+          03  SKEY    PIC X(8).
+       
+       FD RR-FS1.
+       01 RREC.
+          03  FKEY    PIC X(8).
+       
+       WORKING-STORAGE SECTION.
+       
+       01 VARIABLES.
+           03 VKEY PIC 9(8) VALUE ZERO.
+           03 DKEY PIC 9(8) VALUE ZERO.
+       
+       PROCEDURE DIVISION.
+       
+       SQ302M-CONTROL.
+           DISPLAY "THIS IS A DUMMY PARAGRAPH".
+           STOP RUN.
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 4.
+      *> END-OF,SQ302M

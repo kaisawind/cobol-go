@@ -1,0 +1,42 @@
+      *> HEADER,COBOL,IC213A,SUBRTN,IC215A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC215A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>     THIS IS SUBPROGRAM IC215.
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       LINKAGE SECTION.
+       01  DN2                         PICTURE S9.
+       01  DN3                         PICTURE S9.
+       PROCEDURE DIVISION USING DN2, DN3.
+       CALL-TEST-2.
+           MOVE 1 TO DN2.
+       CANCEL-TEST-1.
+           CANCEL "IC214A".
+           MOVE 1 TO DN3.
+       IC215-EXIT.
+           EXIT PROGRAM.
+      *> END-OF,IC215A

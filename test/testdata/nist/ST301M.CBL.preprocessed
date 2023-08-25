@@ -1,0 +1,86 @@
+      *> HEADER,COBOL,ST301M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+            ST301M.
+      *> The following program tests the flagging of intermediate
+      *> subset  features that are used in sort-merge functions
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT TFIL ASSIGN
+           XXXXX027.
+           SELECT TFIL-2 ASSIGN
+           XXXXX001
+           ACCESS MODE IS SEQUENTIAL.
+           SELECT TFIL-3 ASSIGN
+           XXXXX002
+           ACCESS MODE IS SEQUENTIAL.
+           SELECT TFIL-4 ASSIGN
+           XXXXX003
+           ACCESS MODE IS SEQUENTIAL.
+           SELECT TFIL-5 ASSIGN
+           XXXXX004
+           ACCESS MODE IS SEQUENTIAL.
+       
+       I-O-CONTROL.
+           SAME SORT-MERGE AREA FOR TFIL-5, TFIL.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       DATA DIVISION.
+       FILE SECTION.
+       SD  TFIL.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       01  FREC.
+           03 DATA-1  PIC X(80).
+       
+       FD TFIL-2.
+       01 FREC-2.
+           03 DATA-2  PIC X(80).
+       
+       FD TFIL-3.
+       01 FREC-3.
+           03 DATA-3 PIC X(80).
+       
+       FD TFIL-4.
+       01 FREC-4.
+           03 DATA-4 PIC X(80).
+       
+       FD TFIL-5.
+       01 FREC-5.
+          03  DATA-5 PIC X(80).
+       
+       PROCEDURE DIVISION.
+       
+       ST301M-CONTROL.
+           PERFORM ST301M-MERGE THRU ST301M-SORT 1 TIMES.
+           STOP RUN.
+       
+       ST301M-MERGE.
+           MERGE TFIL ON ASCENDING KEY DATA-1
+           USING TFIL-2 TFIL-3
+           OUTPUT PROCEDURE IS ST301M-RETURN.
+       
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       ST301M-RELEASE.
+           RELEASE FREC.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       ST301M-RETURN.
+           RETURN TFIL RECORD
+               AT END DISPLAY "AT END".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       ST301M-SORT.
+           SORT TFIL ON ASCENDING KEY DATA-1
+           INPUT PROCEDURE IS ST301M-RELEASE
+           GIVING TFIL-4.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 6.
+      *> END-OF,ST301M

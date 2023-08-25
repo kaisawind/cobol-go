@@ -1,0 +1,1933 @@
+      *> HEADER,COBOL,NC174A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC174A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC174A TESTS THE FOLLOWING GENERAL FEATURES:
+      *>               RELATIONAL OPERATORS
+      *>               CLASS CONDITIONS
+      *>               SWITCH SETTINGS
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       SPECIAL-NAMES.
+           XXXXX051
+           IS SW-1
+               ON STATUS IS ON-SWITCH-1
+               OFF STATUS IS OFF-SWITCH-1
+           XXXXX052
+           IS SW-2
+                 ON IS ON-SWITCH-2
+                 OFF IS OFF-SWITCH-2
+           CLASS   ORDINAL-A-ONLY IS
+           XXXXX090
+           CLASS   ORDINAL-A-THROUGH-D IS
+           XXXXX090
+           THROUGH
+           XXXXX091
+           CLASS   ORDINAL-D-THRU-A
+           XXXXX091
+           THRU
+           XXXXX090
+           CLASS   ACTUAL-A-ONLY "A"
+           CLASS   ACTUAL-A-THRU-D IS "A" THRU "D"
+           CLASS   ACTUAL-D-THROUGH-A IS "D" THROUGH "A"
+           CLASS   ACTUAL-ABCD "ABCD".
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  WS-A                        PIC X.
+       01  WS-B                        PIC X(5).
+       01  IF-D1                              PICTURE IS S9(4)V9(2)
+           VALUE IS 0.
+       01  IF-D2                              PICTURE IS S9(4)V9(2)
+           VALUE IS ZERO.
+       01  IF-D3                              PICTURE IS X(10)
+           VALUE IS "0000000000".
+       01  IF-D4                              PICTURE IS X(15)
+           VALUE IS "               ".
+       01  IF-D6                              PICTURE IS A(10)
+           VALUE IS "BABABABABA".
+       01  IF-D7                              PICTURE IS S9(6)V9(4)
+           VALUE IS +123.45.
+       01  IF-D8                              PICTURE IS 9(6)V9(4)
+           VALUE IS 12300.
+       01  IF-D9                              PICTURE IS X(3)
+           VALUE IS "123".
+       01  IF-D11                             PICTURE IS X(6)
+           VALUE IS "ABCDEF".
+       01  IF-D13                             PICTURE IS 9(6)V9(4)
+           VALUE IS 12300.
+       01  IF-D14                             PICTURE IS S9(4)V9(2)
+           VALUE IS +123.45.
+       01  IF-D15                             PICTURE IS S999PP
+           VALUE IS 12300.
+       01  IF-D16                             PICTURE IS PP99
+           VALUE IS .0012.
+       01  IF-D17                             PICTURE IS SV9(4)
+           VALUE IS .0012.
+       01  IF-D18                             PICTURE IS X(10)
+           VALUE IS "BABABABABA".
+       01  IF-D19                             PICTURE IS X(10)
+           VALUE IS "ABCDEF    ".
+       01  IF-D23                             PICTURE IS $9,9B9.90+.
+       01  IF-D24                             PICTURE IS X(10)
+           VALUE IS "$1,2 3.40+".
+       01  IF-D25                             PICTURE IS ABABX0A.
+       01  IF-D26  PIC X(7)
+           VALUE IS "A C D0E".
+       01  IF-D27             PICTURE 9(6)V9(4)  VALUE 2137.45
+           USAGE IS COMPUTATIONAL.
+       01  IF-D28                             PICTURE IS 999999V9999
+           VALUE IS 2137.45.
+       01  IF-D32                             PICTURE IS 9 VALUE IS 0.
+       01  IF-D33 PICTURE S9 VALUE -0.
+       01  IF-D34 PICTURE S9 VALUE +0.
+       01  IF-D37             PICTURE 9(5)  VALUE 0001234.
+       01  IF-D38             PICTURE X(20) VALUE " BABBAGE".
+       01  ALPHA-UPPER        PIC X(20)     VALUE " UPPERCASE CHARS".
+       01  ALPHA-LOWER        PIC X(20)     VALUE " lowercase chars".
+       01  NON-COBOL-CHARACTERS  PICTURE X(8) VALUE
+           XXXXX081.
+       01  AZERO-DS-05V05              PICTURE S9(5)V9(5) VALUE ZERO.
+       01  A18ONES-DS-18V00            PICTURE S9(18)
+                                       VALUE 111111111111111111.
+       01  ONES-XN-00018               PICTURE X(18)
+           VALUE "111111111111111111".
+       01  A99-DS-02V00                PICTURE S99  VALUE 99.
+       01  WRK-DU-02V00                PICTURE 99.
+       01  TWOS-XN-00002               PICTURE XX   VALUE "22".
+       01  A18ONES-DS-09V09            PICTURE S9(9)V9(9)
+                                       VALUE 111111111.111111111.
+       01  ONES-XN-00002               PICTURE XX   VALUE "11".
+       01  A02TWOS-DU-02V00            PICTURE 99   VALUE 22.
+       01  A01ONE-DS-P0801             PICTURE SP(8)9 VALUE .000000001.
+       01  A990-DS-0201P               PICTURE S99P  VALUE +990.
+       01  XDATA-XN-00018              PICTURE X(18)
+                                       VALUE "00ABCDEFGHI  4321 ".
+       01  XDATA-DS-18V00-S REDEFINES XDATA-XN-00018 PICTURE S9(18).
+       01  YADATA-XN-00010             PICTURE X(10) VALUE "ABCDEFGHIJ".
+       01  YADATA-XN-00010-U-AND-L     PICTURE X(10) VALUE "AbCdEfGhIj".
+       01  DUMMY-DS-00001     PICTURE S9 VALUE -1.
+       01  A02TWOS-DS-03V02            PICTURE S999V99  VALUE +022.00.
+       01  WRK-DS-18V0-1               PIC S9(18)     VALUE
+                  -123456789012345678.
+       01  WRK-XN-18-2                 PIC  X(18)     VALUE
+                  "123456789012345678".
+       
+       01  IF-D10.
+           02 FILLER          PICTURE XX VALUE "01".
+           02 FILLER          PICTURE XX VALUE "23".
+           02 IF-D10A.
+             03 FILLER        PICTURE XXXX VALUE "4567".
+             03 FILLER        PICTURE XXXX VALUE "8912".
+       01  IF-D12.
+           02 FILLER          PICTURE XXX VALUE "ABC".
+           02 IF-D12A.
+             03 IF-D12B.
+               04 FILLER      PICTURE XX VALUE "DE".
+               04 FILLER      PICTURE X  VALUE "F".
+       01  IF-D20.
+           02 FILLER          PICTURE 9(5) VALUE ZERO.
+           02 FILLER          PICTURE 99   VALUE 12.
+           02 FILLER          PICTURE 9    VALUE 3.
+           02 FILLER          PICTURE 99   VALUE 45.
+       01  IF-D21.
+           02 FILLER          PICTURE 9(5) VALUE ZERO.
+           02 FILLER          PICTURE 9(5) VALUE 12345.
+       01  IF-D22.
+           02 FILLER          PICTURE AA   VALUE "AB".
+           02 FILLER          PICTURE AAAA VALUE "CDEF".
+       01  IF-D35.
+           02 IF-D35A                             VALUE "*ASTERISK".
+             03 FILLER        PICTURE A(6).
+             03 FILLER        PICTURE AAA.
+           02 IF-D35B                            VALUE "/SLASH".
+             03 FILLER        PICTURE 9(6).
+       01  IF-D36 REDEFINES IF-D35.
+           02 IF-D36A         PICTURE X(6).
+           02 IF-D36B         PICTURE XXX.
+           02 IF-D36C         PICTURE X(6).
+       01  IF-D39.
+           02  FILLER   PICTURE A(6) VALUE "ABCDEF".
+           02  FILLER  PICTURE A(4) VALUE SPACE.
+       01  LEVEL-01.
+           02 LEVEL-02.
+           03 LEVEL-03.
+           04 LEVEL-04.
+           05 LEVEL-05.
+           06 LEVEL-06.
+           07 LEVEL-07.
+           08 LEVEL-08.
+           09 LEVEL-09.
+           10 LEVEL-10                        PICTURE IS X VALUE IS "R".
+       01  LEVEL-RECEIVER                     PICTURE IS X VALUE IS
+           SPACE.
+       01  LEVEL-SENDER PICTURE X VALUE "S".
+       01  VAL                                PICTURE IS 9 VALUE IS 0.
+       01  A-2                                PICTURE IS A VALUE IS "A".
+       01  N-27                               PICTURE IS 9999V9
+           VALUE IS 9999.9.
+       01  N-30                               PICTURE IS 9V9
+           VALUE IS 2.
+       01  N-31                               PICTURE IS 9(6).
+       01  X-32 REDEFINES N-31                PICTURE IS X(6).
+       01  N-33                               PICTURE IS 9(5)
+           VALUE IS 29.
+       01  A-37                               PICTURE IS A VALUE IS "X".
+       01  X-38 REDEFINES A-37                PICTURE IS X.
+       01  X-43 PIC X(10) VALUE "    l75.63".
+       01  N-84                               PICTURE IS 9999999999.
+       01  NUMERIC-GRP-TEST.
+           02  NUMERIC-1                PICTURE 9 VALUE 0.
+           02  NUMERIC-2.
+               03  NUMERIC-3            PICTURE 9(1)V9(1) VALUE ZERO.
+               03  NUMERIC-4.
+                   04  NUMERIC-5       PICTURE 9(18) VALUE 1.
+           02  NUMERIC-6.
+               03  NUMERIC-7            PICTURE X VALUE "7".
+               03  NUMERIC-8            PICTURE 9  VALUE 8.
+       01  NUM-GRP.
+           02  NUM-SUB-GRP  PIC 9.
+       01  GROUP-1000.
+           02  FILLER  PIC X.
+           02  GROUP-X1000.
+               03  GROUP-1000-1 PIC X(500) VALUE ZERO.
+               03  XNAME        PICTURE X(100) VALUE QUOTE.
+               03  GROUP-1000-2 PICTURE X(399) VALUE SPACE.
+               03  GROUP-1000-3 PICTURE X VALUE ".".
+           02  GROUP-X500-2.
+               03  GROUP-X500-A        PICTURE X(500) VALUE ZERO.
+               03  GROUP-X500-1.
+                   04  GROUP-X500-1-1  PICTURE X(50) VALUE QUOTE.
+                   04  GROUP-X500-1-2  PICTURE X(50) VALUE QUOTE.
+                   04  GROUP-X500-1-3  PICTURE X(398) VALUE SPACE.
+                   04  GROUP-X500-1-4  PICTURE XX VALUE " .".
+       01  HI-LO-VALUES.
+           02  LOW-VAL  PIC X VALUE LOW-VALUE.
+           02 ZERO-01  PICTURE 9(18) VALUE 1.
+           02  ABC      PICTURE XXX VALUE "ABC".
+           02  NINE-17-8 PICTURE 9(18) VALUE 999999999999999998.
+           02  ZERO-NULL PIC 9(9) VALUE 0.
+           02  ZERO-ZERO PICTURE 9(9)V9(9) VALUE 0.0.
+       01  COMP-DATA.
+           02  COMP-DATA1 PICTURE 9(18) COMPUTATIONAL VALUE 300.
+           02  COMP-DATA2  PICTURE 9(10) COMPUTATIONAL VALUE  100000.
+           02  COMP-DATA3  PICTURE 9     COMPUTATIONAL VALUE 9.
+           02  COMP-DATA4  PICTURE 9(9)V9(7) COMPUTATIONAL VALUE 3.3.
+           02  COMP-DATA5  PICTURE 9(5)V9(2) COMPUTATIONAL VALUE 52.25.
+           02  COMP-DATA6  PICTURE 9V9       COMPUTATIONAL VALUE 8.8.
+           02  COMP-DATA7  PICTURE 9(3)V9(2) COMPUTATIONAL VALUE 300.00.
+           02  COMP-DATA8  PICTURE 9V9(9) COMPUTATIONAL VALUE 3.3000000.
+           02  COMP-DATA9  PICTURE 9(8)  COMPUTATIONAL VALUE 100000.
+       01  DISP-DATA.
+           02  DISP-DATA1  PICTURE 9(18) VALUE 300.
+           02  DISP-DATA2  PICTURE 9(8)  VALUE 100000.
+           02  DISP-DATA3  PICTURE 9     VALUE 9.
+           02  DISP-DATA4  PICTURE 9(7)V9(9) VALUE 3.3.
+           02  DISP-DATA5  PICTURE 9(2)V9(2) VALUE 52.25.
+           02  DISP-DATA6  PICTURE 9V9   VALUE 8.8.
+       01  DATA-5          PICTURE 9     VALUE 5.
+       01  DATA-99999      PICTURE S9(5) VALUE +99999.
+       01  DATA-Z          PICTURE X     VALUE "Z".
+       01  DATA-4          PICTURE 9     VALUE 4.
+       01  DATA-Y          PICTURE X     VALUE "Y".
+       01  DATA-VWXYZ      PICTURE X(5)  VALUE "VWXYZ".
+       01  DATA-ADCBA      PICTURE X(5)  VALUE "ADCBA".
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC174A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC174A-001 SECTION.
+      *> 
+      *> 
+       NEXT-INIT-GF-1.
+      *>     ==-->     NEXT SENTENCE           <--==
+           MOVE   "V1-89 6.15.4 GR2 " TO ANSI-REFERENCE.
+           MOVE    "A" TO A-2.
+       NEXT-TEST-GF-1.
+           IF       A-2 EQUAL TO "A"
+                    NEXT SENTENCE
+                    ELSE
+                    NEXT SENTENCE.
+           PERFORM  PASS.
+           GO TO    NEXT-WRITE-GF-1.
+       NEXT-DELETE-GF-1.
+           PERFORM  DE-LETE.
+       NEXT-WRITE-GF-1.
+           MOVE "NEXT-TEST-1" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+      *> 
+       ANOTHER-REMARK.
+           MOVE     SPACE TO TEST-RESULTS.
+           MOVE "THE FOLLOWING TESTS        " TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+           MOVE "TEST THE COMPARISONS IN    " TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+           MOVE "SWITCH-STATUS, RELATION    " TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+           MOVE "AND CLASS CONDITIONALS.    " TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       SWH-INIT-GF-1.
+           MOVE   "V1-13 4.5.2" TO ANSI-REFERENCE.
+           MOVE "SWITCH-STATUS" TO FEATURE.
+       SWH-TEST-GF-1.
+           IF      ON-SWITCH-1
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   SWH-WRITE-GF-1.
+       SWH-DELETE-GF-1.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM  DE-LETE.
+       SWH-WRITE-GF-1.
+           MOVE "SWH-TEST-GF-1" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SWH-INIT-GF-2.
+           MOVE   "V1-13 4.5.2" TO ANSI-REFERENCE.
+       SWH-TEST-GF-2.
+           IF       OFF-SWITCH-1
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    SWH-WRITE-GF-2.
+       SWH-DELETE-GF-2.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM  DE-LETE.
+       SWH-WRITE-GF-2.
+           MOVE "SWH-TEST-GF-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SWH-INIT-GF-3.
+           MOVE   "V1-13 4.5.2" TO ANSI-REFERENCE.
+       SWH-TEST-GF-3.
+           IF       OFF-SWITCH-2
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    SWH-WRITE-GF-3.
+       SWH-DELETE-GF-3.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM  DE-LETE.
+       SWH-WRITE-GF-3.
+           MOVE "SWH-TEST-GF-3" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SWH-INIT-GF-4.
+           MOVE   "V1-13 4.5.2" TO ANSI-REFERENCE.
+       SWH-TEST-GF-4.
+           IF       ON-SWITCH-2
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    SWH-WRITE-GF-4.
+       SWH-DELETE-GF-4.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM  DE-LETE.
+       SWH-WRITE-GF-4.
+           MOVE "SWH-TEST-GF-4" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SWH-TEST-5.
+      *>  DELETE THE NEXT LINE TO DELETE THIS TEST
+           GO TO SWH-TEST-5-B.
+       SWH-TEST-5-A.
+           GO TO SWH-DELETE-5.
+       SWH-TEST-5-B.
+           IF NOT ON-SWITCH-1
+               MOVE "SWITCH-1  OFF " TO COMPUTED-A
+               MOVE "SWITCH-1 EXPECTED ON" TO CORRECT-A
+               PERFORM FAIL
+               GO TO SWH-WRITE-5.
+           PERFORM PASS.
+           GO TO SWH-WRITE-5.
+       SWH-DELETE-5.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-5.
+           MOVE "SWH-TEST-5" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SWH-TEST-6.
+      *>  DELETE THE NEXT LINE TO DELETE THIS TEST
+           GO TO SWH-TEST-6-B.
+       SWH-TEST-6-A.
+           GO TO SWH-DELETE-6.
+       SWH-TEST-6-B.
+           IF NOT OFF-SWITCH-1
+               PERFORM PASS
+               GO TO SWH-WRITE-6.
+           MOVE "SWITCH-1  OFF " TO COMPUTED-A.
+           MOVE "SWITCH-1 EXPECTED ON" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SWH-WRITE-6.
+       SWH-DELETE-6.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-6.
+           MOVE "SWH-TEST-6" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SWH-TEST-7.
+           GO TO SWH-DELETE-7.
+           IF NOT ON-SWITCH-2
+               PERFORM PASS
+               GO TO SWH-WRITE-7.
+           MOVE "SWITCH-2  ON " TO COMPUTED-A.
+           MOVE "SWITCH2 EXPECTED OFF" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SWH-WRITE-7.
+       SWH-DELETE-7.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-7.
+           MOVE "SWH-TEST-7" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SWH-TEST-8.
+      *>  DELETE THE NEXT LINE TO DELETE THIS TEST
+           GO TO SWH-TEST-8-B.
+       SWH-TEST-8-A.
+           GO TO SWH-DELETE-8.
+       SWH-TEST-8-B.
+           IF NOT OFF-SWITCH-2
+               MOVE "SWITCH-2  ON " TO COMPUTED-A
+               MOVE "SWITCH2 EXPECTED OFF" TO CORRECT-A
+               PERFORM FAIL
+               GO TO SWH-WRITE-8.
+           PERFORM PASS.
+           GO TO  SWH-WRITE-8.
+       SWH-DELETE-8.
+           MOVE  "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-8.
+           MOVE  "SWH-TEST-8" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       SWH-INIT-GF-9.
+           MOVE   "SET SWITCH ON/OFF" TO FEATURE.
+           MOVE   "V1-126 6.22.1(2)"  TO ANSI-REFERENCE.
+           SET     SW-1 TO ON.
+       SWH-TEST-GF-9.
+           IF      ON-SWITCH-1
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   SWH-WRITE-GF-9.
+       SWH-DELETE-GF-9.
+           MOVE   "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-GF-9.
+           MOVE   "SWH-TEST-GF-9" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       SWH-INIT-GF-10.
+           MOVE   "SET SWITCH ON/OFF" TO FEATURE.
+           MOVE   "V1-126 6.22.1(2)"  TO ANSI-REFERENCE.
+           SET     SW-1 SW-2 TO OFF.
+       SWH-TEST-GF-10-1.
+           IF      OFF-SWITCH-1
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   SWH-WRITE-GF-10-1.
+       SWH-DELETE-GF-10-1.
+           MOVE   "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-GF-10-1.
+           MOVE   "SWH-TEST-GF-10-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SWH-TEST-GF-10-2.
+           IF      OFF-SWITCH-2
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   SWH-WRITE-GF-10-2.
+       SWH-DELETE-GF-10-2.
+           MOVE   "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-GF-10-2.
+           MOVE   "SWH-TEST-GF-10-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       SWH-INIT-GF-11.
+           MOVE   "SET SWITCH ON/OFF" TO FEATURE.
+           MOVE   "V1-126 6.22.1(2)"  TO ANSI-REFERENCE.
+           SET     SW-1 TO ON
+                   SW-2 TO OFF.
+       SWH-TEST-GF-11-1.
+           IF      ON-SWITCH-1
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   SWH-WRITE-GF-11-1.
+       SWH-DELETE-GF-11-1.
+           MOVE   "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-GF-11-1.
+           MOVE   "SWH-TEST-GF-11-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SWH-TEST-GF-11-2.
+           IF      OFF-SWITCH-2
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   SWH-WRITE-GF-11-2.
+       SWH-DELETE-GF-11-2.
+           MOVE   "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-GF-11-2.
+           MOVE   "SWH-TEST-GF-11-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       SWH-INIT-GF-12.
+           MOVE   "SET SWITCH ON/OFF" TO FEATURE.
+           MOVE   "V1-126 6.22.1(2)"  TO ANSI-REFERENCE.
+           SET     SW-2 TO OFF.
+       SWH-TEST-GF-12.
+           IF      OFF-SWITCH-2
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   SWH-WRITE-GF-12.
+       SWH-DELETE-GF-12.
+           MOVE   "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-GF-12.
+           MOVE   "SWH-TEST-GF-12" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-1.
+           MOVE   "RELATION"          TO FEATURE.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE     ZERO TO VAL.
+           MOVE    "A"   TO A-2.
+       RELAT-TEST-GF-1.
+           IF "Z"   GREATER THAN A-2
+                    ADD 1 VAL GIVING VAL.
+       
+           IF       A-2 GREATER THAN "Z"
+                    GO TO RELAT-CHECK-GF-1.
+           ADD      2 VAL GIVING VAL.
+           GO TO    RELAT-CHECK-GF-1.
+       RELAT-DELETE-GF-1.
+           PERFORM  DE-LETE.
+           GO TO    RELAT-WRITE-GF-1.
+       RELAT-CHECK-GF-1.
+           IF       VAL EQUAL TO 3
+                   PERFORM PASS
+                   GO TO RELAT-WRITE-GF-1.
+           MOVE VAL TO COMPUTED-A.
+           MOVE 3 TO CORRECT-A.
+           PERFORM FAIL.
+       RELAT-WRITE-GF-1.
+           MOVE "RELAT-TEST-GF-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RELAT-INIT-GF-2.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE     ZERO TO VAL.
+           MOVE    "A"   TO A-2.
+       RELAT-TEST-GF-2.
+           IF      A-2 NOT GREATER THAN "Z"
+                   ADD 1 VAL GIVING VAL.
+           IF   "Z" NOT GREATER THAN A-2
+                   GO TO    RELAT-CHECK-GF-2.
+           ADD     2 VAL GIVING VAL.
+           GO TO   RELAT-CHECK-GF-2.
+       RELAT-DELETE-GF-2.
+           PERFORM DE-LETE.
+           GO TO   RELAT-WRITE-GF-2.
+       RELAT-CHECK-GF-2.
+           IF       VAL EQUAL TO 3
+                    PERFORM PASS
+                    GO TO RELAT-WRITE-GF-2.
+           MOVE VAL TO COMPUTED-A.
+           MOVE 3 TO CORRECT-A.
+           PERFORM  FAIL.
+       RELAT-WRITE-GF-2.
+           MOVE "RELAT-TEST-GF-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RELAT-INIT-GF-3.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE     ZERO TO VAL.
+           MOVE     2    TO N-30.
+           MOVE     29   TO N-33.
+       RELAT-TEST-GF-3.
+           IF       N-30 LESS THAN N-33
+                    ADD 1 VAL GIVING VAL.
+           IF       N-33 LESS THAN N-30
+                    GO TO RELAT-CHECK-GF-3.
+           ADD      2 VAL GIVING VAL.
+           GO TO    RELAT-CHECK-GF-3.
+       RELAT-DELETE-GF-3.
+           PERFORM  DE-LETE.
+           GO TO    RELAT-WRITE-GF-3.
+       RELAT-CHECK-GF-3.
+           IF       VAL EQUAL TO 3
+                    PERFORM PASS
+                    GO TO RELAT-WRITE-GF-3.
+           MOVE VAL TO COMPUTED-A.
+           MOVE 3 TO CORRECT-A.
+           PERFORM  FAIL.
+       RELAT-WRITE-GF-3.
+           MOVE "RELAT-TEST-GF-3" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RELAT-INIT-GF-4.
+           MOVE    "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE     ZERO TO VAL.
+           MOVE     9999.9 TO N-27.
+       RELAT-TEST-GF-4.
+           IF       5280 NOT LESS THAN N-27
+                    ADD 1 VAL GIVING VAL.
+           IF       N-27 NOT LESS THAN 5280
+                    GO TO RELAT-CHECK-GF-4.
+           ADD      2 VAL GIVING VAL.
+           GO TO    RELAT-CHECK-GF-4.
+       RELAT-DELETE-GF-4.
+           PERFORM  DE-LETE.
+           GO TO    RELAT-WRITE-GF-4.
+       RELAT-CHECK-GF-4.
+           IF       VAL EQUAL TO ZERO
+                    PERFORM PASS
+                    GO TO RELAT-WRITE-GF-4.
+           MOVE VAL TO COMPUTED-A.
+           MOVE ZERO TO CORRECT-A.
+           PERFORM  FAIL.
+       RELAT-WRITE-GF-4.
+           MOVE "RELAT-TEST-GF-4" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RELAT-INIT-GF-5.
+           MOVE    "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE     ZERO TO VAL.
+           MOVE     29   TO N-33.
+           MOVE    "    $75.63" TO X-43.
+       RELAT-TEST-GF-5.
+           MOVE     N-33 TO N-84.
+           IF       N-33 EQUAL TO N-84
+                    ADD 1 VAL GIVING VAL.
+           IF       N-84 EQUAL TO X-43
+                    GO TO RELAT-CHECK-GF-5.
+           ADD      2 VAL GIVING VAL.
+           GO TO    RELAT-CHECK-GF-5.
+       RELAT-DELETE-GF-5.
+           PERFORM  DE-LETE.
+           GO TO    RELAT-WRITE-GF-5.
+       RELAT-CHECK-GF-5.
+           IF       VAL EQUAL TO 3
+                    PERFORM PASS
+                    GO TO RELAT-WRITE-GF-5.
+           MOVE VAL TO COMPUTED-A.
+           MOVE 3 TO CORRECT-A.
+           PERFORM  FAIL.
+       RELAT-WRITE-GF-5.
+           MOVE "RELAT-TEST-GF-5" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RELAT-INIT-GF-6.
+           MOVE    "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE     ZERO TO VAL.
+           MOVE     29   TO N-33.
+           MOVE     29   TO N-84.
+           MOVE    "    $75.63" TO X-43.
+       RELAT-TEST-GF-6.
+           IF       N-84 NOT EQUAL TO X-43
+                    ADD 1 VAL GIVING VAL.
+           IF       N-33 NOT EQUAL TO N-84
+                    GO TO RELAT-CHECK-GF-6.
+           ADD      2 VAL GIVING VAL.
+           GO TO    RELAT-CHECK-GF-6.
+       RELAT-DELETE-GF-6.
+           PERFORM  DE-LETE.
+           GO TO    RELAT-WRITE-GF-6.
+       RELAT-CHECK-GF-6.
+           IF       VAL EQUAL TO 3
+                    PERFORM PASS
+                    GO TO RELAT-WRITE-GF-6.
+           MOVE VAL TO COMPUTED-A.
+           MOVE 3 TO CORRECT-A.
+           PERFORM  FAIL.
+       RELAT-WRITE-GF-6.
+           MOVE "RELAT-TEST-GF-6" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RELAT-INIT-GF-7.
+           MOVE    "ABBREV. RELATION"  TO FEATURE.
+           MOVE    "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE     ZERO TO VAL.
+           MOVE     29   TO N-33.
+       RELAT-TEST-GF-7.
+           IF       N-33 GREATER 2
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    RELAT-WRITE-GF-7.
+       RELAT-DELETE-GF-7.
+           PERFORM  DE-LETE.
+       RELAT-WRITE-GF-7.
+           MOVE "RELAT-TEST-GF-7" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RELAT-INIT-GF-8.
+           MOVE    "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE     29   TO N-33.
+       RELAT-TEST-GF-8.
+           IF       2 LESS N-33
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    RELAT-WRITE-GF-8.
+       RELAT-DELETE-GF-8.
+           PERFORM  DE-LETE.
+       RELAT-WRITE-GF-8.
+           MOVE "RELAT-TEST-GF-8" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-9.
+           MOVE    "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE     29   TO N-33.
+       RELAT-TEST-GF-9.
+           IF      N-33 >= 2
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-9.
+       RELAT-DELETE-GF-9.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-9.
+           MOVE  "RELAT-TEST-GF-9" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-10.
+           MOVE    "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+       RELAT-TEST-GF-10.
+           IF      DATA-5 IS GREATER THAN OR EQUAL TO 4
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-10.
+       RELAT-DELETE-GF-10.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-10.
+           MOVE   "RELAT-TEST-GF-10" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-11.
+           MOVE    "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE    "X"    TO A-37.
+       RELAT-TEST-GF-11.
+           IF      A-37 GREATER OR EQUAL "A"
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-11.
+       RELAT-DELETE-GF-11.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-11.
+           MOVE   "RELAT-TEST-GF-11" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-12.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE    29    TO N-33.
+       RELAT-TEST-GF-12.
+           IF      N-33 GREATER THAN OR EQUAL 2
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-12.
+       RELAT-DELETE-GF-12.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-12.
+           MOVE  "RELAT-TEST-GF-12" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-13.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+       RELAT-TEST-GF-13.
+           IF      DATA-99999 GREATER THAN OR EQUAL TO +99999
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-13.
+       RELAT-DELETE-GF-13.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-13.
+           MOVE   "RELAT-TEST-GF-13" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-14.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE   "X"  TO A-37.
+       RELAT-TEST-GF-14.
+           IF      A-37 IS GREATER OR EQUAL "A"
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-14.
+       RELAT-DELETE-GF-14.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-14.
+           MOVE   "RELAT-TEST-GF-14" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-15.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE   "A"  TO A-2.
+           MOVE   "X"  TO A-37.
+       RELAT-TEST-GF-15.
+           IF      A-37 IS GREATER THAN OR EQUAL A-2
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-15.
+       RELAT-DELETE-GF-15.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-15.
+           MOVE   "RELAT-TEST-GF-15" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-16.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+       RELAT-TEST-GF-16.
+           IF      DATA-Z  IS >= "Y"
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-16.
+       RELAT-DELETE-GF-16.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-16.
+           MOVE  "RELAT-TEST-GF-16" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-17.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE    29 TO N-33.
+       RELAT-TEST-GF-17.
+           IF      2 <= N-33
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-17.
+       RELAT-DELETE-GF-17.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-17.
+           MOVE  "RELAT-TEST-GF-17" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-18.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+       RELAT-TEST-GF-18.
+           IF      DATA-4 IS LESS THAN OR EQUAL TO 5
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-18.
+       RELAT-DELETE-GF-18.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-18.
+           MOVE   "RELAT-TEST-GF-18" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-19.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE   "X" TO A-37.
+       RELAT-TEST-GF-19.
+           IF     "A" LESS OR EQUAL A-37
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-19.
+       RELAT-DELETE-GF-19.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-19.
+           MOVE   "RELAT-TEST-GF-19" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-20.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE    29 TO N-33.
+       RELAT-TEST-GF-20.
+           IF      2 LESS THAN OR EQUAL N-33
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-20.
+       RELAT-DELETE-GF-20.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-20.
+           MOVE  "RELAT-TEST-GF-20" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-21.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+       RELAT-TEST-GF-21.
+           IF      DATA-99999 LESS THAN OR EQUAL TO +99999
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-21.
+       RELAT-DELETE-GF-21.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-21.
+           MOVE   "RELAT-TEST-GF-21" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-22.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE   "X" TO A-37.
+       RELAT-TEST-GF-22.
+           IF     "A" IS LESS OR EQUAL A-37
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-22.
+       RELAT-DELETE-GF-22.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-22.
+           MOVE   "RELAT-TEST-GF-22" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-23.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+           MOVE   "A" TO A-2.
+           MOVE   "X" TO A-37.
+       RELAT-TEST-GF-23.
+           IF      A-2 IS LESS THAN OR EQUAL A-37
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-23.
+       RELAT-DELETE-GF-23.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-23.
+           MOVE   "RELAT-TEST-GF-23" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       RELAT-INIT-GF-24.
+           MOVE   "V1-54 6.3.1.1"     TO ANSI-REFERENCE.
+       RELAT-TEST-GF-24.
+           IF     DATA-Y IS <= "Z"
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   RELAT-WRITE-GF-24.
+       RELAT-DELETE-GF-24.
+           PERFORM DE-LETE.
+       RELAT-WRITE-GF-24.
+           MOVE   "RELAT-TEST-GF-24" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-GF-1.
+           PERFORM END-ROUTINE.
+           MOVE   "CLASS ---" TO FEATURE.
+           MOVE   "V1-56 6.3.1.2"     TO ANSI-REFERENCE.
+           PERFORM PRINT-DETAIL.
+           MOVE  ZERO TO N-31.
+       CLASS-TEST-GF-1.
+           IF     X-32 NUMERIC
+                  PERFORM PASS
+                  GO TO CLASS-WRITE-GF-1.
+           PERFORM FAIL.
+           GO TO  CLASS-WRITE-GF-1.
+       CLASS-DELETE-GF-1.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-1.
+           MOVE  "  NUMERIC           " TO FEATURE.
+           MOVE  "CLASS-TEST-GF-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-2.
+           MOVE   "V1-56 6.3.1.2"     TO ANSI-REFERENCE.
+           MOVE   "X" TO A-37.
+       CLASS-TEST-GF-2.
+           IF X-38 NOT NUMERIC
+                   PERFORM PASS
+                   GO TO CLASS-WRITE-GF-2.
+           PERFORM FAIL.
+           GO TO  CLASS-WRITE-GF-2.
+       CLASS-DELETE-GF-2.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-2.
+           MOVE  "  NOT NUMERIC       " TO FEATURE.
+           MOVE   "CLASS-TEST-GF-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-3.
+           MOVE   "V1-56 6.3.1.2"     TO ANSI-REFERENCE.
+           MOVE   "X" TO A-37.
+       CLASS-TEST-GF-3.
+           IF      X-38 IS NOT NUMERIC
+                   PERFORM PASS
+                   GO TO CLASS-WRITE-GF-3.
+           PERFORM FAIL.
+           GO TO  CLASS-WRITE-GF-3.
+       CLASS-DELETE-GF-3.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-3.
+           MOVE   "  NOT NUMERIC       " TO FEATURE.
+           MOVE   "CLASS-TEST-GF-3" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-4.
+           MOVE   "V1-56 6.3.1.2"     TO ANSI-REFERENCE.
+           MOVE  -1 TO DUMMY-DS-00001.
+       CLASS-TEST-GF-4.
+           IF DUMMY-DS-00001 IS NUMERIC
+                    PERFORM PASS
+                    GO TO CLASS-WRITE-GF-4.
+           PERFORM  FAIL.
+           GO TO CLASS-WRITE-GF-4.
+       CLASS-DELETE-GF-4.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-4.
+           MOVE "CLASS-TEST-GF-4" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       CLASS-INIT-GF-5.
+           MOVE "  NUMERIC           " TO FEATURE.
+           MOVE   "V1-56 6.3.1.2"     TO ANSI-REFERENCE.
+           MOVE   "111111111111111111" TO ONES-XN-00018.
+       CLASS-TEST-GF-5.
+           IF ONES-XN-00018 IS NUMERIC
+               PERFORM PASS
+               GO TO CLASS-WRITE-GF-5.
+           MOVE ONES-XN-00018 TO COMPUTED-A.
+           MOVE "NUMERIC EXPECTED" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO CLASS-WRITE-GF-5.
+       CLASS-DELETE-GF-5.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-5.
+           MOVE "CLASS-TEST-GF-5 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-6.
+           MOVE   "V1-56 6.3.1.2"     TO ANSI-REFERENCE.
+           MOVE   +022.00             TO A02TWOS-DS-03V02.
+       CLASS-TEST-GF-6.
+           IF A02TWOS-DS-03V02 IS NUMERIC
+               PERFORM PASS
+               GO TO CLASS-WRITE-GF-6.
+           MOVE A02TWOS-DS-03V02 TO COMPUTED-N.
+           MOVE "NUMERIC EXPECTED" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO CLASS-WRITE-GF-6.
+       CLASS-DELETE-GF-6.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-6.
+           MOVE "CLASS-TEST-GF-6 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-7.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE   "00ABCDEFGHI  4321 " TO XDATA-XN-00018.
+       CLASS-TEST-GF-7.
+           IF XDATA-XN-00018 IS NUMERIC
+               MOVE XDATA-XN-00018 TO COMPUTED-A
+               MOVE "ALPHABETIC EXPECTED" TO CORRECT-A
+               PERFORM FAIL
+               GO TO CLASS-WRITE-GF-7.
+           PERFORM PASS.
+           GO TO CLASS-WRITE-GF-7.
+       CLASS-DELETE-GF-7.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-7.
+           MOVE "CLASS-TEST-GF-7 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-8.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE   "00ABCDEFGHI  4321 " TO XDATA-XN-00018.
+       CLASS-TEST-GF-8.
+           IF XDATA-DS-18V00-S IS NUMERIC
+               MOVE XDATA-DS-18V00-S TO COMPUTED-A
+               MOVE "ALPHABETIC EXPECTED" TO CORRECT-A
+               PERFORM FAIL
+               GO TO CLASS-WRITE-GF-8.
+           PERFORM PASS.
+           GO TO CLASS-WRITE-GF-8.
+       CLASS-DELETE-GF-8.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-8.
+           MOVE "CLASS-TEST-GF-8 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-9.
+           MOVE "  NOT NUMERIC       " TO FEATURE.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE SPACE TO CORRECT-A.
+       CLASS-TEST-GF-9.
+           IF CORRECT-A NOT NUMERIC
+               PERFORM PASS
+               GO TO CLASS-WRITE-GF-9.
+           MOVE CORRECT-A TO COMPUTED-A.
+           MOVE "ALPHABETIC EXPECTED" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO CLASS-WRITE-GF-9.
+       CLASS-DELETE-GF-9.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-9.
+           MOVE "CLASS-TEST-GF-9 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-10.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE   "00ABCDEFGHI  4321 " TO XDATA-XN-00018.
+       CLASS-TEST-GF-10.
+           IF  XDATA-DS-18V00-S NOT NUMERIC
+               PERFORM PASS
+               GO TO CLASS-WRITE-GF-10.
+           MOVE  XDATA-DS-18V00-S TO COMPUTED-A
+           MOVE  "NONNUMERIC EXPECTED" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO  CLASS-WRITE-GF-10.
+       CLASS-DELETE-GF-10.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-10.
+           MOVE "CLASS-TEST-GF-10" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-11.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE ZERO TO CORRECT-A.
+       CLASS-TEST-GF-11.
+           IF CORRECT-A IS NOT NUMERIC
+               MOVE CORRECT-A TO COMPUTED-A
+               MOVE "NUMERIC EXPECTED" TO CORRECT-A
+               PERFORM FAIL
+               GO TO CLASS-WRITE-GF-11.
+           PERFORM PASS.
+           MOVE SPACE TO CORRECT-A.
+           GO TO CLASS-WRITE-GF-11.
+       CLASS-DELETE-GF-11.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-11.
+           MOVE "CLASS-TEST-GF-11" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-12.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE    +990 TO A990-DS-0201P.
+       CLASS-TEST-GF-12.
+           IF A990-DS-0201P IS NOT NUMERIC
+               MOVE A990-DS-0201P TO CORRECT-N
+               MOVE "NUMERIC EXPECTED" TO COMPUTED-A
+               PERFORM FAIL
+               GO TO CLASS-WRITE-GF-12.
+           PERFORM PASS.
+           GO TO CLASS-WRITE-GF-12.
+       CLASS-DELETE-GF-12.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-12.
+           MOVE "CLASS-TEST-GF-12" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-13.
+           MOVE "  ALPHABETIC        " TO FEATURE.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE   "ABCDEFGHIJ"         TO YADATA-XN-00010.
+       CLASS-TEST-GF-13.
+           IF YADATA-XN-00010 IS ALPHABETIC
+               PERFORM PASS
+               GO TO CLASS-WRITE-GF-13.
+           MOVE YADATA-XN-00010 TO COMPUTED-A.
+           MOVE "ALPHABETIC EXPECTED" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO CLASS-WRITE-GF-13.
+       CLASS-DELETE-GF-13.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-13.
+           MOVE "CLASS-TEST-GF-13" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-14.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE  ZERO TO CORRECT-A.
+       CLASS-TEST-GF-14.
+           IF CORRECT-A ALPHABETIC
+               MOVE CORRECT-A TO COMPUTED-A
+               MOVE "NUMERIC EXPECTED"    TO CORRECT-A
+               PERFORM FAIL
+               GO TO CLASS-WRITE-GF-14.
+           PERFORM PASS.
+           MOVE SPACE TO CORRECT-A
+           GO TO CLASS-WRITE-GF-14.
+       CLASS-DELETE-GF-14.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-14.
+           MOVE "CLASS-TEST-GF-14" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-15.
+           MOVE "  NOT ALPHABETIC    " TO FEATURE.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE   "00ABCDEFGHI  4321 " TO XDATA-XN-00018.
+       CLASS-TEST-GF-15.
+           IF XDATA-XN-00018 IS NOT ALPHABETIC
+               PERFORM PASS
+               GO TO CLASS-WRITE-GF-15.
+           MOVE XDATA-XN-00018 TO COMPUTED-A.
+           MOVE "NUMERIC EXPECTED" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO CLASS-WRITE-GF-15.
+       CLASS-DELETE-GF-15.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-15.
+           MOVE "CLASS-TEST-GF-15" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-16.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE   "ABCDEFGHIJ"         TO YADATA-XN-00010.
+       CLASS-TEST-GF-16.
+           IF YADATA-XN-00010 IS NOT ALPHABETIC
+               MOVE YADATA-XN-00010 TO COMPUTED-A
+               MOVE "ALPHABETIC EXPECTED" TO CORRECT-A
+               PERFORM FAIL
+               GO TO CLASS-WRITE-GF-16.
+           PERFORM PASS.
+           GO TO CLASS-WRITE-GF-16.
+       CLASS-DELETE-GF-16.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-16.
+           MOVE "CLASS-TEST-GF-16" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> CLASS-TEST-17.
+      *>     THIS TEST WAS DELETED BY THE FCCTS SINCE IT DID NOT
+      *>     APPLY TO THE REVISED FEDERAL STANDARD - FIPS PUB 21-1.
+       CLASS-INIT-GF-17.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE    0 TO NUMERIC-1.
+           MOVE ZERO TO NUMERIC-3.
+           MOVE    1 TO NUMERIC-5.
+           MOVE  "7" TO NUMERIC-7.
+           MOVE    8 TO NUMERIC-8.
+       CLASS-TEST-GF-17.
+           IF NUMERIC-GRP-TEST NUMERIC
+               PERFORM PASS
+               GO TO CLASS-WRITE-GF-17.
+           MOVE "NUMERIC EXPECTED " TO CORRECT-A.
+           MOVE "SEE PROGRAM FOR RESULTS    " TO RE-MARK.
+           PERFORM FAIL.
+           GO TO CLASS-WRITE-GF-17.
+       CLASS-DELETE-GF-17.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-17.
+           MOVE "CLASS-TEST-GF-17" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-18.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE ZERO TO NUMERIC-3.
+           MOVE    1 TO NUMERIC-5.
+       CLASS-TEST-GF-18.
+           IF NUMERIC-2 NUMERIC
+               PERFORM PASS
+               GO TO CLASS-WRITE-GF-18.
+           MOVE "NUMERIC EXPECTED " TO CORRECT-A.
+           MOVE "SEE PROGRAM FOR RESULTS  " TO RE-MARK.
+           PERFORM FAIL.
+           GO TO CLASS-WRITE-GF-18.
+       CLASS-DELETE-GF-18.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-18.
+           MOVE "CLASS-TEST-GF-18" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-19.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE    1 TO NUMERIC-5.
+       CLASS-TEST-GF-19.
+           IF NUMERIC-4 NUMERIC
+               PERFORM PASS
+               GO TO CLASS-WRITE-GF-19.
+           MOVE "NUMERIC EXPECTED  " TO CORRECT-A.
+           MOVE "SEE PROGRAM FOR RESULTS " TO RE-MARK.
+           PERFORM FAIL.
+           GO TO CLASS-WRITE-GF-19.
+       CLASS-DELETE-GF-19.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-19.
+           MOVE "CLASS-TEST-GF-19" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CLASS-INIT-GF-20.
+           MOVE   "V1-56 6.3.1.2"      TO ANSI-REFERENCE.
+           MOVE  "7" TO NUMERIC-7.
+           MOVE    8 TO NUMERIC-8.
+       CLASS-TEST-GF-20.
+           IF NUMERIC-6 NUMERIC
+               PERFORM PASS
+               GO TO CLASS-WRITE-GF-20.
+           MOVE "NUMERIC EXPECTED " TO CORRECT-A.
+           MOVE "SEE PROGRAM FOR RESULTS " TO RE-MARK.
+           PERFORM FAIL.
+           GO TO CLASS-WRITE-GF-20.
+       CLASS-DELETE-GF-20.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-20.
+           MOVE "CLASS-TEST-GF-20" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> CLASS-TEST-22.
+      *>     THIS TEST WAS DELETED BY THE FCCTS SINCE IT DID NOT
+      *>     APPLY TO THE REVISED FEDERAL STANDARD - FIPS PUB 21-1.
+      *> 
+      *> 
+       CLASS-INIT-35.
+           MOVE   "V1-56 6.3.1.2(3,4)" TO ANSI-REFERENCE.
+           MOVE "  ALPHABETIC-UPPER  " TO FEATURE.
+           MOVE " UPPERCASE CHARS"     TO ALPHA-UPPER.
+       CLASS-TEST-GF-35.
+           IF      ALPHA-UPPER ALPHABETIC-UPPER
+                   PERFORM PASS
+                   GO TO   CLASS-WRITE-GF-35.
+           MOVE   "SEE PROGRAM FOR RESULTS " TO CORRECT-A.
+           MOVE   "UPPERCASE CHARS " TO COMPUTED-A.
+           MOVE   "UPPERCASE CHARS NOT ACCEPTED AS ALPHABETIC-UPPER"
+                TO RE-MARK.
+           PERFORM FAIL.
+           GO TO   CLASS-WRITE-GF-35.
+       CLASS-DELETE-GF-35.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-35.
+           MOVE   "CLASS-TEST-GF-35" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+      *> 
+      *> 
+       CLASS-INIT-36.
+           MOVE "  ALPHABETIC-LOWER  " TO FEATURE.
+           MOVE " lowercase chars"     TO ALPHA-LOWER.
+           MOVE   "V1-56 6.3.1.2(3,4)" TO ANSI-REFERENCE.
+       CLASS-TEST-GF-36.
+           IF      ALPHA-LOWER ALPHABETIC-LOWER
+                   PERFORM PASS
+                   GO TO   CLASS-WRITE-GF-36.
+           MOVE   "SEE PROGRAM"              TO CORRECT-A.
+           MOVE   "lowercase chars"          TO COMPUTED-A.
+           MOVE   "LOWERCASE CHARS NOT ACCEPTED AS ALPHABETIC-LOWER"
+                TO RE-MARK.
+           PERFORM FAIL.
+           GO TO   CLASS-WRITE-GF-36.
+       CLASS-DELETE-GF-36.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-36.
+           MOVE   "CLASS-TEST-GF-36" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-37.
+           MOVE   "V1-56 6.3.1.2(2)"     TO ANSI-REFERENCE.
+           MOVE   "UPPER & LOWER CASE  " TO FEATURE.
+           move   "AbCdEfGhIj"           TO YADATA-XN-00010-U-AND-L.
+       CLASS-TEST-GF-37.
+           IF      YADATA-XN-00010-U-AND-L IS ALPHABETIC
+                   PERFORM PASS
+                   GO TO   CLASS-WRITE-GF-37.
+           MOVE    YADATA-XN-00010-U-AND-L TO COMPUTED-A.
+           MOVE    "ALPHABETIC EXPECTED" TO CORRECT-A.
+           MOVE   "UPPER & LOWER CASE NOT ACCEPTED AS ALPHABETIC"
+                TO RE-MARK.
+           PERFORM FAIL.
+           GO TO   CLASS-WRITE-GF-37.
+       CLASS-DELETE-GF-37.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-37.
+           MOVE   "CLASS-TEST-GF-37" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-38.
+           MOVE   "V1-56 6.3.1.2(2)"     TO ANSI-REFERENCE.
+           move   "AbCdEfGhIj"           TO YADATA-XN-00010-U-AND-L.
+       CLASS-TEST-GF-38.
+           IF      YADATA-XN-00010-U-AND-L IS NOT ALPHABETIC
+                   MOVE    YADATA-XN-00010-U-AND-L TO COMPUTED-A
+                   MOVE   "ALPHABETIC EXPECTED" TO CORRECT-A
+                   MOVE  "UPPER & LOWER CASE NOT ACCEPTED AS ALPHABETIC"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   GO TO   CLASS-WRITE-GF-38.
+           PERFORM PASS.
+           GO TO   CLASS-WRITE-GF-38.
+       CLASS-DELETE-GF-38.
+           PERFORM DE-LETE.
+       CLASS-WRITE-GF-38.
+           MOVE   "CLASS-TEST-GF-38" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-39.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "NEW CLASS TESTS"  TO FEATURE.
+           MOVE   "CLASS-TEST-GF-39" TO PAR-NAME.
+           MOVE   "A" TO WS-A.
+           GO TO   CLASS-TEST-GF-39.
+       CLASS-DELETE-GF-39.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-40.
+       CLASS-TEST-GF-39.
+           IF      WS-A ORDINAL-A-ONLY
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "LETTER 'A' SHOULD BE ORDINAL-A-ONLY"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-40.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-40" TO PAR-NAME.
+           MOVE   "Z" TO WS-A.
+           GO TO   CLASS-TEST-GF-40.
+       CLASS-DELETE-GF-40.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-41.
+       CLASS-TEST-GF-40.
+           IF      WS-A NOT ORDINAL-A-ONLY
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "LETTER 'Z' SHOULD NOT BE ORDINAL-A-ONLY"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-41.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-41" TO PAR-NAME.
+           MOVE   "ADCBA" TO WS-B.
+           GO TO   CLASS-TEST-GF-41.
+       CLASS-DELETE-GF-41.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-42.
+       CLASS-TEST-GF-41.
+           IF      WS-B ORDINAL-A-THROUGH-D
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'ADCBA' SHOULD BE ORDINAL-A-THROUGH-D"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-42.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-42" TO PAR-NAME.
+           MOVE   "VWXYZ" TO WS-B.
+           GO TO   CLASS-TEST-GF-42.
+       CLASS-DELETE-GF-42.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-43.
+       CLASS-TEST-GF-42.
+           IF      WS-B NOT ORDINAL-A-THROUGH-D
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'VWXYZ' SHOULD NOT BE ORDINAL-A-THROUGH-D"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-43.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-43" TO PAR-NAME.
+           MOVE   "ADCBA" TO WS-B.
+           GO TO   CLASS-TEST-GF-43.
+       CLASS-DELETE-GF-43.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-44.
+       CLASS-TEST-GF-43.
+           IF      WS-B ORDINAL-D-THRU-A
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'ADCBA' SHOULD BE ORDINAL-D-THRU-A"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-44.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-44" TO PAR-NAME.
+           MOVE   "VWXYZ" TO WS-B.
+           GO TO   CLASS-TEST-GF-44.
+       CLASS-DELETE-GF-44.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-45.
+       CLASS-TEST-GF-44.
+           IF      WS-B NOT ORDINAL-D-THRU-A
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'VWXYZ' SHOULD NOT BE ORDINAL-D-THRU-A"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-45.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-45" TO PAR-NAME.
+           MOVE   "A" TO WS-A.
+           GO TO   CLASS-TEST-GF-45.
+       CLASS-DELETE-GF-45.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-46.
+       CLASS-TEST-GF-45.
+           IF      WS-A ACTUAL-A-ONLY
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'A' SHOULD BE ACTUAL-A-ONLY"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-46.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-46" TO PAR-NAME.
+           GO TO   CLASS-TEST-GF-46.
+       CLASS-DELETE-GF-46.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-47.
+       CLASS-TEST-GF-46.
+           IF      DATA-Z NOT ACTUAL-A-ONLY
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'Z' SHOULD NOT BE ACTUAL-A-ONLY"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-47.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-47" TO PAR-NAME.
+           MOVE   "ADCBA" TO WS-B.
+           GO TO   CLASS-TEST-GF-47.
+       CLASS-DELETE-GF-47.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-48.
+       CLASS-TEST-GF-47.
+           IF      WS-B ACTUAL-A-THRU-D
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'ADCBA' SHOULD BE ACTUAL-A-THRU-D"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-48.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-48" TO PAR-NAME.
+           GO TO   CLASS-TEST-GF-48.
+       CLASS-DELETE-GF-48.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-49.
+       CLASS-TEST-GF-48.
+           IF      DATA-VWXYZ NOT ACTUAL-A-THRU-D
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'VWXYZ' SHOULD NOT BE ACTUAL-A-THRU-D"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-49.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-49" TO PAR-NAME.
+           GO TO   CLASS-TEST-GF-49.
+       CLASS-DELETE-GF-49.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-50.
+       CLASS-TEST-GF-49.
+           IF      DATA-ADCBA ACTUAL-D-THROUGH-A
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'ADCBA' SHOULD BE ACTUAL-D-THROUGH-A"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-50.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-50" TO PAR-NAME.
+           MOVE   "VWXYZ" TO WS-B.
+           GO TO   CLASS-TEST-GF-50.
+       CLASS-DELETE-GF-50.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-51.
+       CLASS-TEST-GF-50.
+           IF      WS-B NOT ACTUAL-D-THROUGH-A
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'VWXYZ' SHOULD NOT BE ACTUAL-D-THROUGH-A"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-51.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-51" TO PAR-NAME.
+           MOVE   "ADCBA" TO WS-B.
+           GO TO   CLASS-TEST-GF-51.
+       CLASS-DELETE-GF-51.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CLASS-INIT-52.
+       CLASS-TEST-GF-51.
+           IF      WS-B    ACTUAL-ABCD
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'ADCBA' SHOULD BE ACTUAL-ABCD"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CLASS-INIT-52.
+           MOVE   "V1-17 4.5.4 (GR10) & VI-57 6.3.1.2"
+                TO ANSI-REFERENCE.
+           MOVE   "CLASS-TEST-GF-52" TO PAR-NAME.
+           GO TO   CLASS-TEST-GF-52.
+       CLASS-DELETE-GF-52.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CCVS-EXIT.
+       CLASS-TEST-GF-52.
+           IF      DATA-VWXYZ NOT ACTUAL-ABCD
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "'VWXYZ' SHOULD NOT BE ACTUAL-ABCD"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC174A

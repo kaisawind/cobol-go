@@ -1,0 +1,50 @@
+      *> HEADER,COBOL,IC101A,SUBRTN,IC102A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC102A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>         THIS PROGRAM TESTS THE USE OF THE LINKAGE SECTION
+      *>     AND USING PHRASE IN THE PROCEDURE DIVISION HEADER.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  DN2 PICTURE S9  VALUE ZERO.
+       LINKAGE SECTION.
+       77  DN1 PICTURE S9.
+       PROCEDURE DIVISION USING DN1.
+       SECT-IC102-0001 SECTION.
+       CALL-TEST-001.
+           ADD 1 TO DN2.
+           MOVE DN2 TO DN1.
+       CALL-EXIT-001.
+           EXIT PROGRAM.
+      *> END-OF,IC102A

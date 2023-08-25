@@ -1,0 +1,2634 @@
+      *> HEADER,COBOL,NC126A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC126A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC126A TESTS THE USE OF LEVEL NUMBERS 01 THROUGH 49
+      *>     INCLUSIVE WITH A VARIETY OF PICTURE CLAUSES AND GROUP AND
+      *>     ELEMENTARY COMPARISONS.
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  TEST-GROUP-1.
+           02 GP-1  PICTURE ZZZ999.
+           02 GPLEVEL-1.
+            03 GP-2  PICTURE 9(9).99.
+            03 GPLEVEL-2.
+             04 GP-3 PICTURE  0009(9).
+             04 GPLEVEL-3.
+              05 GP-4 PICTURE  ZBZBZ9.
+              05 GPLEVEL-4.
+                 06  GP-5  PICTURE  $$$,$99.99.
+               06 GPLEVEL-5.
+                07 GP-6 PICTURE  ******99.
+                07 GPLEVEL-6.
+                 08 GP-7 PICTURE +999,999.
+                 08 GPLEVEL-7.
+                  09 GP-8 PICTURE X(14).
+                  09 GPLEVEL-8.
+                   10 GP-9 PICTURE XBXBXBX.
+                   10 GPLEVEL-9.
+                    11 GP-10 PICTURE 9090900.
+                    11 GPLEVEL-10.
+                     12 GP-11  PICTURE $999,999.00.
+                     12 GPLEVEL-11.
+                      13 GP-12 PICTURE ZZZ.9.
+                      13 GPLEVEL-12.
+                       14 GP-13 PICTURE  ZZ9B900.
+                       14 GPLEVEL-13.
+                        15 GP-14  PICTURE  XXXX.
+                        15 GPLEVEL-14.
+           16 GP-15 PICTURE  9(10).
+           16 GPLEVEL-15.
+            17 GP-16 PICTURE  Z(11).
+            17 GPLEVEL-16.
+             18 GP-17  PICTURE  99BB909.
+             18 GPLEVEL-17.
+              19 GP-18  PICTURE -*B*99.
+              19 GPLEVEL-18.
+               20 GP-19 PICTURE  0009999.
+               20 GPLEVEL-19.
+                21 GP-20 PICTURE  999DB.
+                21 GPLEVEL-20.
+                 22 GP-21 PICTURE  ABABABA.
+                 22 GPLEVEL-21.
+                  23 GP-22 PICTURE *999999.
+                  23 GPLEVEL-22.
+                   24 GP-23 PICTURE XXXXXA.
+                   24 GPLEVEL-23.
+                    25 GP-24  PICTURE  $$$,$$$.99.
+                    25 GPLEVEL-24.
+                     26 GP-25  PICTURE  9BB9BBB9BBB.
+                     26 GPLEVEL-25.
+                      27 GP-26 PICTURE  9990009.
+                      27 GPLEVEL-26.
+                       28 GP-27 PICTURE  9,999,999.
+                       28 GPLEVEL-27.
+                        29 GP-28 PICTURE   9(7),9.
+                        29 GPLEVEL-28.
+                         30 GP-29  PICTURE  $***.99.
+                         30 GPLEVEL-29.
+           31 GP-30  PICTURE  X(15).
+           31 GPLEVEL-30.
+            32 GP-31  PICTURE  9(10).
+            32 GPLEVEL-31.
+             33 GP-32 PICTURE  *99.
+             33 GPLEVEL-32.
+              34 GP-33 PICTURE  ZZZ9.
+              34 GPLEVEL-33.
+               35 GP-34  PICTURE BB9BB9.
+               35 GPLEVEL-34.
+                36 GP-35 PICTURE  $99,999.99.
+                36 GPLEVEL-35.
+                 37 GP-36  PICTURE  090909.
+                 37 GPLEVEL-36.
+                  38 GP-37  PICTURE  ZZZZ.
+                  38 GPLEVEL-37.
+                   39 GP-38  PICTURE  +99.
+                   39 GPLEVEL-38.
+                    40 GP-39  PICTURE -99.
+                    40 GPLEVEL-39.
+                     41 GP-40  PICTURE  99CR.
+                     41 GPLEVEL-40.
+                      42 GP-41  PICTURE  99DB.
+                      42 GPLEVEL-41.
+                       43 GP-42  PICTURE  ****.
+                       43 GPLEVEL-42.
+                        44 GP-43  PICTURE  AAA.
+                        44 GPLEVEL-43.
+                         45 GP-44  PICTURE XXX.
+                         45 GPLEVEL-44.
+           46 GP-45  PICTURE  *9999.
+           46 GPLEVEL-45.
+            47 GP-46  PICTURE  9(10).99.
+            47 GPLEVEL-46.
+             48 GP-47           OCCURS 2 TIMES  PICTURE 9.
+             48 GPLEVEL-47.
+              49 GP-48          OCCURS 2 TIMES  PICTURE X.
+       01  TABLE-GROUP.
+           02  TB-1  PICTURE XX.
+           02  TBGRP-1.
+            03 TB-2  PICTURE XX.
+            03 TBGRP-2.
+             04 TB-3 PICTURE XX.
+             04 TBGRP-3.
+              05 TB-4  PICTURE XX.
+              05 TBGRP-4.
+               06 TB-5  PICTURE XX.
+               06 TBGRP-5.
+                07 TB-6  PICTURE XX.
+                07 TBGRP-6.
+                 08 TB-7  PICTURE XX.
+                 08 TBGRP-7.
+                  09 TB-8  PICTURE XX.
+                  09 TBGRP-8.
+                   10 TB-9 PICTURE XX.
+                   10 TBGRP-9.
+                    11 TB-10 PICTURE XX.
+                    11 TBGRP-10.
+                     12 TB-11 PICTURE XX.
+                     12 TBGRP-11.
+                      13 TB-12  PICTURE XX.
+                      13 TBGRP-12.
+                      14 TB-13  PICTURE XX.
+                      14 TBGRP-13.
+                       15 TB-14  PICTURE XX.
+                       15 TBGRP-14.
+           16 TB-15 PICTURE XX.
+           16 TBGRP-15.
+            17 TB-16 PICTURE XX.
+            17 TBGRP-16.
+             18 TB-17 PICTURE XX.
+             18 TBGRP-17.
+              19 TB-18 PICTURE XX.
+              19 TBGRP-18.
+               20 TB-19 PICTURE XX.
+               20 TBGRP-19.
+                21 TB-20 PICTURE XX.
+                21 TBGRP-20.
+                 22 TB-21 PICTURE XX.
+                 22 TBGRP-21.
+                  23 TB-22 PICTURE XX.
+                  23 TBGRP-22.
+                   24 TB-23  PICTURE XX.
+                   24 TBGRP-23.
+                    25 TB-24 PICTURE XX.
+                    25 TBGRP-24.
+                     26 TB-25 PICTURE XX.
+                     26 TBGRP-25.
+                      27 TB-26 PICTURE XX.
+                      27 TBGRP-26.
+                       28 TB-27 PICTURE XX.
+                       28 TBGRP-27.
+                        29 TB-28 PICTURE XX.
+                        29 TBGRP-28.
+                         30 TB-29 PICTURE XX.
+                         30 TBGRP-29.
+           31 TB-30  PICTURE XX.
+           31 TBGRP-30.
+            32 TB-31  PICTURE XX.
+            32 TBGRP-31.
+             33 TB-32  PICTURE XX.
+             33 TBGRP-32.
+              34 TB-33  PICTURE XX.
+              34 TBGRP-33.
+               35 TB-34  PICTURE XX.
+               35 TBGRP-34.
+                36 TB-35 PICTURE XX.
+                36 TBGRP-35.
+                 37 TB-36  PICTURE XX.
+                 37 TBGRP-36.
+                  38 TB-37  PICTURE XX.
+                  38 TBGRP-37.
+                   39 TB-38  PICTURE XX.
+                   39 TBGRP-38.
+                    40 TB-39  PICTURE XX.
+                    40 TBGRP-39.
+                     41 TB-40  PICTURE XX.
+                     41 TBGRP-40.
+                      42 TB-41  PICTURE XX.
+                      42 TBGRP-41.
+                       43 TB-42  PICTURE XX.
+                       43 TBGRP-42.
+                        44 TB-43  PICTURE XX.
+                        44 TBGRP-43.
+                         45 TB-44  PICTURE XX.
+                         45 TBGRP-44.
+           46 TB-45  PICTURE XX.
+           46 TBGRP-45.
+            47 TB-46  PICTURE XX.
+            47 TBGRP-46.
+             48 TB-47  PICTURE XX.
+             48 TBGRP-47.
+              49 TB-48  PICTURE XX.
+       01  LITERAL-98.
+           02 A-PART-98  PICTURE X(20) VALUE "ABCDEFGHIJKLMNOPQRST".
+           02 B-PART-98  PICTURE X(20) VALUE "01234567899876543210".
+           02 C-PART-98  PICTURE X(20) VALUE "SUPERCALIFRAGILISTIC".
+           02 D-PART-98  PICTURE X(20) VALUE "THAT LITERAL WAS BAD".
+           02 E-PART-98  PICTURE X(16) VALUE "UP ON THE ROOFS".
+       01  BREAKDOWN-RECORD.
+           02 LENGTH-COUNTER  PICTURE 999 VALUE ZERO.
+           02 COMPUTED-BREAKDOWN.
+               03 CM-20       PICTURE X(20).
+               03 CM-40       PICTURE X(20).
+               03 CM-60       PICTURE X(20).
+               03 CM-80       PICTURE X(20).
+               03 CM-100      PICTURE X(20).
+               03 CM-120      PICTURE X(20).
+               03 CM-140      PICTURE X(20).
+               03 CM-160      PICTURE X(20).
+               03 CM-180      PICTURE X(20).
+               03 CM-200      PICTURE X(20).
+           02 CORRECT-BREAKDOWN.
+               03 CR-20       PICTURE X(20).
+               03 CR-40       PICTURE X(20).
+               03 CR-60       PICTURE X(20).
+               03 CR-80       PICTURE X(20).
+               03 CR-100      PICTURE X(20).
+               03 CR-120      PICTURE X(20).
+               03 CR-140      PICTURE X(20).
+               03 CR-160      PICTURE X(20).
+               03 CR-180      PICTURE X(20).
+               03 CR-200      PICTURE X(20).
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC126A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC126A-001 SECTION.
+       LEV-INIT-GF-1-1.
+           MOVE "VI-21 5.3.3 SR1" TO ANSI-REFERENCE.
+           MOVE "SPACE MOVED TO GRP"  TO FEATURE.
+           PERFORM PRINT-DETAIL.
+           MOVE "GROUP ITEM CHECK  " TO FEATURE.
+       LEV-TEST-GF-1-0.
+           MOVE SPACE  TO TABLE-GROUP.
+       LEV-TEST-GF-1-1.
+           IF TBGRP-1 EQUAL TO  SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-1.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  94     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-1.
+       LEV-DELETE-GF-1-1.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-1.
+           MOVE  "LEV-TEST-GF-1-1"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-2.
+           IF TBGRP-2 EQUAL TO  SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-2.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  92     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-2.
+       LEV-DELETE-GF-1-2.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-2.
+           MOVE  "LEV-TEST-GF-1-2"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-3.
+           IF TBGRP-3   EQUAL TO SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-3.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  90     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-3.
+       LEV-DELETE-GF-1-3.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-3.
+           MOVE  "LEV-TEST-GF-1-3"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-4.
+           IF TBGRP-4   EQUAL TO SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-4.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  88     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-4.
+       LEV-DELETE-GF-1-4.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-4.
+           MOVE  "LEV-TEST-GF-1-4"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-5.
+           IF TBGRP-5   EQUAL TO   SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-5.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  86     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-5.
+       LEV-DELETE-GF-1-5.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-5.
+           MOVE  "LEV-TEST-GF-1-5"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-6.
+           IF TBGRP-6   EQUAL TO   SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-6.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  84     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-6.
+       LEV-DELETE-GF-1-6.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-6.
+           MOVE  "LEV-TEST-GF-1-6"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-7.
+           IF TBGRP-7   EQUAL TO   SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-7.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  82     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-7.
+       LEV-DELETE-GF-1-7.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-7.
+           MOVE  "LEV-TEST-GF-1-7"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-8.
+           IF TBGRP-8   EQUAL TO   SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-8.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  80     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-8.
+       LEV-DELETE-GF-1-8.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-8.
+           MOVE  "LEV-TEST-GF-1-8"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-9.
+           IF TBGRP-9   EQUAL TO   SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-9.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  78     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-9.
+       LEV-DELETE-GF-1-9.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-9.
+           MOVE  "LEV-TEST-GF-1-9"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-10.
+           IF TBGRP-10 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-10.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  76     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-10.
+       LEV-DELETE-GF-1-10.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-10.
+           MOVE  "LEV-TEST-GF-1-10"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-11.
+           IF TBGRP-11 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-11.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  74     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-11.
+       LEV-DELETE-GF-1-11.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-11.
+           MOVE  "LEV-TEST-GF-1-11"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-12.
+           IF TBGRP-12 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-12.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  72     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-12.
+       LEV-DELETE-GF-1-12.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-12.
+           MOVE  "LEV-TEST-GF-1-12"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-13.
+           IF TBGRP-13 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-13.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  70     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-13.
+       LEV-DELETE-GF-1-13.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-13.
+           MOVE  "LEV-TEST-GF-1-13"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-14.
+           IF TBGRP-14 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-14.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  68     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-14.
+       LEV-DELETE-GF-1-14.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-14.
+           MOVE  "LEV-TEST-GF-1-14"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-15.
+           IF TBGRP-15 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-15.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  66     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-15.
+       LEV-DELETE-GF-1-15.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-15.
+           MOVE  "LEV-TEST-GF-1-15"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-16.
+           IF TBGRP-16 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-16.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  64     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-16.
+       LEV-DELETE-GF-1-16.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-16.
+           MOVE  "LEV-TEST-GF-1-16"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-17.
+           IF TBGRP-17 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-17.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  62     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-17.
+       LEV-DELETE-GF-1-17.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-17.
+           MOVE  "LEV-TEST-GF-1-17"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-18.
+           IF TBGRP-18 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-18.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  60     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-18.
+       LEV-DELETE-GF-1-18.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-18.
+           MOVE  "LEV-TEST-GF-1-18"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-19.
+           IF TBGRP-19 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-19.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  58     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-19.
+       LEV-DELETE-GF-1-19.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-19.
+           MOVE  "LEV-TEST-GF-1-19"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-20.
+           IF TBGRP-20 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-20.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  56     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-20.
+       LEV-DELETE-GF-1-20.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-20.
+           MOVE  "LEV-TEST-GF-1-20"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-21.
+           IF TBGRP-21 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-21.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  54     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-21.
+       LEV-DELETE-GF-1-21.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-21.
+           MOVE  "LEV-TEST-GF-1-21"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-22.
+           IF TBGRP-22 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-22.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  52     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-22.
+       LEV-DELETE-GF-1-22.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-22.
+           MOVE  "LEV-TEST-GF-1-22"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-23.
+           IF TBGRP-23 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-23.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  50     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-23.
+       LEV-DELETE-GF-1-23.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-23.
+           MOVE  "LEV-TEST-GF-1-23"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-24.
+           IF TBGRP-24 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-24.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  48     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-24.
+       LEV-DELETE-GF-1-24.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-24.
+           MOVE  "LEV-TEST-GF-1-24"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-25.
+           IF TBGRP-25 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-25.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  46     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-25.
+       LEV-DELETE-GF-1-25.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-25.
+           MOVE  "LEV-TEST-GF-1-25"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-26.
+           IF TBGRP-26 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-26.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  44     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-26.
+       LEV-DELETE-GF-1-26.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-26.
+           MOVE  "LEV-TEST-GF-1-26"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-27.
+           IF TBGRP-27 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-27.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  42     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-27.
+       LEV-DELETE-GF-1-27.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-27.
+           MOVE  "LEV-TEST-GF-1-27"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-28.
+           IF TBGRP-28 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-28.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  40     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-28.
+       LEV-DELETE-GF-1-28.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-28.
+           MOVE  "LEV-TEST-GF-1-28"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-29.
+           IF TBGRP-29 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-29.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  38     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-29.
+       LEV-DELETE-GF-1-29.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-29.
+           MOVE  "LEV-TEST-GF-1-29"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-30.
+           IF TBGRP-30 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-30.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  36     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-30.
+       LEV-DELETE-GF-1-30.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-30.
+           MOVE  "LEV-TEST-GF-1-30"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-31.
+           IF TBGRP-31 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-31.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  34     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-31.
+       LEV-DELETE-GF-1-31.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-31.
+           MOVE  "LEV-TEST-GF-1-31"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-32.
+           IF TBGRP-32 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-32.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  32     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-32.
+       LEV-DELETE-GF-1-32.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-32.
+           MOVE  "LEV-TEST-GF-1-32"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-33.
+           IF TBGRP-33 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-33.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  30     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-33.
+       LEV-DELETE-GF-1-33.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-33.
+           MOVE  "LEV-TEST-GF-1-33"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-34.
+           IF TBGRP-34 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-34.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  28     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-34.
+       LEV-DELETE-GF-1-34.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-34.
+           MOVE  "LEV-TEST-GF-1-34"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-35.
+           IF TBGRP-35 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-35.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  26     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-35.
+       LEV-DELETE-GF-1-35.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-35.
+           MOVE  "LEV-TEST-GF-1-35"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-36.
+           IF TBGRP-36 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-36.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  24     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-36.
+       LEV-DELETE-GF-1-36.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-36.
+           MOVE  "LEV-TEST-GF-1-36"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-37.
+           IF TBGRP-37 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-37.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  22     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-37.
+       LEV-DELETE-GF-1-37.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-37.
+           MOVE  "LEV-TEST-GF-1-37"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-38.
+           IF TBGRP-38 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-38.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  20     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-38.
+       LEV-DELETE-GF-1-38.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-38.
+           MOVE  "LEV-TEST-GF-1-38"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-39.
+           IF TBGRP-39 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-39.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  18     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-39.
+       LEV-DELETE-GF-1-39.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-39.
+           MOVE  "LEV-TEST-GF-1-39"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-40.
+           IF TBGRP-40 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-40.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  16     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-40.
+       LEV-DELETE-GF-1-40.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-40.
+           MOVE  "LEV-TEST-GF-1-40"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-41.
+           IF TBGRP-41 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-41.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  14     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-41.
+       LEV-DELETE-GF-1-41.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-41.
+           MOVE  "LEV-TEST-GF-1-41"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-42.
+           IF TBGRP-42 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-42.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  12     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-42.
+       LEV-DELETE-GF-1-42.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-42.
+           MOVE  "LEV-TEST-GF-1-42"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-43.
+           IF TBGRP-43 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-43.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE  10     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-43.
+       LEV-DELETE-GF-1-43.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-43.
+           MOVE  "LEV-TEST-GF-1-43"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-44.
+           IF TBGRP-44 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-44.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE   8     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-44.
+       LEV-DELETE-GF-1-44.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-44.
+           MOVE  "LEV-TEST-GF-1-44"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-45.
+           IF TBGRP-45 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-45.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE   6     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-45.
+       LEV-DELETE-GF-1-45.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-45.
+           MOVE  "LEV-TEST-GF-1-45"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-46.
+           IF TBGRP-46 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-46.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE   4     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-46.
+       LEV-DELETE-GF-1-46.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-46.
+           MOVE  "LEV-TEST-GF-1-46"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-1-47.
+           IF TBGRP-47 EQUAL TO    SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-1-47.
+           MOVE    TABLE-GROUP           TO COMPUTED-BREAKDOWN.
+           MOVE    SPACE                 TO CORRECT-BREAKDOWN.
+           MOVE   2     TO LENGTH-COUNTER.
+           GO   TO    LEV-WRITE-GF-1-47.
+       LEV-DELETE-GF-1-47.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-1-47.
+           MOVE  "LEV-TEST-GF-1-47"  TO PAR-NAME.
+           IF       LENGTH-COUNTER GREATER THAN ZERO
+                    PERFORM BREAKDOWN-PARA THRU BREAKDOWN-EXIT.
+           PERFORM PRINT-DETAIL.
+       LEV-INIT-GF-2-1.
+           MOVE "VI-21 5.3.3 SR1" TO ANSI-REFERENCE.
+           PERFORM END-ROUTINE.
+           MOVE SPACE TO PRINT-REC.
+           MOVE "ALPHA MOVED TO GROUP"  TO FEATURE.
+           PERFORM PRINT-DETAIL.
+           MOVE "ELEMENTRY ITEM CHK"  TO FEATURE.
+           MOVE "ABCDEFGHIJKLMNOPQRST" TO A-PART-98.
+           MOVE "01234567899876543210" TO B-PART-98.
+           MOVE "SUPERCALIFRAGILISTIC" TO C-PART-98.
+           MOVE "THAT LITERAL WAS BAD" TO D-PART-98.
+           MOVE "UP ON THE ROOFS"      TO E-PART-98.
+           MOVE LITERAL-98 TO TABLE-GROUP.
+       LEV-TEST-GF-2-1.
+           IF TB-1 EQUAL TO "AB"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-1.
+           PERFORM FAIL.
+           MOVE TB-1 TO COMPUTED-A.
+           MOVE "AB" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-1.
+       LEV-DELETE-GF-2-1.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-1.
+           MOVE  "LEV-TEST-GF-2-1"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-2.
+           IF TB-2 EQUAL TO "CD"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-2.
+           PERFORM FAIL.
+           MOVE TB-2 TO COMPUTED-A.
+           MOVE "CD" TO  CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-2.
+       LEV-DELETE-GF-2-2.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-2.
+           MOVE  "LEV-TEST-GF-2-2"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-3.
+           IF TB-3 EQUAL TO "EF"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-3.
+           PERFORM FAIL.
+           MOVE TB-3 TO COMPUTED-A.
+           MOVE "EF" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-3.
+       LEV-DELETE-GF-2-3.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-3.
+           MOVE  "LEV-TEST-GF-2-3"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-4.
+           IF TB-4 EQUAL TO "GH"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-4.
+           PERFORM FAIL.
+           MOVE TB-4 TO COMPUTED-A.
+           MOVE "GH" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-4.
+       LEV-DELETE-GF-2-4.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-4.
+           MOVE  "LEV-TEST-GF-2-4"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-5.
+           IF TB-5 EQUAL TO "IJ"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-5.
+           PERFORM FAIL.
+           MOVE TB-5 TO COMPUTED-A.
+           MOVE "IJ" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-5.
+       LEV-DELETE-GF-2-5.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-5.
+           MOVE  "LEV-TEST-GF-2-5"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-6.
+           IF TB-6 EQUAL TO "KL"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-6.
+           PERFORM FAIL.
+           MOVE TB-6 TO COMPUTED-A.
+           MOVE "KL" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-6.
+       LEV-DELETE-GF-2-6.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-6.
+           MOVE  "LEV-TEST-GF-2-6"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-7.
+           IF TB-7 EQUAL TO "MN"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-7.
+           PERFORM FAIL.
+           MOVE TB-7 TO COMPUTED-A.
+           MOVE "MN" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-7.
+       LEV-DELETE-GF-2-7.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-7.
+           MOVE  "LEV-TEST-GF-2-7"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-8.
+           IF TB-8 EQUAL TO "OP"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-8.
+           PERFORM FAIL.
+           MOVE TB-8 TO COMPUTED-A.
+           MOVE "OP" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-8.
+       LEV-DELETE-GF-2-8.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-8.
+           MOVE  "LEV-TEST-GF-2-8"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-9.
+           IF TB-9 EQUAL TO "QR"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-9.
+           PERFORM FAIL.
+           MOVE TB-9 TO COMPUTED-A.
+           MOVE "QR" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-9.
+       LEV-DELETE-GF-2-9.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-9.
+           MOVE  "LEV-TEST-GF-2-9"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-10.
+           IF TB-10 EQUAL TO "ST"
+                    PERFORM  PASS
+                    GO  TO   LEV-WRITE-GF-2-10.
+           PERFORM FAIL.
+           MOVE TB-10 TO COMPUTED-A.
+           MOVE "ST" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-10.
+       LEV-DELETE-GF-2-10.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-10.
+           MOVE  "LEV-TEST-GF-2-10"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-11.
+           IF TB-11 EQUAL TO "01"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-11.
+           PERFORM FAIL.
+           MOVE TB-11 TO COMPUTED-A.
+           MOVE "01" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-11.
+       LEV-DELETE-GF-2-11.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-11.
+           MOVE  "LEV-TEST-GF-2-11"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-12.
+           IF TB-12 EQUAL TO "23"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-12.
+           PERFORM FAIL.
+           MOVE TB-12 TO COMPUTED-A.
+           MOVE "23" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-12.
+       LEV-DELETE-GF-2-12.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-12.
+           MOVE  "LEV-TEST-GF-2-12"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-13.
+           IF TB-13 EQUAL TO "45"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-13.
+           PERFORM FAIL.
+           MOVE TB-13 TO COMPUTED-A.
+           MOVE "45" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-13.
+       LEV-DELETE-GF-2-13.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-13.
+           MOVE  "LEV-TEST-GF-2-13"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-14.
+           IF TB-14 EQUAL TO "67"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-14.
+           PERFORM FAIL.
+           MOVE TB-14 TO COMPUTED-A.
+           MOVE "67" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-14.
+       LEV-DELETE-GF-2-14.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-14.
+           MOVE  "LEV-TEST-GF-2-14"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-15.
+           IF TB-15 EQUAL TO "89"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-15.
+           PERFORM FAIL.
+           MOVE TB-15 TO COMPUTED-A.
+           MOVE "89" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-15.
+       LEV-DELETE-GF-2-15.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-15.
+           MOVE "LEV-TEST-GF-2-15" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-16.
+           IF TB-16 EQUAL TO "98"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-16.
+           PERFORM FAIL.
+           MOVE TB-16 TO COMPUTED-A.
+           MOVE "98" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-16.
+       LEV-DELETE-GF-2-16.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-16.
+           MOVE  "LEV-TEST-GF-2-16"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-17.
+           IF TB-17 EQUAL TO "76"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-17.
+           PERFORM FAIL.
+           MOVE TB-17 TO COMPUTED-A.
+           MOVE "76" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-17.
+       LEV-DELETE-GF-2-17.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-17.
+           MOVE  "LEV-TEST-GF-2-17"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-18.
+           IF TB-18 EQUAL TO "54"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-18.
+           PERFORM FAIL.
+           MOVE TB-18 TO COMPUTED-A.
+           MOVE "54" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-18.
+       LEV-DELETE-GF-2-18.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-18.
+           MOVE  "LEV-TEST-GF-2-18"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-19.
+           IF TB-19 EQUAL TO "32"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-19.
+           PERFORM FAIL.
+           MOVE TB-19 TO COMPUTED-A.
+           MOVE "32" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-19.
+       LEV-DELETE-GF-2-19.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-19.
+           MOVE  "LEV-TEST-GF-2-19"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-20.
+           IF TB-20 EQUAL TO "10"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-20.
+           PERFORM FAIL.
+           MOVE TB-20 TO COMPUTED-A.
+           MOVE "10" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-20.
+       LEV-DELETE-GF-2-20.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-20.
+           MOVE  "LEV-TEST-GF-2-20"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-21.
+           IF TB-21 EQUAL TO "SU"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-21.
+           PERFORM FAIL.
+           MOVE TB-21 TO COMPUTED-A.
+           MOVE "SU" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-21.
+       LEV-DELETE-GF-2-21.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-21.
+           MOVE  "LEV-TEST-GF-2-21"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-22.
+           IF TB-22 EQUAL TO "PE"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-22.
+           PERFORM FAIL.
+           MOVE TB-22 TO COMPUTED-A.
+           MOVE "PE" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-22.
+       LEV-DELETE-GF-2-22.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-22.
+           MOVE  "LEV-TEST-GF-2-22"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-23.
+           IF TB-23 EQUAL TO "RC"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-23.
+           PERFORM FAIL.
+           MOVE TB-23 TO COMPUTED-A.
+           MOVE "RC" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-23.
+       LEV-DELETE-GF-2-23.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-23.
+           MOVE  "LEV-TEST-GF-2-23"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-24.
+           IF TB-24 EQUAL TO "AL"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-24.
+           PERFORM FAIL.
+           MOVE TB-24 TO COMPUTED-A.
+           MOVE "AL" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-24.
+       LEV-DELETE-GF-2-24.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-24.
+           MOVE  "LEV-TEST-GF-2-24"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-25.
+           IF TB-25 EQUAL TO "IF"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-25.
+           PERFORM FAIL.
+           MOVE TB-25 TO COMPUTED-A.
+           MOVE "IF" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-25.
+       LEV-DELETE-GF-2-25.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-25.
+           MOVE  "LEV-TEST-GF-2-25"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-26.
+           IF TB-26 EQUAL TO "RA"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-26.
+           PERFORM FAIL.
+           MOVE TB-26 TO COMPUTED-A.
+           MOVE "RA" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-26.
+       LEV-DELETE-GF-2-26.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-26.
+           MOVE  "LEV-TEST-GF-2-26"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-27.
+           IF TB-27 EQUAL TO "GI"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-27.
+           PERFORM FAIL.
+           MOVE TB-27 TO COMPUTED-A.
+           MOVE "GI" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-27.
+       LEV-DELETE-GF-2-27.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-27.
+           MOVE  "LEV-TEST-GF-2-27"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-28.
+           IF TB-28 EQUAL TO "LI"
+                   PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-28.
+           PERFORM FAIL.
+           MOVE TB-29 TO COMPUTED-A.
+           MOVE "LI" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-28.
+       LEV-DELETE-GF-2-28.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-28.
+           MOVE  "LEV-TEST-GF-2-28"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-29.
+           IF TB-29 EQUAL TO "ST"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-29.
+           PERFORM FAIL.
+           MOVE TB-29 TO COMPUTED-A.
+           MOVE "ST" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-29.
+       LEV-DELETE-GF-2-29.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-29.
+           MOVE  "LEV-TEST-GF-2-29"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-30.
+           IF TB-30 EQUAL TO "IC"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-30.
+           PERFORM FAIL.
+           MOVE TB-30 TO COMPUTED-A.
+           MOVE "IC" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-30.
+       LEV-DELETE-GF-2-30.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-30.
+           MOVE  "LEV-TEST-GF-2-30"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-31.
+           IF TB-31 EQUAL TO "TH"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-31.
+           PERFORM FAIL.
+           MOVE TB-31 TO COMPUTED-A.
+           MOVE "TH" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-31.
+       LEV-DELETE-GF-2-31.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-31.
+           MOVE  "LEV-TEST-GF-2-31"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-32.
+           IF TB-32 EQUAL TO "AT"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-32.
+           PERFORM FAIL.
+           MOVE TB-32 TO COMPUTED-A.
+           MOVE "AT" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-32.
+       LEV-DELETE-GF-2-32.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-32.
+           MOVE  "LEV-TEST-GF-2-32"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-33.
+           IF TB-33 EQUAL TO " L"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-33.
+           PERFORM FAIL.
+           MOVE TB-33 TO COMPUTED-A.
+           MOVE " L" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-33.
+       LEV-DELETE-GF-2-33.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-33.
+           MOVE  "LEV-TEST-GF-2-33"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-34.
+           IF TB-34 EQUAL TO "IT"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-34.
+           PERFORM FAIL.
+           MOVE TB-34 TO COMPUTED-A.
+           MOVE "IT" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-34.
+       LEV-DELETE-GF-2-34.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-34.
+           MOVE  "LEV-TEST-GF-2-34"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-35.
+           IF TB-35 EQUAL TO "ER"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-35.
+           PERFORM FAIL.
+           MOVE TB-35 TO COMPUTED-A.
+           MOVE "ER" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-35.
+       LEV-DELETE-GF-2-35.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-35.
+           MOVE  "LEV-TEST-GF-2-35"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-36.
+           IF TB-36 EQUAL TO "AL"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-36.
+           PERFORM FAIL.
+           MOVE TB-36 TO COMPUTED-A.
+           MOVE "AL" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-36.
+       LEV-DELETE-GF-2-36.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-36.
+           MOVE  "LEV-TEST-GF-2-36"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-37.
+           IF TB-37 EQUAL TO " W"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-37.
+           PERFORM FAIL.
+           MOVE TB-37 TO COMPUTED-A.
+           MOVE " W" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-37.
+       LEV-DELETE-GF-2-37.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-37.
+           MOVE  "LEV-TEST-GF-2-37"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-38.
+           IF TB-38 EQUAL TO "AS"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-38.
+           PERFORM FAIL.
+           MOVE TB-38 TO COMPUTED-A.
+           MOVE "AS" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-38.
+       LEV-DELETE-GF-2-38.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-38.
+           MOVE  "LEV-TEST-GF-2-38"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-39.
+           IF TB-39 EQUAL TO " B"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-39.
+           PERFORM FAIL.
+           MOVE TB-39 TO COMPUTED-A.
+           MOVE " B" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-39.
+       LEV-DELETE-GF-2-39.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-39.
+           MOVE  "LEV-TEST-GF-2-39"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-40.
+           IF TB-40 EQUAL TO "AD"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-40.
+           PERFORM FAIL.
+           MOVE TB-40 TO COMPUTED-A.
+           MOVE "AD" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-40.
+       LEV-DELETE-GF-2-40.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-40.
+           MOVE  "LEV-TEST-GF-2-40"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-41.
+           IF TB-41 EQUAL TO "UP"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-41.
+           PERFORM FAIL.
+           MOVE TB-41 TO COMPUTED-A.
+           MOVE "UP" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-41.
+       LEV-DELETE-GF-2-41.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-41.
+           MOVE  "LEV-TEST-GF-2-41"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-42.
+           IF TB-42  EQUAL TO " O"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-42.
+           PERFORM FAIL.
+           MOVE TB-42 TO COMPUTED-A.
+           MOVE " O" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-42.
+       LEV-DELETE-GF-2-42.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-42.
+           MOVE  "LEV-TEST-GF-2-42"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-43.
+           IF TB-43 EQUAL TO "N "
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-43.
+           PERFORM FAIL.
+           MOVE TB-43 TO COMPUTED-A.
+           MOVE "N " TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-43.
+       LEV-DELETE-GF-2-43.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-43.
+           MOVE  "LEV-TEST-GF-2-43"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-44.
+           IF TB-44 EQUAL TO "TH"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-44.
+           PERFORM FAIL.
+           MOVE TB-44 TO COMPUTED-A.
+           MOVE "TH" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-44.
+       LEV-DELETE-GF-2-44.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-44.
+           MOVE  "LEV-TEST-GF-2-44"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-45.
+           IF TB-45 EQUAL TO "E "
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-45.
+           PERFORM FAIL.
+           MOVE TB-45 TO COMPUTED-A.
+           MOVE "E " TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-45.
+       LEV-DELETE-GF-2-45.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-45.
+           MOVE  "LEV-TEST-GF-2-45"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-46.
+           IF TB-46 EQUAL TO "RO"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-46.
+           PERFORM FAIL.
+           MOVE TB-46 TO COMPUTED-A.
+           MOVE "RO" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-46.
+       LEV-DELETE-GF-2-46.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-46.
+           MOVE  "LEV-TEST-GF-2-46"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-47.
+           IF TB-47 EQUAL TO "OF"
+                    PERFORM PASS
+                    GO TO LEV-WRITE-GF-2-47.
+           PERFORM FAIL.
+           MOVE TB-47  TO COMPUTED-A.
+           MOVE "OF" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-47.
+       LEV-DELETE-GF-2-47.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-47.
+           MOVE  "LEV-TEST-GF-2-47"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-2-48.
+           IF TB-48 EQUAL TO "S "
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-2-48.
+           PERFORM FAIL.
+           MOVE TB-48 TO COMPUTED-A.
+           MOVE "S " TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-2-48.
+       LEV-DELETE-GF-2-48.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-2-48.
+           MOVE  "LEV-TEST-GF-2-48"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-INIT-GF-3-1.
+           MOVE "VI-21 5.3.3 SR1" TO ANSI-REFERENCE.
+           PERFORM END-ROUTINE.
+           MOVE SPACE TO PRINT-REC.
+           MOVE "NUMERIC MOVED TO GRP"     TO FEATURE.
+           PERFORM PRINT-DETAIL.
+           MOVE "ELEMENTRY ITEM CHK"  TO FEATURE.
+           MOVE  000046                 TO GP-1.
+           MOVE  12345678902            TO GP-2.
+           MOVE  121619492              TO GP-3.
+           MOVE  0109                   TO GP-4.
+           MOVE  6645143                TO GP-5.
+           MOVE  000096                 TO GP-6.
+           MOVE  -4361                  TO GP-7.
+           MOVE  "PROGRAM DIVISI"       TO GP-8.
+           MOVE  "NPLD"                 TO GP-9.
+           MOVE  770                    TO GP-10.
+           MOVE  5604                   TO GP-11.
+           MOVE  ZERO                   TO GP-12.
+           MOVE  0004                   TO GP-13.
+           MOVE  "KLOP"                 TO GP-14.
+           MOVE  12345678902           TO GP-15.
+           MOVE  ZERO                   TO GP-16.
+           MOVE  1972                   TO GP-17.
+           MOVE  -0042                  TO GP-18.
+           MOVE  ZERO                   TO GP-19.
+           MOVE  492                    TO GP-20.
+           MOVE  SPACE                  TO GP-21.
+           MOVE  040290                 TO GP-22.
+           MOVE "9A8B7C"                TO GP-23.
+           MOVE        040290           TO GP-24.
+           MOVE  289                    TO GP-25.
+           MOVE  2251                   TO GP-26.
+           MOVE  1692                   TO GP-27.
+           MOVE  00000041               TO GP-28.
+           MOVE  00001                  TO GP-29.
+           MOVE              ZERO       TO GP-30.
+           MOVE  ZERO            TO GP-31.
+           MOVE  000                    TO GP-32.
+           MOVE  ZERO                   TO GP-33.
+           MOVE  21                     TO GP-34.
+           MOVE  36                     TO GP-35.
+           MOVE  918                    TO GP-36.
+           MOVE  ZERO TO         GP-37.
+           MOVE  -36                    TO GP-38.
+           MOVE  24                     TO GP-39.
+           MOVE  36                     TO GP-40.
+           MOVE  -1                     TO GP-41.
+           MOVE  ZERO                   TO GP-42.
+           MOVE  "AIR"                  TO GP-43.
+           MOVE "9ZX"                   TO GP-44.
+           MOVE  01000                  TO GP-45.
+           MOVE  93                     TO GP-46.
+           MOVE   5      TO GP-47 (1).
+           MOVE    ZERO TO   GP-47 (2).
+           MOVE  "Y"   TO GP-48 (1).
+           MOVE   SPACE TO   GP-48 (2).
+       LEV-TEST-GF-3-1.
+           IF GP-1 EQUAL TO       "   046"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-1.
+           PERFORM FAIL.
+           MOVE GP-1 TO COMPUTED-A.
+           MOVE  "   046"               TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-1.
+       LEV-DELETE-GF-3-1.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-1.
+           MOVE  "LEV-TEST-GF-3-1"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-2.
+           IF GP-2 EQUAL TO "345678902.00"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-2.
+           PERFORM FAIL.
+           MOVE GP-2 TO COMPUTED-A
+           MOVE  "345678902.00"         TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-2.
+       LEV-DELETE-GF-3-2.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-2.
+           MOVE  "LEV-TEST-GF-3-2"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-3.
+           IF GP-3 EQUAL TO       "000121619492"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-3.
+           PERFORM FAIL.
+           MOVE GP-3 TO COMPUTED-A
+           MOVE  "000121619492"         TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-3.
+       LEV-DELETE-GF-3-3.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-3.
+           MOVE  "LEV-TEST-GF-3-3"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-4.
+           IF GP-4 EQUAL TO       "  1 09"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-4.
+           PERFORM FAIL.
+           MOVE GP-4 TO COMPUTED-A
+           MOVE  "  1 09"               TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-4.
+       LEV-DELETE-GF-3-4.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-4.
+           MOVE  "LEV-TEST-GF-3-4"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-5.
+           IF GP-5 EQUAL TO       "$45,143.00"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-5.
+           PERFORM FAIL.
+           MOVE GP-5 TO COMPUTED-A
+           MOVE  "$45,143.00"           TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-5.
+       LEV-DELETE-GF-3-5.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-5.
+           MOVE  "LEV-TEST-GF-3-5" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-6.
+           IF GP-6 EQUAL TO       "******96"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-6.
+           PERFORM FAIL.
+           MOVE GP-6 TO COMPUTED-A
+           MOVE  "******96"             TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-6.
+       LEV-DELETE-GF-3-6.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-6.
+           MOVE  "LEV-TEST-GF-3-6" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-7.
+           IF GP-7 EQUAL TO       "-004,361"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-7.
+           PERFORM FAIL.
+           MOVE GP-7 TO COMPUTED-A
+           MOVE  "-004,361"             TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-7.
+       LEV-DELETE-GF-3-7.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-7.
+           MOVE  "LEV-TEST-GF-3-7" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-8.
+           IF GP-8 EQUAL TO       "PROGRAM DIVISI"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-8.
+           PERFORM FAIL.
+           MOVE  "PROGRAM DIVISI"       TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-8.
+       LEV-DELETE-GF-3-8.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-8.
+           MOVE  "LEV-TEST-GF-3-8" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-9.
+           IF GP-9 EQUAL TO       "N P L D"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-9.
+           PERFORM FAIL.
+           MOVE GP-9 TO COMPUTED-A
+           MOVE  "N P L D"              TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-9.
+       LEV-DELETE-GF-3-9.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-9.
+           MOVE  "LEV-TEST-GF-3-9" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-10.
+           IF GP-10 EQUAL TO      "7070000"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-10.
+           PERFORM FAIL.
+           MOVE GP-10 TO COMPUTED-A
+           MOVE  "7070000"              TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-10.
+       LEV-DELETE-GF-3-10.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-10.
+           MOVE  "LEV-TEST-GF-3-10" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-11.
+           IF GP-11 EQUAL TO     "$005,604.00"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-11.
+           PERFORM FAIL.
+           MOVE GP-11 TO COMPUTED-A.
+           MOVE "$005,604.00"           TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-11.
+       LEV-DELETE-GF-3-11.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-11.
+           MOVE  "LEV-TEST-GF-3-11" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-12.
+           IF GP-12 EQUAL TO      "   .0"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-12.
+           PERFORM FAIL.
+           MOVE GP-12 TO COMPUTED-A
+           MOVE  "   .0"                TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-12.
+       LEV-DELETE-GF-3-12.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-12.
+           MOVE  "LEV-TEST-GF-3-12" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-13.
+           IF GP-13 EQUAL TO      "  0 400"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-13.
+           PERFORM FAIL.
+           MOVE GP-13 TO COMPUTED-A.
+           MOVE  "  0 400"              TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-13.
+       LEV-DELETE-GF-3-13.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-13.
+           MOVE  "LEV-TEST-GF-3-13" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-14.
+           IF GP-14 EQUAL TO      "KLOP"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-14.
+           PERFORM FAIL.
+           MOVE GP-14 TO COMPUTED-A
+           MOVE  "KLOP"                 TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-14.
+       LEV-DELETE-GF-3-14.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-14.
+           MOVE  "LEV-TEST-GF-3-14" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-15.
+           IF GP-15  EQUAL TO "2345678902"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-15.
+           PERFORM FAIL.
+           MOVE GP-15 TO COMPUTED-A.
+           MOVE  "2345678902"           TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-15.
+       LEV-DELETE-GF-3-15.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-15.
+           MOVE  "LEV-TEST-GF-3-15" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-16.
+           IF GP-16 EQUAL TO  SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-16.
+           PERFORM FAIL.
+           MOVE GP-16 TO COMPUTED-A
+           MOVE  "SPACE"                TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-16.
+       LEV-DELETE-GF-3-16.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-16.
+           MOVE  "LEV-TEST-GF-3-16" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-17.
+           IF GP-17 EQUAL TO  "19  702"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-17.
+           PERFORM FAIL.
+           MOVE GP-17 TO COMPUTED-A.
+           MOVE  "19  702"              TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-17.
+       LEV-DELETE-GF-3-17.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-17.
+           MOVE  "LEV-TEST-GF-3-17" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-18.
+           IF GP-18 EQUAL TO "-***42"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-18.
+           PERFORM FAIL.
+           MOVE GP-18 TO COMPUTED-A
+           MOVE  "-***42" TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-18.
+       LEV-DELETE-GF-3-18.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-18.
+           MOVE  "LEV-TEST-GF-3-18" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-19.
+           IF GP-19 EQUAL TO       ZERO
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-19.
+           PERFORM FAIL.
+           MOVE GP-19 TO COMPUTED-A.
+           MOVE  "0000000"   TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-19.
+       LEV-DELETE-GF-3-19.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-19.
+           MOVE  "LEV-TEST-GF-3-19" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-20.
+           IF GP-20 EQUAL TO      "492  "
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-20.
+           PERFORM FAIL.
+           MOVE GP-20 TO COMPUTED-A
+           MOVE  "492  "                TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-20.
+       LEV-DELETE-GF-3-20.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-20.
+           MOVE  "LEV-TEST-GF-3-20" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-21.
+           IF GP-21 EQUAL TO       SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-21.
+           PERFORM FAIL.
+           MOVE GP-20 TO COMPUTED-A
+           MOVE  "SPACE"                TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-21.
+       LEV-DELETE-GF-3-21.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-21.
+           MOVE  "LEV-TEST-GF-3-21" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-22.
+           IF GP-22 EQUAL TO   "*040290"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-22.
+           PERFORM FAIL
+           MOVE GP-22 TO COMPUTED-A
+           MOVE "*040290"               TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-22.
+       LEV-DELETE-GF-3-22.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-22.
+           MOVE  "LEV-TEST-GF-3-22" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-23.
+           IF GP-23 EQUAL TO      "9A8B7C"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-23.
+           PERFORM FAIL.
+           MOVE GP-23 TO COMPUTED-A
+           MOVE  "9A8B7C"               TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-23.
+       LEV-DELETE-GF-3-23.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-23.
+           MOVE  "LEV-TEST-GF-3-23" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-24.
+           IF GP-24 EQUAL TO      "$40,290.00"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-24.
+           PERFORM FAIL.
+           MOVE GP-24 TO COMPUTED-A
+           MOVE  "$40,290.00"           TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-24.
+       LEV-DELETE-GF-3-24.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-24.
+           MOVE  "LEV-TEST-GF-3-24" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-25.
+           IF GP-25 EQUAL TO      "2  8   9   "
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-25.
+           PERFORM FAIL.
+           MOVE GP-25 TO COMPUTED-A
+           MOVE  "2  8   9   "          TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-25.
+       LEV-DELETE-GF-3-25.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-25.
+           MOVE  "LEV-TEST-GF-3-25" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-26.
+           IF GP-26 EQUAL TO      "2250001"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-26.
+           PERFORM FAIL.
+           MOVE GP-26 TO COMPUTED-A
+           MOVE  "2250001"              TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-26.
+       LEV-DELETE-GF-3-26.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-26.
+           MOVE  "LEV-TEST-GF-3-26" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-27.
+           IF GP-27 EQUAL TO      "0,001,692"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-27.
+           PERFORM FAIL.
+           MOVE GP-27 TO COMPUTED-A
+           MOVE  "0,001,692"            TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-27.
+       LEV-DELETE-GF-3-27.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-27.
+           MOVE  "LEV-TEST-GF-3-27" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-28.
+           IF GP-28 EQUAL TO      "0000004,1"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-28.
+           PERFORM FAIL.
+           MOVE GP-28 TO COMPUTED-A.
+           MOVE  "0000004,1"            TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-28.
+       LEV-DELETE-GF-3-28.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-28.
+           MOVE  "LEV-TEST-GF-3-28" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-29.
+           IF GP-29 EQUAL TO      "$**1.00"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-29.
+           PERFORM FAIL.
+           MOVE GP-29 TO COMPUTED-A
+           MOVE  "$**1.00"              TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-29.
+       LEV-DELETE-GF-3-29.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-29.
+           MOVE  "LEV-TEST-GF-3-29" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-30.
+           IF GP-30 EQUAL TO      ZERO
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-30.
+           PERFORM FAIL.
+           MOVE GP-30 TO COMPUTED-A
+           MOVE  "000000000000000"      TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-30.
+       LEV-DELETE-GF-3-30.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-30.
+           MOVE  "LEV-TEST-GF-3-30" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-31.
+           IF GP-31  EQUAL TO ZERO
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-31.
+           PERFORM FAIL.
+           MOVE GP-31 TO COMPUTED-A
+           MOVE  "SPACE"                TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-31.
+       LEV-DELETE-GF-3-31.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-31.
+           MOVE  "LEV-TEST-GF-3-31" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-32.
+           IF GP-32 EQUAL TO      "*00"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-32.
+           PERFORM FAIL.
+           MOVE GP-32 TO COMPUTED-A
+           MOVE  "*00"                  TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-32.
+       LEV-DELETE-GF-3-32.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-32.
+           MOVE  "LEV-TEST-GF-3-32" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-33.
+           IF GP-33 EQUAL TO      "   0"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-33.
+           PERFORM FAIL.
+           MOVE GP-33 TO COMPUTED-A
+           MOVE  "   0"                 TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-33.
+       LEV-DELETE-GF-3-33.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-33.
+           MOVE  "LEV-TEST-GF-3-33" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-34.
+           IF GP-34 EQUAL TO      "  2  1"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-34.
+           PERFORM FAIL.
+           MOVE GP-34 TO COMPUTED-A.
+           MOVE  "  2  1"               TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-34.
+       LEV-DELETE-GF-3-34.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-34.
+           MOVE  "LEV-TEST-GF-3-34" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-35.
+           IF GP-35 EQUAL TO      "$00,036.00"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-35.
+           PERFORM FAIL.
+           MOVE GP-35 TO COMPUTED-A.
+           MOVE  "$00,036.00"           TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-35.
+       LEV-DELETE-GF-3-35.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-35.
+           MOVE  "LEV-TEST-GF-3-35" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-36.
+           IF GP-36 EQUAL TO      "090108"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-36.
+           PERFORM FAIL.
+           MOVE GP-36 TO COMPUTED-A
+           MOVE  "090108"               TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-36.
+       LEV-DELETE-GF-3-36.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-36.
+           MOVE  "LEV-TEST-GF-3-36" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-37.
+           IF GP-37 EQUAL TO       SPACE
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-37.
+           PERFORM FAIL.
+           MOVE GP-37 TO COMPUTED-A
+           MOVE  "SPACE"                TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-37.
+       LEV-DELETE-GF-3-37.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-37.
+           MOVE  "LEV-TEST-GF-3-37" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-38.
+           IF GP-38 EQUAL TO      "-36"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-38.
+           PERFORM FAIL.
+           MOVE GP-38 TO COMPUTED-A
+           MOVE  "-36"                  TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-38.
+       LEV-DELETE-GF-3-38.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-38.
+           MOVE  "LEV-TEST-GF-3-38" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-39.
+           IF GP-39 EQUAL TO      " 24"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-39.
+                    PERFORM FAIL.
+           MOVE GP-39 TO COMPUTED-A
+           MOVE  " 24"                  TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-39.
+       LEV-DELETE-GF-3-39.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-39.
+           MOVE  "LEV-TEST-GF-3-39" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-40.
+           IF GP-40 EQUAL TO      "36  "
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-40.
+           PERFORM FAIL.
+           MOVE GP-40 TO COMPUTED-A
+           MOVE  "36  "                 TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-40.
+       LEV-DELETE-GF-3-40.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-40.
+           MOVE  "LEV-TEST-GF-3-40" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-41.
+           IF GP-41 EQUAL TO      "01DB"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-41.
+           PERFORM FAIL.
+           MOVE GP-41 TO COMPUTED-A
+           MOVE  "01DB"                 TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-41.
+       LEV-DELETE-GF-3-41.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-41.
+           MOVE  "LEV-TEST-GF-3-41" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-42.
+           IF GP-42 EQUAL TO "****"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-42.
+           PERFORM FAIL.
+           MOVE GP-42       TO COMPUTED-A.
+           MOVE "****"  TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-42.
+       LEV-DELETE-GF-3-42.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-42.
+           MOVE  "LEV-TEST-GF-3-42" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-43.
+           IF GP-43 EQUAL TO      "AIR"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-43.
+           PERFORM FAIL.
+           MOVE GP-43 TO COMPUTED-A
+           MOVE  "AIR"                  TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-43.
+       LEV-DELETE-GF-3-43.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-43.
+           MOVE  "LEV-TEST-GF-3-43" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-44.
+           IF GP-44 EQUAL TO      "9ZX"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-44.
+           PERFORM FAIL.
+           MOVE GP-44 TO COMPUTED-A
+           MOVE  "9ZX"                  TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-44.
+       LEV-DELETE-GF-3-44.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-44.
+           MOVE  "LEV-TEST-GF-3-44" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-45.
+           IF GP-45 EQUAL TO       "*1000"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-45.
+           PERFORM FAIL.
+           MOVE GP-45 TO COMPUTED-A
+           MOVE  "*1000"                TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-45.
+       LEV-DELETE-GF-3-45.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-45.
+           MOVE  "LEV-TEST-GF-3-45" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-46.
+           IF GP-46 EQUAL TO      "0000000093.00"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-46.
+           PERFORM FAIL.
+           MOVE GP-46 TO COMPUTED-A
+           MOVE  "0000000093.00"        TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-46.
+       LEV-DELETE-GF-3-46.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-46.
+           MOVE  "LEV-TEST-GF-3-46" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-47.
+           IF GP-47 (1) EQUAL TO "5"
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-47.
+           PERFORM FAIL.
+           MOVE GP-47 (1)   TO COMPUTED-A.
+           MOVE  "5"                    TO CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-47.
+       LEV-DELETE-GF-3-47.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-47.
+           MOVE  "LEV-TEST-GF-3-47" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-48.
+           IF GP-47 (2) EQUAL TO ZERO
+                    PERFORM PASS
+                    GO  TO   LEV-WRITE-GF-3-48.
+           PERFORM FAIL.
+           MOVE GP-47 (2) TO COMPUTED-A.
+           MOVE   ZERO TO  CORRECT-A.
+           GO   TO    LEV-WRITE-GF-3-48.
+       LEV-DELETE-GF-3-48.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-48.
+           MOVE  "LEV-TEST-GF-3-48" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-49.
+           IF GP-48 (1) EQUAL TO "Y"
+                    PERFORM PASS
+                    GO TO LEV-WRITE-GF-3-49.
+           PERFORM FAIL.
+           MOVE GP-48 (1)   TO COMPUTED-A.
+           MOVE  "Y"                    TO CORRECT-A.
+           GO TO LEV-WRITE-GF-3-49.
+       LEV-DELETE-GF-3-49.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-49.
+           MOVE "LEV-TEST-GF-3-49"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       LEV-TEST-GF-3-50.
+           IF GP-48 (2) EQUAL TO " "
+                    PERFORM PASS
+                    GO TO LEV-WRITE-GF-3-50.
+           PERFORM FAIL.
+           MOVE GP-48 (2) TO COMPUTED-A.
+           MOVE " "    TO CORRECT-A.
+           GO TO LEV-WRITE-GF-3-50.
+       LEV-DELETE-GF-3-50.
+           PERFORM DE-LETE.
+       LEV-WRITE-GF-3-50.
+           MOVE "LEV-TEST-GF-3-50"  TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO    CCVS-EXIT.
+       BREAKDOWN-PARA.
+           PERFORM  FAIL.
+           MOVE     CM-20  TO COMPUTED-A.
+           MOVE     CR-20  TO CORRECT-A.
+           MOVE     " 1ST 20 POSITIONS OF RESULTS" TO RE-MARK.
+           IF       LENGTH-COUNTER LESS THAN  21 GO TO BREAKDOWN-EXIT.
+           PERFORM  PRINT-DETAIL.
+           MOVE     CM-40  TO COMPUTED-A.
+           MOVE     CR-40  TO CORRECT-A.
+           MOVE     " 2ND 20 POSITIONS OF RESULTS" TO RE-MARK.
+           IF       LENGTH-COUNTER LESS THAN  41 GO TO BREAKDOWN-EXIT.
+           PERFORM  PRINT-DETAIL.
+           MOVE     CM-60  TO COMPUTED-A.
+           MOVE     CR-60  TO CORRECT-A.
+           MOVE     " 3RD 20 POSITIONS OF RESULTS" TO RE-MARK.
+           IF       LENGTH-COUNTER LESS THAN  61 GO TO BREAKDOWN-EXIT.
+           PERFORM  PRINT-DETAIL.
+           MOVE     CM-80  TO COMPUTED-A.
+           MOVE     CR-80  TO CORRECT-A.
+           MOVE     " 4TH 20 POSITIONS OF RESULTS" TO RE-MARK.
+           IF       LENGTH-COUNTER LESS THAN  81 GO TO BREAKDOWN-EXIT.
+           PERFORM  PRINT-DETAIL.
+           MOVE     CM-100 TO COMPUTED-A.
+           MOVE     CR-100 TO CORRECT-A.
+           MOVE     " 5TH 20 POSITIONS OF RESULTS" TO RE-MARK.
+           IF       LENGTH-COUNTER LESS THAN 101 GO TO BREAKDOWN-EXIT.
+           PERFORM  PRINT-DETAIL.
+           MOVE     CM-120 TO COMPUTED-A.
+           MOVE     CR-120 TO CORRECT-A.
+           MOVE     " 6TH 20 POSITIONS OF RESULTS" TO RE-MARK.
+           IF       LENGTH-COUNTER LESS THAN 121 GO TO BREAKDOWN-EXIT.
+           PERFORM  PRINT-DETAIL.
+           MOVE     CM-140 TO COMPUTED-A.
+           MOVE     CR-140 TO CORRECT-A.
+           MOVE     " 7TH 20 POSITIONS OF RESULTS" TO RE-MARK.
+           IF       LENGTH-COUNTER LESS THAN 141 GO TO BREAKDOWN-EXIT.
+           PERFORM  PRINT-DETAIL.
+           MOVE     CM-160 TO COMPUTED-A.
+           MOVE     CR-160 TO CORRECT-A.
+           MOVE     " 8TH 20 POSITIONS OF RESULTS" TO RE-MARK.
+           IF       LENGTH-COUNTER LESS THAN 161 GO TO BREAKDOWN-EXIT.
+           PERFORM  PRINT-DETAIL.
+           MOVE     CM-180 TO COMPUTED-A.
+           MOVE     CR-180 TO CORRECT-A.
+           MOVE     " 9TH 20 POSITIONS OF RESULTS" TO RE-MARK.
+           IF       LENGTH-COUNTER LESS THAN 181 GO TO BREAKDOWN-EXIT.
+           PERFORM  PRINT-DETAIL.
+           MOVE     CM-200 TO COMPUTED-A.
+           MOVE     CR-200 TO CORRECT-A.
+           MOVE     "10TH 20 POSITIONS OF RESULTS" TO RE-MARK.
+       BREAKDOWN-EXIT.
+           MOVE     ZERO TO LENGTH-COUNTER.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC126A

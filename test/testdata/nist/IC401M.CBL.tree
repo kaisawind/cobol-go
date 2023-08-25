@@ -1,0 +1,171 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n             
+					(programName 
+						(cobolWord IC401M)) IS INITIAL .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(workingStorageSection WORKING-STORAGE SECTION .\n       \n        
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord GLOB)) 
+								(dataGlobalClause IS GLOBAL) 
+								(dataPictureClause PIC IS 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 2)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE IS 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal "HI")))) .\n      )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord EXTE)) 
+								(dataExternalClause IS EXTERNAL) 
+								(dataPictureClause PIC IS 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 5)) 
+										(pictureChars )))) .\n      ))))) 
+			(procedureDivision PROCEDURE DIVISION .\n       \n        
+				(procedureDeclaratives DECLARATIVES .\n       \n        
+					(procedureDeclarative 
+						(procedureSectionHeader 
+							(sectionName 
+								(cobolWord IC401M-USE)) SECTION) .\n            
+						(useStatement USE 
+							(useAfterClause GLOBAL AFTER STANDARD ERROR PROCEDURE ON 
+								(useAfterOn I-O))) .\n       paragraphs) END DECLARATIVES .\n       ) 
+				(procedureDivisionBody paragraphs 
+					(procedureSection 
+						(procedureSectionHeader 
+							(sectionName 
+								(cobolWord IC401M-NONDECL)) SECTION) .\n        
+						(paragraphs 
+							(paragraph 
+								(paragraphName 
+									(cobolWord IC401M-CONTROL)) .\n            
+								(sentence 
+									(statement 
+										(performStatement PERFORM 
+											(performProcedureStatement 
+												(procedureName 
+													(paragraphName 
+														(cobolWord IC401M-CANCEL))) THRU 
+												(procedureName 
+													(paragraphName 
+														(cobolWord IC401M-BYCONT)))))) .\n           ) 
+								(sentence 
+									(statement 
+										(stopStatement STOP RUN)) .\n       \n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord IC401M-CANCEL)) .\n            
+								(sentence 
+									(statement 
+										(cancelStatement CANCEL 
+											(cancelCall 
+												(literal "NESTEDPROG")))) .\n      )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord IC401M-BYREF)) .\n            
+								(sentence 
+									(statement 
+										(callStatement CALL 
+											(literal "NESTEDPROG") 
+											(callUsingPhrase USING 
+												(callUsingParameter 
+													(callByReferencePhrase BY REFERENCE 
+														(callByReference 
+															(identifier 
+																(qualifiedDataName 
+																	(qualifiedDataNameFormat1 
+																		(dataName 
+																			(cobolWord GLOB))))))))))) .\n      )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord IC401M-BYCONT)) .\n            
+								(sentence 
+									(statement 
+										(callStatement CALL 
+											(literal "FIC401M") 
+											(callUsingPhrase USING 
+												(callUsingParameter 
+													(callByContentPhrase BY CONTENT 
+														(callByContent 
+															(identifier 
+																(qualifiedDataName 
+																	(qualifiedDataNameFormat1 
+																		(dataName 
+																			(cobolWord GLOB))))))))))) .\n      )))))) 
+			(programUnit 
+				(identificationDivision IDENTIFICATION DIVISION .\n       
+					(programIdParagraph PROGRAM-ID .\n            
+						(programName 
+							(cobolWord NESTEDPROG)) IS COMMON .\n      )) 
+				(environmentDivision ENVIRONMENT DIVISION .\n       ) 
+				(dataDivision DATA DIVISION .\n        
+					(dataDivisionSection 
+						(linkageSection LINKAGE SECTION .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord GLOB-2)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 2)) 
+											(pictureChars )))) .\n       \n       ))))) 
+				(procedureDivision PROCEDURE DIVISION 
+					(procedureDivisionUsingClause USING 
+						(procedureDivisionUsingParameter 
+							(procedureDivisionByReferencePhrase 
+								(procedureDivisionByReference 
+									(identifier 
+										(qualifiedDataName 
+											(qualifiedDataNameFormat1 
+												(dataName 
+													(cobolWord GLOB-2))))))))) .\n        
+					(procedureDivisionBody 
+						(paragraphs 
+							(paragraph 
+								(paragraphName 
+									(cobolWord DUMMY-PARA)) .\n            
+								(sentence 
+									(statement 
+										(displayStatement DISPLAY 
+											(displayOperand 
+												(literal "HELLO")))) .\n       \n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord END-PARA)) .\n      )))) 
+				(endProgramStatement END PROGRAM 
+					(programName 
+						(cobolWord NESTEDPROG)) .\n      )) 
+			(endProgramStatement END PROGRAM 
+				(programName 
+					(cobolWord IC401M)) .\n      ))) <EOF>)

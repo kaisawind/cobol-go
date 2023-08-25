@@ -1,0 +1,69 @@
+      *> HEADER,COBOL,ST112M,SUBPRG,ST113M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           ST113M.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+           SELECT   SORTIN-1M ASSIGN TO
+           XXXXP006.
+           SELECT   SORTOUT-1M ASSIGN TO
+           XXXXP001.
+           SELECT   SORTFILE-1M ASSIGN TO
+           XXXXX027.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       FD  SORTIN-1M
+           VALUE OF
+           XXXXX074
+           IS
+           XXXXX079
+      *>     XXXXX069
+           .
+       01  SORT-KEY-IN        PICTURE X(33).
+       FD  SORTOUT-1M
+           VALUE OF
+           XXXXX074
+           IS
+           XXXXX075
+      *>     XXXXX069
+           .
+       01  SORT-KEY-OUT       PICTURE X(33).
+       SD  SORTFILE-1M.
+       01  SORT-KEY           PICTURE X(33).
+       PROCEDURE    DIVISION.
+       SORT-PARA SECTION.
+       SORT-PARAGRAPH.
+           SORT     SORTFILE-1M DESCENDING
+                    SORT-KEY
+                    USING SORTIN-1M
+                    GIVING SORTOUT-1M.
+           STOP     RUN.
+      *> END-OF,ST113M

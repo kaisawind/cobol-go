@@ -1,0 +1,445 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n            
+					(programName 
+						(cobolWord ST123A)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       )))) 
+				(environmentDivisionBody 
+					(inputOutputSection INPUT-OUTPUT SECTION .\n        
+						(inputOutputSectionParagraph 
+							(fileControlParagraph FILE-CONTROL .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord PRINT-FILE))) 
+									(fileControlClause 
+										(assignClause ASSIGN TO 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX055)))))) .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord SORTIN-1J))) 
+									(fileControlClause 
+										(assignClause ASSIGN TO 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXD001)))))) .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord SORTOUT-1J))) 
+									(fileControlClause 
+										(assignClause ASSIGN TO 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXP002)))))) .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord SORTFILE-1J))) 
+									(fileControlClause 
+										(assignClause ASSIGN TO 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX027)))))) .\n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(fileSection FILE SECTION .\n        
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord PRINT-FILE)) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord PRINT-REC)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 120)) 
+											(pictureChars )))) .\n       )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord DUMMY-RECORD)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 120)) 
+											(pictureChars )))) .\n       ))) 
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord SORTIN-1J)) 
+							(fileDescriptionEntryClause 
+								(labelRecordsClause LABEL RECORDS STANDARD)) 
+							(fileDescriptionEntryClause 
+								(valueOfClause VALUE OF 
+									(valuePair 
+										(systemName 
+											(cobolWord XXXXX074)) IS 
+										(qualifiedDataName 
+											(qualifiedDataNameFormat1 
+												(dataName 
+													(cobolWord XXXXX075))))))) 
+							(fileDescriptionEntryClause 
+								(recordContainsClause RECORD 
+									(recordContainsClauseFormat2 IS VARYING IN SIZE))) 
+							(fileDescriptionEntryClause 
+								(dataRecordsClause DATA RECORDS ARE 
+									(dataName 
+										(cobolWord SHORT-IN)) 
+									(dataName 
+										(cobolWord MEDIUM-IN)) 
+									(dataName 
+										(cobolWord LONG-IN)))) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord SHORT-IN)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 50)) 
+											(pictureChars )))) .\n       )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord MEDIUM-IN)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 75)) 
+											(pictureChars )))) .\n       )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord LONG-IN)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord FALSE-LENGTH-1)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 25)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord FALSE-LENGTH-2)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars A) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 20)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord FALSE-LENGTH-3)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 9)) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 15)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord FALSE-LENGTH-4)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 40)) 
+											(pictureChars )))) .\n       ))) 
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord SORTOUT-1J)) 
+							(fileDescriptionEntryClause 
+								(labelRecordsClause LABEL RECORDS ARE STANDARD)) 
+							(fileDescriptionEntryClause 
+								(valueOfClause VALUE OF 
+									(valuePair 
+										(systemName 
+											(cobolWord XXXXX074)) IS 
+										(qualifiedDataName 
+											(qualifiedDataNameFormat1 
+												(dataName 
+													(cobolWord XXXXX076))))))) 
+							(fileDescriptionEntryClause 
+								(recordContainsClause RECORD 
+									(recordContainsClauseFormat2 IS VARYING IN SIZE))) 
+							(fileDescriptionEntryClause 
+								(dataRecordsClause DATA RECORD 
+									(dataName 
+										(cobolWord SHORT-OUT)) 
+									(dataName 
+										(cobolWord MEDIUM-OUT)) 
+									(dataName 
+										(cobolWord LONG-OUT)))) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord SHORT-OUT)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord FAKE-LENGTH-1)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 10)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord FAKE-LENGTH-2)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars A) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 10)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord FAKE-LENGTH-3)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 9)) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 10)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord FAKE-LENGTH-4)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 20)) 
+											(pictureChars )))) .\n       )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord MEDIUM-OUT)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 75)) 
+											(pictureChars )))) .\n       )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord LONG-OUT)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 100)) 
+											(pictureChars )))) .\n       ))) 
+						(fileDescriptionEntry SD 
+							(fileName 
+								(cobolWord SORTFILE-1J)) 
+							(fileDescriptionEntryClause 
+								(recordContainsClause RECORD 
+									(recordContainsClauseFormat2 IS VARYING IN SIZE))) 
+							(fileDescriptionEntryClause 
+								(dataRecordsClause DATA RECORD 
+									(dataName 
+										(cobolWord SHORT-SORT)) 
+									(dataName 
+										(cobolWord MEDIUM-SORT)) 
+									(dataName 
+										(cobolWord LONG-SORT)))) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord SHORT-SORT)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord SHORT-NON-KEY)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars XX))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord SHORT-KEY-1)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 10)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord SHORT-KEY-2)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 38)) 
+											(pictureChars )))) .\n       )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord MEDIUM-SORT)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord MEDIUM-NON-KEY)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars XX))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord MEDIUM-KEY-1)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 10)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord MEDIUM-KEY-2)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 38)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord MEDIUM-FILLER)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 25)) 
+											(pictureChars )))) .\n       )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord LONG-SORT)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord LONG-NON-KEY)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars XX))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord LONG-KEY-1)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 10)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord LONG-KEY-2)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 38)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord LONG-FILLER)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 50)) 
+											(pictureChars )))) .\n       )))))) 
+			(procedureDivision PROCEDURE DIVISION .\n        
+				(procedureDivisionBody 
+					(paragraphs 
+						(paragraph 
+							(paragraphName 
+								(cobolWord SORT-PARAGRAPH)) .\n            
+							(sentence 
+								(statement 
+									(sortStatement SORT 
+										(fileName 
+											(cobolWord SORTFILE-1J)) 
+										(sortOnKeyClause DESCENDING KEY 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord MEDIUM-KEY-1)))) 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord MEDIUM-KEY-2))))) 
+										(sortUsing USING 
+											(fileName 
+												(cobolWord SORTIN-1J))) 
+										(sortGivingPhrase GIVING 
+											(sortGiving 
+												(fileName 
+													(cobolWord SORTOUT-1J)))))) .\n           ) 
+							(sentence 
+								(statement 
+									(stopStatement STOP RUN)) .\n      ))))))) <EOF>)

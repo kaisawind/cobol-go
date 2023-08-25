@@ -1,0 +1,763 @@
+      *> HEADER,COBOL,SQ201M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SQ201M.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>     " HIGH       ".
+      *>                                                               *
+      *>     CREATION DATE     /     VALIDATION DATE                   *
+      *>     "4.2 ".
+      *>                                                               *
+      *>     THIS ROUTINE TESTS THE WRITE ... ADVANCIN  STATEMENT IN
+      *>     COMBINATION WITH THE
+      *>                 NOT AT END-OF-PAGE
+      *>     AND THE
+      *>                 END-WRITE        CLAUSES.
+      *> 
+      *>         THE ROUTINE SQ201M TESTS THE USE OF THE LEVEL 2 WRITE
+      *>     STATEMENT AND THE LINAGE CLAUSE FOR A FILE DESIGNATED AS
+      *>     PRINTER OUTPUT.  THESE STATEMENTS CONTROL THE VERTICAL
+      *>     POSITIONING OF EACH LINE ON A PRINTED PAGE.  THE LINAGE
+      *>     CLAUSE SPECIFICALLY CONTROLS THE VERTICAL FORMAT OF A
+      *>     LOGICAL PRINT PAGE.  SQ201M TESTS (1) THE ACCURACY OF THE
+      *>     LINAGE-COUNTER, (2) THE WRITE ADVANCING PAGE, AND (3) THE
+      *>     FOUR COMBINATIONS OF THE END-OF-PAGE PHRASE.  IT IS ASSUMED
+      *>     THAT ALL LEVEL 2 NUCLEUS OPTIONS ARE AVAILABLE IN TESTING
+      *>     SQ201M. A LINAGE CLAUSE WITH COMPLETE FOOTING, TOP, AND
+      *>     BOTTOM SECTIONS AND UTILIZING INTEGER ITEMS IS USED WITH
+      *>     THIS TEST.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+      *>     SELECT RAW-DATA   ASSIGN TO
+      *>     XXXXX062
+      *>            ORGANIZATION IS INDEXED
+      *>            ACCESS MODE IS RANDOM
+      *>            RECORD KEY IS RAW-DATA-KEY.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+      *> 
+      *> FD  RAW-DATA.
+      *> 
+      *> 01  RAW-DATA-SATZ.
+      *>     05  RAW-DATA-KEY        PIC X(6).
+      *>     05  C-DATE              PIC 9(6).
+      *>     05  C-TIME              PIC 9(8).
+      *>     05  C-NO-OF-TESTS       PIC 99.
+      *>     05  C-OK                PIC 999.
+      *>     05  C-ALL               PIC 999.
+      *>     05  C-FAIL              PIC 999.
+      *>     05  C-DELETED           PIC 999.
+      *>     05  C-INSPECT           PIC 999.
+      *>     05  C-NOTE              PIC X(13).
+      *>     05  C-INDENT            PIC X.
+      *>     05  C-ABORT             PIC X(8).
+       FD  PRINT-FILE
+           LABEL RECORDS
+           XXXXX084
+           DATA RECORD IS PRINT-REC DUMMY-RECORD
+           LINAGE IS 50 LINES
+                    WITH FOOTING AT 45
+                    LINES AT TOP 10
+                    LINES AT BOTTOM 6.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  WRITE-SWITCH       PIC 9  VALUE 0.
+       01  END-WRITE-SWITCH   PIC 9  VALUE 1.
+       01  LC-HOLD            PIC 99.
+       01  IDENTIFIER-2       PIC 99.
+       01  TOP-LINE           PIC X(120)   VALUE "THIS LINE WAS WRITTEN BY A WRITE ADVANCING PAGE OPERATION.  IT SHOULD APPEAR AS THE FIRST LINE OF A NEW LOGICAL PAGE.".
+       01  DETAIL-LINE.
+           02 FILLER          PIC X(20)    VALUE SPACE.
+           02 FILLER          PIC X(13)    VALUE "THIS IS LINE ".
+           02 DETAIL-LINE-NO  PIC 999.
+           02 FILLER          PIC X(52)   VALUE " OF 132 DETAIL LINES.".
+           02 FILLER          PIC X(18)    VALUE "LINAGE-COUNTER IS ".
+           02 DETAIL-LC       PIC 99.
+           02 FILLER          PIC X(12)    VALUE ".".
+       01  FOOT-LINE.
+           02 FILLER          PIC X(20)    VALUE SPACE.
+           02 FILLER          PIC X(13)    VALUE "THIS IS LINE ".
+           02 FOOT-COUNT      PIC 999.
+           02 FILLER          PIC X(47)    VALUE " OF 6 FOOTING LINES.  LINAGE-COUNTER SHOULD BE ".
+           02 FOOT-LINE-NO    PIC 99.
+           02 FILLER          PIC X(21)   VALUE ".  LINAGE-COUNTER IS ".
+           02 FOOT-LC         PIC 99.
+           02 FILLER          PIC X(12)    VALUE ".".
+       01  EOP-MESSAGE-1      PIC X(120)   VALUE "          THIS IS A TEST FOR THE EOP PHRASE.  50 LINES SHOULD PRINT IN THE PAGE BODY INCLUDING 44 DETAIL LINES AND".
+       01  EOP-MESSAGE-2      PIC X(120)   VALUE "          6 FOOTING LINES.  THESE LINES SHOULD BE CONSECUTIVE ON ONE LOGICAL PAGE AND BE FOLLOWED BY 16 TOP AND BOTTOM".
+       01  EOP-MESSAGE-3      PIC X(120)   VALUE "          BLANK LINES.  THE CORRECT AND COMPUTED LINAGE-COUNTER VALUES IN THE FOOTING LINES SHOULD BE EQUAL.".
+       01  TEST-RESULTS.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 FEATURE                   PICTURE X(20) VALUE SPACE.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 P-OR-F                    PICTURE X(5) VALUE SPACE.
+           02 FILLER                    PICTURE X  VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER PICTURE X(12) VALUE SPACE.
+             03  PARDOT-X PICTURE X  VALUE SPACE.
+             03 DOTVALUE PICTURE 99  VALUE ZERO.
+             03 FILLER PIC X(5) VALUE SPACE.
+           02 FILLER PIC X(10) VALUE SPACE.
+           02 RE-MARK PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A                PICTURE X(20) VALUE SPACE.
+           03 COMPUTED-N REDEFINES COMPUTED-A PICTURE -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A  PICTURE -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A  PICTURE -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A  PICTURE -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                   PICTURE -9(18).
+               04 FILLER                          PICTURE X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                 PICTURE X(20) VALUE SPACE.
+           03 CORRECT-N REDEFINES CORRECT-A PICTURE -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A    PICTURE -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A    PICTURE -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A    PICTURE -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                    PICTURE -9(18).
+               04 FILLER                          PICTURE X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER PICTURE IS X(99) VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                  REMARKS".
+           02 FILLER PICTURE IS X(20) VALUE IS SPACE.
+       01  CCVS-C-2.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(6) VALUE IS "TESTED".
+           02 FILLER PICTURE IS X(15) VALUE IS SPACE.
+           02 FILLER PICTURE IS X(4) VALUE IS "FAIL".
+           02 FILLER PICTURE IS X(94) VALUE IS SPACE.
+       01  REC-SKL-SUB PICTURE 9(2) VALUE ZERO.
+       01  REC-CT PICTURE 99 VALUE ZERO.
+       01  DELETE-CNT                   PICTURE 999  VALUE ZERO.
+       01  ERROR-COUNTER PICTURE IS 999 VALUE IS ZERO.
+       01  INSPECT-COUNTER PIC 999 VALUE 11.
+       01  PASS-COUNTER PIC 999 VALUE ZERO.
+       01  TOTAL-ERROR PIC 999 VALUE ZERO.
+       01  ERROR-HOLD PIC 999 VALUE ZERO.
+       01  DUMMY-HOLD PIC X(120) VALUE SPACE.
+       01  RECORD-COUNT PIC 9(5) VALUE ZERO.
+       01  CCVS-H-1.
+           02  FILLER   PICTURE X(27)  VALUE SPACE.
+           02 FILLER PICTURE X(67) VALUE
+           " FEDERAL SOFTWARE TESTING CENTER COBOL COMPILER VALIDATION   SYSTEM".
+           02  FILLER     PICTURE X(26)  VALUE SPACE.
+       01  CCVS-H-2.
+           02 FILLER PICTURE X(52) VALUE IS
+           "CCVS85 FSTC COPY, NOT FOR DISTRIBUTION.".
+           02 FILLER PICTURE IS X(19) VALUE IS "TEST RESULTS SET-  ".
+           02 TEST-ID PICTURE IS X(9).
+           02 FILLER PICTURE IS X(40) VALUE IS SPACE.
+       01  CCVS-H-3.
+           02  FILLER PICTURE X(34) VALUE
+           " FOR OFFICIAL USE ONLY    ".
+           02  FILLER PICTURE X(58) VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER PICTURE X(28) VALUE
+           "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER PICTURE IS X(52) VALUE IS SPACE.
+           02 FILLER PICTURE IS X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN PICTURE IS X(9).
+           02 FILLER PICTURE X(45) VALUE IS
+           " NTIS DISTRIBUTION COBOL 85".
+       01  CCVS-E-2.
+           02  FILLER                   PICTURE X(31)  VALUE
+           SPACE.
+           02  FILLER                   PICTURE X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL PICTURE IS XXX VALUE IS SPACE.
+               03 FILLER PICTURE IS X VALUE IS SPACE.
+               03 ENDER-DESC PIC X(46) VALUE "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER PICTURE X(22) VALUE
+           " FOR OFFICIAL USE ONLY".
+           02  FILLER PICTURE X(12) VALUE SPACE.
+           02  FILLER PICTURE X(58) VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER PICTURE X(13) VALUE SPACE.
+           02 FILLER PIC X(15) VALUE " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1 PIC XXX VALUE SPACE.
+           02 FILLER PIC XXXX VALUE " OF ".
+           02 CCVS-E-4-2 PIC XXX VALUE SPACE.
+           02 FILLER PIC X(40) VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER PIC X(30) VALUE "        *** INFORMATION  ***".
+           02 INFO-TEXT.
+           04 FILLER PIC X(20) VALUE SPACE.
+           04 XXCOMPUTED PIC X(20).
+           04 FILLER PIC X(5) VALUE SPACE.
+           04 XXCORRECT PIC X(20).
+       01  HYPHEN-LINE.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(65) VALUE IS "*****************************************************************".
+           02 FILLER PICTURE IS X(54) VALUE IS "******************************************************".
+       01  CCVS-PGM-ID PIC X(6) VALUE
+           "SQ201M".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     MOVE "ABORTED " TO C-ABORT.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-1.
+      *>     MOVE "ABORTED " TO C-ABORT.
+      *>     ADD 1 TO C-NO-OF-TESTS.
+      *>     ACCEPT C-DATE  FROM DATE.
+      *>     ACCEPT C-TIME  FROM TIME.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-1.
+      *> END-E-1.
+      *>     CLOSE RAW-DATA.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-2.
+      *>     MOVE "OK.     " TO C-ABORT.
+      *>     MOVE PASS-COUNTER TO C-OK.
+      *>     MOVE ERROR-HOLD   TO C-ALL.
+      *>     MOVE ERROR-COUNTER TO C-FAIL.
+      *>     MOVE DELETE-CNT TO C-DELETED.
+      *>     MOVE INSPECT-COUNTER TO C-INSPECT.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-2.
+      *> END-E-2.
+      *>     CLOSE RAW-DATA.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-CNT.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+           MOVE CCVS-H-3 TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-CNT TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-CNT IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-CNT TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           GO TO FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-SQ201M-0001 SECTION.
+       WRT-TEST-001.
+      *>              THIS TEST CHECKS THE LINAGE-COUNTER UPON COMPLETION
+      *>              OF AN OPEN COMMAND.  IT SHOULD BE EQUAL TO 1.
+           CLOSE PRINT-FILE.
+           OPEN OUTPUT PRINT-FILE.
+           IF LINAGE-COUNTER EQUAL TO 1
+                    PERFORM PASS
+                    GO TO WRT-WRITE-001.
+           GO TO WRT-FAIL-001.
+       WRT-DELETE-001.
+           PERFORM DE-LETE.
+           GO TO WRT-WRITE-001.
+       WRT-FAIL-001.
+           MOVE "VII-5 1.3.8; VII-29 D." TO RE-MARK.
+           PERFORM FAIL.
+           MOVE LINAGE-COUNTER TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+       WRT-WRITE-001.
+           MOVE "LINAGE-CT AFTER OPEN" TO FEATURE.
+           MOVE "WRT-TEST-01" TO PAR-NAME.
+           MOVE "FILE IS CLOSED, THEN OPENED" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE SPACE TO DUMMY-RECORD.
+           WRITE PRINT-REC AFTER ADVANCING 4 LINES.
+       WRT-INIT-GF-001.
+           PERFORM HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE "TEST WRT-TEST-01 MUST BE PRINTED BEFORE THE HEADER OF THIS LIST"  TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 4 LINES.
+           MOVE "THIS PROGRAM TESTS THE STATEMENT:" TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 4 LINES.
+           MOVE "   WRITE ...   ADVANCING ... " TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 2 LINE.
+           MOVE "THE RULES ARE DESCRIBED ON PAGE VII-52 THROUGH VII-56."
+                TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 2 LINE.
+           MOVE "THE LOGICAL PAGE SIZE IS EQUAL TO       66"
+                TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 4 LINE.
+       WRT-TEST-002.
+      *>              THIS TEST CHECKS THE LINAGE-COUNTER UPON COMPLETION
+      *>              OF A WRITE ADVANCING PAGE OPERATION.
+      *>              IT SHOULD BE EQUAL TO 1.
+           MOVE SPACE TO DUMMY-RECORD.
+           WRITE DUMMY-RECORD AFTER ADVANCING PAGE.
+           IF LINAGE-COUNTER EQUAL TO 1
+                    PERFORM PASS
+                    GO TO WRT-WRITE-002.
+           GO TO WRT-FAIL-002.
+       WRT-DELETE-002.
+           PERFORM DE-LETE.
+           GO TO WRT-WRITE-002.
+       WRT-FAIL-002.
+           MOVE "VII-5 1.3.8; VII-28 C (1)" TO RE-MARK.
+           PERFORM FAIL.
+           MOVE LINAGE-COUNTER TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+       WRT-WRITE-002.
+           MOVE "L-C AFTER WRITE PAGE" TO FEATURE.
+           MOVE "WRT-TEST-02" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       WRT-TEST-003.
+      *>              THIS TEST CHECKS THE LINAGE-COUNTER UPON COMPLETION
+      *>              OF A WRITE AFTER ADVANCING 1 LINE OPERATION ON WHICH
+      *>              LOGICAL PAGE OVERFLOW OCCURS.  IT SHOULD EQUAL 1.
+           MOVE SPACE TO DUMMY-RECORD.
+           WRITE DUMMY-RECORD AFTER ADVANCING PAGE.
+           PERFORM BLANK-LINE-PRINT 50 TIMES.
+           IF LINAGE-COUNTER EQUAL TO 1
+                    PERFORM PASS
+                    GO TO WRT-WRITE-003.
+           GO TO WRT-FAIL-003.
+       WRT-DELETE-003.
+           PERFORM DE-LETE.
+           GO TO WRT-WRITE-003.
+       WRT-FAIL-003.
+           MOVE "VII-5 1.3.8; VII-29 C  4)" TO RE-MARK.
+           PERFORM FAIL.
+           MOVE LINAGE-COUNTER TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+       WRT-WRITE-003.
+           MOVE "L-C AFT PAGE OVERFLW" TO FEATURE.
+           MOVE "WRT-TEST-03" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       WRT-TEST-004.
+      *>              THIS TEST CHECKS THE LINAGE-COUNTER UPON COMPLETION
+      *>              OF A WRITE OPERATION WITHOUT AN ADVANCING PHRASE.
+      *>              IT SHOULD BE INCREMENTED BY 1.
+           MOVE LINAGE-COUNTER TO LC-HOLD.
+           ADD 1 TO LC-HOLD.
+           MOVE SPACE TO DUMMY-RECORD.
+           WRITE DUMMY-RECORD.
+           IF LC-HOLD EQUAL TO LINAGE-COUNTER
+                    PERFORM PASS
+                    GO TO WRT-WRITE-004.
+           GO TO WRT-FAIL-004.
+       WRT-DELETE-004.
+           PERFORM DE-LETE.
+           GO TO WRT-WRITE-004.
+       WRT-FAIL-004.
+           MOVE "VII-5 1.3.8; VII-29 C  3)" TO RE-MARK.
+           PERFORM FAIL.
+           MOVE LINAGE-COUNTER TO COMPUTED-18V0.
+           MOVE LC-HOLD TO CORRECT-18V0.
+       WRT-WRITE-004.
+           MOVE "L-C AFT WRT W/O ADV" TO FEATURE.
+           MOVE "WRT-TEST-04" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       WRT-TEST-005.
+      *>              THIS TEST CHECKS THE LINAGE-COUNTER UPON COMPLETION
+      *>              OF A WRITE ADVANCING INTEGER LINE OPERATION.
+           MOVE LINAGE-COUNTER TO LC-HOLD.
+           ADD 5 TO LC-HOLD.
+           MOVE SPACE TO DUMMY-RECORD.
+           WRITE DUMMY-RECORD BEFORE ADVANCING 5 LINE.
+           IF LINAGE-COUNTER EQUAL TO LC-HOLD
+                    PERFORM PASS
+                    GO TO WRT-WRITE-005.
+           GO TO WRT-FAIL-005.
+       WRT-DELETE-005.
+           PERFORM DE-LETE.
+           GO TO WRT-WRITE-005.
+       WRT-FAIL-005.
+           MOVE "VII-5 1.3.8; VII-28 (9) C  1) INTEGER" TO RE-MARK.
+           PERFORM FAIL.
+           MOVE LINAGE-COUNTER TO COMPUTED-18V0.
+           MOVE LC-HOLD TO CORRECT-18V0.
+       WRT-WRITE-005.
+           MOVE "L-C AFT WRT ADV INT" TO FEATURE.
+           MOVE "WRT-TEST-05" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       WRT-TEST-006.
+      *>              THIS TEST CHECKS THE LINAGE-COUNTER UPON COMPLETION
+      *>              OF A WRITE IDENTIFIER-2 LINES OPERATION.
+           MOVE 4 TO IDENTIFIER-2.
+           MOVE LINAGE-COUNTER TO LC-HOLD.
+           ADD 4 TO LC-HOLD.
+           MOVE SPACE TO DUMMY-RECORD.
+           WRITE DUMMY-RECORD BEFORE ADVANCING IDENTIFIER-2 LINES.
+           IF LINAGE-COUNTER EQUAL TO LC-HOLD
+                    PERFORM PASS
+                    GO TO WRT-WRITE-006.
+           GO TO WRT-FAIL-006.
+       WRT-DELETE-006.
+           PERFORM DE-LETE.
+           GO TO WRT-WRITE-006.
+       WRT-FAIL-006.
+           MOVE "VII-5 1.3.8; VII-29 (9) C  2) IDENTIFIER-2" TO RE-MARK.
+           PERFORM FAIL.
+           MOVE LINAGE-COUNTER TO COMPUTED-18V0.
+           MOVE LC-HOLD TO CORRECT-18V0.
+       WRT-WRITE-006.
+           MOVE "L-C AFT WRT ADV ID-2" TO FEATURE.
+           MOVE "WRT-TEST-06" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       WRT-INIT-007.
+           PERFORM BLANK-LINE-PRINT 10 TIMES.
+           MOVE "THE FOLLOWING SQ201M TESTS CANNOT BE TESTED USING THE NORMAL PASS/FAIL METHODS.  A VISUAL CHECK WILL HAVE TO TO BE MADE" TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE "TO DETERMINE THE ACCURACY OF EACH TEST" TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT 10 TIMES.
+       WRT-TEST-007.
+      *>              THIS IS A TEST FOR WRITE AFTER ADVANCING PAGE.
+      *>              THE RECORD SHOULD PRINT ON THE FIRST LINE OF THE
+      *>              NEXT LOGICAL PAGE.
+           MOVE "WRT AFT ADV PAGE" TO FEATURE.
+           MOVE "WRT-TEST-07" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE TOP-LINE TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING PAGE.
+           MOVE SPACE TO DUMMY-RECORD.
+       WRT-TEST-008.
+      *> *****************************************************************
+      *>                                                                 *
+      *>              THIS IS A TEST FOR WRITE ... NOT AT END-OF-PAGE... *
+      *>                                           ---                   *
+      *> *****************************************************************
+           MOVE 0 TO WRITE-SWITCH.
+           PERFORM WRITE-EOP-MESSAGE.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT UNTIL LINAGE-COUNTER EQUAL 1.
+           MOVE 1 TO DETAIL-LINE-NO.
+           PERFORM EOP-TEST-1 132 TIMES.
+       VAR-TEST-008.
+           IF WRITE-SWITCH NOT = 1
+               GO TO VAR-FAIL-008.
+       VAR-PASS-008.
+           PERFORM PASS.
+           GO TO VAR-WRITE-008.
+       VAR-FAIL-008.
+           MOVE "<NOT AT END-OF-PAGE> NOT ENCOUNTERED; VII-53 GR (9)"
+                      TO RE-MARK.
+           PERFORM FAIL.
+       VAR-WRITE-008.
+           MOVE "NOT END-OF-PAGE" TO FEATURE.
+           MOVE "VAR-TEST-008" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT 5 TIMES.
+       WRT-TEST-009.
+      *>              THIS IS A TEST FOR WRITE ...; AT EOP ...
+      *> *****************************************************************
+      *>                                                                 *
+      *>              THIS IS A TEST FOR WRITE ... NOT AT EOP        ... *
+      *>                                           ---                   *
+      *> *****************************************************************
+           MOVE 0 TO WRITE-SWITCH.
+           PERFORM WRITE-EOP-MESSAGE.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT UNTIL LINAGE-COUNTER EQUAL 1.
+           MOVE 1 TO DETAIL-LINE-NO.
+           PERFORM EOP-TEST-2 132 TIMES.
+       VAR-TEST-009.
+           IF WRITE-SWITCH NOT = 1
+               GO TO VAR-FAIL-009.
+       VAR-PASS-009.
+           PERFORM PASS.
+           GO TO VAR-WRITE-009.
+       VAR-FAIL-009.
+           MOVE "<NOT AT EOP> NOT ENCOUNTERED; VII-53 GR (9)" TO RE-MARK
+           PERFORM FAIL.
+       VAR-WRITE-009.
+           MOVE "NOT AT EOP"         TO FEATURE.
+           MOVE "VAR-TEST-009" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE 0 TO WRITE-SWITCH.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT 5 TIMES.
+       WRT-TEST-010.
+      *>              THIS IS A TEST FOR WRITE... ; END-OF-PAGE ...
+      *> *****************************************************************
+      *>                                                                 *
+      *>              THIS IS A TEST FOR WRITE ... NOT END-OF-PAGE   ... *
+      *>                                           ---                   *
+      *>          AND    END-WRITE                                       *
+      *> *****************************************************************
+           MOVE 0 TO WRITE-SWITCH.
+           MOVE 0 TO END-WRITE-SWITCH.
+           PERFORM WRITE-EOP-MESSAGE.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT UNTIL LINAGE-COUNTER EQUAL 1.
+           MOVE 1 TO DETAIL-LINE-NO.
+           PERFORM EOP-TEST-3 132 TIMES.
+       VAR-TEST-010.
+           IF WRITE-SWITCH NOT = 1
+               GO TO VAR-FAIL-010.
+       VAR-PASS-010.
+           PERFORM PASS.
+           GO TO VAR-WRITE-010.
+       VAR-FAIL-010.
+           MOVE "<NOT END-OF-PAGE> NOT ENCOUNTERED; VII-53 GR (9)"
+                TO RE-MARK.
+           PERFORM FAIL.
+       VAR-WRITE-010.
+           MOVE "NOT END-OF-PAGE" TO FEATURE.
+           MOVE "VAR-TEST-010" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE 0 TO WRITE-SWITCH.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT 5 TIMES.
+       VAR-TEST-010-1.
+           IF END-WRITE-SWITCH NOT EQUAL TO 1
+               GO TO VAR-FAIL-010-1.
+       VAR-PASS-010-1.
+           PERFORM PASS.
+           GO TO VAR-WRITE-010-1.
+       VAR-FAIL-010-1.
+           MOVE "<END-WRITE> NOT CORRECT; IV-27 4.4.4" TO RE-MARK.
+           PERFORM FAIL.
+       VAR-WRITE-010-1.
+           MOVE "END-WRITE;NOT END-OF" TO FEATURE.
+           MOVE "VAR-TEST-010-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT 5 TIMES.
+       WRT-TEST-011.
+      *>              THIS IS A TEST FOR WRITE ...EOP...
+      *> *****************************************************************
+      *>                                                                 *
+      *>              THIS IS A TEST FOR WRITE ... NOT EOP           ... *
+      *>                                           ---                   *
+      *> *****************************************************************
+           MOVE 0 TO WRITE-SWITCH.
+           MOVE 0 TO END-WRITE-SWITCH.
+      *>     MOVE "EOP" TO FEATURE.
+      *>     MOVE "WRT-TEST-11" TO PAR-NAME.
+      *>     PERFORM PRINT-DETAIL.
+           PERFORM WRITE-EOP-MESSAGE.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT UNTIL LINAGE-COUNTER EQUAL 1.
+           MOVE 1 TO DETAIL-LINE-NO.
+           PERFORM EOP-TEST-4 132 TIMES.
+       VAR-TEST-011.
+           IF WRITE-SWITCH NOT = 1
+               GO TO VAR-FAIL-011.
+       VAR-PASS-011.
+           PERFORM PASS.
+           GO TO VAR-WRITE-011.
+       VAR-FAIL-011.
+           MOVE "<NOT EOP> NOT ENCOUNTERED; VII-53 GR (9)" TO RE-MARK.
+           PERFORM FAIL.
+       VAR-WRITE-011.
+           MOVE "NOT EOP" TO FEATURE.
+           MOVE "VAR-TEST-011" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE 0 TO WRITE-SWITCH.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT 5 TIMES.
+       VAR-TEST-011-1.
+           IF END-WRITE-SWITCH NOT EQUAL TO 1
+               GO TO VAR-FAIL-011-1.
+       VAR-PASS-011-1.
+           PERFORM PASS.
+           GO TO VAR-WRITE-011-1.
+       VAR-FAIL-011-1.
+           MOVE "<END-WRITE> NOT CORRECT; IV-27 4.4.4"   TO RE-MARK.
+           PERFORM FAIL.
+       VAR-WRITE-011-1.
+           MOVE "END-WRITE; NOT EOP" TO FEATURE.
+           MOVE "VAR-TEST-011-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE 0 TO WRITE-SWITCH.
+           MOVE 0 TO END-WRITE-SWITCH.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT 5 TIMES.
+       SQ201M-END-ROUTINE.
+           MOVE "END OF SQ201M VALIDATION TESTS" TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           GO TO CCVS-EXIT.
+       EOP-TEST-1.
+           MOVE LINAGE-COUNTER TO DETAIL-LC.
+           MOVE DETAIL-LINE TO PRINT-REC.
+           WRITE PRINT-REC BEFORE ADVANCING 1 LINE AT END-OF-PAGE
+                    MOVE 1 TO FOOT-COUNT
+                    MOVE 45 TO FOOT-LINE-NO
+                    PERFORM PRINT-FOOTING 6 TIMES
+      *> *****************************************************************
+      *>                                                                 *
+      *>          NEW: NOT AT END-OF-PAGE                                *
+      *>               ---                                               *
+      *> *****************************************************************
+              NOT AT END-OF-PAGE
+                   MOVE 1 TO WRITE-SWITCH.
+           ADD 1 TO DETAIL-LINE-NO.
+       EOP-TEST-2.
+           MOVE LINAGE-COUNTER TO DETAIL-LC.
+           MOVE DETAIL-LINE TO PRINT-REC.
+           WRITE PRINT-REC BEFORE ADVANCING 1 LINE ; AT EOP
+                    MOVE 1 TO FOOT-COUNT
+                    MOVE 45 TO FOOT-LINE-NO
+                    PERFORM PRINT-FOOTING 6 TIMES
+      *> *****************************************************************
+      *>                                                                 *
+      *>          NEW: NOT AT EOP                                        *
+      *>                                                                 *
+      *> *****************************************************************
+              NOT AT EOP
+                   MOVE 1 TO WRITE-SWITCH.
+           ADD 1 TO DETAIL-LINE-NO.
+       EOP-TEST-3.
+           MOVE LINAGE-COUNTER TO DETAIL-LC.
+           MOVE DETAIL-LINE TO PRINT-REC.
+           IF END-WRITE-SWITCH EQUAL TO 1 OR END-WRITE-SWITCH EQUAL TO 0
+               WRITE PRINT-REC BEFORE ADVANCING 1 LINE ; END-OF-PAGE
+                    MOVE 1 TO FOOT-COUNT
+                    MOVE 45 TO FOOT-LINE-NO
+                    PERFORM PRINT-FOOTING 6 TIMES
+      *> *****************************************************************
+      *>                                                                 *
+      *>          NEW: NOT END-OF-PAGE                                   *
+      *>               ---                                               *
+      *> *****************************************************************
+                 NOT END-OF-PAGE
+                   MOVE 1 TO WRITE-SWITCH
+                END-WRITE
+              MOVE 1 TO END-WRITE-SWITCH.
+           ADD 1 TO DETAIL-LINE-NO.
+       EOP-TEST-4.
+           MOVE LINAGE-COUNTER TO DETAIL-LC.
+           MOVE DETAIL-LINE TO PRINT-REC.
+           IF END-WRITE-SWITCH EQUAL TO 1 OR END-WRITE-SWITCH EQUAL TO 0
+               WRITE PRINT-REC BEFORE ADVANCING 1 LINE EOP
+                    MOVE 1 TO FOOT-COUNT
+                    MOVE 45 TO FOOT-LINE-NO
+                    PERFORM PRINT-FOOTING 6 TIMES
+      *> *****************************************************************
+      *>                                                                 *
+      *>          NEW: NOT EOP                                           *
+      *>               ---                                               *
+      *> *****************************************************************
+                  NOT EOP
+                   MOVE 1 TO WRITE-SWITCH
+                END-WRITE
+              MOVE 1 TO END-WRITE-SWITCH.
+           ADD 1 TO DETAIL-LINE-NO.
+       PRINT-FOOTING.
+           MOVE LINAGE-COUNTER TO FOOT-LC.
+           MOVE FOOT-LINE TO PRINT-REC.
+           WRITE PRINT-REC BEFORE ADVANCING 1 LINE.
+           ADD 1 TO FOOT-COUNT.
+           ADD 1 TO FOOT-LINE-NO.
+       WRITE-EOP-MESSAGE.
+           PERFORM BLANK-LINE-PRINT 5 TIMES.
+           MOVE EOP-MESSAGE-1 TO PRINT-REC.
+           WRITE PRINT-REC BEFORE ADVANCING 1 LINE.
+           MOVE EOP-MESSAGE-2 TO PRINT-REC.
+           WRITE PRINT-REC BEFORE ADVANCING 1 LINE.
+           MOVE EOP-MESSAGE-3 TO PRINT-REC.
+           WRITE PRINT-REC BEFORE ADVANCING 1 LINE.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT 5 TIMES.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,SQ201M

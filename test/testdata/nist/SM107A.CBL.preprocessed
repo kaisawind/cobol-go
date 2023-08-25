@@ -1,0 +1,1910 @@
+      *> HEADER,COBOL,SM107A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SM107A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     PROGRAM SM107A TESTS THE CAPABILITY TO COPY 1599 RECORDS  *
+      *>     BY A SINGLE "COPY" STATEMENT IN THE PROCEDURE DIVISION.   *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "SM107A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       WARNING-MSG.
+           MOVE " IF NO OTHER REPORT LINES APPEAR BELOW, ""COPY K7SEA"" FAILED." TO PRINT-REC.
+           PERFORM WRITE-LINE.
+      *> 
+      *> ********************** COPY STATEMENT USED **********************
+      *> 
+      *> COPY  K7SEA
+      *> 
+      *> ******************* COPIED TEXT BEGINS BELOW ********************
+      *> HEADER,CLBRY,K7SEA
+       COPY-TEST-1.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-1  " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-2.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-2  " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-3.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-3  " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-4.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-4  " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-5.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-5  " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-6.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-6  " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-7.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-7  " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-8.
+           MOVE     "COPY-TEST-8  " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-9.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-9  " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-10.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-10 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-11.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-11 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-12.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-12 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-13.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-13 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-14.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-14 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-15.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-15 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-16.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-16 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-17.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-17 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-18.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-18 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-19.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-19 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-20.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-20 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-21.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-21 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-2I.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-22 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-23.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-23 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-24.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-24 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-25.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-25 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-26.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-26 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-27.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-27 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-28.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-28 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-29.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-29 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-30.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-30 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-31.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-31 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-32.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-32 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-33.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-33 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-34.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-34 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-35.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-35 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-36.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-36 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-37.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-37 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-38.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-38 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-39.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-39 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-40.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-40 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-41.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-41 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-42.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-42 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-43.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-43 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-44.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-44 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-45.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-45 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-46.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-46 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-47.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-47 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-48.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-48 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-49.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-49 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-50.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-50 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-51.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-51 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-52.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-52 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-53.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-53 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-54.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-54 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-55.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-55 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-56.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-56 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-57.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-57 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-58.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-58 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-59.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-59 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-60.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-60 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-61.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-61 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-62.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-62 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-63.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-63 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-64.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-64 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-65.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-65 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-66.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-66 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-67.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-67 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-68.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-68 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-69.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-69 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-70.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-70 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-71.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-71 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-72.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-72 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-73.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-73 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-74.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-74 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-75.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-75 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-76.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-76 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-77.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-77 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-78.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-78 " TO PAR-NAME.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           PERFORM  PASS.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-79.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-79 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-80.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-80 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-81.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-81 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-82.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-82 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-83.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-83 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-84.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-84 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-85.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-85 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-86.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-86 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-87.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-87 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-88.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-88 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-89.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-89 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-90.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-90 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-91.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-91 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-92.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-92 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-93.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-93 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-94.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-94 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-95.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-95 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-96.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-96 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-97.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-97 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-98.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-98 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-99.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-99 " TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-100.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-100" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-101.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-101" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-102.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-102" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-103.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-103" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-104.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-104" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-105.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-105" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-106.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-106" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-107.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-107" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-108.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-108" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-109.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-109" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-110.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-110" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-111.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-111" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-112.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-112" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-113.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-113" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-114.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-114" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-115.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-115" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-116.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-116" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-117.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-117" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-118.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-118" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-119.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-119" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-120.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-120" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-121.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-121" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-122.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-122" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-123.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-123" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-124.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-124" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-125.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-125" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-126.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-126" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-127.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-127" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-128.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-128" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-129.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-129" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-130.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-130" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-131.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-131" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-132.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-132" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-133.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-133" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-134.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-134" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-135.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-135" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-136.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-136" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-137.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-137" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-138.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-138" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-139.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-139" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-140.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-140" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-141.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-141" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-142.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-142" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-143.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-143" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-144.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-144" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-145.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-145" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-146.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-146" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-147.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-147" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-148.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-148" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-149.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-149" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-150.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-150" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-151.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-151" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-152.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-152" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-153.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-153" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-154.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-154" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-155.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-155" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-156.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-156" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-157.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-157" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-158.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-158" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-159.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-159" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-160.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-160" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-161.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-161" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-162.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-162" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-163.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-163" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-164.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-164" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-165.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-165" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-166.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-166" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-167.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-167" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-168.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-168" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-169.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-169" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-170.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-170" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-171.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-171" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-172.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-172" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-173.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-173" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-174.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-174" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-175.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-175" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-176.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-176" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-177.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-177" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-178.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-178" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-179.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-179" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-180.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-180" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-181.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-181" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-182.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-182" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-183.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-183" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-184.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-184" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-185.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-185" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-186.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-186" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-187.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-187" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-188.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-188" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-189.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-189" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-190.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-190" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-191.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-191" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-192.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-192" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-193.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-193" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-194.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-194" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-195.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-195" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-196.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-196" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-197.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-197" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-198.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-198" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-199.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-199" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       COPY-TEST-200.
+           MOVE     "1600-CARD LIBRARY" TO FEATURE.
+           MOVE     "COPY-TEST-200" TO PAR-NAME.
+           PERFORM  PASS.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+      *> END-OF,K7SEA
+
+      *> ********************** END OF COPIED TEXT ***********************
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,SM107A

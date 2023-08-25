@@ -1,0 +1,2857 @@
+      *> HEADER,COBOL,IX209A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IX209A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>          "IX209A"
+      *> *****************************************************************
+      *>     THE PURPOSE OF THIS PROGRAM IS TO TEST USE OF THE
+      *>     START --- EQUAL TO --- STATEMENT USING FIRST THE PRIME
+      *>     RECORD KEY AND THEN WITH EACH OF THE ALTERNATE RECORD KEYS
+      *>     AS THE KEY OF REFERENCE.   THE START STATEMENT NAMES, 
+      *>     IN ITS CONSTRUCT , EITHER THE DATA NAME SPECIFIED IN THE
+      *>     KEY CLAUSE OR A DATA ITEM THAT IS SUBORDINATE TO THE
+      *>     KEY NAME.   DIFFERENT KEY VALUES ARE USED FOR TESTING.
+      *>     IF A KEY VALUE IS PROVIDED WHICH MATCHES A RECORD IN THE FILE
+      *>     WHEN THE START IS EXECUTED THEN THE RECORD IS EXPECTED TO
+      *>     MADE AVAILABLE BY THE SUBSEQUENT READ STATEMENT.  IF A KEY
+      *>     VALUE IS PROVIDED WHICH DOES NOT  MATCH ANY RECORD IN THE
+      *>     FILE THEN THE INVALID KEY PATH IS EXPECTED TO BE TAKEN.
+      *>     THE FILE STATUS CONTENTS RESULTING FROM EXECUTION OF THE
+      *>     START TESTS ARE SAVED AND CHECKED IN LATER TESTS.
+      *> 
+      *>             REFERENCE   AMERICAN NATIONAL STANDARD
+      *>                         PROGRAMMING LANGUAGE COBOL, X3.23-198X.
+      *>                         SECTION IX, INDEX I-O, THE START
+      *>                         STATEMENT. PARAGRAPHS 4.7.3 (3), (4); 
+      *>                                               4.7.4 (1), (4), (5)
+      *>                                                         AND
+      *>                         THE FILE STATUS PARAGRAPH 1.3.4
+      *> 
+      *>     BEFORE EXECUTION OF THE START IN EACH TEST, A RECORD IS MADE
+      *>     AVAILABLE FROM THE FILE THAT IS DIFFERENT THAN WILL RESULT
+      *>     FROM THE TEST, AND THE RECORD KEY IS LOADED WITH A KEY VALUE.
+      *>     DEPENDING ON THE NATURE OF THE TEST THE KEY VALUE MAY OR
+      *>     MAY NOT BE A VALID KEY FOR THE FILE.
+      *> 
+      *>     THIS PROGRAM FIRST CREATES AN  INDEXED SEQUENTIAL FILE
+      *>     CONTAINING TWO ALTERNATE KEYS AND  THE ONE REQUIRED RECORD
+      *>     KEY FOR THE FILE.  IMMEDIATELY FOLLOWING FILE CREATION THE
+      *>     FILE IS READ AND THE RECORDS OF THE FILE VERIFIED FOR
+      *>     ACCURACY.  NEXT THE TESTS ARE EXECUTED USING THE START ---
+      *>     EQUAL TO --- STATEMENT.
+      *>     THE RECORDS IN THE FILE ARE CREATED IN SEQUENTIAL ORDER BY
+      *>     RECORD KEY VALUE.  FOLLOWING  IS A SAMPLE OF THE DATA
+      *>     CONTENTS FOR THE RECORD KEY AND TWO ALTERNATE RECORD KEYS IN
+      *>     THE FILE.
+      *> 
+      *>    REC-NO  RECORD-KEY      ALTERNATE-KEY-1     ALTERNATE-KEY-2
+      *>    ------  ----------      ---------------     ---------------
+      *>     001   BBBBBBBBBC002 EEEEEEEEEF000ALTKEY1 WWWWWWWWWV398ALTKEY2
+      *>     002   BBBBBBBBCC004 EEEEEEEEFF004ALTKEY1 WWWWWWWWVV396ALTKEY2
+      *>     003   BBBBBBBCCC006 EEEEEEEFFF006ALTKEY1 WWWWWWWVVV394ALTKEY2
+      *>      .          .                 .                    .
+      *>      .          .                 .                    .
+      *>      .          .                 .                    .
+      *>     010   CCCCCCCCCC020 FFFFFFFFFF020ALTKEY1 VVVVVVVVVV380ALTKEY2
+      *>     011   CCCCCCCCCD022 FFFFFFFFFG022ALTKEY1 VVVVVVVVVV380ALTKEY2
+      *>     012   CCCCCCCCDD024 FFFFFFFFGG024ALTKEY1 VVVVVVVVUU376ALTKEY2
+      *>      .          .                 .                    .
+      *>      .          .                 .                    .
+      *>      .          .                 .                    .
+      *>     200   UUUUUUUUUU400 YYYYYYYYYY400ALTKEY1 DDDDDDDDDD000ALTKEY2
+      *> 
+      *>      NOTE 1 - ALTERNATE KEY NUMBER 2 CONTAINS DUPLICATE KEYS
+      *>               EVERY 10TH AND 11TH RECORDS.
+      *> 
+      *>      NOTE 2 - THE FIRST 50 RECORDS AND LAST 25 RECORDS OF THE
+      *>     FILE FOLLOW THE ABOVE SEQUENTIAL KEY PATTERN.  FOR THE MIDDLE
+      *>     125 RECORDS ONLY THE NUMBER PART OF THE KEYS ARE VARIED
+      *>     AND VARIED IN THE SEQUENCE SHOWN ABOVE.  THAT IS, RECORD-KEY
+      *>     AND ALTERNATE-KEY-1 ARE INCREMENTED BY 2 AND THE ALTERNATE-
+      *>     KEY-2 IS DECREMENTED BY 2 EACH TIME A RECORD IS WRITTEN TO
+      *>     THE FILE.  THE FILE IS DESIGNED TO BE LARGE ENOUGH SO THAT
+      *>     AN I-O OPERATION IS REQUIRED FOR EACH RECORD ACCESSED FROM
+      *>     THE FILE.
+      *> 
+      *>     FILE CHARACTERISTICS ARE: FILE SIZE            = 200 RECORDS
+      *>                               RECORD SIZE          = 240 CHARS.
+      *>                               RECORD KEY SIZE      = 13  CHARS.
+      *>                               ALTERNATE KEY 1 SIZE = 20  CHARS.
+      *>                               ALTERNATE KEY 2 SIZE = 20  CHARS.
+      *>                               ACCESS MODE          = SEQUENTIAL
+      *> 
+      *>     A LIST OF COBOL ELEMENTS WITH THE PARAGRAPH NAME IN PARENTH-
+      *>     ESIS THAT TESTS THE ELEMENT AND A SHORT DESCRIPTION OF THE
+      *>     TEST FOLLOWS.
+      *> 
+      *>       WRITE --- INVALID KEY---. (INX-TEST-001) - THIS TEST CREATE
+      *>             A FILE OF 200 RECORDS CONTAINING ONE RECORD KEY AND
+      *>             TWO ALTERNATE KEYS.
+      *>       READ ---AT END ---. (INX-TEST-002) - THIS TEST READS THE
+      *>             FILE CREATED IN INX-TEST-001 AND VERIFIES THAT   THE
+      *>             FILE WAS CREATED CORRECTLY.
+      *>       START --- KEY IS EQUAL TO RECORD-KEY INVALID KEY ---. (INX-
+      *>             TEST-003.01 THRU INX-TEST-003.04) - THE START
+      *>             STATEMENT IS EXECUTED USING THE RECORD-KEY FOR THE
+      *>             FILE CONTAINING KEY VALUES WHICH RESPECTIVELY EQUAL A
+      *>             RECORD IN THE FILE (.01), BETWEEN TWO EXISTING KEY
+      *>             VALUES (02), LESS THAN THE FIRST RECORD IN THE FILE
+      *>             (.03) AND GREATER THAN THAN THE LAST RECORD IN THE
+      *>             FILE (.04).
+      *>       START --- KEY IS EQUAL TO DATA-ITEM  INVALID KEY ---. (INX-
+      *>             TEST-003.05 THRU INX-TEST-003.09) - THE START
+      *>             STATEMENT IS EXECUTED USING A DATA ITEM WHICH IS
+      *>             SUBORDINATE TO  THE RECORD-KEY NAME OF THE FILE
+      *>             AND  CONTAINING KEY VALUES WHICH RESPECTIVELY EQUAL A
+      *>             RECORD IN THE FILE (.05), EQUAL A VALUE PRESENT IN
+      *>             IN MORE THAN ONE RECORD IN THE FILE (.06), 
+      *>             NOT EQUAL TO ANY RECORD IN THE FILE (.07, LESS THAN
+      *>             THE FIRST RECORD IN THE FILE (.08) AND GREATER THAN
+      *>             THE LAST RECORD IN THE FILE (.09.
+      *>       FILE STATUS. (INX-TEST-004.01 THRU INX-TEST-004.09) - THESE
+      *>             TESTS CHECK THE CONTENTS OF THE FILE STATUS RESULTING
+      *>             FROM THE START IN INX-TEST-003.01 THRU
+      *>             INX-TEST-003.09.
+      *>       START --- KEY IS EQUAL TO ALTNATE-KEY INVALID KEY --. (INX-
+      *>             TEST-005.01 THRU INX-TEST-005.04) - THE START
+      *>             STATEMENT IS EXECUTED USING THE ALTERNATE-KEY FOR THE
+      *>             FILE CONTAINING KEY VALUES WHICH RESPECTIVELY EQUAL A
+      *>             RECORD IN THE FILE (.01), BETWEEN TWO EXISTING KEY
+      *>             VALUES (02), LESS THAN THE FIRST RECORD IN THE FILE
+      *>             (.03) AND GREATER THAN THAN THE LAST RECORD IN THE
+      *>             FILE (.04).
+      *>       START --- KEY IS EQUAL TO DATA-ITEM  INVALID KEY ---. (INX-
+      *>             TEST-005.05 THRU INX-TEST-005.09) - THE START
+      *>             STATEMENT IS EXECUTED USING A DATA ITEM WHICH IS
+      *>             SUBORDINATE TO THE ALTERNATE-KEY NAME OF THE FILE
+      *>             AND  CONTAINING KEY VALUES WHICH RESPECTIVELY EQUAL A
+      *>             RECORD IN THE FILE (.05), EQUAL A VALUE PRESENT IN
+      *>             IN MORE THAN ONE RECORD IN THE FILE (.06), 
+      *>             NOT EQUAL TO ANY RECORD IN THE FILE (.07, LESS THAN
+      *>             THE FIRST RECORD IN THE FILE (.08) AND GREATER THAN
+      *>             THE LAST RECORD IN THE FILE (.09.
+      *>       FILE STATUS. (INX-TEST-006.01 THRU INX-TEST-006.09) - THESE
+      *>             TESTS CHECK THE CONTENTS OF THE FILE STATUS RESULTING
+      *>             FROM THE START IN INX-TEST-005.01 THRU
+      *>             INX-TEST-005.09.
+      *>       START --- KEY IS EQUAL TO ALTNATE-KEY INVALID KEY --. (INX-
+      *>             TEST-007.01 THRU INX-TEST-007.04) - THE START
+      *>             STATEMENT IS EXECUTED USING THE ALTERNATE-KEY
+      *>             WHICH SPECIFIES THE DUPLICATES OPTION FOR THE FILE
+      *>             AND  CONTAINING KEY VALUES WHICH RESPECTIVELY EQUAL A
+      *>             RECORD IN THE FILE (.01), BETWEEN TWO EXISTING KEY
+      *>             VALUES (02), LESS THAN THE FIRST RECORD IN THE FILE
+      *>             (.03) AND GREATER THAN THAN THE LAST RECORD IN THE
+      *>             FILE (.04).
+      *>       START --- KEY IS EQUAL TO DATA-ITEM  INVALID KEY ---. (INX-
+      *>             TEST-007.05 THRU INX-TEST-007.09) - THE START
+      *>             STATEMENT IS EXECUTED USING A DATA ITEM WHICH IS
+      *>             SUBORDINATE TO THE ALTERNATE-KEY W/DUP FOR THE FILE
+      *>             AND  CONTAINING KEY VALUES WHICH RESPECTIVELY EQUAL A
+      *>             RECORD IN THE FILE (.05), EQUAL A VALUE PRESENT IN
+      *>             IN MORE THAN ONE RECORD IN THE FILE (.06), 
+      *>             NOT EQUAL TO ANY RECORD IN THE FILE (.07, LESS THAN
+      *>             THE FIRST RECORD IN THE FILE (.08) AND GREATER THAN
+      *>             THE LAST RECORD IN THE FILE (.09.
+      *>       FILE STATUS. (INX-TEST-008.01 THRU INX-TEST-008.09) - THESE
+      *>             TESTS CHECK THE CONTENTS OF THE FILE STATUS RESULTING
+      *>             FROM THE START IN INX-TEST-007.01 THRU
+      *>             INX-TEST-007.09.
+      *> 
+      *> *****************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+      *>     SELECT RAW-DATA   ASSIGN TO
+      *>     XXXXX062
+      *>            ORGANIZATION IS INDEXED
+      *>            ACCESS MODE IS RANDOM
+      *>            RECORD KEY IS RAW-DATA-KEY.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+           SELECT  IX-FS1
+           ASSIGN TO
+           XXXXX024
+      *>     XXXXX044
+              ACCESS MODE IS SEQUENTIAL
+              ORGANIZATION IS INDEXED
+              RECORD KEY IS IX-FS1-KEY
+              ALTERNATE RECORD KEY IS IX-FS1-ALTKEY1
+              ALTERNATE RECORD KEY IS IX-FS1-ALTKEY2 WITH DUPLICATES
+              FILE STATUS IS FS1-STATUS.
+       DATA DIVISION.
+       FILE SECTION.
+      *> 
+      *> FD  RAW-DATA.
+      *> 
+      *> 01  RAW-DATA-SATZ.
+      *>     05  RAW-DATA-KEY        PIC X(6).
+      *>     05  C-DATE              PIC 9(6).
+      *>     05  C-TIME              PIC 9(8).
+      *>     05  C-NO-OF-TESTS       PIC 99.
+      *>     05  C-OK                PIC 999.
+      *>     05  C-ALL               PIC 999.
+      *>     05  C-FAIL              PIC 999.
+      *>     05  C-DELETED           PIC 999.
+      *>     05  C-INSPECT           PIC 999.
+      *>     05  C-NOTE              PIC X(13).
+      *>     05  C-INDENT            PIC X.
+      *>     05  C-ABORT             PIC X(8).
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       FD  IX-FS1
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS IX-FS1R1-F-G-240
+           RECORD CONTAINS 240 CHARACTERS.
+       01  IX-FS1R1-F-G-240.
+           05 IX-FS1-REC-120           PICTURE X(120).
+           05 IX-FS1-REC-121-240.
+              10 FILLER                PICTURE X(8).
+              10 IX-REC-KEY-AREA.
+                 15 IX-FS1-KEY.
+                    20 IX-FS1-KEY-1-10.
+                       25 IX-FS1-KEY-1-5      PICTURE X(5).
+                       25 IX-FS1-KEY-6-10     PICTURE X(5).
+                     20 IX-FS1-KEY-11-13      PICTURE X(3).
+                 15 FILLER             PICTURE X(16).
+              10 FILLER                PICTURE X(9).
+              10 IX-ALT-KEY1-AREA.
+                 15 IX-FS1-ALTKEY1.
+                    20 IX-FS1-ALTKEY1-1-10.
+                       25 IX-FS1-ALTKEY1-1-5  PICTURE X(5).
+                       25 IX-FS1-ALTKEY1-6-10 PICTURE X(5).
+                    20 IX-FS1-ALTKEY1-11-13   PICTURE X(3).
+                    20 IX-FS1-ALTKEY1-14-20   PICTURE X(7).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(9).
+              10 IX-ALT-KEY2-AREA.
+                 15 IX-FS1-ALTKEY2.
+                    20 IX-FS1-ALTKEY2-1-10.
+                       25 IX-FS1-ALTKEY2-1-5  PICTURE X(5).
+                       25 IX-FS1-ALTKEY2-6-10 PICTURE X(5).
+                    20 IX-FS1-ALTKEY2-11-13   PICTURE X(3).
+                    20 IX-FS1-ALTKEY2-14-20   PICTURE X(7).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(7).
+       WORKING-STORAGE SECTION.
+       01  WRK-FS1-RECKEY.
+           05 FS1-RECKEY-1-13.
+              10 FS1-RECKEY-1-10       PICTURE X(10).
+              10 FS1-RECKEY-11-13      PICTURE 9(3).
+           05 FILLER                   PICTURE X(16)  VALUE SPACE.
+       01  WRK-FS1-ALTKEY1.
+            05 FS1-ALTKEY1-1-20.
+             10  FS1-ALTKEY1-1-10.
+              15 FS1-ALTKEY1-1-5       PICTURE X(5).
+              15 FS1-ALTKEY1-6-10      PICTURE X(5).
+             10 FS1-ALTKEY1-11-13      PICTURE 9(3).
+             10 FS1-ALTKEY1-14-20      PICTURE X(7).
+           05 FILLER                   PICTURE X(9)  VALUE SPACE.
+       01  WRK-FS1-ALTKEY2.
+           05 FS1-ALTKEY2-1-20.
+              10 FS1-ALTKEY2-1-10.
+                 15 FS1-ALTKEY2-1-5    PICTURE X(5).
+                 15 FS1-ALTKEY2-6-10   PICTURE X(5).
+              10 FS1-ALTKEY2-11-13     PICTURE 9(3).
+              10 FS1-ALTKEY2-14-20     PICTURE X(7).
+           05 FILLER                   PICTURE X(9) VALUE SPACE.
+       01  RECNO                       PICTURE 9(5)  VALUE ZERO.
+       01  FS1-STATUS                  PICTURE XX   VALUE SPACE.
+       01  EXCUT-COUNTER-06V00         PICTURE 9(6) VALUE ZERO.
+       01  KEYSUB                      PICTURE 9(3) COMPUTATIONAL.
+       01  INVKEY-COUNTER              PICTURE 9(3) COMPUTATIONAL.
+       01  RECORDS-WRITTEN             PICTURE 9(3).
+       01  RECKEY-NUM                  PICTURE 9(3).
+       01  ALTKEY1-NUM                 PICTURE 9(3).
+       01  ALTKEY2-NUM                 PICTURE 9(3).
+       01  RECORD-KEY-CONTENT.
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBBBBC002EEEEEEEEEF002ALTKEY1WWWWWWWWWV398ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBBBCC004EEEEEEEEFF004ALTKEY1WWWWWWWWVV396ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBBCCC006EEEEEEEFFF006ALTKEY1WWWWWWWVVV394ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBCCCC008EEEEEEFFFF008ALTKEY1WWWWWWVVVV392ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBCCCCC010EEEEEFFFFF010ALTKEY1WWWWWVVVVV390ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBCCCCCC012EEEEFFFFFF012ALTKEY1WWWWVVVVVV388ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBCCCCCCC014EEEFFFFFFF014ALTKEY1WWWVVVVVVV386ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBCCCCCCCC016EEFFFFFFFF016ALTKEY1WWVVVVVVVV384ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BCCCCCCCCC018EFFFFFFFFF018ALTKEY1WVVVVVVVVV382ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCCCC020FFFFFFFFFF020ALTKEY1VVVVVVVVVV380ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCCCD022FFFFFFFFFG022ALTKEY1VVVVVVVVVV380ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCCDD024FFFFFFFFGG024ALTKEY1VVVVVVVVUU376ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCDDD026FFFFFFFGGG026ALTKEY1VVVVVVVUUU374ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCDDDD028FFFFFFGGGG028ALTKEY1VVVVVVUUUU372ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCDDDDD030FFFFFGGGGG030ALTKEY1VVVVVUUUUU370ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCDDDDDD032FFFFGGGGGG032ALTKEY1VVVVUUUUUU368ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCDDDDDDD034FFFGGGGGGG034ALTKEY1VVVUUUUUUU366ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCDDDDDDDD036FFGGGGGGGG036ALTKEY1VVUUUUUUUU364ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CDDDDDDDDD038FGGGGGGGGG038ALTKEY1VUUUUUUUUU362ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDDDD040GGGGGGGGGG040ALTKEY1UUUUUUUUUU360ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDDDE042GGGGGGGGGH042ALTKEY1UUUUUUUUUU360ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDDEE044GGGGGGGGHH044ALTKEY1UUUUUUUUTT356ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDEEE046GGGGGGGHHH046ALTKEY1UUUUUUUTTT354ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDEEEE048GGGGGGHHHH048ALTKEY1UUUUUUTTTT352ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDEEEEE050GGGGGHHHHH050ALTKEY1UUUUUTTTTT350ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDEEEEEE052GGGGHHHHHH052ALTKEY1UUUUTTTTTT348ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDEEEEEEE054GGGHHHHHHH054ALTKEY1UUUTTTTTTT346ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDEEEEEEEE056GGHHHHHHHH056ALTKEY1UUTTTTTTTT344ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DEEEEEEEEE058GHHHHHHHHH058ALTKEY1UTTTTTTTTT342ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEEEE060HHHHHHHHHH060ALTKEY1TTTTTTTTTT340ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEEEF062HHHHHHHHHI062ALTKEY1TTTTTTTTTT340ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEEFF064HHHHHHHHII064ALTKEY1TTTTTTTTSS336ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEFFF066HHHHHHHIII066ALTKEY1TTTTTTTSSS334ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEFFFF068HHHHHHIIII068ALTKEY1TTTTTTSSSS332ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEFFFFF070HHHHHIIIII070ALTKEY1TTTTTSSSSS330ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEFFFFFF072HHHHIIIIII072ALTKEY1TTTTSSSSSS328ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEFFFFFFF074HHHIIIIIII074ALTKEY1TTTSSSSSSS326ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEFFFFFFFF076HHIIIIIIII076ALTKEY1TTSSSSSSSS324ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EFFFFFFFFF078HIIIIIIIII078ALTKEY1TSSSSSSSSS322ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFFFF080IIIIIIIIII080ALTKEY1SSSSSSSSSS320ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFFFG082IIIIIIIIIJ082ALTKEY1SSSSSSSSSS320ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFFGG084IIIIIIIIJJ084ALTKEY1SSSSSSSSRR316ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFGGG086IIIIIIIJJJ086ALTKEY1SSSSSSSRRR314ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFGGGG088IIIIIIJJJJ088ALTKEY1SSSSSSRRRR312ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFGGGGG090IIIIIJJJJJ090ALTKEY1SSSSSRRRRR310ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFGGGGGG092IIIIJJJJJJ092ALTKEY1SSSSRRRRRR308ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFGGGGGGG094IIIJJJJJJJ094ALTKEY1SSSRRRRRRR306ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFGGGGGGGG096IIJJJJJJJJ096ALTKEY1SSRRRRRRRR304ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FGGGGGGGGG098IJJJJJJJJJ098ALTKEY1SRRRRRRRRR302ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "GGGGGGGGGG100JJJJJJJJJJ100ALTKEY1RRRRRRRRRR300ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RRRRSSSSSS352VVVVWWWWWW352ALTKEY1GGGGFFFFFF048ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RRRSSSSSSS354VVVWWWWWWW354ALTKEY1GGGFFFFFFF046ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RRSSSSSSSS356VVWWWWWWWW356ALTKEY1GGFFFFFFFF044ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RSSSSSSSSS358VWWWWWWWWW358ALTKEY1GFFFFFFFFF042ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSSSS360WWWWWWWWWW360ALTKEY1FFFFFFFFFF040ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSSST362WWWWWWWWWX362ALTKEY1FFFFFFFFFF040ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSSTT364WWWWWWWWXX364ALTKEY1FFFFFFFFEE036ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSTTT366WWWWWWWXXX366ALTKEY1FFFFFFFEEE034ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSTTTT368WWWWWWXXXX368ALTKEY1FFFFFFEEEE032ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSTTTTT370WWWWWXXXXX370ALTKEY1FFFFFEEEEE030ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSTTTTTT372WWWWXXXXXX372ALTKEY1FFFFEEEEEE028ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSTTTTTTT374WWWXXXXXXX374ALTKEY1FFFEEEEEEE026ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSTTTTTTTT376WWXXXXXXXX376ALTKEY1FFEEEEEEEE024ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "STTTTTTTTT378WXXXXXXXXX378ALTKEY1FEEEEEEEEE022ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTTTT380XXXXXXXXXX380ALTKEY1EEEEEEEEEE020ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTTTU382XXXXXXXXXY382ALTKEY1EEEEEEEEEE020ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTTUU384XXXXXXXXYY384ALTKEY1EEEEEEEEDD016ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTUUU386XXXXXXXYYY386ALTKEY1EEEEEEEDDD014ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTUUUU388XXXXXXYYYY388ALTKEY1EEEEEEDDDD012ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTUUUUU390XXXXXYYYYY390ALTKEY1EEEEEDDDDD010ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTUUUUUU392XXXXYYYYYY392ALTKEY1EEEEDDDDDD008ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTUUUUUUU394XXXYYYYYYY394ALTKEY1EEEDDDDDDD006ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTUUUUUUUU396XXYYYYYYYY396ALTKEY1EEDDDDDDDD004ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TUUUUUUUUU398XYYYYYYYYY398ALTKEY1EDDDDDDDDD002ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "UUUUUUUUUU400YYYYYYYYYY400ALTKEY1DDDDDDDDDD000ALTKEY2".
+       01  RECORD-KEY-DATA   REDEFINES  RECORD-KEY-CONTENT.
+           05 KEY-VALUES                  OCCURS 75  TIMES.
+             10 RECKEY-VALUE           PICTURE X(13).
+             10 ALTKEY1-VALUE          PICTURE X(20).
+             10 ALTKEY2-VALUE          PICTURE X(20).
+       01  INIT-FLAG                   PICTURE 9.
+       01  HOLD-FILESTATUS-RECORD.
+           05 FILESTATUS               PICTURE XX  OCCURS 10 TIMES.
+       01  FILE-RECORD-INFORMATION-REC.
+           03 FILE-RECORD-INFO-SKELETON.
+              05 FILLER                 PICTURE X(48)       VALUE
+                   "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+              05 FILLER                 PICTURE X(46)       VALUE
+                   ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+              05 FILLER                 PICTURE X(26)       VALUE
+                   ",LFIL=000000,ORG=  ,LBLR= ".
+              05 FILLER                 PICTURE X(37)       VALUE
+                   ",RECKEY=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY1=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY2=                             ".
+              05 FILLER                 PICTURE X(7)        VALUE SPACE.
+           03 FILE-RECORD-INFO          OCCURS  10  TIMES.
+              05 FILE-RECORD-INFO-P1-120.
+                 07 FILLER              PIC X(5).
+                 07 XFILE-NAME           PIC X(6).
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-NAME         PIC X(6).
+                 07 FILLER              PIC X(1).
+                 07 REELUNIT-NUMBER     PIC 9(1).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-NUMBER       PIC 9(6).
+                 07 FILLER              PIC X(6).
+                 07 UPDATE-NUMBER       PIC 9(2).
+                 07 FILLER              PIC X(5).
+                 07 ODO-NUMBER          PIC 9(4).
+                 07 FILLER              PIC X(5).
+                 07 XPROGRAM-NAME        PIC X(5).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-LENGTH       PIC 9(6).
+                 07 FILLER              PIC X(7).
+                 07 CHARS-OR-RECORDS    PIC X(2).
+                 07 FILLER              PIC X(1).
+                 07 XBLOCK-SIZE          PIC 9(4).
+                 07 FILLER              PIC X(6).
+                 07 RECORDS-IN-FILE     PIC 9(6).
+                 07 FILLER              PIC X(5).
+                 07 XFILE-ORGANIZATION   PIC X(2).
+                 07 FILLER              PIC X(6).
+                 07 XLABEL-TYPE          PIC X(1).
+              05 FILE-RECORD-INFO-P121-240.
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-KEY          PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY1      PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY2      PIC X(29).
+                 07 FILLER              PIC X(7).
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "IX209A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-1.
+      *>     MOVE "ABORTED " TO C-ABORT.
+      *>     ADD 1 TO C-NO-OF-TESTS.
+      *>     ACCEPT C-DATE  FROM DATE.
+      *>     ACCEPT C-TIME  FROM TIME.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-1.
+      *> END-E-1.
+      *>     CLOSE RAW-DATA.
+           OPEN    OUTPUT PRINT-FILE.
+           MOVE  CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE    ZERO TO REC-SKL-SUB.
+           PERFORM CCVS-INIT-FILE 9 TIMES.
+       CCVS-INIT-FILE.
+           ADD     1 TO REC-SKL-SUB.
+           MOVE    FILE-RECORD-INFO-SKELETON
+                TO FILE-RECORD-INFO (REC-SKL-SUB).
+       CCVS-INIT-EXIT.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-2.
+      *>     MOVE "OK.     " TO C-ABORT.
+      *>     MOVE PASS-COUNTER TO C-OK.
+      *>     MOVE ERROR-HOLD   TO C-ALL.
+      *>     MOVE ERROR-COUNTER TO C-FAIL.
+      *>     MOVE DELETE-COUNTER TO C-DELETED.
+      *>     MOVE INSPECT-COUNTER TO C-INSPECT.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-2.
+      *> END-E-2.
+      *>     CLOSE RAW-DATA.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO   FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-0001-IX209A SECTION.
+       WRITE-INT-GF-01.
+           OPEN    OUTPUT IX-FS1.
+           MOVE    "IX-FS1" TO XFILE-NAME           (1).
+           MOVE    "R1-F-G" TO  XRECORD-NAME        (1).
+           MOVE    ZERO     TO  XRECORD-NUMBER      (1).
+           MOVE    "RC"     TO  CHARS-OR-RECORDS    (1).
+           MOVE    CCVS-PGM-ID  TO  XPROGRAM-NAME       (1).
+           MOVE    240      TO  XRECORD-LENGTH      (1).
+           MOVE    001      TO  XBLOCK-SIZE         (1).
+           MOVE    "IX"     TO  XFILE-ORGANIZATION  (1).
+           MOVE    "S"      TO  XLABEL-TYPE         (1).
+           MOVE    200      TO  RECORDS-IN-FILE     (1).
+           MOVE    "CREATE-FILE-FS1" TO FEATURE.
+           MOVE    "WRITE-TEST-GF-01" TO PAR-NAME.
+           MOVE    ZERO TO KEYSUB.
+           MOVE    ZERO TO INVKEY-COUNTER.
+       WRITE-INIT-GF-01-01.
+           PERFORM WRITE-TEST-GF-01-1  50 TIMES.
+           PERFORM WRITE-TEST-GF-01-2  125 TIMES.
+           PERFORM WRITE-TEST-GF-01-1  25 TIMES.
+           GO TO   WRITE-TEST-GF-01.
+       WRITE-TEST-GF-01-1.
+           ADD     001  TO XRECORD-NUMBER (1).
+           ADD     001  TO  KEYSUB.
+           MOVE    RECKEY-VALUE (KEYSUB) TO FS1-RECKEY-1-13.
+           MOVE    ALTKEY1-VALUE (KEYSUB) TO FS1-ALTKEY1-1-20.
+           MOVE    ALTKEY2-VALUE (KEYSUB) TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO    XRECORD-KEY (1).
+           MOVE    WRK-FS1-ALTKEY1  TO ALTERNATE-KEY1 (1).
+           MOVE    WRK-FS1-ALTKEY2  TO ALTERNATE-KEY2 (1).
+           MOVE    FILE-RECORD-INFO (1)  TO IX-FS1R1-F-G-240.
+           WRITE   IX-FS1R1-F-G-240
+                              INVALID KEY ADD 001 TO INVKEY-COUNTER.
+           ADD     001 TO  EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-01-2.
+           ADD     002  TO FS1-RECKEY-11-13.
+           ADD     002 TO FS1-ALTKEY1-11-13.
+           SUBTRACT  002 FROM FS1-ALTKEY2-11-13.
+           ADD     001  TO XRECORD-NUMBER (1).
+           MOVE    WRK-FS1-RECKEY   TO    XRECORD-KEY (1).
+           MOVE    WRK-FS1-ALTKEY1  TO ALTERNATE-KEY1 (1).
+           MOVE    WRK-FS1-ALTKEY2  TO ALTERNATE-KEY2 (1).
+           MOVE    FILE-RECORD-INFO (1) TO IX-FS1R1-F-G-240.
+           WRITE   IX-FS1R1-F-G-240
+                              INVALID KEY ADD 001 TO INVKEY-COUNTER.
+           ADD     001 TO EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-01.
+           SUBTRACT INVKEY-COUNTER FROM EXCUT-COUNTER-06V00
+                   GIVING RECORDS-WRITTEN.
+           MOVE    200  TO CORRECT-18V0.
+           MOVE    RECORDS-WRITTEN TO COMPUTED-18V0.
+           IF      RECORDS-WRITTEN EQUAL TO 200
+                   PERFORM  PASS
+                   ELSE
+                   PERFORM FAIL.
+           MOVE    "RECORDS IN FILE" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           GO TO   WRITE-TEST-GF-01-END.
+       WRITE-DELETE-GF-01.
+           MOVE    "WRITE-TEST-GF-01" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       WRITE-TEST-GF-01-END.
+           CLOSE   IX-FS1.
+       READ-INIT-F1-01.
+           OPEN    INPUT  IX-FS1.
+           MOVE    "READ-TEST-F1-01" TO PAR-NAME.
+           MOVE    "READ FILE IX-FS1" TO FEATURE.
+           MOVE    ZERO TO EXCUT-COUNTER-06V00.
+           MOVE    02   TO RECKEY-NUM.
+           MOVE    002 TO ALTKEY1-NUM.
+       READ-TEST-F1-01-R1.
+           READ    IX-FS1  AT END  GO TO READ-TEST-F1-01.
+           MOVE    IX-REC-KEY-AREA TO WRK-FS1-RECKEY.
+           MOVE    IX-ALT-KEY1-AREA TO WRK-FS1-ALTKEY1.
+           IF      FS1-RECKEY-11-13 EQUAL TO RECKEY-NUM
+                   AND FS1-ALTKEY1-11-13 EQUAL TO ALTKEY1-NUM
+                   NEXT SENTENCE
+                   ELSE
+                   PERFORM  READ-FAIL-F1-01.
+           ADD     001  TO EXCUT-COUNTER-06V00.
+           ADD     002  TO RECKEY-NUM
+           ADD     002  TO ALTKEY1-NUM.
+           GO TO   READ-TEST-F1-01-R1.
+       READ-TEST-F1-01.
+           IF      EXCUT-COUNTER-06V00 EQUAL TO 200
+                   PERFORM PASS ELSE
+           MOVE "IX-28; 4.5.2 OR IX-41; 4.9.2 NOT COORECTLY EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL.
+           MOVE    EXCUT-COUNTER-06V00 TO  COMPUTED-18V0.
+           MOVE    200  TO  CORRECT-18V0.
+           MOVE    "RECORDS IN FILE" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           GO TO   READ-EXIT-F1-01.
+       READ-FAIL-F1-01.
+           PERFORM FAIL.
+           MOVE    FS1-RECKEY-11-13  TO COMPUTED-18V0.
+           MOVE    RECKEY-NUM  TO CORRECT-18V0.
+           MOVE    "NUM EMBEDDED IN RECKEY"  TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       READ-EXIT-F1-01.
+           CLOSE   IX-FS1.
+       START-INIT-GF-01.
+           OPEN    INPUT  IX-FS1.
+           MOVE    "START EQ TO RECKEY"  TO FEATURE.
+           MOVE    "START-TEST-GF-01" TO PAR-NAME.
+           MOVE    "********************" TO HOLD-FILESTATUS-RECORD.
+      *> 
+      *>  THIS TEST TESTS THE  "START -- EQUAL TO" FOR PROPER POSITIONING
+      *>  OF THE RECORD POINTER FOR THE SUBSEQUENT READ STATEMENT.
+      *>  START-TEST-GF-01 USE ONLY THE PRIME RECORD KEY FOR ESTABLISHING
+      *>  THE CURRENT RECORD POINTER FOR THE FILE.  THE FOLLOWING IS A
+      *>  SUMMARY OF THE TEST CONDITIONS AND THE EXPECTED ACTION TO BE
+      *>  TAKEN FOR THE  TESTS.
+      *> 
+      *>                       CONDITIONS (CONTENTS OF KEY) / ACTION
+      *> 
+      *>    START-TEST-GF-01 - EQUAL A RECORD IN FILE / RECORD FOUND
+      *>    START-TEST-GF-02 - BETWEEN 2 EXISTING KEY VALUES / INVALID KEY
+      *>    START-TEST-GF-03 - LESS THAN FIRST FILE RECORD / INVALID KEY
+      *>    START-TEST-GF-04 - GREATER THAN LAST FILE RECORD / INVALID KEY
+      *>    START-TEST-GF-05 - UNEQUAL SIZE OPERANDS (EQUAL) / RECORD FOUN
+      *>    START-TEST-GF-06 - UNEQUAL SIZE OPERANDS (EQUAL) / RECORD FOUN
+      *>    START-TEST-GF-07 - UNEQUAL SIZE OPERANDS (UNEQUAL) / INVLD KEY
+      *>    START-TEST-GF-08 - UNEQUAL SIZE OPERANDS (UNEQUAL) / INVLD KEY
+      *>    START-TEST-GF-09 - UNEQUAL SIZE OPERANDS (UNEQUAL) /INVLD KEY
+      *> 
+      *>   BEFORE EACH TEST A RECORD IS MADE AVAILABLE WHICH IS DIFFERENT
+      *>   THAN THE ONE WHICH IS EXPECTED TO BE PRESENT FOLLOWING A TEST.
+      *>   IF AN INVALID KEY IS EXPECTED FROM THE TEST, THE KEYS
+      *>   ASSOCIATED WITH THE FILE WHICH ARE NOT PARTICIPATING IN THE
+      *>   START STATEMENT WILL BE LOADED WITH VALUES WHICH WOULD
+      *>   MATCH RECORDS IN THE FILE.  IF KEY MATCH IS EXPECTED FROM
+      *>   THE TEST, THE KEYS ASSOCIATED WITH THE FILE WHICH ARE NOT
+      *>   PARTICIPATING IN THE START STATEMENT WILL BE LOADED WITH
+      *>   VALUES WHICH WOULD NOT MATCH RECORDS IN THE FILE.  THE FILE
+      *>   STATUS FROM EXECUTION OF EACH START IS CAPTURED FOR LATER TESTS
+      *> 
+       START-INIT-GF-01-01.
+           PERFORM START-INITIALIZE-RECORD.
+           MOVE    "START-TEST-GF-01" TO PAR-NAME.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE   "**"  TO FILESTATUS (1)
+                   MOVE   "TEST IMPROPERLY INITIALIZED" TO RE-MARK
+                   GO TO START-DELETE-GF-01.
+           MOVE    "CCCCCCCCCD022" TO FS1-RECKEY-1-13.
+           MOVE    "EEEEEFFFFF022ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "EEEEEFFFFF022ALTKEY2" TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1 TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2 TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-01.
+      *> 
+      *>   START-TEST-GF-01 - THE START SHOULD FIND A RECORD IN THE FILE
+      *>                     WHICH HAS A RECORD KEY VALUE OF
+      *>                     CCCCCCCCCD022 (RECORD NUMBER 11).
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-KEY
+                INVALID KEY   MOVE FS1-STATUS TO FILESTATUS (1)
+                           MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                              GO TO START-FAIL-GF-01.
+           MOVE    FS1-STATUS TO FILESTATUS (1).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END ON READ" TO COMPUTED-A
+                           GO TO START-FAIL-GF-01.
+           MOVE    IX-FS1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 11
+                   PERFORM PASS
+                   MOVE SPACE TO RE-MARK
+                   GO TO START-WRITE-GF-01.
+           MOVE    11  TO RECNO.
+           PERFORM DISPLAY-RECORD-KEYS.
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-01.
+           PERFORM FAIL.
+           MOVE    11   TO CORRECT-18V0.
+           MOVE "IX-36; 4.7.2 ETC." TO RE-MARK.
+           GO TO   START-WRITE-GF-01.
+       START-DELETE-GF-01.
+           PERFORM DE-LETE.
+       START-WRITE-GF-01.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-02.
+           MOVE    "START-TEST-GF-02" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (2)
+                   GO TO   START-DELETE-GF-02.
+           MOVE    "EEEEEEEFFF067" TO FS1-RECKEY-1-13.
+           MOVE    "HHHHHHHIII066ALTKEY1" TO FS1-ALTKEY1-1-20.
+           MOVE    "TTTTTTTSSS334ALTKEY2" TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-02.
+      *> 
+      *>   START-TEST-GF-02 - THE START SHOULD NOT FIND A RECORD IN THE
+      *>                     FILE WHICH HAS A RECORD KEY VALUE OF
+      *>                     "EEEEEEEFFF067". THIS KEY VALUE IS
+      *>                     SEQUENTIALLY LOCATED BETWEEN TWO CURRENTLY
+      *>                     EXISTING RECORD KEYS IN THE FILE.
+      *> 
+           START   IX-FS1
+                           KEY IS EQUAL TO IX-FS1-KEY
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (2)
+                               GO TO START-PASS-GF-02.
+           MOVE    FS1-STATUS TO FILESTATUS (2).
+           READ    IX-FS1 AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           PERFORM FAIL.
+           MOVE "IX-36; 4.7.2 ETC." TO RE-MARK.
+           MOVE    XRECORD-KEY (1) TO COMPUTED-A.
+           MOVE    "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-02.
+       START-PASS-GF-02.
+           PERFORM  PASS.
+           GO TO   START-WRITE-GF-02.
+       START-DELETE-GF-02.
+           PERFORM DE-LETE.
+       START-WRITE-GF-02.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-03.
+           PERFORM START-INITIALIZE-RECORD.
+           MOVE    "START-TEST-GF-03" TO PAR-NAME.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (3)
+                   GO TO   START-DELETE-GF-03.
+           MOVE    "BBBBBBBBBC001"  TO FS1-RECKEY-1-13.
+           MOVE    "EEEEEEEEEF002ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "WWWWWWWWWV398ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-03.
+      *> 
+      *>   START-TEST-GF-03  - THE START STATEMENT SHOULD NOT FIND A
+      *>                     RECORD IN THE FILE WHICH HAS A RECORD
+      *>                     KEY VALUE OF "BBBBBBBBBC001".  THIS KEY
+      *>                     VALUE IS SEQUENTIALLY LOWER THAN ANY
+      *>                     CURRENTLY EXISTING KEY IN THE FILE.
+      *> 
+           START   IX-FS1
+                           KEY IS EQUAL TO IX-FS1-KEY
+                INVALID KEY    MOVE FS1-STATUS TO FILESTATUS (3)
+                           GO TO START-PASS-GF-03.
+           MOVE    FS1-STATUS TO FILESTATUS (3).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC." TO RE-MARK.
+           PERFORM FAIL.
+           MOVE    XRECORD-KEY (1)  TO COMPUTED-A.
+           MOVE    "INVALID KEY"  TO CORRECT-A.
+           GO TO START-WRITE-GF-03.
+       START-PASS-GF-03.
+           PERFORM PASS.
+           GO TO   START-WRITE-GF-03.
+       START-DELETE-GF-03.
+           PERFORM DE-LETE.
+       START-WRITE-GF-03.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-04.
+           MOVE "START-TEST-GF-04" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (4)
+                   GO TO   START-DELETE-GF-04.
+           MOVE    "UUUUUUUUUU401"  TO FS1-RECKEY-1-13.
+           MOVE    "YYYYYYYYYY400ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "DDDDDDDDDD000ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-04.
+      *> 
+      *>   START-TEST-GF-04  - THE START STATEMENT SHOULD NOT FIND A
+      *>                     RECORD IN THE  FILE WHICH HAS A RECORD
+      *>                     KEY VALUE OF "UUUUUUUUUU401".  THIS
+      *>                     VALUE IS SEQUENTIALLY  ONE GREATER THAN
+      *>                     ANY RECORD KEY CURRENTLY EXISTING IN
+      *>                     THE FILE.  AN INVALID KEY CONDITION
+      *>                     IS EXPECTED WHEN THE START IS EXECUTED.
+      *> 
+           START   IX-FS1
+                           KEY IS EQUAL TO IX-FS1-KEY
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (4)
+                               GO TO START-PASS-GF-04.
+           MOVE    FS1-STATUS TO FILESTATUS (4).
+           READ    IX-FS1 AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC." TO RE-MARK.
+           PERFORM FAIL.
+           MOVE    XRECORD-KEY (1) TO COMPUTED-A.
+           MOVE    "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-04.
+       START-PASS-GF-04.
+           PERFORM  PASS.
+           GO TO   START-WRITE-GF-04.
+       START-DELETE-GF-04.
+           PERFORM DE-LETE.
+       START-WRITE-GF-04.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-05.
+           MOVE "START-TEST-GF-05" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (5)
+                   GO TO   START-DELETE-GF-05.
+           MOVE    "CDDDDDDDDD039" TO FS1-RECKEY-1-13.
+           MOVE    "IIIIIIIIJJ083ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "ABCXXXXXXX400ALTKEY2" TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-05.
+      *>   START-TEST-GF-05  - THE START STATEMENT USES AN OPERAND
+      *>                     IN THE KEY PHRASE WHICH IS NOT THE NAME
+      *>                     OF A RECORD   KEY BUT IS THE NAME OF A
+      *>                     DATA ITEM WHICH IS SUBORDINATE TO THE
+      *>                     RECORD KEY.  THE CONTENTS OF THE DATA ITEM
+      *>                     (POSITIONS 1 THRU 5 OF THE RECORD KEY)
+      *>                     IS A UNIQUE KEY VALUE FOR THE FILE. THE
+      *>                     BALANCE OF THE KEY (POSITIONS 6 THRU 13) IS
+      *>                     NOT A VALID KEY VALUE FOR THE FILE.  THE
+      *>                     RECORD WITH THE RECORD KEY "CDDDDDDDDD038"
+      *>                     (RECORD NUMBER 19) IS EXPECTED TO BE FOUND.
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-KEY-1-5
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (5)
+                           MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                           GO TO START-FAIL-GF-05.
+           MOVE    FS1-STATUS TO FILESTATUS (5).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END ON READ" TO COMPUTED-A
+                           GO TO  START-FAIL-GF-05.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 19
+                   PERFORM  PASS
+                   GO TO START-WRITE-GF-05.
+           MOVE    19  TO RECNO.
+           PERFORM DISPLAY-RECORD-KEYS.
+           MOVE    XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-05.
+           PERFORM  FAIL.
+           MOVE    19  TO CORRECT-18V0.
+           MOVE "IX-36; 4.7.2 ETC.; SUBORDINATE D-I OF KEY" TO RE-MARK.
+           GO TO   START-WRITE-GF-05.
+       START-DELETE-GF-05.
+           PERFORM DE-LETE.
+       START-WRITE-GF-05.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-06.
+           MOVE "START-TEST-GF-06" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (6)
+                   GO TO   START-DELETE-GF-06.
+           MOVE    "TTTTTUUUUU390"  TO FS1-RECKEY-1-13.
+           MOVE    "XYYYYYYYYY399ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "WWWWWWWWWV399ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-06.
+      *> 
+      *>   START-TEST-GF-06  - THE START STATEMENT USES AN OPERAND IN THE
+      *>                     KEY PHRASE WHICH IS NOT THE NAME OF A RECORD
+      *>                     KEY BUT IS THE NAME OF A DATA ITEM THAT IS
+      *>                     SUBORDINATE TO THE RECORD KEY.  THE CONTENTS
+      *>                     OF THE DATA ITEM (POSITIONS 1 THRU 5 OF THE
+      *>                     RECORD KEY)  IS A DUPLICATE OF THE FIRST
+      *>                     5 POSITIONS OF 5 OTHER RECORDS IN THE FILE.
+      *>                     THIS TEST EXPECTS THE RECORD POINTER
+      *>                     TO BE POSITIONED TO RECORD KEY TTTTTTTTTT380
+      *>                     (RECORD NUMBER 190) WHICH WAS THE
+      *>                     FIRST RECORD WRITTEN TO THE FILE THAT
+      *>                     CONTAINS TTTTT IN THE FIRST 5 POSITIONS OF
+      *>                     THE KEY.  THE RECORD KEY WAS LOADED WITH THE
+      *>                     VALUE "TTTTTUUUUU390" (KEY FOR RECORD NUMBER
+      *>                     195) BEFORE THE START WAS EXECUTED.
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-KEY-1-5
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (6)
+                           MOVE  "INVALID KEY ON START"  TO COMPUTED-A
+                           GO TO START-FAIL-GF-06.
+           MOVE    FS1-STATUS TO FILESTATUS (6).
+           READ    IX-FS1  AT END
+                           MOVE "AT END ON READ" TO COMPUTED-A
+                           GO TO START-FAIL-GF-06.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 190
+                   PERFORM  PASS
+                   GO TO START-WRITE-GF-06.
+           MOVE    65  TO RECNO.
+           PERFORM DISPLAY-RECORD-KEYS.
+           MOVE    XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-06.
+           MOVE "IX-36; 4.7.2 ETC.; SUBORDINATE D-I OF KEY" TO RE-MARK.
+           PERFORM  FAIL.
+           MOVE    190   TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-06.
+       START-DELETE-GF-06.
+           PERFORM DE-LETE.
+       START-WRITE-GF-06.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-07.
+           MOVE "START-TEST-GF-07" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (7)
+                   GO TO   START-DELETE-GF-07.
+           MOVE    "CCCCCCD022   " TO FS1-RECKEY-1-13.
+           MOVE    "FFFFFFFFFG022ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "VVVVVVVVVV380ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-07.
+      *> 
+      *>   START-TEST-GF-07  - THE START STATEMENT USES AN OPERAND IN THE
+      *>                     KEY PHRASE OF THE START STATEMENT WHICH IS
+      *>                     A DATA ITEM SUBORDINATE TO THE RECORD KEY
+      *>                     NAME.  THE CONTENTS OF THE DATA ITEM
+      *>                     (POSITIONS 1 THRU 10 OF THE RECORD KEY)
+      *>                     IS LOADED WITH "CCCCCCD022".  NO SUCH RECORD
+      *>                     SHOULD BE IN THE FILE.  IF IN THE COMPARSION, 
+      *>                     THE LONGER OPERAND IS TRUNCATED ON THE LEFT
+      *>                     INSTEAD OF ON THE RIGHT THE CONTENTS OF
+      *>                     THE DATA ITEM WILL MATCH A RECORD IN THE
+      *>                     FILE.  THIS TEST EXPECTS THE LONGER OPERAND
+      *>                     TO BE TRUNCATED ON THE RIGHT CAUSING NO
+      *>                     DATA ITEM MATCH AND RESULTING IN AN INVALID
+      *>                     KEY CONDITION WHEN THE START IS EXECUTED.
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-KEY-1-10
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (7)
+                           GO TO START-PASS-GF-07.
+           MOVE    FS1-STATUS TO FILESTATUS (7).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC." TO RE-MARK.
+           PERFORM FAIL.
+           MOVE    XRECORD-KEY (1) TO COMPUTED-A.
+           MOVE    "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-07.
+       START-PASS-GF-07.
+           PERFORM PASS.
+           GO TO   START-WRITE-GF-07.
+       START-DELETE-GF-07.
+           PERFORM DE-LETE.
+       START-WRITE-GF-07.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-08.
+           MOVE "START-TEST-GF-08" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (8)
+                   GO TO   START-DELETE-GF-08.
+           MOVE    "ABBBBBBBBC002"  TO FS1-RECKEY-1-13.
+           MOVE    "EEEEEEEEEF002ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "WWWWWWWWWW400ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-08.
+      *> 
+      *>   START-TEST-GF-08  - THIS TEST USES AN OPERAND IN THE
+      *>                     KEY PHRASE OF THE START STATEMENT WHICH IS
+      *>                     A DATA ITEM SUBORDINATE TO THE RECORD KEY
+      *>                     NAME.  THE CONTENTS OF THE DATA ITEM
+      *>                     (POSITIONS 1 THRU 10 OF THE RECORD KEY) IS
+      *>                     LOADED WITH "ABBBBBBBBC".  THIS KEY VALUE
+      *>                     IS LOWER THAN ANY RECORD KEY VALUE IN
+      *>                     POSITION 1 THRU 10 EXISTING IN THE FILE
+      *>                     THEREFORE AN INVALID KEY CONDITION IS
+      *>                     EXPECTED WHEN THE START STATEMENT IS
+      *>                     EXECUTED.
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-KEY-1-10
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (8)
+                           GO TO START-PASS-GF-08.
+           MOVE    FS1-STATUS TO FILESTATUS (8).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC." TO RE-MARK.
+           PERFORM FAIL.
+           MOVE    XRECORD-KEY (1)  TO COMPUTED-A.
+           MOVE     "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-08.
+       START-PASS-GF-08.
+           PERFORM PASS.
+           GO TO   START-WRITE-GF-08.
+       START-DELETE-GF-08.
+           PERFORM DE-LETE.
+       START-WRITE-GF-08.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-09.
+           MOVE "START-TEST-GF-09" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (9)
+                   GO TO   START-DELETE-GF-09.
+           MOVE    "UUUUUUUUUV400"  TO FS1-RECKEY-1-13.
+           MOVE    "EEEEEEEEEF002ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "WWWWWWWWWV398ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-09.
+      *> 
+      *>   START-TEST-GF-09  - THIS TEST USES AN OPERAND IN THE
+      *>                     KEY PHRASE OF THE START STATEMENT WHICH IS
+      *>                     A DATA ITEM SUBORDINATE TO THE RECORD KEY
+      *>                     NAME.  THE CONTENTS OF THE DATA ITEM
+      *>                     (POSITIONS 1 THRU 10 OF THE RECORD KEY) IS
+      *>                     LOADED WITH "UUUUUUUUUV".  THIS KEY VALUE
+      *>                     IS GREATER THAN ANY RECORD KEY VALUE IN
+      *>                     POSITION 1 THRU 10 EXISTING IN THE FILE
+      *>                     THEREFORE AN INVALID KEY CONDITION IS
+      *>                     EXPECTED WHEN THE START STATEMENT IS
+      *>                     EXECUTED.
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-KEY-1-10
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (9)
+                           GO TO START-PASS-GF-09.
+           MOVE    FS1-STATUS TO FILESTATUS (9).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC." TO RE-MARK.
+           PERFORM FAIL.
+           MOVE    XRECORD-KEY (1)  TO COMPUTED-A.
+           MOVE     "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-09.
+       START-PASS-GF-09.
+           PERFORM PASS.
+           GO TO   START-WRITE-GF-09.
+       START-DELETE-GF-09.
+           PERFORM DE-LETE.
+       START-WRITE-GF-09.
+           PERFORM PRINT-DETAIL.
+           CLOSE   IX-FS1.
+       START-INIT-GF-FILE-STATUS.
+           MOVE "FILE STATUS START:00"   TO FEATURE.
+           MOVE   "START-TEST-GF-10" TO PAR-NAME.
+      *> 
+      *>   THIS SERIES OF TESTS CHECKS THE CONTENTS OF THE FILE STATUS
+      *> 
+       START-TEST-GF-10.
+           IF      FILESTATUS (1)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-10.
+      *> 
+      *>   START-TEST-GF-10 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-01.  THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "00".
+      *> 
+           IF      FILESTATUS (1)  EQUAL TO "00"
+                   PERFORM PASS
+           ELSE
+           MOVE "IX-3; 1.3.4 (1) A; FROM START-TEST-GF-01  " TO RE-MARK
+                   PERFORM  FAIL
+                   MOVE  "00"  TO CORRECT-A
+                   MOVE   FILESTATUS (1)  TO COMPUTED-A.
+       START-WRITE-GF-10.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-11.
+           MOVE "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-11" TO PAR-NAME.
+           IF      FILESTATUS (2)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-11.
+      *> 
+      *>   START-TEST-GF-11 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-02. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (2)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-3; 1.3.4 (1) A; FROM START-TEST-GF-02  " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (2)  TO COMPUTED-A.
+       START-WRITE-GF-11.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-12.
+           MOVE "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-12" TO PAR-NAME.
+           IF      FILESTATUS (3)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-12.
+      *> 
+      *>   START-TEST-GF-12 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-03. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (3)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-3; 1.3.4 (1) A; FROM START-TEST-GF-03  " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (3)  TO COMPUTED-A.
+       START-WRITE-GF-12.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-13.
+           MOVE "START-TEST-GF-13" TO PAR-NAME.
+           MOVE "FILE STATUS START:23"   TO FEATURE.
+           IF      FILESTATUS (4)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-13.
+      *> 
+      *>   START-TEST-GF-13 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-04. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (4)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-3; 1.3.4 (1) A; FROM START-TEST-GF-04  " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (4)  TO COMPUTED-A.
+       START-WRITE-GF-13.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-14.
+           MOVE "START-TEST-GF-14" TO PAR-NAME.
+           MOVE "FILE STATUS START:00"   TO FEATURE.
+           IF      FILESTATUS (5)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-14.
+      *> 
+      *>   START-TEST-GF-14 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-05. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "00"
+      *> 
+           IF      FILESTATUS (5)  EQUAL TO "00"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-3; 1.3.4 (1) A; FROM START-TEST-GF-05   " TO RE-MARK
+                   MOVE    "00"  TO CORRECT-A
+                   MOVE   FILESTATUS (5)  TO COMPUTED-A.
+       START-WRITE-GF-14.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-15.
+           MOVE "START-TEST-GF-15" TO PAR-NAME.
+           MOVE "FILE STATUS START:00"   TO FEATURE.
+           IF      FILESTATUS (6)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-15.
+      *> 
+      *>   START-TEST-GF-15 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-06. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "00"
+      *> 
+           IF      FILESTATUS (6)  EQUAL TO "00"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-3; 1.3.4 (1) A; FROM START-TEST-GF-06   " TO RE-MARK
+                   MOVE   "00"  TO CORRECT-A
+                   MOVE   FILESTATUS (6)  TO COMPUTED-A.
+       START-WRITE-GF-15.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GGF-16.
+           MOVE "START-TEST-GF-16" TO PAR-NAME.
+           MOVE "FILE STATUS START:23"   TO FEATURE.
+           IF      FILESTATUS (7)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-16.
+      *> 
+      *>   START-TEST-GF-16 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-07. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23"
+      *> 
+           IF      FILESTATUS (7)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-3; 1.3.4 (1) A; FROM START-TEST-GF-07   " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (7)  TO COMPUTED-A.
+       START-WRITE-GF-16.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-17.
+           MOVE "START-TEST-GF-17" TO PAR-NAME.
+           MOVE "FILE STATUS START:23"   TO FEATURE.
+           IF      FILESTATUS (8)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-17.
+      *> 
+      *>   START-TEST-GF-07 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-08. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (8)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-3; 1.3.4 (1) A; FROM START-TEST-GF-08   " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (8)  TO COMPUTED-A.
+       START-WRITE-GF-17.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-18.
+           MOVE "START-TEST-GF-18" TO PAR-NAME.
+           MOVE "FILE STATUS START:23"   TO FEATURE.
+           IF      FILESTATUS (9)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-18.
+      *> 
+      *>   START-TEST-GF-18 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-09. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (9)  EQUAL TO "23"
+                   PERFORM PASS
+           ELSE    PERFORM FAIL
+           MOVE "IX-3; 1.3.4 (1) A; FROM START-TEST-GF-09   " TO RE-MARK
+                   MOVE  "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (9)  TO COMPUTED-A.
+       START-WRITE-GF-18.
+           PERFORM  PRINT-DETAIL.
+      *> *****************************************************************
+       
+       START-INIT-005.
+           OPEN    INPUT  IX-FS1.
+           MOVE    "STR EQ ALTKY W/O DUP" TO FEATURE.
+           MOVE    "START-TEST-GF-19" TO PAR-NAME.
+           MOVE    "********************" TO HOLD-FILESTATUS-RECORD.
+      *> 
+      *>  THIS TEST TESTS THE  "START -- EQUAL TO" FOR PROPER POSITIONING
+      *>  OF THE RECORD POINTER FOR THE SUBSEQUENT READ STATEMENT.
+      *>  START-TEST-GF-19/27 USES ONLY THE ALTERNATE RECORD KEY WITHOUT
+      *>  THE DUPLICATES OPTION FOR ESTABLISHING THE CURRENT RECORD
+      *>  POINTER FOR THE FILE.  THE FOLLOWING IS A SUMMARY OF THE TEST
+      *>  CONDITIONS AND THE EXPECTED ACTION TO BE TAKEN FOR THE TESTS.
+      *> 
+      *>                       CONDITIONS (CONTENTS OF KEY) / ACTION
+      *> 
+      *>    START-TEST-GF-19  - EQUAL A RECORD IN FILE / RECORD FOUND
+      *>    START-TEST-GF-20  - BETWEEN 2 EXISTING KEY VALUES / INVALID KE
+      *>    START-TEST-GF-21  - LESS THAN FIRST FILE RECORD / INVALID KEY
+      *>    START-TEST-GF-22  - GREATER THAN LAST FILE RECORD / INVALID KE
+      *>    START-TEST-GF-23  - UNEQUAL SIZE OPERANDS (EQUAL) / RECORD FOU
+      *>    START-TEST-GF-24  - UNEQUAL SIZE OPERANDS (EQUAL) / RECORD FOU
+      *>    START-TEST-GF-25  - UNEQUAL SIZE OPERANDS (UNEQUAL) / INVLD KE
+      *>    START-TEST-GF-26  - UNEQUAL SIZE OPERANDS (UNEQUAL) / INVLD KE
+      *>    START-TEST-GF-27  - UNEQUAL SIZE OPERANDS (UNEQUAL) /INVLD KEY
+      *> 
+      *>   BEFORE EACH TEST A RECORD IS MADE AVAILABLE WHICH IS DIFFERENT
+      *>   THAN THE ONE WHICH IS EXPECTED TO BE PRESENT FOLLOWING A TEST.
+      *>   IF AN INVALID KEY IS EXPECTED FROM THE TEST, THE KEYS
+      *>   ASSOCIATED WITH THE FILE WHICH ARE NOT PARTICIPATING IN THE
+      *>   START STATEMENT WILL BE LOADED WITH VALUES WHICH WOULD
+      *>   MATCH RECORDS IN THE FILE.  IF KEY MATCH IS EXPECTED FROM
+      *>   THE TEST, THE KEYS ASSOCIATED WITH THE FILE WHICH ARE NOT
+      *>   PARTICIPATING IN THE START STATEMENT WILL BE LOADED WITH
+      *>   VALUES WHICH WOULD NOT MATCH RECORDS IN THE FILE.  THE FILE
+      *>   STATUS FROM EXECUTION OF EACH START IS CAPTURED FOR LATER TESTS
+      *> 
+       START-INIT-GF-19.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE   "**"  TO FILESTATUS (1)
+                   MOVE   "TEST IMPROPERLY INITIALIZED" TO RE-MARK
+                   GO TO START-DELETE-GF-19.
+           MOVE    "CCCCCDDDDD022"  TO FS1-RECKEY-1-13.
+           MOVE    "XXXXXXXXXY382ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "EEEEEFFFFF022ALTKEY2" TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1 TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2 TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-19.
+      *> 
+      *>   START-TEST-GF-19 - THE START SHOULD FIND A RECORD IN THE FILE
+      *>                     WHICH HAS AN ALTERNATE KEY VALUE OF
+      *>                     XXXXXXXXXY382ALTKEY1 (RECORD NUMBER 191).
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-ALTKEY1
+              INVALID KEY     MOVE FS1-STATUS TO FILESTATUS (1)
+                           MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                              GO TO START-FAIL-GF-19.
+           MOVE    FS1-STATUS TO FILESTATUS (1).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END ON READ" TO COMPUTED-A
+                           GO TO START-FAIL-GF-19.
+           MOVE    IX-FS1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1)  EQUAL TO 191
+                   PERFORM PASS
+                   MOVE SPACE TO RE-MARK
+                   GO TO START-WRITE-GF-19.
+           MOVE    66  TO RECNO.
+           PERFORM DISPLAY-ALTERNATE-KEY1.
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-19.
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    191  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-19.
+       START-DELETE-GF-19.
+           PERFORM DE-LETE.
+       START-WRITE-GF-19.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-20.
+           MOVE "START-TEST-GF-20" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (2)
+                   GO TO   START-DELETE-GF-20.
+           MOVE    "EEEEEEEFFF066"  TO FS1-RECKEY-1-13.
+           MOVE    "HHHHHHHIII067ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "TTTTTTTSSS334ALTKEY2" TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-20.
+      *> 
+      *>   START-TEST-GF.02  - THE START SHOULD NOT FIND A RECORD IN THE
+      *>                     FILE WHICH HAS AN ALTERNATE KEY VALUE OF
+      *>                     HHHHHHHIII067ALTKEY1.  THIS KEY VALUE IS
+      *>                     SEQUENTIALLY LOCATED BETWEEN TWO CURRENTLY
+      *>                     EXISTING ALTERNATE KEYS IN THE FILE.
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-ALTKEY1
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (2)
+                               GO TO START-PASS-GF-20.
+           MOVE    FS1-STATUS TO FILESTATUS (2).
+           READ    IX-FS1 AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    ALTERNATE-KEY1 (1) TO COMPUTED-A.
+           MOVE    "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-20.
+       START-PASS-GF-20.
+           PERFORM  PASS.
+           MOVE     "INVALID KEY"  TO RE-MARK.
+           GO TO   START-WRITE-GF-20.
+       START-DELETE-GF-20.
+           PERFORM DE-LETE.
+       START-WRITE-GF-20.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-21.
+           MOVE "START-TEST-GF-21" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (3)
+                   GO TO   START-DELETE-GF-21.
+           MOVE    "BBBBBBBBBC002"  TO FS1-RECKEY-1-13.
+           MOVE   "EEEEEEEEEF001ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "WWWWWWWWWV398ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-21.
+      *> 
+      *>   START-TEST-GF-21 - THE START STATEMENT SHOULD NOT FIND A
+      *>                     RECORD IN THE FILE WHICH HAS AN ALTERNATE
+      *>                     KEY VALUE OF EEEEEEEEEF001ALTKEY1.  THIS KEY
+      *>                     VALUE IS SEQUENTIALLY LOWER THAN ANY
+      *>                     CURRENTLY EXISTING KEY IN THE FILE.
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-ALTKEY1
+                INVALID KEY    MOVE FS1-STATUS TO FILESTATUS (3)
+                           GO TO START-PASS-GF-21.
+           MOVE    FS1-STATUS TO FILESTATUS (3).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    ALTERNATE-KEY1 (1) TO COMPUTED-A.
+           MOVE    "INVALID KEY"  TO CORRECT-A.
+           GO TO START-WRITE-GF-21.
+       START-PASS-GF-21.
+           PERFORM PASS.
+           MOVE    "INVALID KEY"  TO RE-MARK.
+           GO TO   START-WRITE-GF-21.
+       START-DELETE-GF-21.
+           PERFORM DE-LETE.
+       START-WRITE-GF-21.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-22.
+           MOVE "START-TEST-GF-22" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (4)
+                   GO TO   START-DELETE-GF-22.
+           MOVE    "UUUUUUUUUU400"  TO FS1-RECKEY-1-13.
+           MOVE    "YYYYYYYYYY401ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "DDDDDDDDDD000ALTKEY2" TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-22.
+      *> 
+      *>   START-TEST-GF-22 - THE START STATEMENT SHOULD NOT FIND A
+      *>                     RECORD IN THE FILE WHICH HAS AN ALTERNATE
+      *>                     KEY VALUE OF YYYYYYYYYY401ALTKEY1.  THIS
+      *>                     VALUE IS SEQUENTIALLY GREATER THAN
+      *>                     ANY ALTERNATE KEY CURRENTLY EXISTING IN
+      *>                     THE FILE.  AN INVALID KEY CONDITION
+      *>                     IS EXPECTED WHEN THE START IS EXECUTED.
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-ALTKEY1
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (4)
+                               GO TO START-PASS-GF-22.
+           MOVE    FS1-STATUS TO FILESTATUS (4).
+           READ    IX-FS1 AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    ALTERNATE-KEY1 (1) TO COMPUTED-A.
+           MOVE    "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-22.
+       START-PASS-GF-22.
+           PERFORM  PASS.
+           GO TO   START-WRITE-GF-22.
+       START-DELETE-GF-22.
+           PERFORM DE-LETE.
+       START-WRITE-GF-22.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-23.
+           MOVE "START-TEST-GF-23" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (5)
+                   GO TO   START-DELETE-GF-23.
+           MOVE    "CDDDDDDDDD039"  TO FS1-RECKEY-1-13.
+           MOVE    "GGGGHXXXXX052ALTKEY1" TO FS1-ALTKEY1-1-20.
+           MOVE    "ABCXXXXXXX400ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-23.
+      *>   START-TEST-GF-23 - THE START STATEMENT USES AN OPERAND
+      *>                     IN THE KEY PHRASE WHICH IS NOT THE NAME
+      *>                     OF AN ALTERNATE KEY BUT IS THE NAME OF A
+      *>                     DATA ITEM WHICH IS SUBORDINATE TO THE
+      *>                     ALTERNATE KEY.  THE CONTENTS OF THE DATA ITEM
+      *>                     (POSITIONS 1 THRU 5 OF THE ALTERNATE KEY)
+      *>                     IS A UNIQUE KEY VALUE FOR THE FILE.  THE
+      *>                     BALANCE OF THE KEY (POSITIONS 6 THRU 13 OF
+      *>                     THE ALTERNATE KEY IS NOT A VALID KEY VALUE
+      *>                     FOR THE FILE.  THE
+      *>                     RECORD WITH THE ALTERNATE KEY "GGGGHHHHHH052
+      *>                     ALTKEY1 (RECORD NUMBER 26) IS EXPECTED TO
+      *>                     BE FOUND.
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-ALTKEY1-1-5
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (5)
+                           MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                           GO TO START-FAIL-GF-23.
+           MOVE    FS1-STATUS TO FILESTATUS (5).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END ON READ" TO COMPUTED-A
+                           GO TO  START-FAIL-GF-23.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1)  EQUAL TO 26
+                   PERFORM  PASS
+                   GO TO START-WRITE-GF-23.
+           MOVE    26  TO RECNO.
+           PERFORM DISPLAY-ALTERNATE-KEY1.
+           MOVE    XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-23.
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM  FAIL.
+           MOVE    26  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-23.
+       START-DELETE-GF-23.
+           PERFORM DE-LETE.
+       START-WRITE-GF-23.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-24.
+           MOVE "START-TEST-GF-24" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (6)
+                   GO TO   START-DELETE-GF-24.
+           MOVE    "YYYYYUUUUU390"  TO FS1-RECKEY-1-13.
+           MOVE    "XXXXXYYYYY390ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "WWWWWWWWWV399ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-24.
+      *> 
+      *>   START-TEST-GF-24 - THE START STATEMENT USES AN OPERAND IN THE
+      *>                     KEY PHRASE WHICH IS NOT THE NAME OF AN
+      *>                     ALTERNATE KEY BUT IS THE NAME OF A DATA ITEM
+      *>                     THAT IS SUBORDINATE TO THE KEY.  THE CONTENTS
+      *>                     OF THE DATA ITEM (POSITIONS 1 THRU 5 OF THE
+      *>                     ALTERNATE KEY) IS A DUPLICATE OF THE FIRST
+      *>                     5 POSITIONS OF 5 OTHER RECORDS IN THE FILE.
+      *>                     THIS TEST EXPECTS THE RECORD POINTER
+      *>                     TO BE POSITIONED TO RECORD KEY XXXXXXXXXX380
+      *>                     ALTKEY1 (RECORD NUMBER 190) WHICH WAS THE
+      *>                     FIRST RECORD WRITTEN TO THE FILE THAT
+      *>                     CONTAINS XXXXX IN THE FIRST 5 POSITIONS OF
+      *>                   THE KEY.  THE ALTERNATE KEY WAS LOADED WITH THE
+      *>                     VALUE XXXXXYYYYY390ALTKEY1 (KEY FOR RECORD
+      *>                      NUMBER 195) BEFORE THE START WAS EXECUTED.
+      *> 
+           START   IX-FS1
+                          KEY IS EQUAL TO IX-FS1-ALTKEY1-1-5
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (6)
+                           MOVE  "INVALID KEY ON START"  TO COMPUTED-A
+                           GO TO START-FAIL-GF-24.
+           MOVE    FS1-STATUS TO FILESTATUS (6).
+           READ    IX-FS1  AT END
+                           MOVE "AT END ON READ" TO COMPUTED-A
+                           GO TO START-FAIL-GF-24.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 190
+                   PERFORM  PASS
+                   GO TO START-WRITE-GF-24.
+           MOVE    65  TO RECNO.
+           PERFORM DISPLAY-ALTERNATE-KEY1.
+           MOVE    XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-24.
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM  FAIL.
+           MOVE    190   TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-24.
+       START-DELETE-GF-24.
+           PERFORM DE-LETE.
+       START-WRITE-GF-24.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-25.
+           MOVE "START-TEST-GF-25" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (7)
+                   GO TO   START-DELETE-GF-25.
+           MOVE    "CCCCCCCCCD022"  TO FS1-RECKEY-1-13.
+           MOVE    "022ALTKEY1          "  TO FS1-ALTKEY1-1-20.
+           MOVE    "VVVVVVVVVV380ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-25.
+      *> 
+      *>   START-TEST-GF-25 - THE START STATEMENT USES AN OPERAND IN THE
+      *>                     KEY PHRASE OF THE START STATEMENT WHICH IS
+      *>                     A DATA ITEM SUBORDINATE TO THE ALTERNATE KEY
+      *>                     NAME.  THE CONTENTS OF THE DATA ITEM
+      *>                     POSITIONS 1 THRU 10 OF THE ALTERNATE KEY)
+      *>                     IS LOADED WITH "022ALTKEY1". NO SUCH RECORD
+      *>                     SHOULD BE IN THE FILE.  IF IN THE COMPARSION, 
+      *>                     THE LONGER OPERAND IS TRUNCATED ON THE LEFT
+      *>                     INSTEAD OF ON THE RIGHT THE CONTENTS OF
+      *>                     THE DATA ITEM WILL MATCH A RECORD IN THE
+      *>                     FILE.  THIS TEST EXPECTS THE LONGER OPERAND
+      *>                     TO BE TRUNCATED ON THE RIGHT CAUSING NO
+      *>                     DATA ITEM MATCH AND RESULTING IN AN INVALID
+      *>                     KEY CONDITION WHEN THE START IS EXECUTED.
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY1-1-10
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (7)
+                           GO TO START-PASS-GF-25.
+           MOVE    FS1-STATUS TO FILESTATUS (7).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    XRECORD-KEY (1) TO COMPUTED-A.
+           MOVE    "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-25.
+       START-PASS-GF-25.
+           PERFORM PASS.
+           GO TO   START-WRITE-GF-25.
+       START-DELETE-GF-25.
+           PERFORM DE-LETE.
+       START-WRITE-GF-25.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-26.
+           MOVE "START-TEST-GF-26" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (8)
+                   GO TO   START-DELETE-GF-26.
+           MOVE    "BBBBBBBBBC002"  TO FS1-RECKEY-1-13.
+           MOVE    "EEEEEEEEEE002ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "WWWWWWWWWV398ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-26.
+      *> 
+      *>   START-TEST-GF-26 - THIS TEST USES AN OPERAND IN THE
+      *>                     KEY PHRASE OF THE START STATEMENT WHICH IS
+      *>                     A DATA ITEM SUBORDINATE TO THE ALTERNATE KEY
+      *>                     NAME.  THE CONTENTS OF THE DATA ITEM
+      *>                     (POSITIONS 1 THRU 10 OF THE RECORD KEY) IS
+      *>                     LOADED WITH "EEEEEEEEEE". THIS KEY VALUE
+      *>                     IS LOWER THAN ANY ALTERNATE KEY VALUE IN
+      *>                     POSITION 1 THRU 10 EXISTING IN THE FILE
+      *>                     THEREFORE AN INVALID KEY CONDITION IS
+      *>                     EXPECTED WHEN THE START STATEMENT IS
+      *>                     EXECUTED.
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY1-1-10
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (8)
+                           GO TO START-PASS-GF-26.
+           MOVE    FS1-STATUS TO FILESTATUS (8).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    XRECORD-KEY (1)  TO COMPUTED-A.
+           MOVE     "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-26.
+       START-PASS-GF-26.
+           PERFORM PASS.
+           GO TO   START-WRITE-GF-26.
+       START-DELETE-GF-26.
+           PERFORM DE-LETE.
+       START-WRITE-GF-26.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-27.
+           MOVE "START-TEST-GF-27" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (9)
+                   GO TO   START-DELETE-GF-27.
+           MOVE    "UUUUUUUUUU400"  TO FS1-RECKEY-1-13.
+           MOVE    "YYYYYZYYYY400ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "WWWWWWWWWV398ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-27.
+      *> 
+      *>   START-TEST-GF-27 - THIS TEST USES AN OPERAND IN THE
+      *>                     KEY PHRASE OF THE START STATEMENT WHICH IS
+      *>                     A DATA ITEM SUBORDINATE TO THE ALTERNATE KEY
+      *>                     NAME.  THE CONTENTS OF THE DATA ITEM
+      *>                     (POSITIONS 1 THRU 10 OF THE RECORD KEY) IS
+      *>                     LOADED WITH "YYYYYZYYYY". THIS KEY VALUE
+      *>                     IS GREATER THAN ANY ALTERNATE KEY VALUE IN
+      *>                     POSITION 1 THRU 10 EXISTING IN THE FILE
+      *>                     THEREFORE AN INVALID KEY CONDITION IS
+      *>                     EXPECTED WHEN THE START STATEMENT IS
+      *>                     EXECUTED.
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY1-1-10
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (9)
+                           GO TO START-PASS-GF-27.
+           MOVE    FS1-STATUS TO FILESTATUS (9).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    XRECORD-KEY (1)  TO COMPUTED-A.
+           MOVE     "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-27.
+       START-PASS-GF-27.
+           PERFORM PASS.
+           GO TO   START-WRITE-GF-27.
+       START-DELETE-GF-27.
+           PERFORM DE-LETE.
+       START-WRITE-GF-27.
+           PERFORM PRINT-DETAIL.
+       
+           CLOSE   IX-FS1.
+       
+       START-INIT-FILE-STATUS-2.
+           MOVE             "FILE STATUS START:00"   TO FEATURE.
+           MOVE "START-TEST-GF-28" TO PAR-NAME.
+      *> 
+      *>   THIS SERIES OF TESTS CHECKS THE CONTENTS OF THE FILE STATUS
+      *>   CAPTURED FROM THE LAST NINE TSTS.
+      *> 
+       START-TEST-GF-28.
+           IF      FILESTATUS (1)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-28.
+      *> 
+      *>   START-TEST-GF-28 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-19. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "00".
+      *> 
+           IF      FILESTATUS (1)  EQUAL TO "00"
+                   PERFORM PASS
+           ELSE
+           MOVE "IX-3; 1.3.4 (1) A FROM START-TEST-GF-19    " TO RE-MARK
+                   PERFORM  FAIL
+                   MOVE  "00"  TO CORRECT-A
+                   MOVE   FILESTATUS (1)  TO COMPUTED-A.
+       START-WRITE-GF-28.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-29.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-29" TO PAR-NAME.
+           IF      FILESTATUS (2)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-29.
+      *> 
+      *>   START-TEST-GF-29 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-20. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (2)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-4; 1.3.4 (3) C ; SEE START-TEST-GF-20   " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (2)  TO COMPUTED-A.
+       START-WRITE-GF-29.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-30.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-30" TO PAR-NAME.
+           IF      FILESTATUS (3)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-30.
+      *> 
+      *>   START-TEST-GF-30 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-21. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (3)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-4; 1.3.4 (3) C; SEE START-TEST-GF-21    " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (3)  TO COMPUTED-A.
+       START-WRITE-GF-30.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-31.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-31" TO PAR-NAME.
+           IF      FILESTATUS (4)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-31.
+      *> 
+      *>   START-TEST-GF-31 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-22. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (4)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-4; 1.3.4 (3) C; SEE START-TEST-GF-22    " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (4)  TO COMPUTED-A.
+       START-WRITE-GF-31.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-32.
+           MOVE             "FILE STATUS START:00"   TO FEATURE.
+           MOVE "START-TEST-GF-32" TO PAR-NAME.
+           IF      FILESTATUS (5)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-32.
+      *> 
+      *>   START-TEST-GF.05  - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-23. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "00"
+      *> 
+           IF      FILESTATUS (5)  EQUAL TO "00"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-3; 1.3.4 (1) A; SEE START-TEST-GF-23    " TO RE-MARK
+                   MOVE    "00"  TO CORRECT-A
+                   MOVE   FILESTATUS (5)  TO COMPUTED-A.
+       START-WRITE-GF-32.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-33.
+           MOVE             "FILE STATUS START:00"   TO FEATURE.
+           MOVE "START-TEST-GF-33" TO PAR-NAME.
+           IF      FILESTATUS (6)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-33.
+      *> 
+      *>   START-TEST-GF-33  - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-24. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "00"
+      *> 
+           IF      FILESTATUS (6)  EQUAL TO "00"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-3; 1.3.4 (1) A; SEE START-TEST-GF-24    " TO RE-MARK
+                   MOVE   "00"  TO CORRECT-A
+                   MOVE   FILESTATUS (6)  TO COMPUTED-A.
+       START-WRITE-GF-33.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-34.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-34" TO PAR-NAME.
+           IF      FILESTATUS (7)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-34.
+      *> 
+      *>   START-TEST-GF-34  - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-25. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23"
+      *> 
+           IF      FILESTATUS (7)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-4; 1.3.4 (3) C; SEE START-TEST-GF-25    " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (7)  TO COMPUTED-A.
+       START-WRITE-GF-34.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-35.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-35" TO PAR-NAME.
+           IF      FILESTATUS (8)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-35.
+      *> 
+      *>   START-TEST-GF-35  - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-26. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (8)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-4; 1.3.4 (3) C; SEE START-TEST-GF-26    " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (8)  TO COMPUTED-A.
+       START-WRITE-GF-35.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-36.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-36" TO PAR-NAME.
+           IF      FILESTATUS (9)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-36.
+      *> 
+      *>   START-TEST-GF-36 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-27. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (9)  EQUAL TO "23"
+                   PERFORM PASS
+           ELSE    PERFORM FAIL
+           MOVE "IX-4; 1.3.4 (3) C; SEE START-TEST-GF-27    " TO RE-MARK
+                   MOVE  "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (9)  TO COMPUTED-A.
+       START-WRITE-GF-36.
+           PERFORM  PRINT-DETAIL.
+       
+       
+       START-INIT-GF-37-ETC.
+           OPEN    INPUT  IX-FS1.
+           MOVE    "STRT EQ ALTKY W/DUP"  TO FEATURE.
+           MOVE    "START-TEST-GF-37" TO PAR-NAME.
+           MOVE    "********************" TO HOLD-FILESTATUS-RECORD.
+      *> 
+      *>  THIS TEST TESTS THE  "START -- EQUAL TO" FOR PROPER POSITIONING
+      *>  OF THE RECORD POINTER FOR THE SUBSEQUENT READ STATEMENT.
+      *>  START-TEST-007 USES ONLY THE ALTERNATE RECORD KEY WITH DUPLI-
+      *>  CATES OPTION (ALTERNATE-KEY2) FOR ESTABLISHING
+      *>  THE CURRENT RECORD POINTER FOR THE FILE.  THE FOLLOWING IS A
+      *>  SUMMARY OF THE TEST CONDITIONS AND THE EXPECTED ACTION TO BE
+      *>  TAKEN FOR THE  TESTS.
+      *> 
+      *>                       CONDITIONS (CONTENTS OF KEY) / ACTION
+      *> 
+      *>    START-TEST-GF-37 - EQUAL A RECORD IN FILE / RECORD FOUND
+      *>    START-TEST-GF-38 - BETWEEN 2 EXISTING KEY VALUES / INVALID KEY
+      *>    START-TEST-GF-39 - LESS THAN FIRST FILE RECORD / INVALID KEY
+      *>    START-TEST-GF-40 - GREATER THAN LAST FILE RECORD / INVALID KEY
+      *>    START-TEST-GF-41 - UNEQUAL SIZE OPERANDS (EQUAL) / RECORD FOUN
+      *>    START-TEST-GF-42 - UNEQUAL SIZE OPERANDS (EQUAL) / RECORD FOUN
+      *>    START-TEST-GF-43 - UNEQUAL SIZE OPERANDS (UNEQUAL) / INVLD KEY
+      *>    START-TEST-GF-44 - UNEQUAL SIZE OPERANDS (UNEQUAL) / INVLD KEY
+      *>    START-TEST-GF-45 - UNEQUAL SIZE OPERANDS (UNEQUAL) /INVLD KEY
+      *> 
+      *>   BEFORE EACH TEST A RECORD IS MADE AVAILABLE WHICH IS DIFFERENT
+      *>   THAN THE ONE WHICH IS EXPECTED TO BE PRESENT FOLLOWING A TEST.
+      *>   IF AN INVALID KEY IS EXPECTED FROM THE TEST, THE KEYS
+      *>   ASSOCIATED WITH THE FILE WHICH ARE NOT PARTICIPATING IN THE
+      *>   START STATEMENT WILL BE LOADED WITH VALUES WHICH WOULD MATCH
+      *>   RECORDS IN THE FILE.  IF A KEY MATCH IS EXPECTED FROM
+      *>   THE TEST, THE KEYS ASSOCIATED WITH THE FILE WHICH ARE NOT
+      *>   PARTICIPATING IN THE START STATEMENT WILL BE LOADED WITH
+      *>   VALUES WHICH WOULD NOT MATCH RECORDS IN THE FILE.  THE FILE
+      *>   STATUS FROM EXECUTION OF EACH START IS CAPTURED FOR LATER TESTS
+      *> 
+       START-INIT-GF-37.
+           MOVE "START-TEST-GF-37" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE   "**"  TO FILESTATUS (1)
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   GO TO START-DELETE-GF-37.
+           MOVE    "CCCCCDDDDD022" TO FS1-RECKEY-1-13.
+           MOVE    "EEEEEFFFFF022ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "VVVVVVVVUU376ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1 TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2 TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-37.
+      *> 
+      *>   START-TEST-GF-37 - THE START SHOULD FIND A RECORD IN THE FILE
+      *>                     WHICH HAS AN ALTERNATE RECORD KEY VALUE OF
+      *>                     VVVVVVVVUU376ALTKEY2 (RECORD NUMBER 12).
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY2
+                INVALID KEY   MOVE FS1-STATUS TO FILESTATUS (1)
+                           MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                              GO TO START-FAIL-GF-37.
+           MOVE    FS1-STATUS TO FILESTATUS (1).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END ON READ" TO COMPUTED-A
+                           GO TO START-FAIL-GF-37.
+           MOVE    IX-FS1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 12
+                   PERFORM PASS
+                   MOVE SPACE TO RE-MARK
+                   GO TO START-WRITE-GF-37.
+           MOVE    12 TO RECNO.
+           PERFORM DISPLAY-ALTERNATE-KEY2.
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-37.
+           PERFORM FAIL.
+           MOVE    12   TO CORRECT-18V0.
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           GO TO   START-WRITE-GF-37.
+       START-DELETE-GF-37.
+           PERFORM DE-LETE.
+       START-WRITE-GF-37.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-38.
+           MOVE "START-TEST-GF-38" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (2)
+                   GO TO   START-DELETE-GF-38.
+           MOVE    "EEEEEEEEFF064" TO FS1-RECKEY-1-13.
+           MOVE    "HHHHHHHIII066ALTKEY1" TO FS1-ALTKEY1-1-20.
+           MOVE    "TTTTTTTSSS335ALTKEY2" TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-38.
+      *> 
+      *>   START-TEST-GF-38- THE START SHOULD NOT FIND A RECORD IN THE
+      *>                     FILE WHICH HAS AN ALTERNATE RECORD KEY VALUE
+      *>                     OF TTTTTTTSSS335ALTKEY2.  THIS KEY VALUE IS
+      *>                     SEQUENTIALLY LOCATED BETWEEN TWO CURRENTLY
+      *>                     EXISTING ALTERNATE KEYS IN THE FILE.
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY2
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (2)
+                               GO TO START-PASS-GF-38.
+           MOVE    FS1-STATUS TO FILESTATUS (2).
+           READ    IX-FS1 AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    ALTERNATE-KEY2 (1) TO COMPUTED-A.
+           MOVE    "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-38.
+       START-PASS-GF-38.
+           PERFORM  PASS.
+           GO TO   START-WRITE-GF-38.
+       START-DELETE-GF-38.
+           PERFORM DE-LETE.
+       START-WRITE-GF-38.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-39.
+           MOVE "START-TEST-GF-39" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (3)
+                   GO TO   START-DELETE-GF-39.
+           MOVE    "UUUUUUUUUU400" TO FS1-RECKEY-1-13.
+           MOVE    "YYYYYYYYYY400ALTKEY1" TO FS1-ALTKEY1-1-20.
+           MOVE    "DDDDDDDDDC000ALTKEY2" TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-39.
+      *> 
+      *>   START-TEST-GF-39 - THE START STATEMENT SHOULD NOT FIND A
+      *>                     RECORD IN THE FILE WHICH HAS AN ALTERNATE
+      *>                     KEY VALUE OF DDDDDDDDDC000ALTKEY2.  THIS KEY
+      *>                     VALUE IS SEQUENTIALLY LOWER THAN ANY
+      *>                     CURRENTLY EXISTING KEY IN THE FILE.
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY2
+                INVALID KEY    MOVE FS1-STATUS TO FILESTATUS (3)
+                           GO TO START-PASS-GF-39.
+           MOVE    FS1-STATUS TO FILESTATUS (3).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    ALTERNATE-KEY2 (1) TO COMPUTED-A.
+           MOVE    "INVALID KEY"  TO CORRECT-A.
+           GO TO START-WRITE-GF-39.
+       START-PASS-GF-39.
+           PERFORM PASS.
+           GO TO   START-WRITE-GF-39.
+       START-DELETE-GF-39.
+           PERFORM DE-LETE.
+       START-WRITE-GF-39.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-40.
+           MOVE "START-TEST-GF-40" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (4)
+                   GO TO   START-DELETE-GF-40.
+           MOVE    "BBBBBBBBBC002"  TO FS1-RECKEY-1-13.
+           MOVE    "YYYYYYYYYY400ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "WWWWWWWWWV399ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-40.
+      *> 
+      *>   START-TEST-GF-40 - THE START STATEMENT SHOULD NOT FIND A
+      *>                     RECORD IN THE FILE WHICH HAS AN ALTERNATE
+      *>                     KEY VALUE OF WWWWWWWWWV399ALTKEY2.  THIS
+      *>                     VALUE IS SEQUENTIALLY  ONE GREATER THAN
+      *>                     ANY ALTERNATE KEY CURRENTLY EXISTING IN
+      *>                     THE FILE.  AN INVALID KEY CONDITION
+      *>                     IS EXPECTED WHEN THE START IS EXECUTED.
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY2
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (4)
+                               GO TO START-PASS-GF-40.
+           MOVE    FS1-STATUS TO FILESTATUS (4).
+           READ    IX-FS1 AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    ALTERNATE-KEY2 (1) TO COMPUTED-A.
+           MOVE    "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-40.
+       START-PASS-GF-40.
+           PERFORM  PASS.
+           GO TO   START-WRITE-GF-40.
+       START-DELETE-GF-40.
+           PERFORM DE-LETE.
+       START-WRITE-GF-40.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-41.
+           MOVE "START-TEST-GF-41" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (5)
+                   GO TO   START-DELETE-GF-41.
+           MOVE    "CCCCCCCCCC038"  TO FS1-RECKEY-1-13.
+           MOVE    "IIIIIIIIJJ083ALTKEY1" TO FS1-ALTKEY1-1-20.
+           MOVE    "VUUUUVVVVV362ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-41.
+      *> 
+      *>   START-TEST-GF-41 - THE START STATEMENT USES AN OPERAND
+      *>                     IN THE KEY PHRASE WHICH IS NOT THE NAME
+      *>                     OF AN ALTERNATE KEY BUT IS THE NAME OF A
+      *>                     DATA ITEM WHICH IS SUBORDINATE TO THE
+      *>                     ALTERNATE KEY.  THE CONTENTS OF THE DATA ITEM
+      *>                     (POSITIONS 1 THRU 5 OF THE ALTERNATE KEY)
+      *>                     IS A UNIQUE KEY VALUE FOR THE FILE. THE
+      *>                     BALANCE OF THE ALTERNATE KEY (POSITIONS 6
+      *>                     THRU 20)  IN NOT A VALID KEY VALUE FOR THE
+      *>                     FILE.   THE
+      *>                     RECORD WITH THE ALTERNATE KEY
+      *>                     VUUUUUUUUU362ALTKEY2 (RECORD NUMBER 19) IS
+      *>                     EXPECTED TO BE FOUND.
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY2-1-5
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (5)
+                           MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                           GO TO START-FAIL-GF-41.
+           MOVE    FS1-STATUS TO FILESTATUS (5).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END ON READ" TO COMPUTED-A
+                           GO TO  START-FAIL-GF-41.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 19
+                   PERFORM  PASS
+                   GO TO START-WRITE-GF-41.
+           MOVE    19  TO RECNO.
+           PERFORM DISPLAY-ALTERNATE-KEY2.
+           MOVE    XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-41.
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM  FAIL.
+           MOVE    19  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-41.
+       START-DELETE-GF-41.
+           PERFORM DE-LETE.
+       START-WRITE-GF-41.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-42.
+           MOVE "START-TEST-GF-42" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (6)
+                   GO TO   START-DELETE-GF-42.
+           MOVE    "TTTTTTTTTT390" TO FS1-RECKEY-1-13.
+           MOVE    "XYYYYYYYYY399ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "EEEEEDDDDD010ALTKEY2" TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-42.
+      *> 
+      *>   START-TEST-GF-42 - THE START STATEMENT USES AN OPERAND IN THE
+      *>                     KEY PHRASE WHICH IS NOT THE NAME OF AN ALTER-
+      *>                     NATE KEY BUT IS THE NAME OF A DATA ITEM THAT
+      *>                     SUBORDINATE TO THE ALTERNATE KEY. THE CONTENT
+      *>                     OF THE DATA ITEM (POSITIONS 1 THRU 5 OF THE
+      *>                     ALTERNATE KEY) IS A DUPLICATE OF THE FIRST
+      *>                     5 POSITIONS OF 5 OTHER RECORDS IN THE FILE.
+      *>                     THIS TEST EXPECTS THE RECORD POINTER
+      *>                     TO BE POSITIONED TO ALTERNATE KEY
+      *>                     EEEEEDDDDD020ALTKEY2 (RECORD NO 195) WHICH
+      *>                     IS THE FIRST RECORD ALPHABETICALLY IN THE
+      *>                     FILE THAT CONTAINS EEEEE IN THE FIRST 5
+      *>                     POSITIONS OF THE KEY.  NOTE THIS IS ALSO
+      *>                     A RECORD IN WHICH THE VALUE OF THE FULL
+      *>                     20 POSITION KEY IS A DUPLICATE OF ANOTHER
+      *>                     RECORD (RECORD NUMBER 191).  THE ALTERNATE
+      *>                     KEY WAS LOADED WITH THE VALUE
+      *>                     EEEEEDDDDD010ALTKEY2 (KEY FOR RECORD NUMBER
+      *>                     195) BEFORE THE START WAS EXECUTED.
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY2-1-5
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (6)
+                           MOVE  "INVALID KEY ON START"  TO COMPUTED-A
+                           GO TO START-FAIL-GF-42.
+           MOVE    FS1-STATUS TO FILESTATUS (6).
+           READ    IX-FS1  AT END
+                           MOVE "AT END ON READ" TO COMPUTED-A
+                           GO TO START-FAIL-GF-42.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 195
+                   PERFORM  PASS
+                   GO TO START-WRITE-GF-42.
+           MOVE    65  TO RECNO.
+           PERFORM DISPLAY-ALTERNATE-KEY2.
+           MOVE    XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-42.
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM  FAIL.
+           MOVE    195   TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-42.
+       START-DELETE-GF-42.
+           PERFORM DE-LETE.
+       START-WRITE-GF-42.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-43.
+           MOVE "START-TEST-GF-43" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (7)
+                   GO TO   START-DELETE-GF-43.
+           MOVE    "CCCCCCCCCD022"  TO FS1-RECKEY-1-13.
+           MOVE    "FFFFFFFFFG022ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "380ALTKEY2          "  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-43.
+      *> 
+      *>   START-TEST-GF-43 - THE START STATEMENT USES AN OPERAND IN THE
+      *>                     KEY PHRASE OF THE START STATEMENT WHICH IS
+      *>                     A DATA ITEM SUBORDINATE TO THE ALTERNATE KEY
+      *>                     NAME.  THE CONTENTS OF THE DATA ITEM
+      *>                     (POSITIONS 1 THRU 10 OF THE RECORD KEY)
+      *>                     IS LOADED WITH "380ALTKEY2".  NO SUCH RECORD
+      *>                     SHOULD BE IN THE FILE.  IF IN THE COMPARSION, 
+      *>                     THE LONGER OPERAND IS TRUNCATED ON THE LEFT
+      *>                     INSTEAD OF ON THE RIGHT THE CONTENTS OF
+      *>                     THE DATA ITEM WILL MATCH A RECORD IN THE
+      *>                     FILE.  THIS TEST EXPECTS THE LONGER OPERAND
+      *>                     TO BE TRUNCATED ON THE RIGHT CAUSING NO
+      *>                     DATA ITEM MATCH AND RESULTING IN AN INVALID
+      *>                     KEY CONDITION WHEN THE START IS EXECUTED.
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY2-1-10
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (7)
+                           GO TO START-PASS-GF-43.
+           MOVE    FS1-STATUS TO FILESTATUS (7).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    ALTERNATE-KEY2 (1) TO COMPUTED-A.
+           MOVE    "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-43.
+       START-PASS-GF-43.
+           PERFORM PASS.
+           GO TO   START-WRITE-GF-43.
+       START-DELETE-GF-43.
+           PERFORM DE-LETE.
+       START-WRITE-GF-43.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-44.
+           MOVE "START-TEST-GF-44" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (8)
+                   GO TO   START-DELETE-GF-44.
+           MOVE    "UUUUUUUUUU400"  TO FS1-RECKEY-1-13.
+           MOVE    "YYYYYYYYYY400ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "DDDDDDDDDC000ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-RECKEY   TO IX-REC-KEY-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-44.
+      *> 
+      *>   START-TEST-GF-44 - THIS TEST USES AN OPERAND IN THE
+      *>                     KEY PHRASE OF THE START STATEMENT WHICH IS
+      *>                     A DATA ITEM SUBORDINATE TO THE ALTERNATE KEY
+      *>                     NAME.  THE CONTENTS OF THE DATA ITEM
+      *>                     (POSITIONS 1 THRU 10 OF THE ALTERNATE KEY) IS
+      *>                     LOADED WITH "DDDDDDDDDC".  THIS KEY VALUE
+      *>                     IS LOWER THAN ANY ALTERNATE KEY VALUE IN
+      *>                     POSITION 1 THRU 10 EXISTING IN THE FILE
+      *>                     THEREFORE AN INVALID KEY CONDITION IS
+      *>                     EXPECTED WHEN THE START STATEMENT IS
+      *>                     EXECUTED.
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY2-1-10
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (8)
+                           GO TO START-PASS-GF-44.
+           MOVE    FS1-STATUS TO FILESTATUS (8).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    ALTERNATE-KEY2 (1) TO COMPUTED-A.
+           MOVE     "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-44.
+       START-PASS-GF-44.
+           PERFORM PASS.
+           GO TO   START-WRITE-GF-44.
+       START-DELETE-GF-44.
+           PERFORM DE-LETE.
+       START-WRITE-GF-44.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-45.
+           MOVE "START-TEST-GF-45" TO PAR-NAME.
+           PERFORM START-INITIALIZE-RECORD.
+           IF      INIT-FLAG NOT EQUAL TO ZERO
+                   MOVE    "TEST IMPROPERLY INITIALIZED"  TO RE-MARK
+                   MOVE   "**"  TO FILESTATUS (9)
+                   GO TO   START-DELETE-GF-45.
+           MOVE    "UUUUUUUUUU400"  TO FS1-RECKEY-1-13.
+           MOVE    "YYYYYYYYYY400ALTKEY1"  TO FS1-ALTKEY1-1-20.
+           MOVE    "WWWWWWWWWW400ALTKEY2"  TO FS1-ALTKEY2-1-20.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           MOVE    WRK-FS1-ALTKEY2  TO IX-ALT-KEY2-AREA.
+       START-TEST-GF-45.
+      *> 
+      *>   START-TEST-GF-45 - THIS TEST USES AN OPERAND IN THE
+      *>                     KEY PHRASE OF THE START STATEMENT WHICH IS
+      *>                     A DATA ITEM SUBORDINATE TO THE ALTERNATE KEY
+      *>                     NAME.  THE CONTENTS OF THE DATA ITEM
+      *>                     (POSITIONS 1 THRU 10 OF THE ALTERNATE KEY) IS
+      *>                     LOADED WITH "WWWWWWWWWW".  THIS KEY VALUE
+      *>                     IS GREATER THAN ANY ALTERNATE KEY VALUE IN
+      *>                     POSITION 1 THRU 10 EXISTING IN THE FILE
+      *>                     THEREFORE AN INVALID KEY CONDITION IS
+      *>                     EXPECTED WHEN THE START STATEMENT IS
+      *>                     EXECUTED.
+      *> 
+           START  IX-FS1
+                         KEY IS EQUAL TO IX-FS1-ALTKEY2-1-10
+                INVALID KEY    MOVE  FS1-STATUS TO FILESTATUS (9)
+                           GO TO START-PASS-GF-45.
+           MOVE    FS1-STATUS TO FILESTATUS (9).
+           READ    IX-FS1  AT END
+                           MOVE  "AT END PATH TAKEN ON READ" TO RE-MARK.
+           MOVE    IX-FS1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           MOVE "IX-36; 4.7.2 ETC.                          " TO RE-MARK
+           PERFORM FAIL.
+           MOVE    XRECORD-KEY (1)  TO COMPUTED-A.
+           MOVE     "INVALID KEY" TO CORRECT-A.
+           GO TO   START-WRITE-GF-45.
+       START-PASS-GF-45.
+           PERFORM PASS.
+           GO TO   START-WRITE-GF-45.
+       START-DELETE-GF-45.
+           PERFORM DE-LETE.
+       START-WRITE-GF-45.
+           PERFORM PRINT-DETAIL.
+       
+           CLOSE   IX-FS1.
+       
+       START-INIT-FILE-STATUS-03.
+           MOVE             "FILE STATUS START:00"   TO FEATURE.
+           MOVE "START-TEST-GF-46" TO PAR-NAME.
+      *> 
+      *>   THIS SERIES OF TESTS CHECKS THE CONTENTS OF THE FILE STATUS
+      *>   CAPTURED FROM THE NINE TESTS BEFORE.
+      *> 
+       START-TEST-GF-46.
+           IF      FILESTATUS (1)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-46.
+      *> 
+      *>   START-TEST-GF-046 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-37. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "00".
+      *> 
+           IF      FILESTATUS (1)  EQUAL TO "00"
+                   PERFORM PASS
+           ELSE
+           MOVE "IX-3; 1.3.4 (1) A; SEE START-TEST-GF-37    " TO RE-MARK
+                   PERFORM  FAIL
+                   MOVE  "00"  TO CORRECT-A
+                   MOVE   FILESTATUS (1)  TO COMPUTED-A.
+       START-WRITE-GF-46.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-47.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-47" TO PAR-NAME.
+           IF      FILESTATUS (2)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-47.
+      *> 
+      *>   START-TEST-GF-47 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-38. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (2)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-4; 1.3.4 (3) C; SEE START-TEST-GF-38    " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (2)  TO COMPUTED-A.
+       START-WRITE-GF-47.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-48.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-48" TO PAR-NAME.
+           IF      FILESTATUS (3)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-48.
+      *> 
+      *>   START-TEST-GF-48 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-39. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (3)  EQUAL TO "23"
+                   PERFORM  PASS
+           ELSE PERFORM FAIL
+           MOVE "IX-4; 1.3.4 (3) C; SEE START-TEST-GF-39    " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE  FILESTATUS (3) TO COMPUTED-A.
+       START-WRITE-GF-48.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-49.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-49" TO PAR-NAME.
+           IF      FILESTATUS (4)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-49.
+      *> 
+      *>   START-TEST-GF-49 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *>                     RESULTING FROM START-TEST-GF-40. THE FILE
+      *> 
+           IF      FILESTATUS (4)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-4; 1.3.4 (3) C; SEE START-TEST-GF-40    " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (4)  TO COMPUTED-A.
+       START-WRITE-GF-49.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-50.
+           MOVE             "FILE STATUS START:00"   TO FEATURE.
+           MOVE "START-TEST-GF-50" TO PAR-NAME.
+           IF      FILESTATUS (5)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-50.
+      *> 
+      *>   START-TEST-GF-50 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-41. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "00"
+      *> 
+           IF      FILESTATUS (5)  EQUAL TO "00"
+                   PERFORM  PASS
+           MOVE "IX-3; 1.3.4 (1) A; SEE START-TEST-GF-41    " TO RE-MARK
+                   ELSE  PERFORM  FAIL
+                   MOVE    "00"  TO CORRECT-A
+                   MOVE   FILESTATUS (5)  TO COMPUTED-A.
+       START-WRITE-GF-50.
+           MOVE    "FROM START-TEST-007.05" TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-51.
+           MOVE             "FILE STATUS START:00"   TO FEATURE.
+           MOVE "START-TEST-GF-51" TO PAR-NAME.
+           IF      FILESTATUS (6)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-51.
+      *> 
+      *>   START-TEST-GF-51 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-42. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "00"
+      *> 
+           IF      FILESTATUS (6)  EQUAL TO "00"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-3; 1.3.4 (1) A; SEE START-TEST-GF-42    " TO RE-MARK
+                   MOVE   "00"  TO CORRECT-A
+                   MOVE   FILESTATUS (6)  TO COMPUTED-A.
+       START-WRITE-GF-51.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-52.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-52" TO PAR-NAME.
+           IF      FILESTATUS (7)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-52.
+      *> 
+      *>   START-TEST-GF-52 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-43. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23"
+      *> 
+           IF      FILESTATUS (7)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-4; 1.3.4 (3) C; SEE START-TEST-GF-43    " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (7)  TO COMPUTED-A.
+       START-WRITE-GF-52.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-53.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-53" TO PAR-NAME.
+           IF      FILESTATUS (8)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-53.
+      *> 
+      *>   START-TEST-GF-53 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-44. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (8)  EQUAL TO "23"
+                   PERFORM  PASS
+                   ELSE  PERFORM  FAIL
+           MOVE "IX-4; 1.3.4 (3) C; SEE START-TEST-GF-44    " TO RE-MARK
+                   MOVE    "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (8)  TO COMPUTED-A.
+       START-WRITE-GF-53.
+           PERFORM  PRINT-DETAIL.
+       START-TEST-GF-54.
+           MOVE             "FILE STATUS START:23"   TO FEATURE.
+           MOVE "START-TEST-GF-54" TO PAR-NAME.
+           IF      FILESTATUS (9)  EQUAL TO "**"
+                   PERFORM DE-LETE
+                   GO TO  START-WRITE-GF-54.
+      *> 
+      *>   START-TEST-GF-54 - THIS TEST CHECKS THE FILE STATUS CONTENTS
+      *>                     RESULTING FROM START-TEST-GF-45. THE FILE
+      *>                     STATUS CONTENTS IS EXPECTED TO BE "23".
+      *> 
+           IF      FILESTATUS (9)  EQUAL TO "23"
+                   PERFORM  PASS
+           ELSE    PERFORM FAIL
+           MOVE "IX-4; 1.3.4 (3) C; SEE START-TEST-GF-45    " TO RE-MARK
+                   MOVE  "23"  TO CORRECT-A
+                   MOVE   FILESTATUS (9)  TO COMPUTED-A.
+       START-WRITE-GF-54.
+           PERFORM  PRINT-DETAIL.
+      *> START-WRITE-008.
+           GO TO   START-TEST-COMPLETE.
+      *> START-CLOSE-FILES.
+      *>     GO TO   START-TEST-COMPLETE.
+       START-INITIALIZE-RECORD.
+           MOVE    "GGGGGGGGGG200" TO  FS1-RECKEY-1-13.
+           MOVE    ZERO  TO INIT-FLAG.
+           MOVE    9999  TO XRECORD-NUMBER (1).
+           MOVE    SPACE TO IX-FS1R1-F-G-240.
+           MOVE    WRK-FS1-RECKEY TO IX-REC-KEY-AREA.
+           START   IX-FS1  KEY IS EQUAL TO IX-FS1-KEY INVALID KEY
+                           MOVE   1  TO INIT-FLAG.
+           READ    IX-FS1  INTO  FILE-RECORD-INFO (1)
+                           AT END  MOVE  1 TO INIT-FLAG.
+           IF      XRECORD-NUMBER (1) NOT EQUAL TO 100
+                   MOVE 1 TO INIT-FLAG.
+           MOVE        "**"  TO FS1-STATUS.
+       DISPLAY-RECORD-KEYS.
+           MOVE    XRECORD-KEY (1)  TO WRK-FS1-RECKEY.
+           MOVE    FS1-RECKEY-1-13  TO COMPUTED-A.
+           MOVE    RECKEY-VALUE (RECNO)  TO CORRECT-A.
+           MOVE    SPACE TO P-OR-F.
+           MOVE    "RECORD KEY VALUES" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       DISPLAY-ALTERNATE-KEY1.
+           MOVE    ALTERNATE-KEY1 (1)  TO WRK-FS1-ALTKEY1.
+           MOVE    FS1-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE    ALTKEY1-VALUE (RECNO)  TO CORRECT-A.
+           MOVE    SPACE TO P-OR-F.
+           MOVE    "ALTERNATE RECORD KEY1 VALUES"  TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       DISPLAY-ALTERNATE-KEY2.
+           MOVE    ALTERNATE-KEY2 (1) TO WRK-FS1-ALTKEY2.
+           MOVE    FS1-ALTKEY2-1-20  TO COMPUTED-A.
+           MOVE    ALTKEY2-VALUE (RECNO)  TO CORRECT-A.
+           MOVE    SPACE TO P-OR-F.
+           MOVE    "ALTERNATE RECORD KEY2 VALUES"  TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       START-TEST-COMPLETE.
+           EXIT.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,IX209A

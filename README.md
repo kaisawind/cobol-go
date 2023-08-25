@@ -1,2 +1,1 @@
-# cobol-go
-cobol parser for go
+# cobol parser

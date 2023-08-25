@@ -1,0 +1,873 @@
+      *> HEADER,COBOL,IX105A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IX105A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *> GENERAL:    THIS PROGRAM PROCESSES THREE INDEXED I-O FILES
+      *>             IDENTIFIED AS IX-FR1,IX-FR2 AND IX-FR3.  THE FUNCTION
+      *>             OF THIS PROGRAM IS TO CREATE THREE INDEXED FILES
+      *>             RANDOMLLY (ACCESS MODE RANDOM) AND VERIFY THAT THEY
+      *>             WERE CREATED CORRECTLY.  THE FILES PROCESSED
+      *>             CONTAIN VARIABLE LENGTH RECORDS.
+      *> 
+      *>             X-CARD PARAMETERS WHICH MUST BE SUPPLIED FOR THIS
+      *>             PROGRAM ARE:
+      *> 
+      *>                  X-24   IMPLEMENTOR-NAME IN ASSIGN TO CLAUSE FOR
+      *>                          INDEXED  I-O DATA FILE-1
+      *>                  X-25   IMPLEMENTOR-NAME IN ASSIGN TO CLAUSE FOR
+      *>                          INDEXED  I-O DATA FILE-2
+      *>                  X-26   IMPLEMENTOR-NAME IN ASSIGN TO CLAUSE FOR
+      *>                          INDEXED  I-O DATA FILE-3
+      *>                  X-55   SYSTEM PRINTER
+      *>                  X-62   FOR RAW-DATA
+      *>                  X-82   SOURCE-COMPUTER
+      *>                  X-83   OBJECT-COMPUTER.
+      *> 
+      *>   THIS PROGRAM SHOULD BE RUN ONLY WHEN AN IMPLEMENTATION   *
+      *>   PROVIDES VARIABLE-LENGTH RECORDS FOR THE RECORD CONTAINS *
+      *>   INTEGER TO INTEGER CLAUSE.                               *
+      *>                                                            *
+      *> **************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+           SELECT IX-FR1 ASSIGN TO
+           XXXXX024
+                   ORGANIZATION IS INDEXED
+                   ACCESS  MODE IS RANDOM
+                    RECORD KEY IS IX-FR1-KEY.
+           SELECT IX-FR2 ASSIGN TO
+           XXXXX025
+                   ORGANIZATION IS INDEXED
+                   ACCESS  MODE IS RANDOM
+                    RECORD KEY IS IX-FR2-KEY.
+           SELECT IX-FR3 ASSIGN TO
+           XXXXX026
+                   ORGANIZATION IS INDEXED
+                   ACCESS  MODE IS RANDOM
+                    RECORD KEY IS IX-FR3-KEY.
+       I-O-CONTROL.
+           SAME IX-FR2 IX-FR3.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       FD  IX-FR1
+           LABEL RECORDS ARE STANDARD
+           DATA RECORDS ARE GRP-1SEQ-RECORD-1A  GRP-1SEQ-RECORD-1B
+           RECORD CONTAINS 56 TO 100 CHARACTERS.
+       01  GRP-1SEQ-RECORD-1A.
+           02  IX-FR1-KEY              PICTURE X(8).
+           02  FILLER-1A               PICTURE X(48).
+       01  GRP-1SEQ-RECORD-1B.
+           02  FILLER-1B               PICTURE X(56).
+           02  LONG-REC-1B.
+               03  FILLER              PICTURE X(15).
+               03  REC-NUMBER-1B       PICTURE XXX.
+               03  FILLER              PICTURE X(26).
+       FD  IX-FR2
+           DATA RECORDS  GRP-1SEQ-RECORD-2A  GRP-1SEQ-RECORD-2B
+           LABEL RECORDS ARE STANDARD
+           RECORD CONTAINS 56 TO 101 CHARACTERS.
+       01  GRP-1SEQ-RECORD-2A.
+           02  IX-FR2-KEY              PICTURE X(8).
+           02  FILLER-2A               PICTURE X(48).
+       01  GRP-1SEQ-RECORD-2B.
+           02  FILLER-2B               PICTURE X(56).
+           02  LONG-REC-2B.
+               03  FILLER              PICTURE X(15).
+               03  REC-NUMBER-2B       PICTURE XXX.
+               03  FILLER              PICTURE X(27).
+       FD  IX-FR3
+           LABEL RECORD STANDARD
+           DATA RECORD  GRP-1SEQ-RECORD-3A  GRP-1SEQ-RECORD-3B
+           BLOCK 3 RECORDS
+           RECORD CONTAINS 56 TO 102 CHARACTERS.
+       01  GRP-1SEQ-RECORD-3A.
+           02  IX-FR3-KEY              PICTURE X(8).
+           02  FILLER-3A               PICTURE X(48).
+       01  GRP-1SEQ-RECORD-3B.
+           02  FILLER-3B               PICTURE X(56).
+           02  LONG-REC-3B.
+               03  FILLER              PICTURE X(15).
+               03  REC-NUMBER-3B       PICTURE XXX.
+           02  FILLER                  PICTURE X(28).
+       WORKING-STORAGE SECTION.
+       01  SHORT-SW                    PICTURE 9 VALUE ZERO.
+       01  RECORD-BUILD.
+           02  KEY-BUILD.
+               03  KEY-NAME            PICTURE X(3) VALUE "KEY".
+               03  KEY-VALUE           PICTURE 9(5) VALUE ZERO.
+           02  FILLER                  PICTURE X(6) VALUE " FILE ".
+           02  FILE-NO                 PICTURE 99 VALUE ZERO.
+           02  FILLER                  PICTURE X(14)  VALUE
+           "  RECORD TYPE ".
+           02  RECORD-LONG-OR-SHORT    PICTURE X(5) VALUE "SHORT".
+           02  FILLER                  PICTURE X(21) VALUE SPACE.
+           02  RECORD-LONG-ONLY.
+               03  FILLER              PICTURE X(15)  VALUE
+               " RECORD NUMBER ".
+               03  THREE-POS-NUM       PICTURE 999 VALUE ZERO.
+               03  FILLER-LONG         PICTURE X(28)  VALUE
+               " AREA USED FOR LONG RECORD  ".
+       01  FILE-RECORD-INFORMATION-REC.
+           03 FILE-RECORD-INFO-SKELETON.
+              05 FILLER                 PICTURE X(48)       VALUE
+                   "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+              05 FILLER                 PICTURE X(46)       VALUE
+                   ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+              05 FILLER                 PICTURE X(26)       VALUE
+                   ",LFIL=000000,ORG=  ,LBLR= ".
+              05 FILLER                 PICTURE X(37)       VALUE
+                   ",RECKEY=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY1=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY2=                             ".
+              05 FILLER                 PICTURE X(7)        VALUE SPACE.
+           03 FILE-RECORD-INFO          OCCURS  10  TIMES.
+              05 FILE-RECORD-INFO-P1-120.
+                 07 FILLER              PIC X(5).
+                 07 XFILE-NAME           PIC X(6).
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-NAME         PIC X(6).
+                 07 FILLER              PIC X(1).
+                 07 REELUNIT-NUMBER     PIC 9(1).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-NUMBER       PIC 9(6).
+                 07 FILLER              PIC X(6).
+                 07 UPDATE-NUMBER       PIC 9(2).
+                 07 FILLER              PIC X(5).
+                 07 ODO-NUMBER          PIC 9(4).
+                 07 FILLER              PIC X(5).
+                 07 XPROGRAM-NAME        PIC X(5).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-LENGTH       PIC 9(6).
+                 07 FILLER              PIC X(7).
+                 07 CHARS-OR-RECORDS    PIC X(2).
+                 07 FILLER              PIC X(1).
+                 07 XBLOCK-SIZE          PIC 9(4).
+                 07 FILLER              PIC X(6).
+                 07 RECORDS-IN-FILE     PIC 9(6).
+                 07 FILLER              PIC X(5).
+                 07 XFILE-ORGANIZATION   PIC X(2).
+                 07 FILLER              PIC X(6).
+                 07 XLABEL-TYPE          PIC X(1).
+              05 FILE-RECORD-INFO-P121-240.
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-KEY          PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY1      PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY2      PIC X(29).
+                 07 FILLER              PIC X(7).
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "IX105A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN    OUTPUT PRINT-FILE.
+           MOVE  CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE    ZERO TO REC-SKL-SUB.
+           PERFORM CCVS-INIT-FILE 9 TIMES.
+       CCVS-INIT-FILE.
+           ADD     1 TO REC-SKL-SUB.
+           MOVE    FILE-RECORD-INFO-SKELETON
+                TO FILE-RECORD-INFO (REC-SKL-SUB).
+       CCVS-INIT-EXIT.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO   FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-RC-02-001 SECTION.
+       WRITE-INIT-GF-01.
+           MOVE "WRITE SHORT & LONG " TO FEATURE.
+           MOVE "WRITE-TEST-GF-01" TO PAR-NAME.
+       WRITE-TEST-GF-01.
+      *>     CREATE AN INDEXED FILE OF 180 RECORDS.  THE RECORDS SIZE IS
+      *>     VARIABLE LENGTH (056 TO 100 CHARACTERS).
+           MOVE 1 TO FILE-NO.
+           OPEN OUTPUT IX-FR1.
+           PERFORM WRITE-TEST-GF-01-SHORT-REC 20 TIMES.
+           PERFORM WRITE-TEST-GF-01-LONG-REC 45 TIMES.
+           PERFORM WRITE-TEST-GF-01-SHORT-REC 50 TIMES.
+           PERFORM WRITE-TEST-GF-01-LONG-REC 29 TIMES.
+           PERFORM WRITE-TEST-GF-01-SHORT-REC 35 TIMES.
+           PERFORM WRITE-TEST-GF-01-LONG-REC.
+           IF THREE-POS-NUM EQUAL 180
+              PERFORM PASS
+              MOVE "FILE IX-FR1 CREATED (180 RECORDS)" TO RE-MARK
+              GO TO WRITE-TEST-GF-01-WRITE.
+           MOVE "WRONG NUMBER OF RECORDS WRITTEN" TO RE-MARK.
+           GO TO WRITE-TEST-GF-01-FAIL.
+       WRITE-DELETE-GF-01.
+           PERFORM DE-LETE.
+      *>     NOTE IX-FR1 IS NOT CREATED  SO SKIP TO WRITE-TEST-5.
+           PERFORM PRINT-DETAIL.
+           GO TO WRITE-INIT-GF-02.
+       WRITE-TEST-GF-01-LONG-REC.
+           ADD 1 TO KEY-VALUE  THREE-POS-NUM.
+           MOVE "LONG " TO RECORD-LONG-OR-SHORT.
+           MOVE RECORD-BUILD TO GRP-1SEQ-RECORD-1B.
+           WRITE GRP-1SEQ-RECORD-1B INVALID KEY
+              MOVE "INVALID KEY ON WRITE (LONG)" TO RE-MARK
+              GO TO WRITE-TEST-GF-01-FAIL.
+       WRITE-TEST-GF-01-SHORT-REC.
+           ADD 1 TO KEY-VALUE  THREE-POS-NUM.
+           MOVE "SHORT" TO RECORD-LONG-OR-SHORT.
+           MOVE RECORD-BUILD TO GRP-1SEQ-RECORD-1B.
+           WRITE GRP-1SEQ-RECORD-1A INVALID KEY
+              MOVE "INVALID KEY ON WRITE (SHORT)" TO RE-MARK
+              GO TO WRITE-TEST-GF-01-FAIL.
+       WRITE-TEST-GF-01-FAIL.
+           MOVE "IX-41 4.9.2 WRONG NUMBER OF RECORDS WRITTEN" TO RE-MARK
+           PERFORM FAIL.
+           MOVE 180 TO CORRECT-18V0.
+           MOVE THREE-POS-NUM TO COMPUTED-18V0.
+       WRITE-TEST-GF-01-WRITE.
+           MOVE SPACE TO GRP-1SEQ-RECORD-1B.
+           PERFORM PRINT-DETAIL.
+           CLOSE IX-FR1.
+       READ-INIT-F2-01.
+           MOVE "READ TO VERIFY     " TO FEATURE.
+           MOVE "READ-TEST-F2-01    " TO PAR-NAME.
+      *>     VERIFY NUMBER OF RECORDS IN FILE.
+           OPEN INPUT IX-FR1.
+           MOVE 1 TO KEY-VALUE.
+           MOVE KEY-BUILD TO IX-FR1-KEY.
+       READ-TEST-F2-01.
+           READ IX-FR1 INVALID KEY
+              GO TO COMPARE-FOR-TEST-F2-01.
+           ADD 1 TO KEY-VALUE.
+           MOVE KEY-BUILD TO IX-FR1-KEY.
+           IF KEY-VALUE GREATER THAN 181
+              GO TO READ-FAIL-F2-01.
+           GO TO READ-TEST-F2-01.
+       COMPARE-FOR-TEST-F2-01.
+           IF KEY-VALUE EQUAL 181
+               PERFORM PASS
+               MOVE "180 RECORDS VERIFIED" TO RE-MARK
+               GO TO READ-WRITE-F2-01.
+       READ-FAIL-F2-01.
+           MOVE "IX-28 4.5.2                               " TO RE-MARK.
+           PERFORM FAIL.
+           MOVE 180 TO CORRECT-18V0.
+           SUBTRACT 1 FROM KEY-VALUE.
+           MOVE KEY-VALUE TO COMPUTED-18V0.
+           MOVE "INCORRECT NUMBER OF RECORDS" TO RE-MARK.
+       READ-WRITE-F2-01.
+           MOVE "READ-TEST-F2-01" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           CLOSE IX-FR1.
+       READ-INIT-F2-02.
+           OPEN INPUT IX-FR1.
+           MOVE 10 TO KEY-VALUE.
+           MOVE KEY-BUILD TO IX-FR1-KEY.
+           MOVE "READ  SHORT RECORDS" TO FEATURE.
+           MOVE "READ-TEST-GF-02    " TO PAR-NAME.
+       READ-TEST-F2-02.
+      *>     VERIFY VARIABLE LENGTH RECORDS WERE CREATED BY TESTING
+      *>     SHORT RECORD.
+           READ IX-FR1 INVALID KEY
+               PERFORM FAIL
+               MOVE "KEY00010" TO CORRECT-A
+               MOVE "***INVALID KEY***" TO COMPUTED-A
+               MOVE "INVALID KEY IX-FR1 IX-28 4.5.2" TO RE-MARK
+               GO TO READ-TEST-F2-02-WRITE.
+      *>     NOTE  *** IF REC-NUMBER-1B CONTAINS THE RECORD NUMBER
+      *>           THEN FIXED LENGTH RECORDS WERE WRITTEN INSTEAD
+      *>           OF VARIABLE LENGTH RECORDS.
+      *>     NOTE  CHECK LENGTH OF RECORD 10.
+       COMPARE-FOR-TEST-F2-02.
+           IF REC-NUMBER-1B EQUAL TO "010"
+              MOVE "LONG RECORD CREATED" TO COMPUTED-A
+           ELSE MOVE "SHORT RECORD CREATED" TO COMPUTED-A
+                MOVE 1 TO SHORT-SW.
+           MOVE "EXPECT SHORT RECORD" TO CORRECT-A.
+           MOVE "INFO ONLY-SEE PROGRAM" TO RE-MARK.
+       READ-TEST-F2-02-WRITE.
+           PERFORM PRINT-DETAIL.
+           CLOSE IX-FR1.
+       READ-INIT-F2-03.
+      *>     VERIFY VARIABLE LENGTH RECORDS WERE CREATED BY TESTING
+      *>     LONG RECORD.
+           OPEN INPUT IX-FR1.
+           MOVE 144 TO KEY-VALUE.
+           MOVE KEY-BUILD TO IX-FR1-KEY.
+           MOVE "READ LONG   RECORDS" TO FEATURE.
+           MOVE "READ-TEST-F2-03    " TO PAR-NAME.
+       READ-TEST-F2-03.
+           READ IX-FR1 INVALID KEY
+               PERFORM FAIL
+               MOVE "KEY00144" TO CORRECT-A
+               MOVE "***INVALID KEY***" TO COMPUTED-A
+               MOVE "INVAILD KEY IX-FR1" TO RE-MARK
+               GO TO READ-WRITE-F2-03.
+      *>     NOTE  *** IF REC-NUMBER-1B CONTAINS THE RECORD NUMBER
+      *>               THEN LONG RECORDS WERE WRITTEN.
+       COMPARE-FOR-TEST-F2-03.
+           IF REC-NUMBER-1B NOT EQUAL TO "144" GO TO READ-FAIL-F2-03.
+           PERFORM PASS.
+           PERFORM READ-WRITE-F2-03.
+           MOVE "EXPECT VARIABLE LTH" TO CORRECT-A.
+           MOVE "INFO ONLY-SEE PROGRAM" TO RE-MARK.
+           IF SHORT-SW EQUAL TO ZERO
+              MOVE "FIXED RECORD CREATED" TO COMPUTED-A
+              ELSE MOVE "VARIABLE LTH CREATED" TO COMPUTED-A.
+           GO TO READ-WRITE-F2-03.
+       READ-FAIL-F2-03.
+           PERFORM FAIL.
+           MOVE "KEY00144" TO CORRECT-A.
+           MOVE IX-FR1-KEY TO COMPUTED-A.
+           MOVE "WRONG LENGTH OR WRONG RECORD IX-28 4.5.2" TO RE-MARK.
+       READ-WRITE-F2-03.
+           PERFORM PRINT-DETAIL.
+       READ-TEST-F2-03-EXIT.
+           CLOSE  IX-FR1.
+       WRITE-INIT-GF-02.
+           MOVE "WRITE IX-FS2       " TO FEATURE.
+           MOVE "WRITE-TEST-GF-02    " TO PAR-NAME.
+      *>     CREATE AN INDEXED FILE OF 101 RECORDS.  THE RECORD SIZE IS
+      *>     VARIABLE LENGTH (056 TO 101 CHARACTERS).
+           MOVE ZERO TO KEY-VALUE  THREE-POS-NUM  SHORT-SW.
+           MOVE 2 TO FILE-NO.
+           OPEN OUTPUT IX-FR2.
+       WRITE-TEST-GF-02.
+           PERFORM WRITE-TEST-GF-02-SHORT-REC 11 TIMES.
+           PERFORM WRITE-TEST-GF-02-LONG-REC 29 TIMES.
+           PERFORM WRITE-TEST-GF-02-SHORT-REC 20 TIMES.
+           PERFORM WRITE-TEST-GF-02-LONG-REC 20 TIMES.
+           PERFORM WRITE-TEST-GF-02-SHORT-REC 20 TIMES.
+           PERFORM WRITE-TEST-GF-02-LONG-REC.
+           IF THREE-POS-NUM EQUAL 101
+              PERFORM PASS
+              MOVE "FILE IX-FR2 CREATED (101 RECORDS)" TO RE-MARK
+              GO TO WRITE-TEST-GF-02-WRITE.
+           MOVE "WRONG NUMBER OF RECORDS WRITTEN IX-41 4.9.2" TO RE-MARK
+           GO TO WRITE-TEST-GF-02-FAIL.
+       WRITE-DELETE-GF-02.
+           PERFORM DE-LETE.
+      *>     NOTE IX-FR2 IS NOT CREATED  SO SKIP TO WRITE-TEST-9.
+           PERFORM PRINT-DETAIL.
+           GO TO WRITE-INIT-GF-03.
+       WRITE-TEST-GF-02-LONG-REC.
+           ADD 1 TO KEY-VALUE  THREE-POS-NUM.
+           MOVE "LONG " TO RECORD-LONG-OR-SHORT.
+           MOVE RECORD-BUILD TO GRP-1SEQ-RECORD-2B.
+           WRITE GRP-1SEQ-RECORD-2B INVALID KEY
+              MOVE "INVALID KEY ON WRITE (LONG)" TO RE-MARK
+              GO TO WRITE-TEST-GF-02-FAIL.
+       WRITE-TEST-GF-02-SHORT-REC.
+           ADD 1 TO KEY-VALUE  THREE-POS-NUM.
+           MOVE "SHORT" TO RECORD-LONG-OR-SHORT.
+           MOVE RECORD-BUILD TO GRP-1SEQ-RECORD-2B.
+           WRITE GRP-1SEQ-RECORD-2A INVALID KEY
+              MOVE "INVALID KEY ON WRITE (SHORT)" TO RE-MARK
+              GO TO WRITE-TEST-GF-02-FAIL.
+       WRITE-TEST-GF-02-FAIL.
+           PERFORM FAIL.
+           MOVE 101 TO CORRECT-18V0.
+           MOVE THREE-POS-NUM TO COMPUTED-18V0.
+       WRITE-TEST-GF-02-WRITE.
+           MOVE SPACE TO GRP-1SEQ-RECORD-2B.
+           PERFORM PRINT-DETAIL.
+           CLOSE IX-FR2.
+       READ-INIT-F2-05.
+      *>     VERIFY NUMBER OF RECORDS IN FILE.
+           MOVE "READ IX-FS2 VERIFY " TO FEATURE.
+           MOVE "READ-TEST-F2-05    " TO PAR-NAME.
+           OPEN INPUT IX-FR2.
+           MOVE 1 TO KEY-VALUE.
+           MOVE KEY-BUILD TO IX-FR2-KEY.
+       READ-TEST-F2-05.
+           READ IX-FR2 INVALID KEY
+              GO TO COMPARE-FOR-TEST-F2-05.
+           ADD 1 TO KEY-VALUE.
+           MOVE KEY-BUILD TO IX-FR2-KEY.
+           IF KEY-VALUE GREATER THAN 102
+              GO TO READ-TEST-F2-05-FAIL.
+           GO TO READ-TEST-F2-05.
+       COMPARE-FOR-TEST-F2-05.
+           IF KEY-VALUE EQUAL 102
+               PERFORM PASS
+               MOVE "101 RECORDS VERIFIED" TO RE-MARK
+               GO TO READ-TEST-F2-05-WRITE.
+       READ-TEST-F2-05-FAIL.
+           PERFORM FAIL.
+           MOVE 101 TO CORRECT-18V0.
+           SUBTRACT 1 FROM KEY-VALUE.
+           MOVE KEY-VALUE TO COMPUTED-18V0.
+           MOVE "INCORRECT NUMBER OF RECORDS IX-28  4.5.2" TO RE-MARK.
+       READ-TEST-F2-05-WRITE.
+           PERFORM PRINT-DETAIL.
+       READ-INIT-F2-06.
+      *>     VERIFY VARIABLE LENGTH RECORDS WERE CREATED BY TESTING
+      *>     SHORT RECORD.
+           MOVE "READ               " TO FEATURE.
+           MOVE "READ-TEST-F2-06    " TO PAR-NAME.
+           MOVE 100 TO KEY-VALUE.
+           MOVE KEY-BUILD TO IX-FR2-KEY.
+       READ-TEST-F2-06.
+           READ IX-FR2 INVALID KEY
+               PERFORM FAIL
+               MOVE "KEY00100" TO CORRECT-A
+               MOVE "***INVALID KEY***" TO COMPUTED-A
+               MOVE "INVAILD KEY IX-FR2 IX-28 4.5.2 " TO RE-MARK
+               GO TO READ-TEST-F2-06-WRITE.
+      *>     NOTE  *** IF REC-NUMBER-2B CONTAINS THE RECORD NUMBER
+      *>           THEN FIXED LENGTH RECORDS WERE WRITTEN INSTEAD
+      *>           OF VARIABLE LENGTH RECORDS.
+      *>     NOTE  CHECK LENGTH OF RECORD 100.
+       COMPARE-FOR-TEST-F2-06.
+           IF REC-NUMBER-2B EQUAL TO "100"
+              MOVE "LONG RECORD CREATED" TO COMPUTED-A
+           ELSE MOVE "SHORT RECORD CREATED" TO COMPUTED-A
+                MOVE 1 TO SHORT-SW.
+           MOVE "EXPECT SHORT RECORD" TO CORRECT-A.
+           MOVE "INFO ONLY-SEE PROGRAM" TO RE-MARK.
+       READ-TEST-F2-06-WRITE.
+           PERFORM PRINT-DETAIL.
+       READ-INIT-F2-07.
+      *>     VERIFY VARIABLE LENGTH RECORDS WERE CREATED BY TESTING
+      *>     LONG RECORD.
+           MOVE "READ               " TO FEATURE.
+           MOVE "READ-TEST-F2-07    " TO PAR-NAME.
+           MOVE 12 TO KEY-VALUE.
+           MOVE KEY-BUILD TO IX-FR2-KEY.
+       READ-TEST-F2-07.
+           READ IX-FR2 INVALID KEY
+               PERFORM FAIL
+               MOVE "KEY00012" TO CORRECT-A
+               MOVE "***INVALID KEY***" TO COMPUTED-A
+               MOVE "INVALID KEY IX-FR2 IX-28 4.5.2" TO RE-MARK
+               GO TO READ-TEST-F2-07-WRITE.
+      *>     NOTE  ** IF REC-NUMBER-1B CONTAINS THE RECORD NUMBER
+      *>              THEN LONG RECORDS WERE WRITTEN.
+       COMPARE-FOR-TEST-F2-07.
+           IF REC-NUMBER-2B EQUAL TO "012"
+              PERFORM PASS
+              PERFORM READ-TEST-F2-07-WRITE
+              MOVE "EXPECT VARIABLE LTH" TO CORRECT-A
+              MOVE "INFO ONLY-SEE PROGRAM" TO RE-MARK
+              IF SHORT-SW EQUAL TO ZERO
+                 MOVE "FIXED RECORD CREATED" TO COMPUTED-A
+                 GO TO READ-TEST-F2-07-WRITE
+              ELSE MOVE "VARIABLE LTH CREATED" TO COMPUTED-A
+                   GO TO READ-TEST-F2-07-WRITE.
+           PERFORM FAIL.
+           MOVE "KEY00012" TO CORRECT-A.
+           MOVE IX-FR2-KEY TO COMPUTED-A.
+           MOVE "WRONG LENGTH OR WRONG RECORD" TO RE-MARK.
+       READ-TEST-F2-07-WRITE.
+           PERFORM PRINT-DETAIL.
+       READ-TEST-F2-07-EXIT.
+           CLOSE IX-FR2.
+       WRITE-INIT-GF-03.
+      *>     CREATE AN INDEXED FILE OF 120 RECORDS.  THE RECORD SIZE IS
+      *>     VARIABLE LENGTH (056-102 CHARACTERS).
+           MOVE "WRITE IX-FS3       " TO FEATURE.
+           MOVE "WRITE-TEST-GF-03   " TO PAR-NAME.
+           MOVE ZERO TO KEY-VALUE  THREE-POS-NUM  SHORT-SW.
+           MOVE 3 TO FILE-NO.
+           OPEN OUTPUT IX-FR3.
+       WRITE-TEST-GF-03.
+           PERFORM WRITE-TEST-GF-03-SHORT-REC.
+           PERFORM WRITE-TEST-GF-03-LONG-REC 15 TIMES.
+           PERFORM WRITE-TEST-GF-03-SHORT-REC 20 TIMES.
+           PERFORM WRITE-TEST-GF-03-LONG-REC 12 TIMES.
+           PERFORM WRITE-TEST-GF-03-SHORT-REC 23 TIMES.
+           PERFORM WRITE-TEST-GF-03-LONG-REC 23 TIMES.
+           PERFORM WRITE-TEST-GF-03-SHORT-REC 25 TIMES.
+           PERFORM WRITE-TEST-GF-03-LONG-REC.
+           IF THREE-POS-NUM EQUAL 120
+              PERFORM PASS
+              MOVE "FILE IX-FR3 CREATED (120 RECORDS)" TO RE-MARK
+              GO TO WRITE-TEST-GF-03-WRITE.
+           MOVE "WRONG NUMBER OF RECORDS WRITTEN IX-41 4.9.2" TO RE-MARK
+           GO TO WRITE-TEST-GF-03-FAIL.
+       WRITE-DELETE-GF-03.
+           PERFORM DE-LETE.
+      *>     NOTE IX-FR3 IS NOT CREATED  SO SKIP TO END-PARAGRAPH.
+           PERFORM PRINT-DETAIL.
+           GO TO CCVS-EXIT.
+       WRITE-TEST-GF-03-LONG-REC.
+           ADD 1 TO KEY-VALUE  THREE-POS-NUM.
+           MOVE "LONG " TO RECORD-LONG-OR-SHORT.
+           MOVE RECORD-BUILD TO GRP-1SEQ-RECORD-3B.
+           WRITE GRP-1SEQ-RECORD-3B INVALID KEY
+              MOVE "INVALID KEY ON WRITE (LONG)" TO RE-MARK
+              GO TO WRITE-TEST-GF-03-FAIL.
+       WRITE-TEST-GF-03-SHORT-REC.
+           ADD 1 TO KEY-VALUE  THREE-POS-NUM.
+           MOVE "SHORT" TO RECORD-LONG-OR-SHORT.
+           MOVE RECORD-BUILD TO GRP-1SEQ-RECORD-3B.
+           WRITE GRP-1SEQ-RECORD-3A INVALID KEY
+              MOVE "INVALID KEY ON WRITE (SHORT)" TO RE-MARK
+              GO TO WRITE-TEST-GF-03-FAIL.
+       WRITE-TEST-GF-03-FAIL.
+           PERFORM FAIL.
+           MOVE 120 TO CORRECT-18V0.
+           MOVE THREE-POS-NUM TO COMPUTED-18V0.
+       WRITE-TEST-GF-03-WRITE.
+           MOVE SPACE TO GRP-1SEQ-RECORD-3B.
+           PERFORM PRINT-DETAIL.
+           CLOSE IX-FR3.
+       READ-INIT-F2-08.
+      *>     VERIFY VARIABLE LENGTH RECORDS WERE CREATED BY TESTING
+      *>     LONG RECORD.
+           MOVE "READ IX-FS3 VERIFY " TO FEATURE.
+           MOVE "READ-TEST-F2-08    " TO PAR-NAME.
+           OPEN INPUT IX-FR3.
+           MOVE 1 TO KEY-VALUE.
+           MOVE KEY-BUILD TO IX-FR3-KEY.
+       READ-TEST-F2-08.
+           READ IX-FR3 INVALID KEY
+               PERFORM FAIL
+               MOVE "KEY00016" TO CORRECT-A
+               MOVE "***INVALID KEY***" TO COMPUTED-A
+               MOVE "INVAILD KEY IX-FR3" TO RE-MARK
+               GO TO READ-TEST-F2-08-WRITE.
+           IF KEY-VALUE NOT EQUAL TO 16
+              ADD 1 TO KEY-VALUE
+              MOVE KEY-BUILD TO IX-FR3-KEY
+              GO TO READ-TEST-F2-08.
+      *>     NOTE  *** IF REC-NUMBER-3B CONTAINS THE RECORD NUMBER
+      *>               THEN LONG RECORDS WERE WRITTEN.
+       COMPARE-FOR-TEST-F2-08.
+           IF REC-NUMBER-3B EQUAL TO "016"
+              PERFORM PASS
+              GO TO READ-TEST-F2-08-WRITE.
+           PERFORM FAIL.
+           MOVE "KEY00016" TO CORRECT-A.
+           MOVE IX-FR3-KEY TO COMPUTED-A.
+           MOVE "WRONG LENGTH OR WRONG RECORD IX-28 4.5.2" TO RE-MARK.
+       READ-TEST-F2-08-WRITE.
+           PERFORM PRINT-DETAIL.
+       READ-INIT-09.
+      *>     VERIFY VARIABLE LENGTH RECORDS WERE CREATED BY TESTING
+      *>     SHORT RECORD.
+           MOVE "READ  SHORT RECORDS" TO FEATURE.
+           MOVE "READ-TEST-F2-09    " TO PAR-NAME.
+           MOVE 71 TO KEY-VALUE.
+           MOVE KEY-BUILD TO IX-FR3-KEY.
+       READ-TEST-F2-09.
+           READ IX-FR3 INVALID KEY
+               PERFORM FAIL
+               MOVE "KEY00071" TO CORRECT-A
+               MOVE "***INVALID KEY***" TO COMPUTED-A
+               MOVE "INVAILD KEY IX-FR3 IX-28 4.5.2" TO RE-MARK
+               GO TO READ-TEST-F2-09-WRITE.
+      *>     NOTE  *** IF REC-NUMBER-1B CONTAINS THE RECORD NUMBER
+      *>           THEN FIXED LENGTH RECORDS WERE WRITTEN INSTEAD
+      *>           OF VARIABLE LENGTH RECORDS.
+      *>     NOTE  CHECK LENGTH OF RECORD 71.
+       COMPARE-FOR-TEST-F2-09.
+           IF REC-NUMBER-3B EQUAL TO "071"
+              MOVE "LONG RECORD CREATED" TO COMPUTED-A
+           ELSE MOVE "SHORT RECORD CREATED" TO COMPUTED-A
+                MOVE 1 TO SHORT-SW.
+           MOVE "EXPECT SHORT RECORD" TO CORRECT-A.
+           MOVE "INFO ONLY-SEE PROGRAM" TO RE-MARK.
+       READ-TEST-F2-09-WRITE.
+           PERFORM PRINT-DETAIL.
+       READ-INIT-F2-10.
+      *>     VERIFY VARIABLE LENGTH RECORDS WERE CREATED BY TESTING
+      *>     LONG RECORD.
+           MOVE "READ LONG   RECORDS" TO FEATURE.
+           MOVE "READ-TEST-F2-10    " TO PAR-NAME.
+           MOVE 120 TO KEY-VALUE.
+           MOVE KEY-BUILD TO IX-FR3-KEY.
+       READ-TEST-F2-10.
+           READ IX-FR3 INVALID KEY
+               PERFORM FAIL
+               MOVE "KEY00120" TO CORRECT-A
+               MOVE "***INVALID KEY***" TO COMPUTED-A
+               MOVE "INVAILD KEY IX-FR3 IX-28 4.5.2" TO RE-MARK
+               GO TO READ-TEST-F2-10-WRITE.
+      *>     NOTE  *** IF REC-NUMBER-3B CONTAINS THE RECORD NUMBER
+      *>           THEN LONG RECORDS WERE WITTEN.
+       COMPARE-FOR-TEST-F2-10.
+           IF REC-NUMBER-3B EQUAL TO "120"
+              PERFORM PASS
+              PERFORM READ-TEST-F2-10-WRITE
+              MOVE "EXPECT VARIABLE LTH" TO CORRECT-A
+              MOVE "INFO ONLY-SEE PROGRAM" TO RE-MARK
+              IF SHORT-SW EQUAL TO ZERO
+                 MOVE "FIXED RECORD CREATED" TO COMPUTED-A
+                 GO TO READ-TEST-F2-10-WRITE
+              ELSE MOVE "VARIABLE LTH CREATED" TO COMPUTED-A
+                   GO TO READ-TEST-F2-10-WRITE.
+           PERFORM FAIL.
+           MOVE "KEY00120" TO CORRECT-A.
+           MOVE IX-FR3-KEY TO COMPUTED-A.
+           MOVE "WRONG LENGTH OR WRONG RECORD IX-28 4.5.2" TO RE-MARK.
+       READ-TEST-F2-10-WRITE.
+           MOVE "READ-TEST-012" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       READ-TEST-F2-10-EXIT.
+           CLOSE IX-FR3.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,IX105A

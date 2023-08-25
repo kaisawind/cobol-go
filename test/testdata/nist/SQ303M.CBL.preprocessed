@@ -1,0 +1,51 @@
+      *> HEADER,COBOL,SQ303M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SQ303M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF
+      *> OBSOLETE FEATURES THAT ARE USED IN HIGH SUBSET SEQUENTIAL
+      *> INPUT-OUTPUT.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT TFIL ASSIGN
+           XXXXX014
+               ORGANIZATION IS SEQUENTIAL
+               ACCESS MODE IS SEQUENTIAL.
+       
+           SELECT TFIL2 ASSIGN
+           XXXXX008
+               ORGANIZATION IS SEQUENTIAL
+               ACCESS MODE IS SEQUENTIAL.
+       
+       I-O-CONTROL.
+           MULTIPLE FILE TAPE CONTAINS TFIL2.
+      *> Message expected for above statement: OBSOLETE
+       
+       DATA DIVISION.
+       FILE SECTION.
+       FD TFIL.
+       01 FREC.
+           03 RKEY PIC 9(8).
+       
+       FD TFIL2.
+       01 FREC2.
+           03 RKEY2 PIC 9(8).
+       
+       PROCEDURE DIVISION.
+       
+       SQ303M-CONTROL.
+           OPEN INPUT TFIL REVERSED.
+      *> Message expected for above statement: OBSOLETE
+       
+           CLOSE TFIL.
+           STOP RUN.
+       
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 2.
+      *> END-OF,SQ303M

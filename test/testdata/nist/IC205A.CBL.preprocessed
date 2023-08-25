@@ -1,0 +1,72 @@
+      *> HEADER,COBOL,IC203A,SUBRTN,IC205A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC205A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>         THE SUBPROGRAM IC205 TESTS THE USE OF THE CANCEL      *
+      *>     STATEMENT WITHIN A SUBPROGRAM.  THIS SUBPROGRAM IS        *
+      *>     CALLED BY IC203 AND CALLS THE SUBPROGRAMS IC204 AND IC206.*
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  ID1 PICTURE X(6) VALUE "IC204A".
+       77  DN2 PICTURE S9(8) USAGE COMP VALUE ZERO.
+       LINKAGE SECTION.
+       01  TABLE-1.
+           02  T-DN1 PIC XXX.
+           02  T-DN2 PIC 99.
+           02  T-DN3 PIC X(5).
+       77  DN1 PICTURE S999.
+       01  TABLE-2.
+           02  TV-1 PIC X.
+           02  TV-2 PIC X.
+       PROCEDURE DIVISION USING TABLE-1, TABLE-2, DN1.
+       CNCL-TEST-05.
+           CALL "IC206A" USING DN2.
+           CALL "IC206A" USING DN2.
+           CALL "IC206A" USING DN2.
+           MOVE "X" TO TV-1.
+           IF DN2 EQUAL TO 3
+               MOVE "A" TO TV-1.
+           CANCEL "IC206A".
+           MOVE ZERO TO DN2.
+           CALL "IC206A" USING DN2.
+           IF DN2 NOT EQUAL TO 1
+               MOVE "Y" TO TV-2, 
+               GO TO CNCL-TEST-06.
+           MOVE "B" TO TV-2.
+       CNCL-TEST-06.
+           CANCEL ID1.
+       EXIT-IC205.
+           EXIT PROGRAM.
+      *> END-OF,IC205A

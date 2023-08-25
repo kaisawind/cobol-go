@@ -1,0 +1,1145 @@
+      *> HEADER,COBOL,NC120A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC120A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC120A TESTS THE USE OF THE "SIGN" CLAUSE WITH
+      *>     FORMATS 1 AND 2 OF THE MULTIPLY STATEMENT.
+      *>     ALL COMBINATIONS OF THE SIGN CLAUSE ARE USED WITH
+      *>     DATA ITEMS OF VARIOUS LENGTHS.
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  WRK-DS-LS-18V00                PICTURE S9(18)
+                 SIGN IS LEADING SEPARATE CHARACTER.
+       77  A06THREES-DS-LS-03V03          PICTURE S999V999 VALUE 333.333
+                 SIGN IS LEADING.
+       77  WRK-DS-TS-06V06                PICTURE S9(6)V9(6)
+                 SIGN IS TRAILING SEPARATE CHARACTER.
+       77  WRK-DS-TS-12V00-S-S REDEFINES WRK-DS-TS-06V06 PICTURE S9(12)
+                 SIGN TRAILING SEPARATE.
+       77  A08TWOS-DS-02V06            PICTURE S99V9(6) VALUE 22.222222.
+       77  WRK-DS-10V00                PICTURE S9(10).
+       77  WRK-XN-00001                PICTURE X.
+       77  A10ONES-DS-T-10V00            PICTURE S9(10)
+               SIGN IS TRAILING
+                                       VALUE 1111111111.
+       77  A12THREES-DS-LS-06V06          PICTURE S9(6)V9(6)
+                   SIGN IS LEADING SEPARATE
+                                       VALUE 333333.333333.
+       77  WRK-DS-02V00                PICTURE S99.
+       77  AZERO-DS-LS-05V05              PICTURE S9(5)V9(5) VALUE ZERO
+                 SIGN IS LEADING SEPARATE CHARACTER.
+       77  WRK-DS-09V09                 PICTURE S9(9)V9(9).
+       77  WRK-DS-18V00-S REDEFINES WRK-DS-09V09 PICTURE S9(18).
+       77  A05ONES-DS-LS-00V05            PICTURE SV9(5) VALUE .11111
+                 SIGN IS LEADING SEPARATE CHARACTER.
+       77  A12ONES-DS-12V00            PICTURE S9(12)
+                                       VALUE 111111111111.
+       77  A01ONE-DS-TS-P0801            PICTURE SP(8)9 VALUE .000000001
+                  SIGN IS TRAILING SEPARATE.
+       77  WRK-DS-T-09V08                PICTURE S9(9)V9(8)
+                 SIGN IS TRAILING.
+       77  WKR-DS-T-17V00-S REDEFINES WRK-DS-T-09V08 PICTURE S9(17)
+               SIGN TRAILING.
+       77  A18ONES-DS-18V00            PICTURE S9(18)
+                                       VALUE 111111111111111111.
+       77  WRK-DS-LS-0201P                PICTURE S99P
+                  SIGN IS LEADING SEPARATE.
+       77  WRK-CS-18V00                PICTURE S9(18) COMPUTATIONAL.
+       77  WRK-DU-18V00                PICTURE 9(18).
+       77  A99-CS-02V00                PICTURE S99 COMPUTATIONAL
+                                       VALUE 99.
+       77  A01ONE-CS-00V01             PICTURE SV9 COMPUTATIONAL
+                                       VALUE .1.
+       77  A99-DS-02V00                PICTURE S99   VALUE 99.
+       77  WRK-DS-TS-12V00-S                PICTURE S9(12).
+       77  WRK-DS-LS-01V00             PICTURE S9 LEADING SEPARATE.
+       77  WRK-DS-03V10                PICTURE S9(3)V9(10).
+       77  A18ONES-DS-09V09            PICTURE S9(9)V9(9)
+                                       VALUE 111111111.111111111.
+       77  A02TWOS-DU-02V00            PICTURE 99  VALUE 22.
+       77  WRK-DS-05V00                PICTURE S9(5).
+       77  A02TWOS-DS-03V02            PICTURE S999V99 VALUE +022.00.
+       77  WRK-CS-02V02                PICTURE S99V99  COMPUTATIONAL.
+       77  A990-DS-0201P               PICTURE S99P   VALUE +990.
+       77  XRAY                        PICTURE X.
+       77  A01ONES-CS-18V00   PICTURE S9(18) COMPUTATIONAL
+                   VALUE +000000000000000001.
+       77  A02THREES-CS-18V00 PICTURE S9(18) COMPUTATIONAL
+                   VALUE -000000000000000033.
+       77  A18SIXES-CU-18V00  PICTURE 9(18) COMPUTATIONAL
+                   VALUE 666666666666666666.
+       77  A16NINES-CU-18V00  PICTURE 9(18) COMPUTATIONAL
+                   VALUE 009999999999999999.
+       77  A14TWOS-CU-18V00   PICTURE 9(18) COMPUTATIONAL
+                   VALUE 000022222222222222.
+       01  MULTIPLY-DATA LEADING SEPARATE.
+           02 MULT1                           PICTURE IS 999V99
+           VALUE IS 80.12.
+           02 MULT2                           PICTURE IS 999V999.
+           02 MULT3                           PICTURE IS $$99.99.
+           02 MULT4                           PICTURE IS S99
+           VALUE IS -56.
+           02 MULT5                           PICTURE IS 9 VALUE IS 4.
+           02 MULT6                           PICTURE IS 99 VALUE IS
+           20.
+       01  DIVIDE-DATA TRAILING SEPARATE.
+           02 DIV1                            PICTURE IS 9(4)V99
+           VALUE IS 1620.36.
+           02 DIV2                            PICTURE IS 99V9
+           VALUE IS 44.1.
+           02 DIV3                            PICTURE IS 9(4)V9
+           VALUE IS 1661.7.
+           02 DIV4                            PICTURE IS S9V999
+           VALUE IS -9.642.
+           02 DIV-02LEVEL-1.
+           03 DIV5                            PICTURE IS V99
+           VALUE IS .82.
+           03 DIV6                            PICTURE IS 9 VALUE IS 0.
+           03 DIV7                            PICTURE IS 9V9
+           VALUE IS 9.6.
+       01  DIV-DATA-2.
+           02 DIV8                            PICTURE IS 99V9.
+           02 DIV9                            PICTURE IS ZZ,ZZZ.9.
+           02 DIV10                           PICTURE IS V999.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC120A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECTION-NC120A-001 SECTION.
+       SIG-INIT-GF-14.
+           MOVE  "MULTIPLY BY GIVING" TO FEATURE.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE   80.12  TO MULT1.
+           MOVE    0     TO MULT2.
+       SIG-TEST-GF-14-0.
+           MULTIPLY MULT1 BY 4.3 GIVING MULT2.
+       SIG-TEST-GF-14-1.
+           IF       MULT2 NOT EQUAL TO 344.516
+                    GO TO SIG-FAIL-GF-14.
+           PERFORM  PASS
+                    GO TO SIG-WRITE-GF-14.
+       SIG-DELETE-GF-14.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-14.
+       SIG-FAIL-GF-14.
+           PERFORM  FAIL.
+           MOVE     MULT2 TO COMPUTED-N.
+           MOVE     +344.516 TO CORRECT-N.
+       SIG-WRITE-GF-14.
+           MOVE "SIG-TEST-GF-14" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-INIT-GF-15.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE   80.12  TO MULT1.
+           MOVE     0    TO MULT3.
+       SIG-TEST-GF-15-0.
+           MULTIPLY .9 BY MULT1 GIVING MULT3 ROUNDED.
+       SIG-TEST-GF-15-1.
+           IF       MULT3 NOT EQUAL TO " $72.11"
+                    GO TO SIG-FAIL-GF-15.
+           PERFORM  PASS.
+           GO TO    SIG-WRITE-GF-15.
+       SIG-DELETE-GF-15.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-15.
+       SIG-FAIL-GF-15.
+           PERFORM  FAIL.
+           MOVE     MULT3 TO COMPUTED-A.
+           MOVE " l72.11" TO CORRECT-A.
+       SIG-WRITE-GF-15.
+           MOVE "SIG-TEST-GF-15 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-INIT-GF-16.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE   -56    TO MULT4.
+           MOVE    80.12 TO MULT1.
+           MOVE     4    TO MULT5.
+       SIG-TEST-GF-16-0.
+           MULTIPLY MULT4 BY MULT1 GIVING MULT5 ON SIZE ERROR
+                    MOVE "H" TO XRAY.
+       SIG-TEST-GF-16-1.
+           IF       XRAY EQUAL TO "H"
+                    PERFORM PASS
+                    ELSE
+                    GO TO SIG-FAIL-GF-16-1.
+           GO TO    SIG-WRITE-GF-16-1.
+       SIG-DELETE-GF-16-1.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-16-1.
+       SIG-FAIL-GF-16-1.
+           MOVE     MULT5 TO COMPUTED-N.
+           MOVE "ON SIZE ERROR NOT EXECUTED" TO RE-MARK.
+           PERFORM  FAIL.
+       SIG-WRITE-GF-16-1.
+           MOVE "SIG-TEST-GF-16-1 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-TEST-GF-16-2.
+           IF       MULT5 NOT EQUAL TO 4
+                    GO TO SIG-FAIL-GF-16-2.
+           PERFORM  PASS.
+           GO TO    SIG-WRITE-GF-16-2.
+       SIG-DELETE-GF-16-2.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-16-2.
+       SIG-FAIL-GF-16-2.
+           PERFORM  FAIL.
+           MOVE     MULT5 TO COMPUTED-N.
+           MOVE     +4 TO CORRECT-N.
+           MOVE    "WRONGLY AFFECTED BY SIZE ERROR" TO RE-MARK.
+       SIG-WRITE-GF-16-2.
+           MOVE "SIG-TEST-GF-16-2 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-INIT-GF-1.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE     4 TO MULT5.
+           MOVE   "A" TO XRAY.
+       SIG-TEST-GF-1-0.
+           MULTIPLY 3.3 BY -3 GIVING MULT5 ROUNDED ON SIZE ERROR
+                    MOVE "J" TO XRAY.
+       SIG-TEST-GF-1-1.
+           IF       XRAY NOT EQUAL TO "J"
+                    GO TO SIG-FAIL-GF-1-1
+                    ELSE
+                    PERFORM PASS.
+           GO TO    SIG-WRITE-GF-1-1.
+       SIG-DELETE-GF-1-1.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-1-1.
+       SIG-FAIL-GF-1-1.
+           MOVE     MULT5 TO COMPUTED-N.
+           MOVE "ON SIZE ERROR NOT EXECUTED" TO RE-MARK.
+           PERFORM  FAIL.
+       SIG-WRITE-GF-1-1.
+           MOVE "SIG-TEST-GF-1-1 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-TEST-GF-1-2.
+           IF       MULT5 EQUAL TO 4
+                    PERFORM PASS
+                    ELSE
+                    GO TO SIG-FAIL-GF-1-2.
+           GO TO    SIG-WRITE-GF-1-2.
+       SIG-DELETE-GF-1-2.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-1-2.
+       SIG-FAIL-GF-1-2.
+           PERFORM  FAIL.
+           MOVE     MULT5 TO COMPUTED-N.
+           MOVE     +4 TO CORRECT-N.
+           MOVE     4 TO MULT5.
+           MOVE     "WRONGLY AFFECTED BY SIZE ERROR" TO RE-MARK.
+       SIG-WRITE-GF-1-2.
+           MOVE "SIG-TEST-GF-1-2 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-INIT-GF-2.
+           MOVE "MULTIPLY BY" TO FEATURE.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE     4 TO MULT5.
+       SIG-TEST-GF-2-0.
+           MULTIPLY MULT5 BY MULT1.
+       SIG-TEST-GF-2-1.
+           IF       MULT1 EQUAL TO 320.48
+                    PERFORM PASS
+                    ELSE
+                    GO TO SIG-FAIL-GF-2.
+           GO TO    SIG-WRITE-GF-2.
+       SIG-DELETE-GF-2.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-2.
+       SIG-FAIL-GF-2.
+           PERFORM  FAIL.
+           MOVE     MULT1 TO COMPUTED-N.
+           MOVE     +320.48 TO CORRECT-N.
+       SIG-WRITE-GF-2.
+           MOVE "SIG-TEST-GF-2 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-INIT-GF-3.
+           MOVE "MULTIPLY BY" TO FEATURE.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE   -56 TO MULT4.
+       SIG-TEST-GF-3-0.
+           MULTIPLY -1.3 BY MULT4 ROUNDED.
+       SIG-TEST-GF-3-1.
+           IF       MULT4 EQUAL TO 73
+                    PERFORM PASS
+                    ELSE
+                    GO TO SIG-FAIL-GF-3.
+           GO TO    SIG-WRITE-GF-3.
+       SIG-DELETE-GF-3.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-3.
+       SIG-FAIL-GF-3.
+           PERFORM  FAIL.
+           MOVE     MULT4 TO COMPUTED-N.
+           MOVE     +73 TO CORRECT-N.
+       SIG-WRITE-GF-3.
+           MOVE "SIG-TEST-GF-3 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-INIT-GF-4.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE     4 TO MULT5.
+           MOVE   "B" TO XRAY.
+       SIG-TEST-GF-4-0.
+           MULTIPLY MULT5 BY MULT5 ON SIZE ERROR
+                    MOVE "K" TO XRAY.
+       SIG-TEST-GF-4-1.
+           IF       XRAY EQUAL TO "K"
+                    PERFORM PASS
+                    ELSE
+                    GO TO SIG-FAIL-GF-4-1.
+           GO TO    SIG-WRITE-GF-4-1.
+       SIG-DELETE-GF-4-1.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-4-1.
+       SIG-FAIL-GF-4-1.
+           MOVE     MULT5 TO COMPUTED-N.
+           MOVE "ON SIZE ERROR NOT EXECUTED" TO RE-MARK.
+           PERFORM  FAIL.
+       SIG-WRITE-GF-4-1.
+           MOVE "SIG-TEST-GF-4-1 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-TEST-GF-4-2.
+           IF       MULT5 EQUAL TO 4
+                    PERFORM PASS
+                    ELSE
+                    GO TO SIG-FAIL-GF-4-2.
+           GO TO    SIG-WRITE-GF-4-2.
+       SIG-DELETE-GF-4-2.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-4-2.
+       SIG-FAIL-GF-4-2.
+           PERFORM  FAIL.
+           MOVE     MULT5 TO COMPUTED-N.
+           MOVE     +4 TO CORRECT-N.
+           MOVE "NOT AFFECTED BY SIZE ERROR" TO RE-MARK.
+       SIG-WRITE-GF-4-2.
+           MOVE "SIG-TEST-GF-4-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-INIT-GF-5.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE    20 TO MULT6.
+           MOVE   "C" TO XRAY.
+       SIG-TEST-GF-5-0.
+           MULTIPLY 4.99 BY MULT6 ROUNDED ON SIZE ERROR
+                    MOVE "L" TO XRAY.
+       SIG-TEST-GF-5-1.
+           IF       XRAY EQUAL TO "L"
+                    PERFORM PASS
+                    ELSE
+                    GO TO SIG-FAIL-GF-5-1.
+           GO TO    SIG-WRITE-GF-5-1.
+       SIG-DELETE-GF-5-1.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-5-1.
+       SIG-FAIL-GF-5-1.
+           MOVE     MULT6 TO COMPUTED-N.
+           MOVE "ON SIZE ERROR NOT EXECUTED" TO RE-MARK.
+           PERFORM  FAIL.
+       SIG-WRITE-GF-5-1.
+           MOVE "SIG-TEST-GF-5-1" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-TEST-GF-5-2.
+           IF       MULT6 EQUAL TO 20
+                    PERFORM PASS
+                    ELSE
+                    GO TO SIG-FAIL-GF-5-2.
+           GO TO    SIG-WRITE-GF-5-2.
+       SIG-DELETE-GF-5-2.
+           PERFORM  DE-LETE.
+           GO TO    SIG-WRITE-GF-5-2.
+       SIG-FAIL-GF-5-2.
+           PERFORM  FAIL.
+           MOVE     MULT6 TO COMPUTED-N.
+           MOVE     +20 TO CORRECT-N.
+           MOVE "NOT AFFECTED BY SIZE ERROR" TO RE-MARK.
+       SIG-WRITE-GF-5-2.
+           MOVE "SIG-TEST-GF-5-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SIG-INIT-GF-6.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE 222222222222 TO WRK-DS-LS-18V00.
+       SIG-TEST-GF-6-0.
+           MULTIPLY A06THREES-DS-LS-03V03 BY WRK-DS-LS-18V00.
+       SIG-TEST-GF-6-1.
+           IF WRK-DS-LS-18V00 EQUAL TO 000074073999999925
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-6.
+           GO TO SIG-FAIL-GF-6.
+       SIG-DELETE-GF-6.
+           PERFORM DE-LETE.
+           GO TO SIG-WRITE-GF-6.
+       SIG-FAIL-GF-6.
+           MOVE  000074073999999925 TO CORRECT-18V0.
+           MOVE  WRK-DS-LS-18V00       TO COMPUTED-18V0.
+           PERFORM FAIL.
+       SIG-WRITE-GF-6.
+           MOVE "SIG-TEST-GF-6         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-7.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE A08TWOS-DS-02V06 TO WRK-DS-TS-06V06.
+       SIG-TEST-GF-7-0.
+           MULTIPLY 0.4 BY WRK-DS-TS-06V06 ROUNDED.
+       SIG-TEST-GF-7-1.
+           IF WRK-DS-TS-12V00-S-S EQUAL TO 000008888889
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-7.
+           GO TO SIG-FAIL-GF-7.
+       SIG-DELETE-GF-7.
+           PERFORM DE-LETE.
+           GO TO SIG-WRITE-GF-7.
+       SIG-FAIL-GF-7.
+           MOVE  WRK-DS-TS-12V00-S-S     TO COMPUTED-18V0.
+           MOVE  000008888889       TO CORRECT-18V0.
+           PERFORM FAIL.
+       SIG-WRITE-GF-7.
+           MOVE "SIG-TEST-GF-7         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-8.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE "0" TO WRK-XN-00001.
+           MOVE A10ONES-DS-T-10V00 TO WRK-DS-10V00.
+       SIG-TEST-GF-8-0.
+           MULTIPLY A12THREES-DS-LS-06V06 BY WRK-DS-10V00
+               ON SIZE ERROR MOVE "1" TO WRK-XN-00001.
+       SIG-TEST-GF-8-1.
+           IF WRK-DS-10V00 EQUAL TO 1111111111
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-8-1.
+           GO TO SIG-FAIL-GF-8-1.
+       SIG-DELETE-GF-8-1.
+           PERFORM DE-LETE.
+           GO TO SIG-WRITE-GF-8-1.
+       SIG-FAIL-GF-8-1.
+           MOVE  WRK-DS-10V00       TO COMPUTED-18V0.
+           MOVE  1111111111         TO CORRECT-18V0.
+           PERFORM FAIL.
+       SIG-WRITE-GF-8-1.
+           MOVE "SIG-TEST-GF-8-1         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-8-2.
+           IF WRK-XN-00001 EQUAL TO "1"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-8-2.
+           MOVE "1" TO CORRECT-A.
+           MOVE WRK-XN-00001 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-8-2.
+       SIG-DELETE-GF-8-2.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-8-2.
+           MOVE "SIG-TEST-GF-8-2         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-9.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE "1" TO WRK-XN-00001.
+           MOVE -99 TO WRK-DS-02V00.
+       SIG-TEST-GF-9-0.
+           MULTIPLY AZERO-DS-LS-05V05 BY WRK-DS-02V00
+               ON SIZE ERROR MOVE "0" TO WRK-XN-00001.
+       SIG-TEST-GF-9-1.
+           IF WRK-DS-02V00 EQUAL TO 00
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-9-1.
+           GO TO SIG-FAIL-GF-9-1.
+       SIG-DELETE-GF-9-1.
+           PERFORM DE-LETE.
+           GO TO SIG-WRITE-GF-9-1.
+       SIG-FAIL-GF-9-1.
+           MOVE  WRK-DS-02V00       TO COMPUTED-N.
+           MOVE  00                 TO CORRECT-N.
+           PERFORM FAIL.
+       SIG-WRITE-GF-9-1.
+           MOVE "SIG-TEST-GF-9-1         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-9-2.
+           IF WRK-XN-00001 EQUAL TO "1"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-9-2.
+           MOVE "1" TO CORRECT-A.
+           MOVE WRK-XN-00001 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-9-2.
+       SIG-DELETE-GF-9-2.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-9-2.
+           MOVE "SIG-TEST-GF-9-2         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-10.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE "0" TO WRK-XN-00001.
+           MOVE -01 TO WRK-DS-02V00.
+       SIG-TEST-GF-10-0.
+           MULTIPLY 99.5 BY WRK-DS-02V00 ROUNDED
+               ON SIZE ERROR MOVE "1" TO WRK-XN-00001.
+       SIG-TEST-GF-10-1.
+           IF WRK-DS-02V00 EQUAL TO -01
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-10-1.
+           GO TO SIG-FAIL-GF-10-1.
+       SIG-DELETE-GF-10-1.
+           PERFORM DE-LETE.
+           GO TO SIG-WRITE-GF-10-1.
+       SIG-FAIL-GF-10-1.
+           MOVE  WRK-DS-02V00       TO COMPUTED-N.
+           MOVE  -01                TO CORRECT-N.
+           PERFORM FAIL.
+       SIG-WRITE-GF-10-1.
+           MOVE "SIG-TEST-GF-10-1         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-10-2.
+           IF WRK-XN-00001 EQUAL TO "1"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-10-2.
+           MOVE "1" TO CORRECT-A.
+           MOVE WRK-XN-00001 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-10-2.
+       SIG-DELETE-GF-10-2.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-10-2.
+           MOVE "SIG-TEST-GF-10-2         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-11.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE "1" TO WRK-XN-00001.
+           MOVE -01 TO WRK-DS-02V00.
+       SIG-TEST-GF-11-0.
+           MULTIPLY 99.4 BY WRK-DS-02V00 ROUNDED
+               ON SIZE ERROR MOVE "0" TO WRK-XN-00001.
+       SIG-TEST-GF-11-1.
+           IF WRK-DS-02V00 EQUAL TO -99
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-11-1.
+           GO TO SIG-FAIL-GF-11-1.
+       SIG-DELETE-GF-11-1.
+           PERFORM DE-LETE.
+           GO TO SIG-WRITE-GF-11-1.
+       SIG-FAIL-GF-11-1.
+           MOVE  WRK-DS-02V00       TO COMPUTED-N.
+           MOVE  -99                TO CORRECT-N.
+           PERFORM FAIL.
+       SIG-WRITE-GF-11-1.
+           MOVE "SIG-TEST-GF-11-1         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-11-2.
+           IF WRK-XN-00001 EQUAL TO "1"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-11-2.
+           MOVE "1" TO CORRECT-A.
+           MOVE WRK-XN-00001 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-11-2.
+       SIG-DELETE-GF-11-2.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-11-2.
+           MOVE "SIG-TEST-GF-11-2         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-17.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE "MULTIPLY BY GIVING  " TO FEATURE.
+           MOVE ZERO TO WRK-DS-09V09.
+       SIG-TEST-GF-17-0.
+           MULTIPLY A06THREES-DS-LS-03V03 BY A12THREES-DS-LS-06V06
+               GIVING WRK-DS-09V09.
+       SIG-TEST-GF-17-1.
+           IF WRK-DS-18V00-S EQUAL TO 111110999999888889
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-17.
+           GO TO SIG-FAIL-GF-17.
+       SIG-DELETE-GF-17.
+           PERFORM DE-LETE.
+           GO TO SIG-WRITE-GF-17.
+       SIG-FAIL-GF-17.
+           MOVE  111110999999888889 TO CORRECT-18V0.
+           MOVE  WRK-DS-18V00-S     TO COMPUTED-18V0.
+           PERFORM FAIL.
+       SIG-WRITE-GF-17.
+           MOVE "SIG-TEST-GF-17         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-18.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE ZERO TO WRK-DS-10V00.
+       SIG-TEST-GF-18-0.
+           MULTIPLY A06THREES-DS-LS-03V03 BY A06THREES-DS-LS-03V03
+               GIVING WRK-DS-10V00 ROUNDED.
+       SIG-TEST-GF-18-1.
+           IF WRK-DS-10V00 EQUAL TO 0000111111
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-18.
+           GO TO SIG-FAIL-GF-18.
+       SIG-DELETE-GF-18.
+           PERFORM DE-LETE.
+           GO TO SIG-WRITE-GF-18.
+       SIG-FAIL-GF-18.
+           MOVE  0000111111         TO CORRECT-18V0.
+           MOVE  WRK-DS-10V00       TO COMPUTED-18V0.
+           PERFORM FAIL.
+       SIG-WRITE-GF-18.
+           MOVE "SIG-TEST-GF-18         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-19.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE "0" TO WRK-XN-00001.
+           MOVE ZERO TO WRK-DS-10V00.
+       SIG-TEST-GF-19-0.
+           MULTIPLY A05ONES-DS-LS-00V05 BY A12ONES-DS-12V00
+               GIVING WRK-DS-10V00 ON SIZE ERROR
+               MOVE "1" TO WRK-XN-00001.
+       SIG-TEST-GF-19-1.
+           IF WRK-DS-10V00 EQUAL TO 0000000000
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-19-1.
+           GO TO SIG-FAIL-GF-19-1.
+       SIG-DELETE-GF-19-1.
+           PERFORM DE-LETE.
+           GO TO SIG-WRITE-GF-19-1.
+       SIG-FAIL-GF-19-1.
+           MOVE  0000000000         TO CORRECT-18V0.
+           MOVE  WRK-DS-10V00       TO COMPUTED-18V0.
+           PERFORM FAIL.
+       SIG-WRITE-GF-19-1.
+           MOVE "SIG-TEST-GF-19-1         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-19-2.
+           IF WRK-XN-00001 EQUAL TO "1"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-19-2.
+           MOVE "1" TO CORRECT-A.
+           MOVE WRK-XN-00001 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-19-2.
+       SIG-DELETE-GF-19-2.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-19-2.
+           MOVE "SIG-TEST-GF-19-2         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-20.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE "1" TO WRK-XN-00001.
+           MOVE ZERO TO WRK-DS-10V00.
+       SIG-TEST-GF-20-0.
+           MULTIPLY A01ONE-DS-TS-P0801 BY A12ONES-DS-12V00
+               GIVING WRK-DS-10V00 ON SIZE ERROR
+               MOVE "0" TO WRK-XN-00001.
+       SIG-TEST-GF-20-1.
+           IF WRK-DS-10V00 EQUAL TO 0000000111
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-20-1.
+           GO TO SIG-FAIL-GF-20-1.
+       SIG-DELETE-GF-20-1.
+           PERFORM DE-LETE.
+           GO TO SIG-WRITE-GF-20-1.
+       SIG-FAIL-GF-20-1.
+           MOVE  0000000111         TO CORRECT-18V0.
+           MOVE  WRK-DS-10V00       TO COMPUTED-18V0.
+           PERFORM FAIL.
+       SIG-WRITE-GF-20-1.
+           MOVE "SIG-TEST-GF-20-1         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-20-2.
+           IF WRK-XN-00001 EQUAL TO "1"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-20-2.
+           MOVE "1" TO CORRECT-A.
+           MOVE WRK-XN-00001 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-20-2.
+       SIG-DELETE-GF-20-2.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-20-2.
+           MOVE "SIG-TEST-GF-20-2         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-21.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE "0" TO WRK-XN-00001.
+           MOVE ZERO TO WRK-DS-10V00.
+       SIG-TEST-GF-21-0.
+           MULTIPLY 9.5 BY A10ONES-DS-T-10V00
+               GIVING WRK-DS-10V00 ROUNDED ON SIZE ERROR
+               MOVE "1" TO WRK-XN-00001.
+       SIG-TEST-GF-21-1.
+           IF WRK-DS-10V00 EQUAL TO 0000000000
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-21-1.
+           MOVE  0000000000         TO CORRECT-18V0.
+           MOVE  WRK-DS-10V00       TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-21-1.
+       SIG-DELETE-GF-21-1.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-21-1.
+           MOVE "SIG-TEST-GF-21-1         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-21-2.
+           IF WRK-XN-00001 EQUAL TO "1"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-21-2.
+           MOVE "1" TO CORRECT-A.
+           MOVE WRK-XN-00001 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-21-2.
+       SIG-DELETE-GF-21-2.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-21-2.
+           MOVE "SIG-TEST-GF-21-2         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-22.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE "1" TO WRK-XN-00001.
+           MOVE ZERO TO WRK-DS-T-09V08.
+       SIG-TEST-GF-22-0.
+           MULTIPLY A01ONE-DS-TS-P0801 BY A18ONES-DS-18V00
+               GIVING WRK-DS-T-09V08 ROUNDED ON SIZE ERROR
+               MOVE "0" TO WRK-XN-00001.
+       SIG-TEST-GF-22-1.
+           IF WKR-DS-T-17V00-S EQUAL TO 11111111111111111
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-22-1.
+           MOVE  11111111111111111  TO CORRECT-18V0.
+           MOVE  WKR-DS-T-17V00-S     TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-22-1.
+       SIG-DELETE-GF-22-1.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-22-1.
+           MOVE "SIG-TEST-GF-22-1         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-22-2.
+           IF WRK-XN-00001 EQUAL TO "1"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-22-2.
+           MOVE "1" TO CORRECT-A.
+           MOVE WRK-XN-00001 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-22-2.
+       SIG-DELETE-GF-22-2.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-22-2.
+           MOVE "SIG-TEST-GF-22-2         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-12.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE "MULTIPLY BY         " TO FEATURE.
+           MOVE -990 TO WRK-DS-LS-0201P.
+       SIG-TEST-GF-12-0.
+           MULTIPLY A01ONE-CS-00V01 BY WRK-DS-LS-0201P.
+       SIG-TEST-GF-12-1.
+           MOVE WRK-DS-LS-0201P TO WRK-DS-05V00.
+           IF WRK-DS-05V00 EQUAL TO -00090
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-12.
+           MOVE -00090 TO CORRECT-N.
+           MOVE  WRK-DS-05V00       TO COMPUTED-N.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-12.
+       SIG-DELETE-GF-12.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-12.
+           MOVE "SIG-TEST-GF-12         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-13.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE A18ONES-DS-18V00 TO WRK-CS-18V00.
+       SIG-TEST-GF-13-0.
+           MULTIPLY A01ONE-DS-TS-P0801 BY WRK-CS-18V00.
+       SIG-TEST-GF-13-1.
+           MOVE WRK-CS-18V00 TO WRK-DU-18V00.
+           IF WRK-DU-18V00 EQUAL TO 000000000111111111
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-13.
+           MOVE  000000000111111111 TO CORRECT-18V0.
+           MOVE WRK-DU-18V00     TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-13.
+       SIG-DELETE-GF-13.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-13.
+           MOVE "SIG-TEST-GF-13         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-23.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE ZERO TO WRK-CS-02V02.
+       SIG-TEST-GF-23-0.
+           MULTIPLY A99-CS-02V00 BY A01ONE-CS-00V01 GIVING WRK-CS-02V02.
+       SIG-TEST-GF-23-1.
+           MOVE WRK-CS-02V02 TO WRK-DS-TS-06V06.
+           IF WRK-DS-TS-12V00-S-S EQUAL TO 000009900000
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-23.
+           MOVE  000009900000       TO CORRECT-18V0.
+           MOVE  WRK-DS-TS-12V00-S-S     TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-23.
+       SIG-DELETE-GF-23.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-23.
+           MOVE "MULTIPLY BY GIVING  " TO FEATURE.
+           MOVE "SIG-TEST-GF-23         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-24.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE ZERO TO WRK-CS-18V00.
+       SIG-TEST-GF-24-0.
+           MULTIPLY A01ONES-CS-18V00 BY A02THREES-CS-18V00
+                   GIVING WRK-CS-18V00.
+       SIG-TEST-GF-24-1.
+           IF WRK-CS-18V00 EQUAL TO -000000000000000033
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-24.
+           MOVE -000000000000000033 TO CORRECT-18V0.
+           MOVE WRK-CS-18V00 TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-24.
+       SIG-DELETE-GF-24.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-24.
+           MOVE "SIG-TEST-GF-24 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-25.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE ZERO TO WRK-DU-18V00.
+       SIG-TEST-GF-25-0.
+           MULTIPLY A02THREES-CS-18V00 BY A14TWOS-CU-18V00
+                   GIVING WRK-DU-18V00.
+       SIG-TEST-GF-25-1.
+           IF WRK-DU-18V00 EQUAL TO 000733333333333326
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-25.
+           MOVE 000733333333333326 TO CORRECT-18V0.
+           MOVE WRK-DU-18V00 TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-25.
+       SIG-DELETE-GF-25.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-25.
+           MOVE "SIG-TEST-GF-25 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-26.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE ZERO TO WRK-CS-18V00.
+       SIG-TEST-GF-26-0.
+           MULTIPLY A02THREES-CS-18V00 BY A16NINES-CU-18V00
+                   GIVING WRK-CS-18V00.
+       SIG-TEST-GF-26-1.
+           IF WRK-CS-18V00 EQUAL TO -329999999999999967
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-26.
+           MOVE -329999999999999967 TO CORRECT-18V0.
+           MOVE WRK-CS-18V00 TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-26.
+       SIG-DELETE-GF-26.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-26.
+           MOVE "SIG-TEST-GF-26 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-27.
+           MOVE   "VI-42 5.12.4"      TO ANSI-REFERENCE.
+           MOVE ZERO TO WRK-DU-18V00.
+       SIG-TEST-GF-27-0.
+           MULTIPLY A01ONES-CS-18V00 BY A18SIXES-CU-18V00
+               GIVING WRK-DU-18V00.
+       SIG-TEST-GF-27-1.
+           IF WRK-DU-18V00 EQUAL TO 666666666666666666
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-27.
+           MOVE 666666666666666666 TO CORRECT-18V0.
+           MOVE WRK-DU-18V00 TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO SIG-WRITE-GF-27.
+       SIG-DELETE-GF-27.
+           PERFORM DE-LETE.
+       SIG-WRITE-GF-27.
+           MOVE "SIG-TEST-GF-27 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           PERFORM END-ROUTINE.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC120A

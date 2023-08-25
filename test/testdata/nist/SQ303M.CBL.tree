@@ -1,0 +1,120 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n            
+					(programName 
+						(cobolWord SQ303M)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       )))) 
+				(environmentDivisionBody 
+					(inputOutputSection INPUT-OUTPUT SECTION .\n        
+						(inputOutputSectionParagraph 
+							(fileControlParagraph FILE-CONTROL .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord TFIL))) 
+									(fileControlClause 
+										(assignClause ASSIGN 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX014))))) 
+									(fileControlClause 
+										(organizationClause ORGANIZATION IS SEQUENTIAL)) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS SEQUENTIAL))) .\n       \n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord TFIL2))) 
+									(fileControlClause 
+										(assignClause ASSIGN 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX008))))) 
+									(fileControlClause 
+										(organizationClause ORGANIZATION IS SEQUENTIAL)) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS SEQUENTIAL))) .\n       \n       )) 
+						(inputOutputSectionParagraph 
+							(ioControlParagraph I-O-CONTROL .\n            
+								(ioControlClause 
+									(multipleFileClause MULTIPLE FILE TAPE CONTAINS 
+										(multipleFilePosition 
+											(fileName 
+												(cobolWord TFIL2))))) .\n      ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(fileSection FILE SECTION .\n        
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord TFIL)) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord FREC)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord RKEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 9)) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 8)) 
+											(pictureChars )))) .\n       \n       ))) 
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord TFIL2)) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord FREC2)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord RKEY2)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 9)) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 8)) 
+											(pictureChars )))) .\n       \n       )))))) 
+			(procedureDivision PROCEDURE DIVISION .\n       \n        
+				(procedureDivisionBody 
+					(paragraphs 
+						(paragraph 
+							(paragraphName 
+								(cobolWord SQ303M-CONTROL)) .\n            
+							(sentence 
+								(statement 
+									(openStatement OPEN 
+										(openInputStatement INPUT 
+											(openInput 
+												(fileName 
+													(cobolWord TFIL)) REVERSED)))) .\n      ) 
+							(sentence 
+								(statement 
+									(closeStatement CLOSE 
+										(closeFile 
+											(fileName 
+												(cobolWord TFIL))))) .\n           ) 
+							(sentence 
+								(statement 
+									(stopStatement STOP RUN)) .\n       \n       \n      ))))))) <EOF>)

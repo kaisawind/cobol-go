@@ -1,0 +1,2849 @@
+      *> HEADER,COBOL,NC104A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC104A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC104A TESTS FORMAT 1 OF THE MOVE STATEMENT
+      *>     WITH VARIOUS COMBINATIONS OF SENDING AND RECEIVING FIELDS.
+      *> 
+      *>     (SEE ALSO NC105A).
+      *> 
+       
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE
+           LABEL RECORDS
+           XXXXX084
+           DATA RECORD IS PRINT-REC DUMMY-RECORD.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  MOVE1                              PICTURE IS 9(5)
+           VALUE IS 12345.
+       01  MOVE2                              PICTURE IS 9(5).
+       01  MOVE3                              PICTURE IS 99.
+       01  MOVE4                              PICTURE IS 9(7).
+       01  MOVE5                              PICTURE IS 99V999.
+       01  MOVE6                              PICTURE IS V99999.
+       01  MOVE8                              PICTURE IS 9(5)V99.
+       01  MOVE9                              PICTURE IS 9(7)V99.
+       01  MOVE10                             PICTURE IS $999.99.
+       01  MOVE11                             PICTURE IS $99,999.99.
+       01  MOVE12                             PICTURE IS $(5)9(3).
+       01  MOVE13                             PICTURE IS *(5)9(6).
+       01  MOVE14                             PICTURE IS +9(5).
+       01  MOVE15                             PICTURE IS 9(5)
+           VALUE IS 00000.
+       01  MOVE16                             PICTURE IS 9(5)CR.
+       01  MOVE17                             PICTURE IS $99,999.99
+           BLANK WHEN ZERO.
+       01  MOVE18                             PICTURE IS ZZZZZZ.
+       01  MOVE19                             PICTURE IS X(5).
+       01  MOVE20                             PICTURE IS X(4).
+       01  MOVE21                             PICTURE IS X(7).
+       01  MOVE22                             PICTURE IS XBX0XBX0X.
+       01  MOVE23                             PICTURE IS 999V99
+           VALUE IS 123.45.
+       01  MOVE24                             PICTURE IS XBXXXB000XXXX.
+       01  MOVE25                             PICTURE IS 999.
+       01  MOVE26                             PICTURE IS 999V99.
+       01  MOVE27                             PICTURE IS 99PP.
+       01  MOVE29                             PICTURE IS 9999V999.
+       01  MOVE29A VALUE IS "$123.45".
+           02 MOVE30                          PICTURE IS $999.99.
+       01  MOVE31                             PICTURE IS X(9).
+       01  MOVE32                             PICTURE IS X(5)
+           VALUE IS "ABCDE".
+       01  MOVE33                             PICTURE IS A(5).
+       01  MOVE34                             PICTURE IS A(7).
+       01  MOVE35                             PICTURE IS A(3).
+       01  MOVE35A VALUE IS "1 A05".
+           02 MOVE36                          PICTURE IS XBA09.
+       01  MOVE37                             PICTURE IS AAAAA
+           VALUE IS "ABCDE".
+       01  MOVE39                             PICTURE IS 0XXXXX0.
+       01  MOVE47A.
+           02 MOVE48                          PICTURE IS 9V9(17).
+           02 MOVE49                          PICTURE IS 9(5)
+           VALUE IS 00045.
+           02 MOVE50                          PICTURE IS X(5)
+           VALUE IS "12345".
+           02 MOVE51                          PICTURE IS S9(5)
+           VALUE IS -12345.
+           02 MOVE52                          PICTURE IS 9(5)-.
+       01  AN-DATANAMES.
+           02  ANDATA1       PICTURE X     VALUE SPACE.
+           02  ANDATA2       PICTURE XX    VALUE SPACE.
+           02  ANDATA3       PICTURE XXX   VALUE SPACE.
+           02  ANDATA4       PICTURE X(4)  VALUE SPACE.
+           02  ANDATA5       PICTURE X(5)  VALUE SPACE.
+           02  ANDATA6       PICTURE X(6)  VALUE SPACE.
+           02  ANDATA7       PICTURE X(7)  VALUE SPACE.
+           02  ANDATA8       PICTURE X(8)  VALUE SPACE.
+           02  ANDATA9       PICTURE X(9)  VALUE SPACE.
+           02  ANDATA10      PICTURE X(10) VALUE SPACE.
+           02  ANDATA11      PICTURE X(11) VALUE SPACE.
+           02  ANDATA12      PICTURE X(12) VALUE SPACE.
+           02  ANDATA13      PICTURE X(13) VALUE SPACE.
+           02  ANDATA14      PICTURE X(14) VALUE SPACE.
+           02  ANDATA15      PICTURE X(15) VALUE SPACE.
+           02  ANDATA16      PICTURE X(16) VALUE SPACE.
+           02  ANDATA17      PICTURE X(17) VALUE SPACE.
+           02  ANDATA18      PICTURE X(18) VALUE SPACE.
+           02  ANDATA19      PICTURE X(19) VALUE SPACE.
+           02  ANDATA20      PICTURE X(20) VALUE SPACE.
+           02  ANDATA21      PICTURE X(120) VALUE SPACE.
+       01  42-DATANAMES.
+           02  DNAME1   PICTURE 9      VALUE 1        COMPUTATIONAL.
+           02  DNAME2   PICTURE 99     VALUE 01       COMPUTATIONAL.
+           02  DNAME3   PICTURE 999    VALUE 001      COMPUTATIONAL.
+           02  DNAME4   PICTURE 9(4)   VALUE 0001     COMPUTATIONAL.
+           02  DNAME5   PICTURE 9(5)   VALUE 00001    COMPUTATIONAL.
+           02  DNAME6   PICTURE 9(6)   VALUE 000001   COMPUTATIONAL.
+           02  DNAME7   PICTURE 9(7)   VALUE 0000001  COMPUTATIONAL.
+           02  DNAME8   PICTURE 9(8)   VALUE 00000001 COMPUTATIONAL.
+           02  DNAME9   PICTURE 9(9)   VALUE 000000001.
+           02  DNAME10  PICTURE 9(10)   VALUE 0000000001.
+           02  DNAME11  PICTURE 9(11)   VALUE 00000000001.
+           02  DNAME12  PICTURE 9(12)   VALUE 000000000001.
+           02  DNAME13  PICTURE 9(13)   VALUE 0000000000001.
+           02  DNAME14  PICTURE 9(14)   VALUE 00000000000001.
+           02  DNAME15  PICTURE 9(15)   VALUE 000000000000001.
+           02  DNAME16  PICTURE 9(16)   VALUE 0000000000000001.
+           02  DNAME17  PICTURE 9(17)   VALUE 00000000000000001.
+           02  DNAME18  PICTURE 9(18)   VALUE 000000000000000001.
+           02  DNAME19  PICTURE 9      VALUE 1.
+           02  DNAME20  PICTURE 99     VALUE 11.
+           02  DNAME21  PICTURE 999    VALUE 111.
+           02  DNAME22  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME23  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME24  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME25  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME26  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME27  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME28  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME29  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME30   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME31   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME32   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME33   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME34   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME35   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME36   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME37   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME38   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME39   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME40   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME41   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME42   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC104A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC104A-001 SECTION.
+       MOVE-INIT-F1-1.
+           MOVE "MOVE NUMERIC INTEGER" TO FEATURE.
+           MOVE "V1-102 6.18.2"        TO ANSI-REFERENCE.
+           MOVE  12345 TO MOVE1.
+       MOVE-TEST-F1-1-0.
+           MOVE     MOVE1 TO MOVE2.
+       MOVE-TEST-F1-1-1.
+           IF       MOVE2 EQUAL TO 12345
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-1.
+      *>     NOTE NI TO NI (NUMERIC INTEGRAL) MOVE, EQUAL SIZE.
+           GO TO    MOVE-WRITE-F1-1.
+       MOVE-DELETE-F1-1.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-1.
+       MOVE-FAIL-F1-1.
+           MOVE     MOVE2 TO COMPUTED-N.
+           MOVE     12345 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-1.
+           MOVE "MOVE-TEST-F1-1 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-2.
+           MOVE      12345 TO MOVE1.
+       MOVE-TEST-F1-2-0.
+           MOVE     MOVE1 TO MOVE3.
+       MOVE-TEST-F1-2-1.
+           IF       MOVE3 EQUAL TO 45
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-2.
+      *>     NOTE NI TO NI MOVE, WITH TRUNCATION.
+           GO TO    MOVE-WRITE-F1-2.
+       MOVE-DELETE-F1-2.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-2.
+       MOVE-FAIL-F1-2.
+           MOVE     MOVE3 TO COMPUTED-N.
+           MOVE     45 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-2.
+           MOVE "MOVE-TEST-F1-2 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-3.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-3-0.
+           MOVE     MOVE1 TO MOVE4.
+       MOVE-TEST-F1-3-1.
+           IF       MOVE4 EQUAL TO 0012345
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-3.
+      *>     NOTE NI TO NI MOVE, WITH ZERO PADDING.
+           GO TO    MOVE-WRITE-F1-3.
+       MOVE-DELETE-F1-3.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-3.
+       MOVE-FAIL-F1-3.
+           MOVE     MOVE4 TO COMPUTED-N.
+           MOVE     0012345 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-3.
+           MOVE "MOVE-TEST-F1-3 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-4.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-4-0.
+           MOVE     MOVE1 TO MOVE5.
+       MOVE-TEST-F1-4-1.
+           IF       MOVE5 EQUAL TO 45
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-4.
+      *>     NOTE NI TO NNI (NUMERIC NON INTEGER), LEFT TRUNCATION
+      *>     ZERO FILL ON RIGHT.
+           GO TO    MOVE-WRITE-F1-4.
+       MOVE-DELETE-F1-4.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-4.
+       MOVE-FAIL-F1-4.
+           MOVE     MOVE5 TO COMPUTED-N.
+           MOVE     45 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-4.
+           MOVE "MOVE-TEST-F1-4 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-5.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-5-0.
+           MOVE     MOVE1 TO MOVE48.
+       MOVE-TEST-F1-5-1.
+           IF       MOVE48 EQUAL TO 5
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-5.
+      *>     NOTE NI TO NNI MOVE, RECEIVING FIELD MAX SIZE.
+           GO TO    MOVE-WRITE-F1-5.
+       MOVE-DELETE-F1-5.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-5.
+       MOVE-FAIL-F1-5.
+           MOVE     MOVE48 TO COMPUTED-N.
+           MOVE     5 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-5.
+           MOVE "MOVE-TEST-F1-5 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-6.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-6-0.
+           MOVE     MOVE1 TO MOVE27.
+       MOVE-TEST-F1-6-1.
+           IF       MOVE27 EQUAL TO 2300
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-6.
+      *>     NOTE NI TO NNI MOVE SCALING.
+           GO TO    MOVE-WRITE-F1-6.
+       MOVE-DELETE-F1-6.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-6.
+       MOVE-FAIL-F1-6.
+           MOVE     MOVE27 TO COMPUTED-N.
+           MOVE     2300 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-6.
+           MOVE "MOVE-TEST-F1-6 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-7.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-7-0.
+           MOVE     MOVE1 TO MOVE8.
+       MOVE-TEST-F1-7-1.
+           IF       MOVE1  EQUAL TO 12345.00
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-7.
+      *>     NOTE NI TO NNI MOVE, ZERO PADDING ON RIGHT.
+           GO TO    MOVE-WRITE-F1-7.
+       MOVE-DELETE-F1-7.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-7.
+       MOVE-FAIL-F1-7.
+           MOVE     MOVE8 TO COMPUTED-N.
+           MOVE     12345.00  TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-7.
+           MOVE "MOVE-TEST-F1-7 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-8.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-8-0.
+           MOVE     MOVE1 TO MOVE9.
+       MOVE-TEST-F1-8-1.
+           IF       MOVE9  EQUAL TO  012345.00
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-8.
+      *>     NOTE NI TO NNI MOVE, ZERO PADDING LEFT AND RIGHT.
+           GO TO    MOVE-WRITE-F1-8.
+       MOVE-DELETE-F1-8.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-8.
+       MOVE-FAIL-F1-8.
+           MOVE     MOVE9 TO COMPUTED-N.
+           MOVE     0012345.00 TO  CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-8.
+           MOVE "MOVE-TEST-F1-8 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-9.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-9-0.
+           MOVE     MOVE1 TO MOVE10.
+       MOVE-TEST-F1-9-1.
+           IF       MOVE10 EQUAL TO "$345.00"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-9.
+      *>     NOTE NI TO NE MOVE, FIXED INSERTION, CURRENCY SIGN, PERIOD.
+           GO TO    MOVE-WRITE-F1-9.
+       MOVE-DELETE-F1-9.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-9.
+       MOVE-FAIL-F1-9.
+           MOVE     MOVE10 TO COMPUTED-A.
+           MOVE "$345.00" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-9.
+           MOVE "MOVE-TEST-F1-9 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-10.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-10-0.
+           MOVE     MOVE1 TO MOVE11.
+       MOVE-TEST-F1-10-1.
+           IF       MOVE11 EQUAL TO "$12,345.00"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-10.
+      *>     NOTE NI TO NE MOVE, FIXED INSERTION (CURRENCY SIGN, 
+      *>     COMMA, PERIOD) ZERO FILL ON RIGHT.
+           GO TO    MOVE-WRITE-F1-10.
+       MOVE-DELETE-F1-10.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-10.
+       MOVE-FAIL-F1-10.
+           MOVE     MOVE11 TO COMPUTED-A.
+           MOVE "$12,345.00" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-10.
+           MOVE "MOVE-TEST-F1-10" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-11.
+           MOVE     00045 TO MOVE49.
+       MOVE-TEST-F1-11-0.
+           MOVE     MOVE49 TO MOVE12.
+       MOVE-TEST-F1-11-1.
+           IF       MOVE12 EQUAL TO "    $045"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-11.
+      *>     NOTE NI TO NE MOVE, FLOAT CURRENCY SIGN.
+           GO TO    MOVE-WRITE-F1-11.
+       MOVE-DELETE-F1-11.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-11.
+       MOVE-FAIL-F1-11.
+           MOVE     MOVE12 TO COMPUTED-A.
+           MOVE "    $045" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-11.
+           MOVE "MOVE-TEST-F1-11" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-12.
+           MOVE     00045 TO MOVE49.
+       MOVE-TEST-F1-12-0.
+           MOVE     MOVE49 TO MOVE13.
+       MOVE-TEST-F1-12-1.
+           IF       MOVE13 EQUAL TO "*****000045"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-12.
+      *>     NOTE NI TO NE MOVE, CHECK PROTECT.
+           GO TO    MOVE-WRITE-F1-12.
+       MOVE-DELETE-F1-12.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-12.
+       MOVE-FAIL-F1-12.
+           MOVE     MOVE13 TO COMPUTED-A.
+           MOVE "*****000045" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-12.
+           MOVE "MOVE-TEST-F1-12" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-13.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-13-0.
+           MOVE     MOVE1 TO MOVE14.
+       MOVE-TEST-F1-13-1.
+           IF       MOVE14 EQUAL TO "+12345"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-13.
+      *>     NOTE NI TO NE MOVE, REPORT SIGN.
+           GO TO    MOVE-WRITE-F1-13.
+       MOVE-DELETE-F1-13.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-13.
+       MOVE-FAIL-F1-13.
+           MOVE     MOVE14 TO COMPUTED-A.
+           MOVE "+12345" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-13.
+           MOVE "MOVE-TEST-F1-13" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-14.
+           MOVE    -12345 TO MOVE51.
+       MOVE-TEST-F1-14-0.
+           MOVE     MOVE51 TO MOVE16.
+       MOVE-TEST-F1-14-1.
+           IF       MOVE16 EQUAL TO "12345CR"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-14.
+      *>     NOTE NI TO NE MOVE, REPORT SYMBOL CR.
+           GO TO    MOVE-WRITE-F1-14.
+       MOVE-DELETE-F1-14.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-14.
+       MOVE-FAIL-F1-14.
+           MOVE     MOVE16 TO COMPUTED-A.
+           MOVE "12345CR" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-14.
+           MOVE "MOVE-TEST-F1-14" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-15.
+           MOVE    -12345 TO MOVE51.
+       MOVE-TEST-F1-15-0.
+           MOVE     MOVE51 TO MOVE52.
+       MOVE-TEST-F1-15-1.
+           IF       MOVE52 EQUAL TO "12345-"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-15.
+      *>     NOTE NI TO NE MOVE REPORT SIGN.
+           GO TO    MOVE-WRITE-F1-15.
+       MOVE-DELETE-F1-15.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-15.
+       MOVE-FAIL-F1-15.
+           MOVE     MOVE52 TO COMPUTED-A.
+           MOVE "12345-" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-15.
+           MOVE "MOVE-TEST-F1-15" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-16.
+           MOVE     00000 TO MOVE15.
+       MOVE-TEST-F1-16-0.
+           MOVE     MOVE15 TO MOVE17.
+       MOVE-TEST-F1-16-1.
+           IF       MOVE17 EQUAL TO SPACE
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-16.
+      *>     NOTE NI TO NE MOVE, BLANK WHEN ZERO CLAUSE.
+           GO TO    MOVE-WRITE-F1-16.
+       MOVE-DELETE-F1-16.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-16.
+       MOVE-FAIL-F1-16.
+           MOVE     MOVE17 TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-16.
+           MOVE "MOVE-TEST-F1-16" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-17.
+           MOVE     00000 TO MOVE15.
+       MOVE-TEST-F1-17-0.
+           MOVE     MOVE15 TO MOVE18.
+       MOVE-TEST-F1-17-1.
+           IF       MOVE18 EQUAL TO SPACE
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-17.
+      *>     NOTE NI TO NE MOVE, BLANK WHEN ZERO PICTURE.
+           GO TO    MOVE-WRITE-F1-17.
+       MOVE-DELETE-F1-17.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-17.
+       MOVE-FAIL-F1-17.
+           MOVE     MOVE18 TO COMPUTED-A.
+           MOVE     SPACE TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-17.
+           MOVE "MOVE-TEST-F1-17" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-18.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-18-0.
+           MOVE     MOVE1 TO MOVE19.
+       MOVE-TEST-F1-18-1.
+           IF       MOVE19 EQUAL TO 12345
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-18.
+      *>     NOTE NI TO AN MOVE, EQUAL SIZE.
+           GO TO    MOVE-WRITE-F1-18.
+       MOVE-DELETE-F1-18.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-18.
+       MOVE-FAIL-F1-18.
+           MOVE     MOVE19 TO COMPUTED-N.
+           MOVE     12345 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-18.
+           MOVE "MOVE-TEST-F1-18" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-19.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-19-0.
+           MOVE     MOVE1 TO MOVE20.
+       MOVE-TEST-F1-19-1.
+           IF       MOVE20 EQUAL TO 1234
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-19.
+      *>     NOTE NI TO AN MOVE, TRUNCATION ON RIGHT.
+           GO TO    MOVE-WRITE-F1-19.
+       MOVE-DELETE-F1-19.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-19.
+       MOVE-FAIL-F1-19.
+           MOVE     MOVE20 TO COMPUTED-N.
+           MOVE     1234 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-19.
+           MOVE "MOVE-TEST-F1-19" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-20.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-20-0.
+           MOVE     MOVE1 TO MOVE21.
+       MOVE-TEST-F1-20-1.
+           IF       MOVE21 EQUAL TO "12345  "
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-20.
+      *>     NOTE NI TO AN MOVE, SPACE PADDING ON RIGHT.
+           GO TO    MOVE-WRITE-F1-20.
+       MOVE-DELETE-F1-20.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-20.
+       MOVE-FAIL-F1-20.
+           MOVE     MOVE21 TO COMPUTED-A.
+           MOVE "12345  " TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-20.
+           MOVE "MOVE-TEST-F1-20" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-21.
+           MOVE     12345 TO MOVE1.
+       MOVE-TEST-F1-21-0.
+           MOVE     MOVE1 TO MOVE22.
+       MOVE-TEST-F1-21-1.
+           IF       MOVE22 EQUAL TO "1 203 405"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-21.
+      *>     NOTE NI TO AE MOVE, ZERO AND SPACE INSERTION.
+           GO TO    MOVE-WRITE-F1-21.
+       MOVE-DELETE-F1-21.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-21.
+       MOVE-FAIL-F1-21.
+           MOVE     MOVE22 TO COMPUTED-A.
+           MOVE "1 203 405" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-21.
+           MOVE "MOVE-TEST-F1-21" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-22.
+           MOVE     123.45 TO MOVE23.
+           MOVE    "MOVE NUM NON-INTEGER" TO FEATURE.
+       MOVE-TEST-F1-22-0.
+           MOVE     MOVE23 TO MOVE4.
+       MOVE-TEST-F1-22-1.
+           IF       MOVE4 EQUAL TO 0000123
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-22.
+      *>     NOTE NNI TO NI MOVE, ZERO PADDING ON LEFT, TRUNCATION.
+           GO TO    MOVE-WRITE-F1-22.
+       MOVE-DELETE-F1-22.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-22.
+       MOVE-FAIL-F1-22.
+           MOVE     MOVE23 TO COMPUTED-N.
+           MOVE     0000123 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-22.
+           MOVE "MOVE-TEST-F1-22" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-23.
+           MOVE     123.45 TO MOVE23.
+       MOVE-TEST-F1-23-0.
+           MOVE     MOVE23 TO MOVE25.
+       MOVE-TEST-F1-23-1.
+           IF       MOVE25 EQUAL TO 123
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-23.
+      *>     NOTE NNI TO NI MOVE, TRUNCATION ON RIGHT.
+           GO TO    MOVE-WRITE-F1-23.
+       MOVE-DELETE-F1-23.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-23.
+       MOVE-FAIL-F1-23.
+           MOVE     MOVE25 TO COMPUTED-N.
+           MOVE     123 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-23.
+           MOVE "MOVE-TEST-F1-23" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-24.
+           MOVE     123.45 TO MOVE23.
+       MOVE-TEST-F1-24-0.
+           MOVE     MOVE23 TO MOVE3.
+       MOVE-TEST-F1-24-1.
+           IF       MOVE3 EQUAL TO 23
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-24.
+      *>     NOTE NNI TO NI MOVE, TRUNCATION LEFT AND RIGHT.
+           GO TO    MOVE-WRITE-F1-24.
+       MOVE-DELETE-F1-24.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-24.
+       MOVE-FAIL-F1-24.
+           MOVE     MOVE3 TO COMPUTED-N.
+           MOVE     23 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-24.
+           MOVE "MOVE-TEST-F1-24" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-25.
+           MOVE     123.45 TO MOVE23.
+       MOVE-TEST-F1-25-0.
+           MOVE     MOVE23 TO MOVE27.
+       MOVE-TEST-F1-25-1.
+           IF       MOVE27 EQUAL TO 0100
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-25.
+      *>     NOTE NNI TO NNI MOVE, SCALING.
+           GO TO    MOVE-WRITE-F1-25.
+       MOVE-DELETE-F1-25.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-25.
+       MOVE-FAIL-F1-25.
+           MOVE     MOVE27 TO COMPUTED-N.
+           MOVE     0100  TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-25.
+           MOVE "MOVE-TEST-F1-25" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-26.
+           MOVE     123.45 TO MOVE23.
+       MOVE-TEST-F1-26-0.
+           MOVE     MOVE23 TO MOVE6.
+       MOVE-TEST-F1-26-1.
+           IF       MOVE6  EQUAL TO .45000
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-26.
+      *>     NOTE NNI TO NNI MOVE, TRUNCATION ON LEFT AND ZERO
+      *>     FILL ON RIGHT.
+           GO TO    MOVE-WRITE-F1-26.
+       MOVE-DELETE-F1-26.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-26.
+       MOVE-FAIL-F1-26.
+           MOVE     MOVE6 TO COMPUTED-N.
+           MOVE     .45000  TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-26.
+           MOVE "MOVE-TEST-F1-26" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-27.
+           MOVE     123.45 TO MOVE23.
+       MOVE-TEST-F1-27-0.
+           MOVE     MOVE23 TO MOVE29.
+       MOVE-TEST-F1-27-1.
+           IF       MOVE29 EQUAL TO 0123.450
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-27.
+      *>     NOTE NNI TO NNI MOVE, ZERO PADDING ON LEFT AND RIGHT.
+           GO TO    MOVE-WRITE-F1-27.
+       MOVE-DELETE-F1-27.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-27.
+       MOVE-FAIL-F1-27.
+           MOVE     MOVE29 TO COMPUTED-N.
+           MOVE     0123.450  TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-27.
+           MOVE "MOVE-TEST-F1-27" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-28.
+           MOVE     123.45 TO MOVE23.
+       MOVE-TEST-F1-28-0.
+           MOVE     MOVE23 TO MOVE11.
+       MOVE-TEST-F1-28-1.
+           IF       MOVE11 EQUAL TO "$00,123.45"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-28.
+      *>     NOTE NNI TO NE MOVE, FIXED INSERTION, ZERO PADDING ON LEFT.
+           GO TO    MOVE-WRITE-F1-28.
+       MOVE-DELETE-F1-28.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-28.
+       MOVE-FAIL-F1-28.
+           MOVE     MOVE11 TO COMPUTED-A.
+           MOVE "$00,123.45" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-28.
+           MOVE "MOVE-TEST-F1-28" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-29.
+           MOVE     123.45 TO MOVE23.
+       MOVE-TEST-F1-29-0.
+           MOVE     MOVE30 TO MOVE21.
+       MOVE-TEST-F1-29-1.
+           IF       MOVE21 EQUAL TO "$123.45"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-29.
+      *>     NOTE NE TO AN MOVE, EQUAL SIZE.
+           GO TO    MOVE-WRITE-F1-29.
+       MOVE-DELETE-F1-29.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-29.
+       MOVE-FAIL-F1-29.
+           MOVE     MOVE21 TO COMPUTED-A.
+           MOVE "$123.45" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-29.
+           MOVE "MOVE-TEST-F1-29" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-30.
+           MOVE   "$123.45" TO MOVE29A.
+       MOVE-TEST-F1-30-0.
+           MOVE     MOVE30 TO MOVE31.
+       MOVE-TEST-F1-30-1.
+           IF       MOVE31 EQUAL TO "$123.45  "
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-30.
+      *>     NOTE NE TO AN MOVE, SPACE PADDING ON RIGHT.
+           GO TO    MOVE-WRITE-F1-30.
+       MOVE-DELETE-F1-30.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-30.
+       MOVE-FAIL-F1-30.
+           MOVE     MOVE31 TO COMPUTED-A.
+           MOVE "$123.45  " TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-30.
+           MOVE "MOVE-TEST-F1-30" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-31.
+           MOVE   "$123.45" TO MOVE29A.
+       MOVE-TEST-F1-31-0.
+           MOVE     MOVE30 TO MOVE20.
+       MOVE-TEST-F1-31-1.
+           IF       MOVE20 EQUAL TO "$123"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-31.
+      *>     NOTE NE TO AN MOVE, TRUNCATION ON RIGHT.
+           GO TO    MOVE-WRITE-F1-31.
+       MOVE-DELETE-F1-31.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-31.
+       MOVE-FAIL-F1-31.
+           MOVE     MOVE20 TO COMPUTED-A.
+           MOVE "$123" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-31.
+           MOVE "MOVE-TEST-F1-31" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-32.
+           MOVE   "$123.45" TO MOVE29A.
+       MOVE-TEST-F1-32-0.
+           MOVE     MOVE30 TO MOVE24.
+       MOVE-TEST-F1-32-1.
+           IF       MOVE24 EQUAL TO "$ 123 000.45 "
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-32.
+      *>     NOTE NE TO AE MOVE, SPACE AND ZERO INSERTION.
+           GO TO    MOVE-WRITE-F1-32.
+       MOVE-DELETE-F1-32.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-32.
+       MOVE-FAIL-F1-32.
+           MOVE     MOVE24 TO COMPUTED-A.
+           MOVE "$ 123 000.45 " TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-32.
+           MOVE "MOVE-TEST-F1-32" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-33.
+           MOVE    "MOVE ALPHANUMERIC   " TO FEATURE.
+           MOVE    "12345" TO MOVE50.
+       MOVE-TEST-F1-33-0.
+           MOVE     MOVE50 TO MOVE2.
+       MOVE-TEST-F1-33-1.
+           IF       MOVE2 EQUAL TO 12345
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-33.
+      *>     NOTE AN TO NI MOVE, EQUAL SIZE.
+           GO TO    MOVE-WRITE-F1-33.
+       MOVE-DELETE-F1-33.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-33.
+       MOVE-FAIL-F1-33.
+           MOVE     MOVE2 TO COMPUTED-N.
+           MOVE     12345 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-33.
+           MOVE "MOVE-TEST-F1-33" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-34.
+           MOVE    "12345" TO MOVE50.
+       MOVE-TEST-F1-34-0.
+           MOVE     MOVE50 TO MOVE4.
+       MOVE-TEST-F1-34-1.
+           IF       MOVE4 EQUAL TO 0012345
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-34.
+      *>     NOTE AN TO NI MOVE, ZERO PADDING ON LEFT.
+           GO TO    MOVE-WRITE-F1-34.
+       MOVE-DELETE-F1-34.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-34.
+       MOVE-FAIL-F1-34.
+           MOVE     MOVE4 TO COMPUTED-N.
+           MOVE     0012345  TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-34.
+           MOVE "MOVE-TEST-F1-34" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-35.
+           MOVE    "12345" TO MOVE50.
+       MOVE-TEST-F1-35-0.
+           MOVE     MOVE50 TO MOVE3.
+       MOVE-TEST-F1-35-1.
+           IF       MOVE3 EQUAL TO 45
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-35.
+      *>     NOTE AN TO NI MOVE, TRUNCATION ON LEFT.
+           GO TO    MOVE-WRITE-F1-35.
+       MOVE-DELETE-F1-35.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-35.
+       MOVE-FAIL-F1-35.
+           MOVE     MOVE50 TO COMPUTED-N.
+           MOVE     45 TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-35.
+           MOVE "MOVE-TEST-F1-35" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-36.
+           MOVE    "12345" TO MOVE50.
+       MOVE-TEST-F1-36-0.
+           MOVE     MOVE50 TO MOVE26.
+       MOVE-TEST-F1-36-1.
+           IF       MOVE26 EQUAL TO 345.00
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-36.
+      *>     NOTE AN TO NNI MOVE, ZERO FILL RIGHT, TRUNCATION LEFT.
+           GO TO    MOVE-WRITE-F1-36.
+       MOVE-DELETE-F1-36.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-36.
+       MOVE-FAIL-F1-36.
+           MOVE     MOVE26 TO COMPUTED-N.
+           MOVE   345.00  TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-36.
+           MOVE "MOVE-TEST-F1-36" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-37.
+           MOVE    "12345" TO MOVE50.
+       MOVE-TEST-F1-37-0.
+           MOVE     MOVE50 TO MOVE9.
+       MOVE-TEST-F1-37-1.
+           IF       MOVE9 EQUAL TO  0012345.00
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-37.
+      *>     NOTE AN TO NNI MOVE, ZERO PADDING LEFT AND RIGHT.
+           GO TO    MOVE-WRITE-F1-37.
+       MOVE-DELETE-F1-37.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-37.
+       MOVE-FAIL-F1-37.
+           MOVE     MOVE9 TO COMPUTED-N.
+           MOVE  0012345.00   TO CORRECT-N.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-37.
+           MOVE "MOVE-TEST-F1-37" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-38.
+           MOVE    "12345" TO MOVE50.
+       MOVE-TEST-F1-38-0.
+           MOVE     MOVE50 TO MOVE16.
+       MOVE-TEST-F1-38-1.
+           IF       MOVE16 EQUAL TO "12345  "
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-38.
+      *>     NOTE AN TO NE WITH CR SYMBOL.
+           GO TO    MOVE-WRITE-F1-38.
+       MOVE-DELETE-F1-38.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-38.
+       MOVE-FAIL-F1-38.
+           MOVE     MOVE16 TO COMPUTED-A.
+           MOVE "12345  " TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-38.
+           MOVE "MOVE-TEST-F1-38" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-39.
+           MOVE    "12345" TO MOVE50.
+       MOVE-TEST-F1-39-0.
+           MOVE     MOVE50 TO MOVE11.
+       MOVE-TEST-F1-39-1.
+           IF       MOVE11 EQUAL TO "$12,345.00"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-39.
+      *>     NOTE AN TO NNI MOVE, INSERTION CHARACTERS AND ZERO PADDING
+      *>     ON RIGHT.
+           GO TO    MOVE-WRITE-F1-39.
+       MOVE-DELETE-F1-39.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-39.
+       MOVE-FAIL-F1-39.
+           MOVE     MOVE11 TO COMPUTED-A.
+           MOVE "$12,345.00" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-39.
+           MOVE "MOVE-TEST-F1-39" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-40.
+           MOVE    "ABCDE" TO MOVE32.
+       MOVE-TEST-F1-40-0.
+           MOVE     MOVE32 TO MOVE21.
+       MOVE-TEST-F1-40-1.
+           IF       MOVE21 EQUAL TO "ABCDE  "
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-40.
+      *>     NOTE AN TO AN MOVE, SPACE PADDING ON RIGHT.
+           GO TO    MOVE-WRITE-F1-40.
+       MOVE-DELETE-F1-40.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-40.
+       MOVE-FAIL-F1-40.
+           MOVE     MOVE21 TO COMPUTED-A.
+           MOVE "ABCDE  " TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-40.
+           MOVE "MOVE-TEST-F1-40" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-41.
+           MOVE    "ABCDE" TO MOVE32.
+       MOVE-TEST-F1-41-0.
+           MOVE     MOVE32 TO MOVE20.
+       MOVE-TEST-F1-41-1.
+           IF       MOVE20 EQUAL TO "ABCD"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-41.
+      *>     NOTE AN TO AN MOVE, TRUNCATION ON RIGHT.
+           GO TO    MOVE-WRITE-F1-41.
+       MOVE-DELETE-F1-41.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-41.
+       MOVE-FAIL-F1-41.
+           MOVE     MOVE20 TO COMPUTED-A.
+           MOVE "ABCD" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-41.
+           MOVE "MOVE-TEST-F1-41" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-42.
+           MOVE    "ABCDE" TO MOVE32.
+       MOVE-TEST-F1-42-0.
+           MOVE     MOVE32 TO MOVE22.
+       MOVE-TEST-F1-42-1.
+           IF       MOVE22 EQUAL TO "A B0C D0E"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-42.
+      *>     NOTE AN TO AE MOVE, ZERO AND SPACE INSERTION.
+           GO TO    MOVE-WRITE-F1-42.
+       MOVE-DELETE-F1-42.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-42.
+       MOVE-FAIL-F1-42.
+           MOVE     MOVE22 TO COMPUTED-A.
+           MOVE "A B0C D0E" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-42.
+           MOVE "MOVE-TEST-F1-42" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-43.
+           MOVE    "ABCDE" TO MOVE32.
+       MOVE-TEST-F1-43-0.
+           MOVE     MOVE32 TO MOVE33.
+       MOVE-TEST-F1-43-1.
+           IF       MOVE33 EQUAL TO "ABCDE"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-43.
+      *>     NOTE AN TO A MOVE, EQUAL SIZE.
+           GO TO    MOVE-WRITE-F1-43.
+       MOVE-DELETE-F1-43.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-43.
+       MOVE-FAIL-F1-43.
+           MOVE     MOVE33 TO COMPUTED-A.
+           MOVE "ABCDE" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-43.
+           MOVE "MOVE-TEST-F1-43" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-44.
+           MOVE    "ABCDE" TO MOVE32.
+       MOVE-TEST-F1-44-0.
+           MOVE     MOVE32 TO MOVE34.
+       MOVE-TEST-F1-44-1.
+           IF       MOVE34 EQUAL TO "ABCDE  "
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-44.
+      *>     NOTE AN TO A MOVE, SPACE PADDING ON RIGHT.
+           GO TO    MOVE-WRITE-F1-44.
+       MOVE-DELETE-F1-44.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-44.
+       MOVE-FAIL-F1-44.
+           MOVE     MOVE34 TO COMPUTED-A.
+           MOVE "ABCDE  " TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-44.
+           MOVE "MOVE-TEST-F1-44" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-45.
+           MOVE    "ABCDE" TO MOVE32.
+       MOVE-TEST-F1-45-0.
+           MOVE     MOVE32 TO MOVE35.
+       MOVE-TEST-F1-45-1.
+           IF       MOVE35 EQUAL TO "ABC"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-45.
+      *>     NOTE AN TO A MOVE, TRUNCATION ON RIGHT.
+           GO TO    MOVE-WRITE-F1-45.
+       MOVE-DELETE-F1-45.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-45.
+       MOVE-FAIL-F1-45.
+           MOVE     MOVE35 TO COMPUTED-A.
+           MOVE "ABC" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-45.
+           MOVE "MOVE-TEST-F1-45" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-46.
+           MOVE    "1 A05" TO MOVE35A.
+       MOVE-TEST-F1-46-0.
+           MOVE     MOVE36 TO MOVE21.
+       MOVE-TEST-F1-46-1.
+           IF       MOVE21 EQUAL TO "1 A05  "
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-46.
+      *>     NOTE AE TO AN MOVE, SPACE PADDING ON RIGHT.
+           GO TO    MOVE-WRITE-F1-46.
+       MOVE-DELETE-F1-46.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-46.
+       MOVE-FAIL-F1-46.
+           MOVE     MOVE21 TO COMPUTED-A.
+           MOVE "1 A05  " TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-46.
+           MOVE "MOVE-TEST-F1-46" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-47.
+           MOVE    "1 A05" TO MOVE35A.
+       MOVE-TEST-F1-47-0.
+           MOVE     MOVE36 TO MOVE20.
+       MOVE-TEST-F1-47-1.
+           IF       MOVE20 EQUAL TO "1 A0"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-47.
+      *>     NOTE AE TO AN MOVE, TRUNCATION ON RIGHT.
+           GO TO    MOVE-WRITE-F1-47.
+       MOVE-DELETE-F1-47.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-47.
+       MOVE-FAIL-F1-47.
+           MOVE     MOVE20 TO COMPUTED-A.
+           MOVE "1 A0" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-47.
+           MOVE "MOVE-TEST-F1-47" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-48.
+           MOVE    "1 A05" TO MOVE35A.
+       MOVE-TEST-F1-48-0.
+           MOVE     MOVE36 TO MOVE39.
+       MOVE-TEST-F1-48-1.
+           IF       MOVE39 EQUAL TO "01 A050"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-48.
+      *>     NOTE AE TO AE MOVE, ZERO INSERTION.
+           GO TO    MOVE-WRITE-F1-48.
+       MOVE-DELETE-F1-48.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-48.
+       MOVE-FAIL-F1-48.
+           MOVE     MOVE39 TO COMPUTED-A.
+           MOVE "01 A050" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-48.
+           MOVE "MOVE-TEST-F1-48" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-49.
+           MOVE    "1 A05" TO MOVE35A.
+       MOVE-TEST-F1-49-0.
+           MOVE     MOVE35A TO MOVE33.
+       MOVE-TEST-F1-49-1.
+           IF       MOVE33 EQUAL TO "1 A05"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-49.
+      *>     NOTE AE TO A MOVE, EQUAL SIZE.
+           GO TO    MOVE-WRITE-F1-49.
+       MOVE-DELETE-F1-49.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-49.
+       MOVE-FAIL-F1-49.
+           MOVE     MOVE33 TO COMPUTED-A.
+           MOVE "1 A05" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-49.
+           MOVE "MOVE-TEST-F1-49" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-50.
+           MOVE    "1 A05" TO MOVE35A.
+       MOVE-TEST-F1-50-0.
+           MOVE     MOVE35A TO MOVE34.
+       MOVE-TEST-F1-50-1.
+           IF       MOVE34 EQUAL TO "1 A05  "
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-50.
+      *>     NOTE AE TO A MOVE, SPACE PADDING ON RIGHT.
+           GO TO    MOVE-WRITE-F1-50.
+       MOVE-DELETE-F1-50.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-50.
+       MOVE-FAIL-F1-50.
+           MOVE     MOVE34 TO COMPUTED-A.
+           MOVE "1 A05  " TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-50.
+           MOVE "MOVE-TEST-F1-50" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-51.
+           MOVE    "1 A05" TO MOVE35A.
+       MOVE-TEST-F1-51-0.
+           MOVE     MOVE35A TO MOVE35.
+       MOVE-TEST-F1-51-1.
+           IF       MOVE35 EQUAL TO "1 A"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-51.
+      *>     NOTE AE TO A MOVE, TRUNCATION ON RIGHT.
+           GO TO    MOVE-WRITE-F1-51.
+       MOVE-DELETE-F1-51.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-51.
+       MOVE-FAIL-F1-51.
+           MOVE     MOVE35 TO COMPUTED-A.
+           MOVE "1 A" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-51.
+           MOVE "MOVE-TEST-F1-51" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-52.
+           MOVE    "ABCDE" TO MOVE37.
+           MOVE    "MOVE ALPHABETIC     " TO FEATURE.
+       MOVE-TEST-F1-52-0.
+           MOVE     MOVE37 TO MOVE21.
+       MOVE-TEST-F1-52-1.
+           IF       MOVE21 EQUAL TO "ABCDE  "
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-52.
+      *>     NOTE A TO AN MOVE, SPACE PADDING ON RIGHT.
+           GO TO    MOVE-WRITE-F1-52.
+       MOVE-DELETE-F1-52.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-52.
+       MOVE-FAIL-F1-52.
+           MOVE     MOVE21 TO COMPUTED-A.
+           MOVE "ABCDE  " TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-52.
+           MOVE "MOVE-TEST-F1-52" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-53.
+           MOVE    "ABCDE" TO MOVE37.
+       MOVE-TEST-F1-53-0.
+           MOVE     MOVE37 TO MOVE20.
+       MOVE-TEST-F1-53-1.
+           IF       MOVE20 EQUAL TO "ABCD"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-53.
+      *>     NOTE A TO AN MOVE, TRUNCATION ON RIGHT.
+           GO TO    MOVE-WRITE-F1-53.
+       MOVE-DELETE-F1-53.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-53.
+       MOVE-FAIL-F1-53.
+           MOVE     MOVE20 TO COMPUTED-A.
+           MOVE "ABCD" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-53.
+           MOVE "MOVE-TEST-F1-53" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-54.
+           MOVE    "ABCDE" TO MOVE37.
+       MOVE-TEST-F1-54-0.
+           MOVE     MOVE37 TO MOVE39.
+       MOVE-TEST-F1-54-1.
+           IF       MOVE39 EQUAL TO "0ABCDE0"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-54.
+      *>     NOTE A TO AE MOVE, ZERO INSERTION.
+           GO TO    MOVE-WRITE-F1-54.
+       MOVE-DELETE-F1-54.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-54.
+       MOVE-FAIL-F1-54.
+           MOVE     MOVE39 TO COMPUTED-A.
+           MOVE "0ABCDE0" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-54.
+           MOVE "MOVE-TEST-F1-54" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-55.
+           MOVE    "ABCDE" TO MOVE37.
+       MOVE-TEST-F1-55-0.
+           MOVE     MOVE37 TO MOVE34.
+       MOVE-TEST-F1-55-1.
+           IF       MOVE34 EQUAL TO "ABCDE  "
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-55.
+      *>     NOTE A TO A MOVE, SPACE PADDING ON RIGHT.
+           GO TO    MOVE-WRITE-F1-55.
+       MOVE-DELETE-F1-55.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-55.
+       MOVE-FAIL-F1-55.
+           MOVE     MOVE4 TO COMPUTED-A.
+           MOVE "ABCDE  " TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-55.
+           MOVE "MOVE-TEST-F1-55" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       MOVE-INIT-F1-56.
+           MOVE    "ABCDE" TO MOVE37.
+       MOVE-TEST-F1-56-0.
+           MOVE     MOVE37 TO MOVE35.
+       MOVE-TEST-F1-56-1.
+           IF       MOVE35 EQUAL TO "ABC"
+                    PERFORM PASS
+                    ELSE
+                    GO TO MOVE-FAIL-F1-56.
+      *>     NOTE A TO A MOVE, TRUNCATION ON RIGHT.
+           GO TO    MOVE-WRITE-F1-56.
+       MOVE-DELETE-F1-56.
+           PERFORM  DE-LETE.
+           GO TO    MOVE-WRITE-F1-56.
+       MOVE-FAIL-F1-56.
+           MOVE     MOVE35 TO COMPUTED-A.
+           MOVE "ABC" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOVE-WRITE-F1-56.
+           MOVE "MOVE-TEST-F1-56" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       NUMERIC-OPERAND-LIMITS-TESTS SECTION.
+       MOVE-INIT-F1-57-1.
+           MOVE "MOVE LIMITS TESTS " TO FEATURE.
+           MOVE  1 TO DNAME1.
+      *>     NOTE  THE FOLLOWING 44 TESTS WILL TEST THE LIMITS OF
+      *>         THE MOVE STATEMENT WITH OVER 20 OPERANDS, A DELETION
+      *>         PLACED IN THIS PARAGRAPH WILL SKIP THE LIMITS TESTS
+      *>         BUT A NOTE  STATEMENT MAY NEED TO BE PLACED IN EACH TEST.
+           GO TO MOVE-TEST-F1-57-0.
+       MOVE-INIT-DELETE-F1-57-1.
+           PERFORM DE-LETE.
+           MOVE "MOVE LIMITS TESTS " TO FEATURE.
+           MOVE "MOVE-TEST, F1-57-1 THRU F1-58-21" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           ADD 43 TO DELETE-COUNTER.
+           GO TO MOVE-INIT-F1-58.
+       MOVE-TEST-F1-57-0.
+           MOVE DNAME1 TO DNAME22  DNAME23  DNAME24  DNAME25  DNAME26
+               DNAME27  DNAME28  DNAME29  DNAME30  DNAME31  DNAME32
+               DNAME33  DNAME34  DNAME35  DNAME36  DNAME37  DNAME38
+               DNAME39  DNAME40  DNAME41  DNAME42  DNAME19.
+       MOVE-TEST-F1-57-1.
+           IF DNAME19 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-1.
+           MOVE 1 TO CORRECT-18V0.
+           MOVE DNAME19 TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-1.
+       MOVE-DELETE-F1-57-1.
+           PERFORM DE-LETE.
+      *>     NOTE  *** A DELETE IN THIS TEST WILL CAUSE THE NEXT
+      *>         43 TESTS TO FAIL.
+       MOVE-WRITE-F1-57-1.
+           MOVE "MOVE-TEST-F1-57-1 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-2.
+           IF DNAME22 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-2.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME22 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-2.
+       MOVE-DELETE-F1-57-2.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-2.
+           MOVE "MOVE-TEST-F1-57-2 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-3.
+           IF DNAME23 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-3.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME23 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-3.
+       MOVE-DELETE-F1-57-3.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-3.
+           MOVE "MOVE-TEST-F1-57-3 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-4.
+           IF DNAME24 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-4.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME24 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-4.
+       MOVE-DELETE-F1-57-4.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-4.
+           MOVE "MOVE-TEST-F1-57-4 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-5.
+           IF DNAME25 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-5.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME25 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-5.
+       MOVE-DELETE-F1-57-5.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-5.
+           MOVE "MOVE-TEST-F1-57-5 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-6.
+           IF DNAME26 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-6.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME26 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-6.
+       MOVE-DELETE-F1-57-6.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-6.
+           MOVE "MOVE-TEST-F1-57-6 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-7.
+           IF DNAME27 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-7.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME27 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-7.
+       MOVE-DELETE-F1-57-7.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-7.
+           MOVE "MOVE-TEST-F1-57-7 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-8.
+           IF DNAME28 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-8.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME28 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-8.
+       MOVE-DELETE-F1-57-8.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-8.
+           MOVE "MOVE-TEST-F1-57-8 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-9.
+           IF DNAME29 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-9.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME29 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-9.
+       MOVE-DELETE-F1-57-9.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-9.
+           MOVE "MOVE-TEST-F1-57-9 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-10.
+           IF DNAME30 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-10.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME30 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-10.
+       MOVE-DELETE-F1-57-10.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-10.
+           MOVE "MOVE-TEST-F1-57-10 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-11.
+           IF DNAME31 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-11.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME31 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-11.
+       MOVE-DELETE-F1-57-11.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-11.
+           MOVE "MOVE-TEST-F1-57-11 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-12.
+           IF DNAME32 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-12.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME32 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-12.
+       MOVE-DELETE-F1-57-12.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-12.
+           MOVE "MOVE-TEST-F1-57-12 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-13.
+           IF DNAME33 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-13.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME33 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-13.
+       MOVE-DELETE-F1-57-13.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-13.
+           MOVE "MOVE-TEST-F1-57-13 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-14.
+           IF DNAME34 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-14.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME34 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-14.
+       MOVE-DELETE-F1-57-14.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-14.
+           MOVE "MOVE-TEST-F1-57-14 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-15.
+           IF DNAME35 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-15.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME35 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-15.
+       MOVE-DELETE-F1-57-15.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-15.
+           MOVE "MOVE-TEST-F1-57-15 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-16.
+           IF DNAME36 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-16.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME36 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-16.
+       MOVE-DELETE-F1-57-16.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-16.
+           MOVE "MOVE-TEST-F1-57-16 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-17.
+           IF DNAME37 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-17.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME37 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-17.
+       MOVE-DELETE-F1-57-17.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-17.
+           MOVE "MOVE-TEST-F1-57-17 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-18.
+           IF DNAME38 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-18.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME38 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-18.
+       MOVE-DELETE-F1-57-18.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-18.
+           MOVE "MOVE-TEST-F1-57-18 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-19.
+           IF DNAME39 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-19.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME39 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-19.
+       MOVE-DELETE-F1-57-19.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-19.
+           MOVE "MOVE-TEST-F1-57-19 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-20.
+           IF DNAME40 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-20.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME40 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-20.
+       MOVE-DELETE-F1-57-20.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-20.
+           MOVE "MOVE-TEST-F1-57-20 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-21.
+           IF DNAME41 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-21.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME41 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-21.
+       MOVE-DELETE-F1-57-21.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-21.
+           MOVE "MOVE-TEST-F1-57-21 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-57-22.
+           IF DNAME42 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-57-22.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-57-1.
+           MOVE DNAME42 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-57-22.
+       MOVE-DELETE-F1-57-22.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-57-22.
+           MOVE "MOVE-TEST-F1-57-22 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-INIT-F1-58.
+           MOVE    000000000000000001 TO DNAME18.
+       MOVE-TEST-F1-58-0.
+           MOVE DNAME18 TO DNAME22  DNAME23  DNAME24  DNAME25  DNAME26
+               DNAME27  DNAME28  DNAME29  DNAME30  DNAME31  DNAME32
+               DNAME33  DNAME34  DNAME35  DNAME36  DNAME37  DNAME38
+               DNAME39  DNAME40  DNAME41  DNAME42.
+       MOVE-TEST-F1-58-1.
+           IF DNAME22 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-1.
+           MOVE DNAME22 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-1.
+       MOVE-DELETE-F1-58-1.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-1.
+           MOVE "MOVE-TEST-F1-58-1 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-2.
+           IF DNAME23 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-2.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME23 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-2.
+       MOVE-DELETE-F1-58-2.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-2.
+           MOVE "MOVE-TEST-F1-58-2 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-3.
+           IF DNAME24 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-3.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME24 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-3.
+       MOVE-DELETE-F1-58-3.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-3.
+           MOVE "MOVE-TEST-F1-58-3 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-4.
+           IF DNAME25 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-4.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME25 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-4.
+       MOVE-DELETE-F1-58-4.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-4.
+           MOVE "MOVE-TEST-F1-58-4 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-5.
+           IF DNAME26 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-5.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME26 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-5.
+       MOVE-DELETE-F1-58-5.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-5.
+           MOVE "MOVE-TEST-F1-58-5 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-6.
+           IF DNAME27 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-6.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME27 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-6.
+       MOVE-DELETE-F1-58-6.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-6.
+           MOVE "MOVE-TEST-F1-58-6 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-7.
+           IF DNAME28 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-7.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME28 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-7.
+       MOVE-DELETE-F1-58-7.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-7.
+           MOVE "MOVE-TEST-F1-58-7 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-8.
+           IF DNAME29 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-8.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME29 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-8.
+       MOVE-DELETE-F1-58-8.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-8.
+           MOVE "MOVE-TEST-F1-58-8 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-9.
+           IF DNAME30 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-9.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME30 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-9.
+       MOVE-DELETE-F1-58-9.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-9.
+           MOVE "MOVE-TEST-F1-58-9 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-10.
+           IF DNAME31 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-10.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME31 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-10.
+       MOVE-DELETE-F1-58-10.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-10.
+           MOVE "MOVE-TEST-F1-58-10 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-11.
+           IF DNAME32 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-11.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME32 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-11.
+       MOVE-DELETE-F1-58-11.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-11.
+           MOVE "MOVE-TEST-F1-58-11 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-12.
+           IF DNAME33 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-12.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME33 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-12.
+       MOVE-DELETE-F1-58-12.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-12.
+           MOVE "MOVE-TEST-F1-58-12 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-13.
+           IF DNAME34 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-13.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME34 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-13.
+       MOVE-DELETE-F1-58-13.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-13.
+           MOVE "MOVE-TEST-F1-58-13 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-14.
+           IF DNAME35 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-14.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME35 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-14.
+       MOVE-DELETE-F1-58-14.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-14.
+           MOVE "MOVE-TEST-F1-58-14 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-15.
+           IF DNAME36 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-15.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME36 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-15.
+       MOVE-DELETE-F1-58-15.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-15.
+           MOVE "MOVE-TEST-F1-58-15 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-16.
+           IF DNAME37 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-16.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME37 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-16.
+       MOVE-DELETE-F1-58-16.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-16.
+           MOVE "MOVE-TEST-F1-58-16 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-17.
+           IF DNAME38 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-17.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME38 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-17.
+       MOVE-DELETE-F1-58-17.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-17.
+           MOVE "MOVE-TEST-F1-58-17 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-18.
+           IF DNAME39 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-18.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME39 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-18.
+       MOVE-DELETE-F1-58-18.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-18.
+           MOVE "MOVE-TEST-F1-58-18 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-19.
+           IF DNAME40 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-19.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME40 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-19.
+       MOVE-DELETE-F1-58-19.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-19.
+           MOVE "MOVE-TEST-F1-58-19 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-20.
+           IF DNAME41 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-20.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME41 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-20.
+       MOVE-DELETE-F1-58-20.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-20.
+           MOVE "MOVE-TEST-F1-58-20 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-58-21.
+           IF DNAME42 EQUAL TO 1
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-58-21.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-58-1.
+           MOVE DNAME42 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-58-21.
+       MOVE-DELETE-F1-58-21.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-58-21.
+           MOVE "MOVE-TEST-F1-58-21 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-INIT-F1-59-1.
+           MOVE ZERO TO DNAME22  DNAME23  DNAME24  DNAME25  DNAME26.
+           MOVE ZERO TO DNAME27  DNAME28  DNAME29  DNAME30  DNAME31.
+           MOVE ZERO TO DNAME32  DNAME33  DNAME34  DNAME35  DNAME36.
+           MOVE ZERO TO DNAME37  DNAME38  DNAME39  DNAME40  DNAME41.
+           MOVE ZERO TO DNAME42.
+       MOVE-TEST-F1-59-0.
+           MOVE "A" TO ANDATA1  ANDATA2  ANDATA3  ANDATA4  ANDATA5
+               ANDATA6  ANDATA7  ANDATA8  ANDATA9  ANDATA10  ANDATA11
+               ANDATA12  ANDATA13  ANDATA14  ANDATA15  ANDATA16
+               ANDATA17  ANDATA18  ANDATA19  ANDATA20  ANDATA21.
+       MOVE-TEST-F1-59-1.
+           IF ANDATA1  EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-1.
+           MOVE ANDATA1  TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-1.
+       MOVE-DELETE-F1-59-1.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-1.
+           MOVE "MOVE-TEST-F1-59-1 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-2.
+           IF ANDATA2  EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-2.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA2  TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-2.
+       MOVE-DELETE-F1-59-2.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-2.
+           MOVE "MOVE-TEST-F1-59-2 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-3.
+           IF ANDATA3  EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-3.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA3  TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-3.
+       MOVE-DELETE-F1-59-3.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-3.
+           MOVE "MOVE-TEST-F1-59-3 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-4-4.
+           IF ANDATA4  EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-4.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA4  TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-4.
+       MOVE-DELETE-F1-59-4.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-4.
+           MOVE "MOVE-TEST-F1-59-4 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-5.
+           IF ANDATA5  EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-5.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA5  TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-5.
+       MOVE-DELETE-F1-59-5.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-5.
+           MOVE "MOVE-TEST-F1-59-5 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-6.
+           IF ANDATA6  EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-6.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA6  TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-6.
+       MOVE-DELETE-F1-59-6.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-6.
+           MOVE "MOVE-TEST-F1-59-6 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-7.
+           IF ANDATA7  EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-7.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA7  TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-7.
+       MOVE-DELETE-F1-59-7.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-7.
+           MOVE "MOVE-TEST-F1-59-7 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-8.
+           IF ANDATA8  EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-8.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA8  TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-8.
+       MOVE-DELETE-F1-59-8.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-8.
+           MOVE "MOVE-TEST-F1-59-8 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-9.
+           IF ANDATA9  EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-9.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA9  TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-9.
+       MOVE-DELETE-F1-59-9.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-9.
+           MOVE "MOVE-TEST-F1-59-9 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-10.
+           IF ANDATA10 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-10.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA10 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-10.
+       MOVE-DELETE-F1-59-10.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-10.
+           MOVE "MOVE-TEST-F1-59-10 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-11.
+           IF ANDATA11 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-11.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA11 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-11.
+       MOVE-DELETE-F1-59-11.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-11.
+           MOVE "MOVE-TEST-F1-59-11 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-12.
+           IF ANDATA12 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-12.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA12 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-12.
+       MOVE-DELETE-F1-59-12.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-12.
+           MOVE "MOVE-TEST-F1-59-12 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-13.
+           IF ANDATA13 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-13.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA13 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-13.
+       MOVE-DELETE-F1-59-13.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-13.
+           MOVE "MOVE-TEST-F1-59-13 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-14.
+           IF ANDATA14 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-14.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA14 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-14.
+       MOVE-DELETE-F1-59-14.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-14.
+           MOVE "MOVE-TEST-F1-59-14 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-15.
+           IF ANDATA15 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-15.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA15 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-15.
+       MOVE-DELETE-F1-59-15.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-15.
+           MOVE "MOVE-TEST-F1-59-15 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-16.
+           IF ANDATA16 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-16.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA16 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-16.
+       MOVE-DELETE-F1-59-16.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-16.
+           MOVE "MOVE-TEST-F1-59-16 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-17.
+           IF ANDATA17 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-17.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA17 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-17.
+       MOVE-DELETE-F1-59-17.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-17.
+           MOVE "MOVE-TEST-F1-59-17 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-18.
+           IF ANDATA18 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-18.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA18 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-18.
+       MOVE-DELETE-F1-59-18.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-18.
+           MOVE "MOVE-TEST-F1-59-18 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-19.
+           IF ANDATA19 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-19.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA19 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-19.
+       MOVE-DELETE-F1-59-19.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-19.
+           MOVE "MOVE-TEST-F1-59-19 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-20.
+           IF ANDATA20 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-20.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA20 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-20.
+       MOVE-DELETE-F1-59-20.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-20.
+           MOVE "MOVE-TEST-F1-59-20 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-59-21.
+           IF ANDATA21 EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-59-21.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-59-1.
+           MOVE ANDATA21 TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-59-21.
+       MOVE-DELETE-F1-59-21.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-59-21.
+           MOVE "MOVE-TEST-F1-59-21 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-INIT-F1-60.
+      *> 
+       MOVE-TEST-F1-60-0.
+           MOVE "ABCDEFGHIJKLMNOPQRSTU" TO ANDATA1  ANDATA2  ANDATA3
+               ANDATA4  ANDATA5  ANDATA6  ANDATA7  ANDATA8  ANDATA9
+               ANDATA10  ANDATA11  ANDATA12  ANDATA13  ANDATA14
+               ANDATA15  ANDATA16  ANDATA17  ANDATA18  ANDATA19
+               ANDATA20  ANDATA21.
+       MOVE-TEST-F1-60-1.
+           IF ANDATA1  EQUAL TO "A"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-1.
+           MOVE ANDATA1  TO COMPUTED-A.
+           MOVE "A" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-1.
+       MOVE-DELETE-F1-60-1.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-1.
+           MOVE "MOVE-TEST-F1-60-1 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-2.
+           IF ANDATA2  EQUAL TO "AB"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-2.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA2  TO COMPUTED-A.
+           MOVE "AB"                   TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-2.
+       MOVE-DELETE-F1-60-2.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-2.
+           MOVE "MOVE-TEST-F1-60-2 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-3.
+           IF ANDATA3  EQUAL TO "ABC"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-3.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA3  TO COMPUTED-A.
+           MOVE "ABC"                  TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-3.
+       MOVE-DELETE-F1-60-3.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-3.
+           MOVE "MOVE-TEST-F1-60-3 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-4.
+           IF ANDATA4  EQUAL TO "ABCD"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-4.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA4  TO COMPUTED-A.
+           MOVE "ABCD"                 TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-4.
+       MOVE-DELETE-F1-60-4.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-4.
+           MOVE "MOVE-TEST-F1-60-4 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-5.
+           IF ANDATA5  EQUAL TO "ABCDE"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-5.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA5  TO COMPUTED-A.
+           MOVE "ABCDE"                TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-5.
+       MOVE-DELETE-F1-60-5.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-5.
+           MOVE "MOVE-TEST-F1-60-5 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-6.
+           IF ANDATA6  EQUAL TO "ABCDEF"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-6.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA6  TO COMPUTED-A.
+           MOVE "ABCDEF"               TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-6.
+       MOVE-DELETE-F1-60-6.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-6.
+           MOVE "MOVE-TEST-F1-60-6 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-7.
+           IF ANDATA7  EQUAL TO "ABCDEFG"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-7.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA7  TO COMPUTED-A.
+           MOVE "ABCDEFG"              TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-7.
+       MOVE-DELETE-F1-60-7.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-7.
+           MOVE "MOVE-TEST-F1-60-7 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-8.
+           IF ANDATA8  EQUAL TO "ABCDEFGH"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-8.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA8  TO COMPUTED-A.
+           MOVE "ABCDEFGH"             TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-8.
+       MOVE-DELETE-F1-60-8.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-8.
+           MOVE "MOVE-TEST-F1-60-8 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-9.
+           IF ANDATA9  EQUAL TO "ABCDEFGHI"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-9.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA9  TO COMPUTED-A.
+           MOVE "ABCDEFGHI"            TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-9.
+       MOVE-DELETE-F1-60-9.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-9.
+           MOVE "MOVE-TEST-F1-60-9 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-10.
+           IF ANDATA10 EQUAL TO "ABCDEFGHIJ"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-10.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA10 TO COMPUTED-A.
+           MOVE "ABCDEFGHIJ"           TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-10.
+       MOVE-DELETE-F1-60-10.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-10.
+           MOVE "MOVE-TEST-F1-60-10 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-11.
+           IF ANDATA11 EQUAL TO "ABCDEFGHIJK"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-11.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA11 TO COMPUTED-A.
+           MOVE "ABCDEFGHIJK"          TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-11.
+       MOVE-DELETE-F1-60-11.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-11.
+           MOVE "MOVE-TEST-F1-60-11 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-12.
+           IF ANDATA12 EQUAL TO "ABCDEFGHIJKL"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-12.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA12 TO COMPUTED-A.
+           MOVE "ABCDEFGHIJKL"         TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-12.
+       MOVE-DELETE-F1-60-12.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-12.
+           MOVE "MOVE-TEST-F1-60-12 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-13.
+           IF ANDATA13 EQUAL TO "ABCDEFGHIJKLM"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-13.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA13 TO COMPUTED-A.
+           MOVE "ABCDEFGHIJKLM"        TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-13.
+       MOVE-DELETE-F1-60-13.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-13.
+           MOVE "MOVE-TEST-F1-60-13 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-14.
+           IF ANDATA14 EQUAL TO "ABCDEFGHIJKLMN"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-14.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA14 TO COMPUTED-A.
+           MOVE "ABCDEFGHIJKLMN"       TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-14.
+       MOVE-DELETE-F1-60-14.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-14.
+           MOVE "MOVE-TEST-F1-60-14 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-15.
+           IF ANDATA15 EQUAL TO "ABCDEFGHIJKLMNO"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-15.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA15 TO COMPUTED-A.
+           MOVE "ABCDEFGHIJKLMNO"      TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-15.
+       MOVE-DELETE-F1-60-15.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-15.
+           MOVE "MOVE-TEST-F1-60-15 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-16.
+           IF ANDATA16 EQUAL TO "ABCDEFGHIJKLMNOP"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-16.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA16 TO COMPUTED-A.
+           MOVE "ABCDEFGHIJKLMNOP"     TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-16.
+       MOVE-DELETE-F1-60-16.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-16.
+           MOVE "MOVE-TEST-F1-60-16 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-17.
+           IF ANDATA17 EQUAL TO "ABCDEFGHIJKLMNOPQ"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-17.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA17 TO COMPUTED-A.
+           MOVE "ABCDEFGHIJKLMNOPQ"    TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-17.
+       MOVE-DELETE-F1-60-17.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-17.
+           MOVE "MOVE-TEST-F1-60-17 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-18.
+           IF ANDATA18 EQUAL TO "ABCDEFGHIJKLMNOPQR"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-18.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA18 TO COMPUTED-A.
+           MOVE "ABCDEFGHIJKLMNOPQR"   TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-18.
+       MOVE-DELETE-F1-60-18.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-18.
+           MOVE "MOVE-TEST-F1-60-18 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-19.
+           IF ANDATA19 EQUAL TO "ABCDEFGHIJKLMNOPQRS"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-19.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA19 TO COMPUTED-A.
+           MOVE "ABCDEFGHIJKLMNOPQRS"  TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-19.
+       MOVE-DELETE-F1-60-19.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-19.
+           MOVE "MOVE-TEST-F1-60-19 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-20.
+           IF ANDATA20 EQUAL TO "ABCDEFGHIJKLMNOPQRST"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-20.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE ANDATA20 TO COMPUTED-A.
+           MOVE "ABCDEFGHIJKLMNOPQRST" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-20.
+       MOVE-DELETE-F1-60-20.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-20.
+           MOVE "MOVE-TEST-F1-60-20 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MOVE-TEST-F1-60-21.
+           IF ANDATA21 EQUAL TO "ABCDEFGHIJKLMNOPQRSTU"
+               PERFORM PASS
+               GO TO MOVE-WRITE-F1-60-21.
+      *>     NOTE   THIS TEST DEPENDS ON PARAGRAPH  MOVE-TEST-F1-60-1.
+           MOVE "SEE RE-MARK COL" TO COMPUTED-A.
+           MOVE ANDATA21 TO RE-MARK.
+           MOVE "ALPHABET A THRU U" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO MOVE-WRITE-F1-60-21.
+       MOVE-DELETE-F1-60-21.
+           PERFORM DE-LETE.
+       MOVE-WRITE-F1-60-21.
+           MOVE "MOVE-TEST-F1-60-21 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           PERFORM END-ROUTINE.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC104A

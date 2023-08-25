@@ -1,0 +1,1922 @@
+      *> HEADER,COBOL,NC225A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC225A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     PROGRAM NC225A TESTS THE USE OF THE "EVALUATE" STATEMENT. *
+      *>     VARIOUS COMBINATIONS OF IDENTIFIERS, LITERALS, ARITHMETIC *
+      *>     EXPRESSIONS AND CONDITIONAL EXPRESSIONS AS WELL AS THE    *
+      *>     OPTIONAL WORDS "TRUE" AND "FALSE" ARE USED AS SELECTION   *
+      *>     SUBJECTS AND SELECTION OBJECTS.                           *
+      *>     MULTIPLE SELECTION SUBJECTS AND SETS OF SELECTION         *
+      *>     OBJECTS ARE ALSO TESTED.                                  *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  WRK-XN-00001-1              PIC   X.
+       01  WRK-XN-00001-2              PIC   X.
+       01  WRK-XN-00001-3              PIC   X.
+       01  WRK-XN-00001-4              PIC   X.
+       01  WRK-DU-02V00                PIC   99.
+       01  WRK-DU-08V00                PIC   9(8).
+       01  WRK-DU-08V00-1              PIC   9(8).
+       01  WRK-DU-08V00-2              PIC   9(8).
+               88 IT-IS-81         VALUE 81.
+       01  WRK-DU-08V00-3              PIC   9(8).
+       01  WRK-DU-08V00-4              PIC   9(8).
+       01  TEST-3-DATA                 PIC   X(6)     VALUE "ABCDEF".
+       01  TEST-4-DATA                 PIC   XXBXXBXX VALUE "AB CD EF".
+       
+       01  WS-2                        PIC  S9        VALUE +2.
+       01  WS-3                        PIC  S9        VALUE +3.
+       01  WS-5                        PIC  S9        VALUE +5.
+       01  WS-6                        PIC  S9        VALUE +6.
+       01  WS-7                        PIC  S9        VALUE +7.
+       01  WS-10                       PIC  S99       VALUE +10.
+       01  WS-81                       PIC  S99       VALUE +81.
+       01  TEST-5-TABLE.
+         03        TABLE-GROUP         OCCURS 4.
+           05      TABLE-1             PIC 9(8)
+                                       OCCURS 2.
+         03         TEST-5-DATA        PIC X(6).
+      *> 
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC225A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+       
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO    FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+      *> 
+       SECT-NC225A-001-1 SECTION.
+      *> 
+       EVA-INIT-GF-1.
+           MOVE   "EVALUATE STATEMENT"  TO FEATURE.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1       TO REC-CT.
+           MOVE   "6" TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-1-1.
+       EVA-DELETE-GF-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-2.
+       EVA-TEST-GF-1-1.
+           MOVE   "EVA-TEST-GF-1-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NUMERIC
+              WHEN TRUE
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-1-1.
+           GO TO EVA-FAIL-GF-1-1.
+       EVA-DELETE-GF-1-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-1-1.
+       EVA-FAIL-GF-1-1.
+           MOVE   "EXPECTING NUMERIC CONDITION" TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-1-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-1-2.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-1-2" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NOT NUMERIC
+              WHEN TRUE
+                   GO TO EVA-FAIL-GF-1-2.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-1-2.
+       EVA-DELETE-GF-1-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-1-2.
+       EVA-FAIL-GF-1-2.
+           MOVE   "EXPECTING NUMERIC CONDITION" TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-1-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-2.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "*" TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-2-1.
+       EVA-DELETE-GF-2.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-3.
+       EVA-TEST-GF-2-1.
+           MOVE   "EVA-TEST-GF-2-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NUMERIC
+              WHEN TRUE
+                   GO TO EVA-FAIL-GF-2-1.
+           PERFORM PASS.
+           GO TO EVA-WRITE-GF-2-1.
+       EVA-DELETE-GF-2-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-2-1.
+       EVA-FAIL-GF-2-1.
+           MOVE   "EXPECTING NON-NUMERIC CONDITION" TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-2-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-2-2.
+           ADD     1 TO REC-CT.
+           MOVE   "EVA-TEST-GF-2-2" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NOT NUMERIC
+              WHEN TRUE
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-2-2.
+           GO TO EVA-FAIL-GF-2-2.
+       EVA-DELETE-GF-2-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-2-2.
+       EVA-FAIL-GF-2-2.
+           MOVE   "EXPECTING NON-NUMERIC CONDITION" TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-2-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-3.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "6" TO WRK-XN-00001-1.
+           MOVE   "6" TO WRK-XN-00001-2.
+           GO TO   EVA-TEST-GF-3-1.
+       EVA-DELETE-GF-3.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-4.
+       EVA-TEST-GF-3-1.
+           MOVE   "EVA-TEST-GF-3-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1
+              WHEN WRK-XN-00001-2
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-3-1.
+           GO TO EVA-FAIL-GF-3-1.
+       EVA-DELETE-GF-3-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-3-1.
+       EVA-FAIL-GF-3-1.
+           MOVE   "EXPECTING EQUAL IDENTIFIER" TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-3-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-3-2.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-3-2" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1
+              WHEN NOT WRK-XN-00001-2
+                   GO TO EVA-FAIL-GF-3-2.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-3-2.
+       EVA-DELETE-GF-3-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-3-2.
+       EVA-FAIL-GF-3-2.
+           MOVE   "EXPECTING EQUAL IDENTIFIERS" TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-3-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-4.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "1" TO WRK-XN-00001-1.
+           MOVE   "*" TO WRK-XN-00001-2.
+           GO TO   EVA-TEST-GF-4-1.
+       EVA-DELETE-GF-4.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-5.
+       EVA-TEST-GF-4-1.
+           MOVE   "EVA-TEST-GF-4-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1
+              WHEN WRK-XN-00001-2
+                   GO TO EVA-FAIL-GF-4-1.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-4-1.
+       EVA-DELETE-GF-4-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-4-1.
+       EVA-FAIL-GF-4-1.
+           MOVE   "EXPECTING UNEQUAL IDENTIFIERS" TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-4-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-4-2.
+           ADD     1 TO REC-CT.
+           EVALUATE WRK-XN-00001-1
+              WHEN NOT WRK-XN-00001-2
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-4-2.
+           GO TO EVA-FAIL-GF-4-2.
+       EVA-DELETE-GF-4-2.
+           PERFORM DE-LETE.
+           GO TO   EVA-WRITE-GF-4-2.
+       EVA-FAIL-GF-4-2.
+           MOVE   "EXPECTING UNEQUAL IDENTIFIERS" TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-4-2.
+           MOVE   "EVA-TEST-GF-4-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-5.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "A" TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-5-1.
+       EVA-DELETE-GF-5.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-6.
+       EVA-TEST-GF-5-1.
+           MOVE   "EVA-TEST-GF-5-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1
+              WHEN "A"
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-5-1.
+           GO TO EVA-FAIL-GF-5-1.
+       EVA-DELETE-GF-5-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-5-1.
+       EVA-FAIL-GF-5-1.
+           MOVE   "EXPECTING EQUAL LITERAL" TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-5-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-5-2.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-5-2" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1
+              WHEN NOT "A"
+                   GO TO EVA-FAIL-GF-5-2.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-5-2.
+       EVA-DELETE-GF-5-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-5-2.
+       EVA-FAIL-GF-5-2.
+           MOVE   "EXPECTING EQUAL LITERAL" TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-5-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-6.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "A" TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-6-1.
+       EVA-DELETE-GF-6.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-7.
+       EVA-TEST-GF-6-1.
+           MOVE   "EVA-TEST-GF-6-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1
+              WHEN "Z"
+                   GO TO EVA-FAIL-GF-6-1.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-6-1.
+       EVA-DELETE-GF-6-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-6-1.
+       EVA-FAIL-GF-6-1.
+           MOVE   "EXPECTING UNEQUAL LITERAL" TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-6-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-6-2.
+           ADD     1 TO REC-CT.
+           MOVE   "EVA-TEST-GF-6-2" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1
+              WHEN NOT "Z"
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-6-2.
+           GO TO EVA-FAIL-GF-6-2.
+       EVA-DELETE-GF-6-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-6-2.
+       EVA-FAIL-GF-6-2.
+           MOVE   "EXPECTING UNEQUAL LITERAL" TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-6-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-7.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    89 TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-7-1.
+       EVA-DELETE-GF-7.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-8.
+       EVA-TEST-GF-7-1.
+           MOVE   "EVA-TEST-GF-7-1" TO PAR-NAME.
+           EVALUATE WRK-DU-08V00
+              WHEN (33 + (99 - 43))
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-7-1.
+           GO TO EVA-FAIL-GF-7-1.
+       EVA-DELETE-GF-7-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-7-1.
+       EVA-FAIL-GF-7-1.
+           MOVE   "EXPECTING EQUAL ARITHMETIC EXPRESSION" TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-7-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-7-2.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-7-2" TO PAR-NAME.
+           EVALUATE WRK-DU-08V00
+              WHEN NOT (33 + (99 - 43))
+                   GO TO EVA-FAIL-GF-7-2.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-7-2.
+       EVA-DELETE-GF-7-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-7-2.
+       EVA-FAIL-GF-7-2.
+           MOVE   "EXPECTING EQUAL ARITHMETIC EXPRESSION"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-7-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-8.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    89 TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-8-1.
+       EVA-DELETE-GF-8.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-9.
+       EVA-TEST-GF-8-1.
+           MOVE   "EVA-TEST-GF-8-1" TO PAR-NAME.
+           EVALUATE WRK-DU-08V00
+              WHEN (2 + 4 + 8 + 16 + 32 + 64)
+                   GO TO EVA-FAIL-GF-8-1.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-8-1.
+       EVA-DELETE-GF-8-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-8-1.
+       EVA-FAIL-GF-8-1.
+           MOVE   "EXPECTING UNEQUAL ARITHMETIC EXPRESSION"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-8-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-8-2.
+           ADD     1 TO REC-CT.
+           MOVE   "EVA-TEST-GF-8-2" TO PAR-NAME.
+           EVALUATE WRK-DU-08V00
+              WHEN NOT (2 + 4 + 8 + 16 + 32 + 64)
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-8-2.
+           GO TO   EVA-FAIL-GF-8-2.
+       EVA-DELETE-GF-8-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-8-2.
+       EVA-FAIL-GF-8-2.
+           MOVE   "EXPECTING UNEQUAL ARITHMETIC EXPRESSION" TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-8-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-9.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "J" TO WRK-XN-00001-1.
+           MOVE   "A" TO WRK-XN-00001-2.
+           MOVE   "N" TO WRK-XN-00001-3.
+           GO TO   EVA-TEST-GF-9-1.
+       EVA-DELETE-GF-9.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-10.
+       EVA-TEST-GF-9-1.
+           MOVE   "EVA-TEST-GF-9-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1
+              WHEN WRK-XN-00001-2 THRU WRK-XN-00001-3
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-9-1.
+           GO TO   EVA-FAIL-GF-9-1.
+       EVA-DELETE-GF-9-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-9-1.
+       EVA-FAIL-GF-9-1.
+           MOVE   "SUBJECT IDENTIFIER SHOULD BE WITHIN RANGE"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-9-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-9-2.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-9-2" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1
+              WHEN NOT WRK-XN-00001-2 THRU WRK-XN-00001-3
+                   GO TO EVA-FAIL-GF-9-2.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-9-2.
+       EVA-DELETE-GF-9-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-9-2.
+       EVA-FAIL-GF-9-2.
+           MOVE   "SUBJECT IDENTIFIER SHOULD BE WITHIN RANGE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-9-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-10.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "J" TO WRK-XN-00001-1.
+           MOVE   "A" TO WRK-XN-00001-2.
+           MOVE   "N" TO WRK-XN-00001-3.
+           GO TO   EVA-TEST-GF-10-1.
+       EVA-DELETE-GF-10.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-11.
+       EVA-TEST-GF-10-1.
+           MOVE   "EVA-TEST-GF-10-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-3
+              WHEN WRK-XN-00001-2 THRU WRK-XN-00001-1
+                   GO TO EVA-FAIL-GF-10-1.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-10-1.
+       EVA-DELETE-GF-10-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-10-1.
+       EVA-FAIL-GF-10-1.
+           MOVE "SUBJECT IDENTIFIER SHOULD NOT BE WITHIN RANGE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-10-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-10-2.
+           ADD     1 TO REC-CT.
+           MOVE   "EVA-TEST-GF-10-2" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-3
+              WHEN NOT WRK-XN-00001-2 THRU WRK-XN-00001-1
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-10-2.
+           GO TO EVA-FAIL-GF-10-2.
+       EVA-DELETE-GF-10-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-10-2.
+       EVA-FAIL-GF-10-2.
+           MOVE "  SUBJECT IDENTIFIER SHOULD NOT BE WITHIN RANGE"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-10-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-11.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "J" TO WRK-XN-00001-1.
+           MOVE   "A" TO WRK-XN-00001-2.
+           MOVE   "N" TO WRK-XN-00001-3.
+           GO TO   EVA-TEST-GF-11-1.
+       EVA-DELETE-GF-11.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-12.
+       EVA-TEST-GF-11-1.
+           MOVE   "EVA-TEST-GF-11-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1
+              WHEN "A" THROUGH "N"
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-11-1.
+           GO TO EVA-FAIL-GF-11-1.
+       EVA-DELETE-GF-11-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-11-1.
+       EVA-FAIL-GF-11-1.
+           MOVE   "SUBJECT IDENTIFIER SHOULD BE WITHIN RANGE"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-11-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-11-2.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-11-2" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1
+              WHEN NOT "A" THROUGH "N"
+                   GO TO EVA-FAIL-GF-11-2.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-11-2.
+       EVA-DELETE-GF-11-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-11-2.
+       EVA-FAIL-GF-11-2.
+           MOVE   "SUBJECT IDENTIFIER SHOULD BE WITHIN RANGE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-11-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-12.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "J" TO WRK-XN-00001-1.
+           MOVE   "A" TO WRK-XN-00001-2.
+           MOVE   "N" TO WRK-XN-00001-3.
+           GO TO   EVA-TEST-GF-12-1.
+       EVA-DELETE-GF-12.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-13.
+       EVA-TEST-GF-12-1.
+           MOVE   "EVA-TEST-GF-12-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-3
+              WHEN "A" THROUGH "J"
+                   GO TO EVA-FAIL-GF-12-1.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-12-1.
+       EVA-DELETE-GF-12-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-12-1.
+       EVA-FAIL-GF-12-1.
+           MOVE "SUBJECT IDENTIFIER SHOULD NOT BE WITHIN RANGE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-12-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-12-2.
+           ADD     1 TO REC-CT.
+           MOVE   "EVA-TEST-GF-12-2" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-3
+              WHEN NOT "A" THROUGH "J"
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-12-2.
+           GO TO   EVA-FAIL-GF-12-2.
+       EVA-DELETE-GF-12-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-12-2.
+       EVA-FAIL-GF-12-2.
+           MOVE "  SUBJECT IDENTIFIER SHOULD NOT BE WITHIN RANGE"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-12-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-13.
+           MOVE   "VI-84 6.12.4 GR1(a)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    89 TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-13-1.
+       EVA-DELETE-GF-13.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-14.
+       EVA-TEST-GF-13-1.
+           MOVE   "EVA-TEST-GF-13-1" TO PAR-NAME.
+           EVALUATE WRK-DU-08V00
+              WHEN (11 + (99 - 43)) THRU (20 * 5)
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-13-1.
+           GO TO   EVA-FAIL-GF-13-1.
+       EVA-DELETE-GF-13-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-13-1.
+       EVA-FAIL-GF-13-1.
+           MOVE   "SUBJECT IDENTIFIER SHOULD BE WITHIN RANGE"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-13-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-13-2.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-13-2" TO PAR-NAME.
+           EVALUATE WRK-DU-08V00
+              WHEN NOT (11 + (99 - 43)) THRU (20 * 5)
+                   GO TO EVA-FAIL-GF-13-2.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-13-2.
+       EVA-DELETE-GF-13-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-13-2.
+       EVA-FAIL-GF-13-2.
+           MOVE   "SUBJECT IDENTIFIER SHOULD BE WITHIN RANGE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-13-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-14.
+           MOVE   "VI-84 6.12.4 GR1(A)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    89 TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-14-1.
+       EVA-DELETE-GF-14.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-15.
+       EVA-TEST-GF-14-1.
+           MOVE   "EVA-TEST-GF-14-1" TO PAR-NAME.
+           EVALUATE WRK-DU-08V00
+              WHEN (11 + (99 - 20)) THRU (20 * 5)
+                   GO TO EVA-FAIL-GF-14-1.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-14-1.
+       EVA-DELETE-GF-14-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-14-1.
+       EVA-FAIL-GF-14-1.
+           MOVE "SUBJECT IDENTIFIER SHOULD NOT BE WITHIN RANGE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-14-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-14-2.
+           ADD     1 TO REC-CT.
+           MOVE   "EVA-TEST-GF-14-2" TO PAR-NAME.
+           EVALUATE WRK-DU-08V00
+              WHEN NOT (11 + (99 - 20)) THRU (20 * 5)
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-14-2.
+           GO TO   EVA-FAIL-GF-14-2.
+       EVA-DELETE-GF-14-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-14-2.
+       EVA-FAIL-GF-14-2.
+           MOVE   "SUBJECT IDENTIFIER SHOULD NOT BE WITHIN RANGE"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-14-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-15.
+           MOVE   "VI-84 6.12.4 GR1(b)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    26 TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-15-1.
+       EVA-DELETE-GF-15.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-16.
+       EVA-TEST-GF-15-1.
+           MOVE   "EVA-TEST-GF-15-1" TO PAR-NAME.
+           EVALUATE 26
+              WHEN WRK-DU-08V00
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-15-1.
+           GO TO   EVA-FAIL-GF-15-1.
+       EVA-DELETE-GF-15-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-15-1.
+       EVA-FAIL-GF-15-1.
+           MOVE   "IDENTIFIER AND LITERAL SHOULD BE EQUAL"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-15-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-15-2.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-15-2" TO PAR-NAME.
+           EVALUATE 26
+              WHEN NOT WRK-DU-08V00
+                   GO TO EVA-FAIL-GF-15-2.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-15-2.
+       EVA-DELETE-GF-15-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-15-2.
+       EVA-FAIL-GF-15-2.
+           MOVE   "IDENTIFIER AND LITERAL SHOULD BE EQUAL"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-15-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-16.
+           MOVE   "VI-84 6.12.4 GR1(b)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    78 TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-16-1.
+       EVA-DELETE-GF-16.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-17.
+       EVA-TEST-GF-16-1.
+           MOVE   "EVA-TEST-GF-16-1" TO PAR-NAME.
+           EVALUATE 1234
+              WHEN WRK-DU-08V00
+                   GO TO EVA-FAIL-GF-16-1.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-16-1.
+       EVA-DELETE-GF-16-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-16-1.
+       EVA-FAIL-GF-16-1.
+           MOVE   "IDENTIFIER AND LITERAL SHOULD NOT BE EQUAL"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-16-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-16-2.
+           ADD     1 TO REC-CT.
+           MOVE   "EVA-TEST-GF-16-2" TO PAR-NAME.
+           EVALUATE 1234
+              WHEN NOT WRK-DU-08V00
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-16-2.
+           GO TO   EVA-FAIL-GF-16-2.
+       EVA-DELETE-GF-16-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-16-2.
+       EVA-FAIL-GF-16-2.
+           MOVE   "IDENTIFIER AND LITERAL SHOULD NOT BE EQUAL"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-16-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-17.
+           MOVE   "VI-84 6.12.4 GR1(d)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    8  TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-17-1.
+       EVA-DELETE-GF-17.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-18.
+       EVA-TEST-GF-17-1.
+           MOVE   "EVA-TEST-GF-17-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NUMERIC
+              WHEN TRUE
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-17-1.
+           GO TO   EVA-FAIL-GF-17-1.
+       EVA-DELETE-GF-17-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-17-1.
+       EVA-FAIL-GF-17-1.
+           MOVE   "CONDITIONAL EXPRESSION SHOULD BE TRUE"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-17-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-17-2.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-17-2" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NUMERIC
+              WHEN FALSE
+                   GO TO EVA-FAIL-GF-17-2.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-17-2.
+       EVA-DELETE-GF-17-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-17-2.
+       EVA-FAIL-GF-17-2.
+           MOVE   "CONDITIONAL EXPRESSION SHOULD BE TRUE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-17-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-17-3.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-17-3" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NUMERIC
+              WHEN ANY
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-17-3.
+           GO TO   EVA-FAIL-GF-17-3.
+       EVA-DELETE-GF-17-3.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-17-3.
+       EVA-FAIL-GF-17-3.
+           MOVE   "WHEN 'ANY' SHOULD HAVE EXECUTED" TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-17-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-18.
+           MOVE   "VI-84 6.12.4 GR1(d)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "*" TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-18-1.
+       EVA-DELETE-GF-18.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-19.
+       EVA-TEST-GF-18-1.
+           MOVE   "EVA-TEST-GF-18-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NUMERIC
+              WHEN TRUE
+                   GO TO EVA-FAIL-GF-18-1.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-18-1.
+       EVA-DELETE-GF-18-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-18-1.
+       EVA-FAIL-GF-18-1.
+           MOVE   "CONDITIONAL EXPRESSION SHOULD BE FALSE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-18-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-18-2.
+           ADD     1 TO REC-CT.
+           MOVE   "EVA-TEST-GF-18-2" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NUMERIC
+              WHEN FALSE
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-18-2.
+           GO TO   EVA-WRITE-GF-18-2.
+       EVA-DELETE-GF-18-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-18-2.
+       EVA-FAIL-GF-18-2.
+           MOVE   "CONDITIONAL EXPRESSION SHOULD BE FALSE"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-18-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-18-3.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-18-3" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NUMERIC
+              WHEN ANY
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-18-3.
+           GO TO   EVA-FAIL-GF-18-3.
+       EVA-DELETE-GF-18-3.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-18-3.
+       EVA-FAIL-GF-18-3.
+           MOVE   "WHEN 'ANY' SHOULD HAVE EXECUTED" TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-18-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-19.
+           MOVE   "VI-84 6.12.4 GR1(c)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    9  TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-19-1.
+       EVA-DELETE-GF-19.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-20.
+       EVA-TEST-GF-19-1.
+           MOVE   "EVA-TEST-GF-19-1" TO PAR-NAME.
+           EVALUATE (WRK-DU-08V00 * 9)
+              WHEN WS-81
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-19-1.
+           GO TO   EVA-FAIL-GF-19-1.
+       EVA-DELETE-GF-19-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-19-1.
+       EVA-FAIL-GF-19-1.
+           MOVE   "SELECTION SUBJECT SHOULD EQUAL IDENTIFIER"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-19-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-19-2.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-19-2" TO PAR-NAME.
+           EVALUATE (WRK-DU-08V00 * 9)
+              WHEN 81
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-19-2.
+           GO TO   EVA-FAIL-GF-19-2.
+       EVA-DELETE-GF-19-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-19-2.
+       EVA-FAIL-GF-19-2.
+           MOVE   "SELECTION SUBJECT SHOULD EQUAL LITERAL"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-19-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-19-3.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-19-3" TO PAR-NAME.
+           EVALUATE (WRK-DU-08V00 * 9)
+              WHEN (9 + 9 + 9 + 9 + 9 + 9 + 9 + 9 + 9)
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-19-3.
+           GO TO   EVA-FAIL-GF-19-3.
+       EVA-DELETE-GF-19-3.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-19-3.
+       EVA-FAIL-GF-19-3.
+           MOVE   "SELECTION SUBJECT SHOULD EQUAL ARITHMETIC EXPRESSION"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-19-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-20.
+           MOVE   "VI-84 6.12.4 GR1(c)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    8  TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-20-1.
+       EVA-DELETE-GF-20.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-21.
+       EVA-TEST-GF-20-1.
+           MOVE   "EVA-TEST-GF-20-1" TO PAR-NAME.
+           EVALUATE (WRK-DU-08V00 * 9)
+              WHEN WS-81
+                   GO TO EVA-FAIL-GF-20-1.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-20-1.
+       EVA-DELETE-GF-20-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-20-1.
+       EVA-FAIL-GF-20-1.
+           MOVE "SELECTION SUBJECT SHOULD NOT EQUAL IDENTIFIER"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-20-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-TEST-GF-20-2.
+           ADD     1 TO REC-CT.
+           MOVE   "EVA-TEST-GF-20-2" TO PAR-NAME.
+           EVALUATE (WRK-DU-08V00 * 9)
+              WHEN 81
+                   GO TO EVA-FAIL-GF-20-2.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-20-2.
+       EVA-DELETE-GF-20-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-20-2.
+       EVA-FAIL-GF-20-2.
+           MOVE   "SELECTION SUBJECT SHOULD NOT EQUAL LITERAL"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-20-2.
+           PERFORM PRINT-DETAIL.
+       
+       EVA-TEST-GF-20-3.
+           ADD     1       TO REC-CT.
+           MOVE   "EVA-TEST-GF-20-3" TO PAR-NAME.
+           EVALUATE (WRK-DU-08V00 * 9)
+              WHEN (9 + 9 + 9 + 9 + 9 + 9 + 9 + 9 + 9)
+                   GO TO EVA-FAIL-GF-20-3.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-20-3.
+       EVA-DELETE-GF-20-3.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-20-3.
+       EVA-FAIL-GF-20-3.
+           MOVE
+           "SELECTION SUBJECT SHOULD NOT = ARITHMETIC EXPRESSION"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-20-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-21.
+           MOVE   "VI-84 6.12.4 GR1(e)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-21-1.
+       EVA-DELETE-GF-21.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-22.
+       EVA-TEST-GF-21-1.
+           MOVE   "EVA-TEST-GF-21-1" TO PAR-NAME.
+           EVALUATE TRUE
+              WHEN WRK-XN-00001-1 = SPACE
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-21-1.
+           GO TO   EVA-FAIL-GF-21-1.
+       EVA-DELETE-GF-21-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-21-1.
+       EVA-FAIL-GF-21-1.
+           MOVE   "SELECTION OBJECT CONDITION SHOULD BE TRUE"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-21-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-22.
+           MOVE   "VI-84 6.12.4 GR1(e)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "#" TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-22-1.
+       EVA-DELETE-GF-22.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-23.
+       EVA-TEST-GF-22-1.
+           MOVE   "EVA-TEST-GF-22-1" TO PAR-NAME.
+           EVALUATE TRUE
+              WHEN WRK-XN-00001-1 = SPACE
+                   GO TO EVA-FAIL-GF-22-1.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-22-1.
+       EVA-DELETE-GF-22-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-22-1.
+       EVA-FAIL-GF-22-1.
+           MOVE   "SELECTION OBJECT CONDITION SHOULD BE FALSE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-22-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-23.
+           MOVE   "VI-84 6.12.4 GR1(e)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-23-1.
+       EVA-DELETE-GF-23.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-24.
+       EVA-TEST-GF-23-1.
+           MOVE   "EVA-TEST-GF-23-1" TO PAR-NAME.
+           EVALUATE FALSE
+              WHEN WRK-XN-00001-1 = SPACE
+                   GO TO EVA-FAIL-GF-23-1.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-23-1.
+       EVA-DELETE-GF-23-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-23-1.
+       EVA-FAIL-GF-23-1.
+           MOVE   "SELECTION OBJECT CONDITION SHOULD BE TRUE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-23-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-24.
+           MOVE   "VI-84 6.12.4 GR1(e)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "#" TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-24-1.
+       EVA-DELETE-GF-24.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-25.
+       EVA-TEST-GF-24-1.
+           MOVE   "EVA-TEST-GF-24-1" TO PAR-NAME.
+           EVALUATE FALSE
+              WHEN WRK-XN-00001-1 = SPACE
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-24-1.
+           GO TO   EVA-FAIL-GF-24-1.
+       EVA-DELETE-GF-24-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-24-1.
+       EVA-FAIL-GF-24-1.
+           MOVE   "SELECTION OBJECT CONDITION SHOULD BE FALSE"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-24-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-25.
+           MOVE   "VI-84 6.12.4 GR3(b)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    26 TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-25-1.
+       EVA-DELETE-GF-25.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-16.
+       EVA-TEST-GF-25-1.
+           MOVE   "EVA-TEST-GF-25-1" TO PAR-NAME.
+           EVALUATE 26
+              WHEN WRK-DU-08V00
+                   PERFORM PASS
+              WHEN OTHER
+                   GO TO EVA-FAIL-GF-25-1.
+           GO TO EVA-WRITE-GF-25-1.
+       EVA-DELETE-GF-25-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-25-1.
+       EVA-FAIL-GF-25-1.
+           MOVE   "IDENTIFIER AND LITERAL SHOULD BE EQUAL"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-25-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-26.
+           MOVE   "VI-84 6.12.4 GR3(b)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    78 TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-26-1.
+       EVA-DELETE-GF-26.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-27.
+       EVA-TEST-GF-26-1.
+           MOVE   "EVA-TEST-GF-26-1" TO PAR-NAME.
+           EVALUATE 1234
+              WHEN WRK-DU-08V00
+                   GO TO EVA-FAIL-GF-26-1
+              WHEN OTHER
+                   PERFORM PASS.
+           GO TO EVA-WRITE-GF-26-1.
+       EVA-DELETE-GF-26-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-26-1.
+       EVA-FAIL-GF-26-1.
+           MOVE   "IDENTIFIER AND LITERAL SHOULD NOT BE EQUAL"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-26-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-27.
+           MOVE   "VI-84 6.12.4 GR3(c)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    26 TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-27-1.
+       EVA-DELETE-GF-27.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-28.
+       EVA-TEST-GF-27-1.
+           MOVE   "EVA-TEST-GF-27-1" TO PAR-NAME.
+           EVALUATE 26
+              WHEN NOT WRK-DU-08V00
+                   GO TO   EVA-FAIL-GF-27-1
+           END-EVALUATE.
+           PERFORM PASS.
+           GO TO   EVA-WRITE-GF-27-1.
+       EVA-DELETE-GF-27-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-27-1.
+       EVA-FAIL-GF-27-1.
+           MOVE   "IDENTIFIER AND LITERAL SHOULD BE EQUAL"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-27-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-28.
+           MOVE   "VI-84 6.12.4 GR3(c)" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    78 TO WRK-DU-08V00.
+           GO TO   EVA-TEST-GF-28-1.
+       EVA-DELETE-GF-28.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-29.
+       EVA-TEST-GF-28-1.
+           MOVE   "EVA-TEST-GF-28-1" TO PAR-NAME.
+           EVALUATE 1234
+              WHEN NOT WRK-DU-08V00
+                   PERFORM PASS
+                   GO TO   EVA-WRITE-GF-28-1
+           end-evaluate.
+           GO TO   EVA-FAIL-GF-28-1.
+       EVA-DELETE-GF-28-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-28-1.
+       EVA-FAIL-GF-28-1.
+           MOVE   "IDENTIFIER AND LITERAL SHOULD NOT BE EQUAL"
+                TO RE-MARK.
+           PERFORM FAIL.
+       EVA-WRITE-GF-28-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-29.
+           MOVE   "VI-84 6.12.4 GR3" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE    8  TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-29-1.
+       EVA-DELETE-GF-29.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-30.
+       EVA-TEST-GF-29-1.
+           MOVE   "EVA-TEST-GF-29-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NUMERIC
+              WHEN TRUE
+                   PERFORM PASS
+              WHEN OTHER
+                   GO TO   EVA-FAIL-GF-29-1
+           END-EVALUATE
+           GO TO   EVA-WRITE-GF-29-1.
+       EVA-DELETE-GF-29-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-29-1.
+       EVA-FAIL-GF-29-1.
+           MOVE   "CONDITIONAL EXPRESSION SHOULD BE TRUE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-29-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-30.
+           MOVE   "VI-84 6.12.4 GR3" TO ANSI-REFERENCE.
+           MOVE    1  TO REC-CT.
+           MOVE   "*" TO WRK-XN-00001-1.
+           GO TO   EVA-TEST-GF-30-1.
+       EVA-DELETE-GF-30.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-31.
+       EVA-TEST-GF-30-1.
+           MOVE   "EVA-TEST-GF-30-1" TO PAR-NAME.
+           EVALUATE WRK-XN-00001-1 NUMERIC
+              WHEN TRUE
+                   GO TO EVA-FAIL-GF-30-1
+              WHEN OTHER
+                   PERFORM PASS
+           END-EVALUATE
+           GO TO   EVA-WRITE-GF-30-1.
+       EVA-DELETE-GF-30-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-30-1.
+       EVA-FAIL-GF-30-1.
+           MOVE   "CONDITIONAL EXPRESSION SHOULD BE FALSE"
+                TO RE-MARK
+           PERFORM FAIL.
+       EVA-WRITE-GF-30-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-31.
+           MOVE   "VI-84 6.12.4 GR3" TO ANSI-REFERENCE.
+           MOVE   "EVA-TEST-GF-31-1"   TO PAR-NAME.
+           MOVE    1   TO REC-CT.
+           MOVE    81  TO WRK-DU-08V00.
+           MOVE   "*"  TO WRK-XN-00001-1.
+           MOVE    "*" TO WRK-XN-00001-2.
+           MOVE    987 TO WRK-DU-08V00-1.
+           MOVE    81  TO WRK-DU-08V00-2.
+           MOVE    0   TO WRK-DU-08V00-3.
+           MOVE    567 TO WRK-DU-08V00-4.
+           GO TO   EVA-TEST-GF-31-0.
+       EVA-DELETE-GF-31.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-32.
+       EVA-TEST-GF-31-0.
+           EVALUATE     WRK-DU-08V00
+                   ALSO 81
+                   ALSO (WRK-DU-08V00 * 9)
+                   ALSO IT-IS-81
+                   ALSO TRUE
+                   ALSO FALSE
+              WHEN NOT  WRK-DU-08V00-1
+                   ALSO WRK-DU-08V00-2
+                   ALSO 729
+                   ALSO TRUE
+                   ALSO WRK-DU-08V00-3 = 0
+                   ALSO WRK-DU-08V00-4 < 9
+                        MOVE  "A" TO WRK-XN-00001-1
+                        MOVE  "B" TO WRK-XN-00001-2
+              WHEN      81
+                   ALSO WRK-DU-08V00
+                   ALSO (9 * 9 * 9)
+                   ALSO FALSE
+                   ALSO WRK-XN-00001-2 = "*"
+                   ALSO WRK-DU-08V00 > 8
+                        MOVE  "C" TO WRK-XN-00001-1
+                        MOVE  "D" TO WRK-XN-00001-2
+              WHEN      ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO WRK-DU-08V00 = 6
+                        MOVE  "E" TO WRK-XN-00001-1
+                        MOVE  "F" TO WRK-XN-00001-2
+              WHEN      OTHER
+                        MOVE  "G" TO WRK-XN-00001-1
+                        MOVE  "H" TO WRK-XN-00001-2
+           END-EVALUATE.
+       EVA-TEST-GF-31-1.
+           IF      WRK-XN-00001-1 = "A"
+                   PERFORM PASS
+                   GO TO EVA-WRITE-GF-31-1
+           ELSE
+                   GO TO EVA-FAIL-GF-31-1.
+       EVA-DELETE-GF-31-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-31-1.
+       EVA-FAIL-GF-31-1.
+           MOVE   "EVALUATE FAILURE" TO RE-MARK
+           MOVE    WRK-XN-00001-1 TO COMPUTED-X
+           MOVE   "A"             TO CORRECT-X
+           PERFORM FAIL.
+       EVA-WRITE-GF-31-1.
+           PERFORM PRINT-DETAIL.
+       EVA-TEST-GF-31-2.
+           IF      WRK-XN-00001-2 = "B"
+                   PERFORM PASS
+                   GO TO EVA-WRITE-GF-31-2
+           ELSE
+                   GO TO EVA-FAIL-GF-31-2.
+       EVA-DELETE-GF-31-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-31-2.
+       EVA-FAIL-GF-31-2.
+           MOVE   "EVALUATE FAILURE" TO RE-MARK
+           MOVE    WRK-XN-00001-2 TO COMPUTED-X
+           MOVE   "B"             TO CORRECT-X
+           PERFORM FAIL.
+       EVA-WRITE-GF-31-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-32.
+           MOVE   "VI-84 6.12.4 GR3" TO ANSI-REFERENCE.
+           MOVE   "EVA-TEST-GF-32-1"   TO PAR-NAME.
+           MOVE    1   TO REC-CT.
+           MOVE    81  TO WRK-DU-08V00.
+           MOVE   "*"  TO WRK-XN-00001-1.
+           MOVE    987 TO WRK-DU-08V00-1.
+           MOVE    7   TO WRK-DU-08V00-2.
+           MOVE    0   TO WRK-DU-08V00-3.
+           MOVE    567 TO WRK-DU-08V00-4.
+           GO TO   EVA-TEST-GF-32-0.
+       EVA-DELETE-GF-32.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-33.
+       EVA-TEST-GF-32-0.
+           EVALUATE     WRK-DU-08V00
+                   ALSO 81
+                   ALSO (WRK-DU-08V00 * 2)
+                   ALSO IT-IS-81
+                   ALSO TRUE
+                   ALSO FALSE
+              WHEN NOT  WRK-DU-08V00-1
+                   ALSO WRK-DU-08V00-2
+                   ALSO 81
+                   ALSO TRUE
+                   ALSO WRK-DU-08V00-3 = 0
+                   ALSO WRK-DU-08V00-4 < 9
+                        MOVE  "A" TO WRK-XN-00001-1
+                        MOVE  "B" TO WRK-XN-00001-2
+              WHEN      81
+                   ALSO WRK-DU-08V00-3 THROUGH WRK-DU-08V00-4
+                   ALSO (WRK-DU-08V00-2 * 8) THRU (WRK-DU-08V00-2 * 30)
+                   ALSO FALSE
+                   ALSO WRK-DU-08V00-2 = 7
+                   ALSO WRK-DU-08V00 > 88
+                        MOVE  "C" TO WRK-XN-00001-1
+                        MOVE  "D" TO WRK-XN-00001-2
+              WHEN      ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO WRK-DU-08V00 = 6
+                        MOVE  "E" TO WRK-XN-00001-1
+                        MOVE  "F" TO WRK-XN-00001-2
+              WHEN      OTHER
+                        MOVE  "G" TO WRK-XN-00001-1
+                        MOVE  "H" TO WRK-XN-00001-2
+           END-EVALUATE.
+       EVA-TEST-GF-32-1.
+           IF      WRK-XN-00001-1 = "C"
+                   PERFORM PASS
+                   GO TO EVA-WRITE-GF-32-1
+           ELSE
+                   GO TO EVA-FAIL-GF-32-1.
+       EVA-DELETE-GF-32-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-32-1.
+       EVA-FAIL-GF-32-1.
+           MOVE   "EVALUATE FAILURE" TO RE-MARK
+           MOVE    WRK-XN-00001-1 TO COMPUTED-X
+           MOVE   "C"             TO CORRECT-X
+           PERFORM FAIL.
+       EVA-WRITE-GF-32-1.
+           PERFORM PRINT-DETAIL.
+       EVA-TEST-GF-32-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-2 = "D"
+                   PERFORM PASS
+                   GO TO EVA-WRITE-GF-32-2
+           ELSE
+                   GO TO EVA-FAIL-GF-32-2.
+       EVA-DELETE-GF-32-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-32-2.
+       EVA-FAIL-GF-32-2.
+           MOVE   "EVALUATE FAILURE" TO RE-MARK
+           MOVE    WRK-XN-00001-2 TO COMPUTED-X
+           MOVE   "D"             TO CORRECT-X
+           PERFORM FAIL.
+       EVA-WRITE-GF-32-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-33.
+           MOVE   "VI-84 6.12.4 GR3" TO ANSI-REFERENCE.
+           MOVE   "EVA-TEST-GF-33-1"   TO PAR-NAME.
+           MOVE    1   TO REC-CT.
+           MOVE    6   TO WRK-DU-08V00.
+           MOVE   "*"  TO WRK-XN-00001-1.
+           MOVE    987 TO WRK-DU-08V00-1.
+           MOVE    7   TO WRK-DU-08V00-2.
+           MOVE    0   TO WRK-DU-08V00-3.
+           MOVE    567 TO WRK-DU-08V00-4.
+           GO TO   EVA-TEST-GF-33-0.
+       EVA-DELETE-GF-33.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-34.
+       EVA-TEST-GF-33-0.
+           EVALUATE     WRK-DU-08V00
+                   ALSO 81
+                   ALSO (WRK-DU-08V00-2 * 9)
+                   ALSO IT-IS-81
+                   ALSO TRUE
+                   ALSO FALSE
+              WHEN NOT  WRK-DU-08V00-1
+                   ALSO WRK-DU-08V00-2
+                   ALSO 81
+                   ALSO TRUE
+                   ALSO WRK-DU-08V00-3 = 0
+                   ALSO WRK-DU-08V00-4 < 9
+                        MOVE  "A" TO WRK-XN-00001-1
+                        MOVE  "B" TO WRK-XN-00001-2
+              WHEN      81
+                   ALSO WRK-DU-08V00-3 THROUGH WRK-DU-08V00-4
+                   ALSO (WRK-DU-08V00-2 * 7) THRU (WRK-DU-08V00-2 * 8)
+                   ALSO FALSE
+                   ALSO WRK-DU-08V00-2 = 81
+                   ALSO WRK-DU-08V00 > 8
+                        MOVE  "C" TO WRK-XN-00001-1
+                        MOVE  "D" TO WRK-XN-00001-2
+              WHEN      ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO WRK-DU-08V00-2 = 6
+                        MOVE  "E" TO WRK-XN-00001-1
+                        MOVE  "F" TO WRK-XN-00001-2
+              WHEN      OTHER
+                        MOVE  "G" TO WRK-XN-00001-1
+                        MOVE  "H" TO WRK-XN-00001-2
+           END-EVALUATE.
+       EVA-TEST-GF-33-1.
+           IF      WRK-XN-00001-1 = "E"
+                   PERFORM PASS
+                   GO TO EVA-WRITE-GF-33-1
+           ELSE
+                   GO TO EVA-FAIL-GF-33-1.
+       EVA-DELETE-GF-33-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-33-1.
+       EVA-FAIL-GF-33-1.
+           MOVE   "EVALUATE FAILURE" TO RE-MARK
+           MOVE    WRK-XN-00001-1 TO COMPUTED-X
+           MOVE   "E"             TO CORRECT-X
+           PERFORM FAIL.
+       EVA-WRITE-GF-33-1.
+           PERFORM PRINT-DETAIL.
+       EVA-TEST-GF-33-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-2 = "F"
+                   PERFORM PASS
+                   GO TO EVA-WRITE-GF-33-2
+           ELSE
+                   GO TO EVA-FAIL-GF-33-2.
+       EVA-DELETE-GF-33-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-33-2.
+       EVA-FAIL-GF-33-2.
+           MOVE   "EVALUATE FAILURE" TO RE-MARK
+           MOVE    WRK-XN-00001-2 TO COMPUTED-X
+           MOVE   "F"             TO CORRECT-X
+           PERFORM FAIL.
+       EVA-WRITE-GF-33-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-34.
+           MOVE   "VI-84 6.12.4 GR3" TO ANSI-REFERENCE.
+           MOVE   "EVA-TEST-GF-34-1"   TO PAR-NAME.
+           MOVE    1   TO REC-CT.
+           MOVE    99  TO WRK-DU-08V00.
+           MOVE   "*"  TO WRK-XN-00001-1.
+           MOVE    99  TO WRK-DU-08V00-1.
+           MOVE    99  TO WRK-DU-08V00-2.
+           MOVE    99  TO WRK-DU-08V00-3.
+           MOVE    99  TO WRK-DU-08V00-4.
+           GO TO   EVA-TEST-GF-34-0.
+       EVA-DELETE-GF-34.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   EVA-INIT-GF-35.
+       EVA-TEST-GF-34-0.
+           EVALUATE     WRK-DU-08V00
+                   ALSO 81
+                   ALSO (WRK-DU-08V00-2 * 9)
+                   ALSO IT-IS-81
+                   ALSO TRUE
+                   ALSO FALSE
+              WHEN NOT  WRK-DU-08V00-1
+                   ALSO WRK-DU-08V00-2
+                   ALSO 81
+                   ALSO TRUE
+                   ALSO WRK-DU-08V00-3 = 0
+                   ALSO WRK-DU-08V00-4 < 9
+                        MOVE  "A" TO WRK-XN-00001-1
+                        MOVE  "B" TO WRK-XN-00001-2
+              WHEN      81
+                   ALSO WRK-DU-08V00-3 THROUGH WRK-DU-08V00-4
+                   ALSO (WRK-DU-08V00-2 * 7) THRU (WRK-DU-08V00-2 * 8)
+                   ALSO FALSE
+                   ALSO WRK-DU-08V00-2 = 81
+                   ALSO WRK-DU-08V00 > 8
+                        MOVE  "C" TO WRK-XN-00001-1
+                        MOVE  "D" TO WRK-XN-00001-2
+              WHEN      ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO ANY
+                   ALSO WRK-DU-08V00 = 99
+                        MOVE  "E" TO WRK-XN-00001-1
+                        MOVE  "F" TO WRK-XN-00001-2
+              WHEN      OTHER
+                        MOVE  "G" TO WRK-XN-00001-1
+                        MOVE  "H" TO WRK-XN-00001-2
+           END-EVALUATE.
+       EVA-TEST-GF-34-1.
+           IF      WRK-XN-00001-1 = "G"
+                   PERFORM PASS
+                   GO TO EVA-WRITE-GF-34-1
+           ELSE
+                   GO TO EVA-FAIL-GF-34-1.
+       EVA-DELETE-GF-34-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-34-1.
+       EVA-FAIL-GF-34-1.
+           MOVE   "EVALUATE FAILURE" TO RE-MARK
+           MOVE    WRK-XN-00001-1 TO COMPUTED-X
+           MOVE   "G"             TO CORRECT-X
+           PERFORM FAIL.
+       EVA-WRITE-GF-34-1.
+           PERFORM PRINT-DETAIL.
+       EVA-TEST-GF-34-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-2 = "H"
+                   PERFORM PASS
+                   GO TO EVA-WRITE-GF-34-2
+           ELSE
+                   GO TO EVA-FAIL-GF-34-2.
+       EVA-DELETE-GF-34-2.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-34-2.
+       EVA-FAIL-GF-34-2.
+           MOVE   "EVALUATE FAILURE" TO RE-MARK
+           MOVE    WRK-XN-00001-2 TO COMPUTED-X
+           MOVE   "H"             TO CORRECT-X
+           PERFORM FAIL.
+       EVA-WRITE-GF-34-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       EVA-INIT-GF-35.
+           MOVE   "VI-84 6.12.4 GR3" TO ANSI-REFERENCE.
+           MOVE   "EVA-TEST-GF-35-1" TO PAR-NAME.
+           MOVE    1   TO REC-CT.
+           MOVE    81  TO WRK-DU-08V00-1.
+           GO TO   EVA-TEST-GF-35-1.
+       EVA-DELETE-GF-35.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CCVS-EXIT.
+       EVA-TEST-GF-35-1.
+           EVALUATE     TRUE
+                   WHEN WRK-DU-08V00 NUMERIC
+                   WHEN WRK-DU-08V00 > 10
+                   WHEN WRK-DU-08V00 < 100
+                        MOVE "A" TO WRK-XN-00001-1
+                   WHEN OTHER
+                        MOVE "Z" TO WRK-XN-00001-1
+           END-EVALUATE.
+           IF      WRK-XN-00001-1 = "A"
+                   PERFORM PASS
+                   GO TO EVA-WRITE-GF-35-1
+           ELSE
+                   GO TO EVA-FAIL-GF-35-1.
+       EVA-DELETE-GF-35-1.
+           PERFORM DE-LETE.
+           GO TO EVA-WRITE-GF-35-1.
+       EVA-FAIL-GF-35-1.
+           MOVE   "EVALUATE FAILURE" TO RE-MARK
+           MOVE    WRK-XN-00001-1 TO COMPUTED-X
+           MOVE   "A"             TO CORRECT-X
+           PERFORM FAIL.
+       EVA-WRITE-GF-35-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC225A

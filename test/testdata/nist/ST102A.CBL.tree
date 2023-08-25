@@ -1,0 +1,238 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n            
+					(programName 
+						(cobolWord ST102A)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       )))) 
+				(environmentDivisionBody 
+					(inputOutputSection INPUT-OUTPUT SECTION .\n        
+						(inputOutputSectionParagraph 
+							(fileControlParagraph FILE-CONTROL .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord SORTFILE-1B))) 
+									(fileControlClause 
+										(assignClause ASSIGN TO 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX027)))))) .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord SORTIN-1B))) 
+									(fileControlClause 
+										(assignClause ASSIGN TO 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXD001)))))) .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord SORTOUT-1B))) 
+									(fileControlClause 
+										(assignClause ASSIGN TO 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXP002)))))) .\n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(fileSection FILE SECTION .\n        
+						(fileDescriptionEntry SD 
+							(fileName 
+								(cobolWord SORTFILE-1B)) 
+							(fileDescriptionEntryClause 
+								(recordContainsClause RECORD 
+									(recordContainsClauseFormat1 CONTAINS 
+										(integerLiteral 120) CHARACTERS))) 
+							(fileDescriptionEntryClause 
+								(dataRecordsClause DATA RECORD 
+									(dataName 
+										(cobolWord S-RECORD)))) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord S-RECORD)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord KEYS-GROUP)) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord KEY-1)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 9)))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord KEY-2)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 99)))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord KEY-3)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord KEY-4)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 9999)))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord KEY-5)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 9)) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 5)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 FILLER 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 105)) 
+											(pictureChars )))) .\n       ))) 
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord SORTIN-1B)) 
+							(fileDescriptionEntryClause 
+								(blockContainsClause BLOCK CONTAINS 
+									(integerLiteral 10) RECORDS)) 
+							(fileDescriptionEntryClause 
+								(labelRecordsClause LABEL RECORDS ARE STANDARD)) 
+							(fileDescriptionEntryClause 
+								(valueOfClause VALUE OF 
+									(valuePair 
+										(systemName 
+											(cobolWord XXXXX074)) IS 
+										(qualifiedDataName 
+											(qualifiedDataNameFormat1 
+												(dataName 
+													(cobolWord XXXXX075))))))) 
+							(fileDescriptionEntryClause 
+								(dataRecordsClause DATA RECORD IS 
+									(dataName 
+										(cobolWord INSORT)))) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord INSORT)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 120)) 
+											(pictureChars )))) .\n       ))) 
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord SORTOUT-1B)) 
+							(fileDescriptionEntryClause 
+								(blockContainsClause BLOCK CONTAINS 
+									(integerLiteral 10) RECORDS)) 
+							(fileDescriptionEntryClause 
+								(labelRecordsClause LABEL RECORD STANDARD)) 
+							(fileDescriptionEntryClause 
+								(valueOfClause VALUE OF 
+									(valuePair 
+										(systemName 
+											(cobolWord XXXXX074)) IS 
+										(qualifiedDataName 
+											(qualifiedDataNameFormat1 
+												(dataName 
+													(cobolWord XXXXX076))))))) 
+							(fileDescriptionEntryClause 
+								(dataRecordsClause DATA RECORD 
+									(dataName 
+										(cobolWord OUTSORT)))) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord OUTSORT)) 
+									(dataPictureClause PICTURE 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 120)) 
+											(pictureChars )))) .\n       )))))) 
+			(procedureDivision PROCEDURE DIVISION .\n        
+				(procedureDivisionBody 
+					(paragraphs 
+						(paragraph 
+							(paragraphName 
+								(cobolWord SORT-STATEMENT)) .\n            
+							(sentence 
+								(statement 
+									(sortStatement SORT 
+										(fileName 
+											(cobolWord SORTFILE-1B)) 
+										(sortOnKeyClause ON DESCENDING KEY 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord KEY-1))))) 
+										(sortOnKeyClause ON ASCENDING KEY 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord KEY-2))))) 
+										(sortOnKeyClause ON DESCENDING KEY 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord KEY-3))))) 
+										(sortOnKeyClause ASCENDING 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord KEY-4)))) 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord KEY-5))))) 
+										(sortUsing USING 
+											(fileName 
+												(cobolWord SORTIN-1B))) 
+										(sortGivingPhrase GIVING 
+											(sortGiving 
+												(fileName 
+													(cobolWord SORTOUT-1B)))))) .\n       )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord STOP-RUN-STATEMENT)) .\n            
+							(sentence 
+								(statement 
+									(stopStatement STOP RUN)) .\n      ))))))) <EOF>)

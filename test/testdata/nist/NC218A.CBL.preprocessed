@@ -1,0 +1,3075 @@
+      *> HEADER,COBOL,NC218A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC218A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     PROGRAM NC218A TESTS TYHE USE OF THE "UNSTRING" STATEMENT *
+      *>     INCLUDING THE OPTIONAL PHRASES "POINTER", "TALLYING",     *
+      *>     "OVERFLOW", "NOT OVERFLOW" AND "END-STRING".              *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  WRK-XN-00001-1       PIC X.
+       01  WRK-XN-00001-2       PIC X.
+       01  WRK-XN-00001-3       PIC X.
+       01  ZERO-XN-1 PIC X VALUE "0".
+       01  GRP1-XN-6 PIC X(6) VALUE "ABCDEF".
+       01  ID1-XN-7 PIC X(7) VALUE "1200000".
+       01  GRP1-XN-7 PIC X(7) VALUE "ABCDEFG".
+       01  GRP1-XN-10 PIC X(10) VALUE "ABCDEFGHIJ".
+       01  ID1-XN-12 PIC X(12) VALUE "ABCDEFGHIJKL".
+       01  GRP1-XN-36 PIC X(36) VALUE
+           "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".
+       01  GRP1-XN-X-36 REDEFINES GRP1-XN-36.
+           10 ID1 PIC X(6) OCCURS 6 TIMES.
+       01  GRP2-XN-2 PIC XX VALUE "CE".
+       01  GRP2-XN-X-2 REDEFINES GRP2-XN-2.
+           10 ID2A PIC X OCCURS 2 TIMES.
+       01  GRP2-XN-7 PIC X(7) VALUE "BCDEFGH".
+       01  GRP2-XN-X-7 REDEFINES GRP2-XN-7.
+           10 ID2 PIC X OCCURS 7 TIMES.
+       01  ID4-X PIC X VALUE SPACE.
+       01  ID4-XJ PIC X JUSTIFIED RIGHT VALUE SPACE.
+       01  ID4-XXX  PIC XXX VALUE SPACES.
+       01  ID4-XXXJ PIC XXX JUST RIGHT VALUE SPACES.
+       01  ID4-DU-1V0 PIC 9 VALUE ZERO.
+       01  ID4-DS-1V0 PIC S9 VALUE ZERO.
+       01  ID4-DU-2V0 PIC 99 VALUE ZERO.
+       01  ID4-DS-2V0 PIC S99 VALUE ZERO.
+       01  ID4-DS-TS-1V0 PIC S9 TRAILING VALUE ZERO.
+       01  ID4-DS-LS-1V0 PIC S9 LEADING VALUE ZERO.
+       01  GRP4-XN-6.
+           10 ID4A-XXXXX PIC X(5).
+           10 ID4B-X PIC X.
+       01  ID4C-XXXX PIC X(4) VALUE SPACES.
+       01  ID4D-X PIC X VALUE SPACE.
+       01  GRP4-XN-10.
+           10 ID4A-X PIC X.
+           10 ID4B-XX PIC XX.
+           10 ID4C-XXX PIC XXX.
+           10 ID4D-XXXX PIC XXXX.
+       01  ASTER-XN-4 PIC X(4) VALUE "****".
+       01  ID5-XN-4 PIC X(4) VALUE SPACES.
+       01  ID5-XN-4-2 PIC X(4) VALUE SPACES.
+       01  ID5-XN-6 PIC X(6) VALUE SPACES.
+       01  ID6-DU-2V0 PIC 99 VALUE ZERO.
+       01  ID6-DU-2V0-2  PIC 99 VALUE ZERO.
+       01  ID10-DU-2V0 PIC 99 VALUE ZERO.
+       01  ID11-DU-2V0 PIC 99 VALUE ZERO.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC218A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC218A-001 SECTION.
+       
+       UST-INIT-GF-1.
+           MOVE   "VI-135" TO ANSI-REFERENCE.
+           MOVE   "UST-TEST-GF-1" TO PAR-NAME.
+           MOVE   "PIC X " TO FEATURE.
+           MOVE    ZERO TO ID4-X.
+           MOVE   "1200000" TO ID1-XN-7.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+       UST-TEST-GF-1.
+           UNSTRING ID1-XN-7 DELIMITED BY ZERO
+                    INTO ID4-X DELIMITER IN ID5-XN-4
+                    COUNT IN ID6-DU-2V0
+                    WITH POINTER ID10-DU-2V0
+                    TALLYING ID11-DU-2V0
+                    ON OVERFLOW  PERFORM PASS
+                                 GO TO UST-WRITE-GF-1.
+           GO TO UST-FAIL-GF-1.
+       UST-DELETE-GF-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-2.
+       UST-FAIL-GF-1.
+           PERFORM FAIL.
+           MOVE    "OVERFLOW SHOULD OCCUR" TO RE-MARK.
+       UST-WRITE-GF-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-1-1.
+           ADD     1 TO REC-CT.
+           IF      ID4-X = "1"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-1-1
+           ELSE
+                   GO TO UST-FAIL-GF-1-1.
+       UST-DELETE-GF-1-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-1-1.
+       UST-FAIL-GF-1-1.
+           PERFORM FAIL
+           MOVE    ID4-X TO COMPUTED-A
+           MOVE    "1" TO CORRECT-A.
+       UST-WRITE-GF-1-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-1-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-1-2
+           ELSE
+                   GO TO UST-FAIL-GF-1-2.
+       UST-DELETE-GF-1-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-1-2.
+       UST-FAIL-GF-1-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE    "0   " TO CORRECT-A.
+       UST-WRITE-GF-1-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-1-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-1-3
+           ELSE
+                   GO TO UST-FAIL-GF-1-3.
+       UST-DELETE-GF-1-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-1-3.
+       UST-FAIL-GF-1-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-1-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-1-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-1-4
+           ELSE
+                   GO TO UST-FAIL-GF-1-4.
+       UST-DELETE-GF-1-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-1-4.
+       UST-FAIL-GF-1-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-1-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-1-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-1-5
+           ELSE
+                   GO TO UST-FAIL-GF-1-5.
+       UST-DELETE-GF-1-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-1-5.
+       UST-FAIL-GF-1-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-1-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-2.
+           MOVE    "UST-TEST-GF-2" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "PIC X JUST" TO FEATURE.
+           MOVE    "1200000" TO ID1-XN-7.
+           MOVE    ZERO TO ID4-XJ.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-2.
+           UNSTRING ID1-XN-7 DELIMITED ZERO INTO ID4-XJ
+                   DELIMITER ID5-XN-4
+                   COUNT ID6-DU-2V0
+                   POINTER ID10-DU-2V0
+                   TALLYING ID11-DU-2V0
+                   OVERFLOW PERFORM PASS
+                            GO TO UST-WRITE-GF-2.
+           GO TO UST-FAIL-GF-2.
+       UST-DELETE-GF-2.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-3.
+       UST-FAIL-GF-2.
+           PERFORM FAIL.
+           MOVE    "OVERFLOW SHOULD HAVE OCCURED" TO RE-MARK.
+       UST-WRITE-GF-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-2-1.
+           ADD     1 TO REC-CT.
+           IF      ID4-XJ = "2"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-2-1
+           ELSE
+                   GO TO UST-FAIL-GF-2-1.
+       UST-DELETE-GF-2-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-2-1.
+       UST-FAIL-GF-2-1.
+           PERFORM FAIL
+           MOVE    ID4-XJ TO COMPUTED-A
+           MOVE    "2" TO CORRECT-A.
+       UST-WRITE-GF-2-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-2-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-2-2
+           ELSE
+                   GO TO UST-FAIL-GF-2-2.
+       UST-DELETE-GF-2-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-2-2.
+       UST-FAIL-GF-2-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE    "0   " TO CORRECT-A.
+       UST-WRITE-GF-2-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-2-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-2-3
+           ELSE
+                   GO TO UST-FAIL-GF-2-3.
+       UST-DELETE-GF-2-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-2-3.
+       UST-FAIL-GF-2-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-2-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-2-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-2-4
+           ELSE
+                   GO TO UST-FAIL-GF-2-4.
+       UST-DELETE-GF-2-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-2-4.
+       UST-FAIL-GF-2-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-2-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-2-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-2-5
+           ELSE
+                   GO TO UST-FAIL-GF-2-5.
+       UST-DELETE-GF-2-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-2-5.
+       UST-FAIL-GF-2-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-2-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-3.
+           MOVE    "UST-TEST-GF-3" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "PIC XXX" TO FEATURE.
+           MOVE    "1200000" TO ID1-XN-7.
+           MOVE    ZERO TO ID4-XXX.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-3.
+           UNSTRING ID1-XN-7 DELIMITED "0" INTO ID4-XXX
+                    DELIMITER ID5-XN-4
+                    COUNT ID6-DU-2V0
+                    POINTER ID10-DU-2V0
+                    TALLYING ID11-DU-2V0.
+           GO TO UST-TEST-GF-3-1.
+       UST-DELETE-GF-3.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-4.
+      *> 
+       UST-TEST-GF-3-1.
+           IF      ID4-XXX = "12  "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-3-1
+           ELSE
+                   GO TO UST-FAIL-GF-3-1.
+       UST-DELETE-GF-3-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-3-1.
+       UST-FAIL-GF-3-1.
+           PERFORM FAIL
+           MOVE    ID4-XXX TO COMPUTED-A
+           MOVE    "12  " TO CORRECT-A.
+       UST-WRITE-GF-3-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-3-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-3-2
+           ELSE
+                   GO TO UST-FAIL-GF-3-2.
+       UST-DELETE-GF-3-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-3-2.
+       UST-FAIL-GF-3-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE    "0   " TO CORRECT-A.
+       UST-WRITE-GF-3-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-3-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-3-3
+           ELSE
+                   GO TO UST-FAIL-GF-3-3.
+       UST-DELETE-GF-3-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-3-3.
+       UST-FAIL-GF-3-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-3-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-3-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-3-4
+           ELSE
+                   GO TO UST-FAIL-GF-3-4.
+       UST-DELETE-GF-3-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-3-4.
+       UST-FAIL-GF-3-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-3-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-3-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-3-5
+           ELSE
+                   GO TO UST-FAIL-GF-3-5.
+       UST-DELETE-GF-3-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-3-5.
+       UST-FAIL-GF-3-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-3-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-4.
+           MOVE    "UST-TEST-GF-4" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "PIC XXX JUST" TO FEATURE.
+           MOVE    "1200000" TO ID1-XN-7.
+           MOVE    "0" TO ZERO-XN-1.
+           MOVE    ZERO TO ID4-XXXJ.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-4.
+           UNSTRING ID1-XN-7 DELIMITED BY ZERO-XN-1 INTO ID4-XXXJ
+                    DELIMITER ID5-XN-4
+                    COUNT IN ID6-DU-2V0
+                    POINTER ID10-DU-2V0
+                    TALLYING IN ID11-DU-2V0.
+           GO TO UST-TEST-GF-4-1.
+       UST-DELETE-GF-4.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-5.
+      *> 
+       UST-TEST-GF-4-1.
+           IF      ID4-XXXJ = " 12"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-4-1
+           ELSE
+                   GO TO UST-FAIL-GF-4-1.
+       UST-DELETE-GF-4-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-4-1.
+       UST-FAIL-GF-4-1.
+           PERFORM FAIL
+           MOVE    ID4-XXXJ TO COMPUTED-A
+           MOVE    " 12" TO CORRECT-A.
+       UST-WRITE-GF-4-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-4-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-4-2
+           ELSE
+                   GO TO UST-FAIL-GF-4-2.
+       UST-DELETE-GF-4-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-4-2.
+       UST-FAIL-GF-4-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE "0   " TO CORRECT-A.
+       UST-WRITE-GF-4-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-4-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-4-3
+           ELSE
+                   GO TO UST-FAIL-GF-4-3.
+       UST-DELETE-GF-4-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-4-3.
+       UST-FAIL-GF-4-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-4-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-4-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-4-4
+           ELSE
+                   GO TO UST-FAIL-GF-4-4.
+       UST-DELETE-GF-4-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-4-4.
+       UST-FAIL-GF-4-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-4-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-4-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-4-5
+           ELSE
+                   GO TO UST-FAIL-GF-4-5.
+       UST-DELETE-GF-4-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-4-5.
+       UST-FAIL-GF-4-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-4-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-5.
+           MOVE    "UST-TEST-GF-5" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "PIC 9" TO FEATURE.
+           MOVE    ZERO TO ID4-DU-1V0.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    "1200000" TO ID1-XN-7.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-5.
+           UNSTRING ID1-XN-7 DELIMITED "0" INTO ID4-DU-1V0
+                    DELIMITER IN ID5-XN-4
+                    COUNT ID6-DU-2V0
+                    WITH POINTER ID10-DU-2V0
+                    TALLYING ID11-DU-2V0.
+           GO TO UST-TEST-GF-5-1.
+       UST-DELETE-GF-5.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-6.
+      *> 
+       UST-TEST-GF-5-1.
+           IF      ID4-DU-1V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-5-1
+           ELSE
+                   GO TO UST-FAIL-GF-5-1.
+       UST-DELETE-GF-5-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-5-1.
+       UST-FAIL-GF-5-1.
+           PERFORM FAIL
+           MOVE    ID4-DU-1V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-5-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-5-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-5-2
+           ELSE
+                   GO TO UST-FAIL-GF-5-2.
+       UST-DELETE-GF-5-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-5-2.
+       UST-FAIL-GF-5-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE    "0   " TO CORRECT-A.
+       UST-WRITE-GF-5-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-5-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-5-3
+           ELSE
+                   GO TO UST-FAIL-GF-5-3.
+       UST-DELETE-GF-5-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-5-3.
+       UST-FAIL-GF-5-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-5-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-5-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-5-4
+           ELSE
+                   GO TO UST-FAIL-GF-5-4.
+       UST-DELETE-GF-5-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-5-4.
+       UST-FAIL-GF-5-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-5-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-5-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-5-5
+           ELSE
+                   GO TO UST-FAIL-GF-5-5.
+       UST-DELETE-GF-5-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-5-5.
+       UST-FAIL-GF-5-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-5-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-6.
+           MOVE    "UST-TEST-GF-6" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "PIC S9" TO FEATURE.
+           MOVE    ZERO TO ID4-DS-1V0.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    "1200000" TO ID1-XN-7.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-6.
+           UNSTRING ID1-XN-7 DELIMITED BY ALL ZERO INTO ID4-DS-1V0
+                    DELIMITER ID5-XN-4
+                    COUNT ID6-DU-2V0
+                    POINTER ID10-DU-2V0
+                    TALLYING ID11-DU-2V0.
+           GO TO UST-TEST-GF-6-1.
+       UST-DELETE-GF-6.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-7.
+      *> 
+       UST-TEST-GF-6-1.
+           IF      ID4-DS-1V0 = +2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-6-1
+           ELSE
+                   GO TO UST-FAIL-GF-6-1.
+       UST-DELETE-GF-6-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-6-1.
+       UST-FAIL-GF-6-1.
+           PERFORM FAIL
+           MOVE    ID4-DS-1V0 TO COMPUTED-N
+           MOVE    +2 TO CORRECT-N.
+       UST-WRITE-GF-6-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-6-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-6-2
+           ELSE
+                   GO TO UST-FAIL-GF-6-2.
+       UST-DELETE-GF-6-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-6-2.
+       UST-FAIL-GF-6-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE    "0   " TO CORRECT-A.
+       UST-WRITE-GF-6-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-6-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-6-3
+           ELSE
+                   GO TO UST-FAIL-GF-6-3.
+       UST-DELETE-GF-6-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-6-3.
+       UST-FAIL-GF-6-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-6-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-6-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 8
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-6-4
+           ELSE
+                   GO TO UST-FAIL-GF-6-4.
+       UST-DELETE-GF-6-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-6-4.
+       UST-FAIL-GF-6-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    8 TO CORRECT-N.
+       UST-WRITE-GF-6-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-6-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-6-5
+           ELSE
+                   GO TO UST-FAIL-GF-6-5.
+       UST-DELETE-GF-6-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-6-5.
+       UST-FAIL-GF-6-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-6-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-7.
+           MOVE    "UST-TEST-GF-7" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "PIC 99" TO FEATURE.
+           MOVE    "1200000" TO ID1-XN-7.
+           MOVE    ZERO TO ID4-DU-2V0.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-7.
+           UNSTRING ID1-XN-7 DELIMITED ALL "0" INTO ID4-DU-2V0
+                   DELIMITER ID5-XN-4
+                   COUNT ID6-DU-2V0
+                   POINTER ID10-DU-2V0
+                   TALLYING ID11-DU-2V0.
+           GO      TO UST-TEST-GF-7-1.
+       UST-DELETE-GF-7.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-8.
+      *> 
+       UST-TEST-GF-7-1.
+           IF      ID4-DU-2V0 = 12
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-7-1
+           ELSE
+                   GO TO UST-FAIL-GF-7-1.
+       UST-DELETE-GF-7-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-7-1.
+       UST-FAIL-GF-7-1.
+           PERFORM FAIL
+           MOVE    ID4-DU-2V0 TO COMPUTED-N
+           MOVE    12 TO CORRECT-N.
+       UST-WRITE-GF-7-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-7-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-7-2
+           ELSE
+                   GO TO UST-FAIL-GF-7-2.
+       UST-DELETE-GF-7-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-7-2.
+       UST-FAIL-GF-7-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE    "0   " TO CORRECT-A.
+       UST-WRITE-GF-7-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-7-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-7-3
+           ELSE
+                   GO TO UST-FAIL-GF-7-3.
+       UST-DELETE-GF-7-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-7-3.
+       UST-FAIL-GF-7-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-7-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-7-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 8
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-7-4
+           ELSE
+                   GO TO UST-FAIL-GF-7-4.
+       UST-DELETE-GF-7-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-7-4.
+       UST-FAIL-GF-7-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    8 TO CORRECT-N.
+       UST-WRITE-GF-7-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-7-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-7-5
+           ELSE
+                   GO TO UST-FAIL-GF-7-5.
+       UST-DELETE-GF-7-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-7-5.
+       UST-FAIL-GF-7-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-7-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-8.
+           MOVE    "UST-TEST-GF-8" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "PIC S99" TO FEATURE.
+           MOVE    "1200000" TO ID1-XN-7.
+           MOVE    ZERO TO ID4-DS-2V0.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-8.
+           UNSTRING ID1-XN-7 DELIMITED ZERO-XN-1 INTO ID4-DS-2V0
+                   DELIMITER ID5-XN-4
+                   COUNT ID6-DU-2V0
+                   POINTER ID10-DU-2V0
+                   TALLYING IN ID11-DU-2V0.
+           GO TO UST-TEST-GF-8-1.
+       UST-DELETE-GF-8.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-9.
+      *> 
+       UST-TEST-GF-8-1.
+           IF      ID4-DS-2V0 = +12
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-8-1
+           ELSE
+                   GO TO UST-FAIL-GF-8-1.
+       UST-DELETE-GF-8-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-8-1.
+       UST-FAIL-GF-8-1.
+           PERFORM FAIL
+           MOVE    ID4-DS-2V0 TO COMPUTED-N
+           MOVE    +12 TO CORRECT-N.
+       UST-WRITE-GF-8-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-8-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-8-2
+           ELSE
+                   GO TO UST-FAIL-GF-8-2.
+       UST-DELETE-GF-8-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-8-2.
+       UST-FAIL-GF-8-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE    "0   " TO CORRECT-A.
+       UST-WRITE-GF-8-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-8-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-8-3
+           ELSE
+                   GO TO UST-FAIL-GF-8-3.
+       UST-DELETE-GF-8-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-8-3.
+       UST-FAIL-GF-8-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-8-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-8-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-8-4
+           ELSE
+                   GO TO UST-FAIL-GF-8-4.
+       UST-DELETE-GF-8-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-8-4.
+       UST-FAIL-GF-8-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-8-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-8-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-8-5
+           ELSE
+                   GO TO UST-FAIL-GF-8-5.
+       UST-DELETE-GF-8-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-8-5.
+       UST-FAIL-GF-8-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-8-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-9.
+           MOVE    "UST-TEST-GF-9" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "PIC S9 TRAIL SEP" TO FEATURE.
+           MOVE    "1200000" TO ID1-XN-7.
+           MOVE    ZERO TO ID4-DS-TS-1V0.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-9.
+           UNSTRING ID1-XN-7 DELIMITED ALL ZERO-XN-1 INTO ID4-DS-TS-1V0
+                   DELIMITER ID5-XN-4
+                   COUNT ID6-DU-2V0
+                   POINTER ID10-DU-2V0
+                   TALLYING IN ID11-DU-2V0.
+           GO TO UST-TEST-GF-9-1.
+       UST-DELETE-GF-9.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-10.
+      *> 
+       UST-TEST-GF-9-1.
+           IF      ID4-DS-TS-1V0 = +2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-9-1
+           ELSE
+                   GO TO UST-FAIL-GF-9-1.
+       UST-DELETE-GF-9-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-9-1.
+       UST-FAIL-GF-9-1.
+           PERFORM FAIL
+           MOVE    ID4-DS-TS-1V0 TO COMPUTED-N
+           MOVE    +2 TO CORRECT-N.
+       UST-WRITE-GF-9-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-9-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-9-2
+           ELSE
+                   GO TO UST-FAIL-GF-9-2.
+       UST-DELETE-GF-9-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-9-2.
+       UST-FAIL-GF-9-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE    "0   " TO CORRECT-A.
+       UST-WRITE-GF-9-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-9-3.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-9-3
+           ELSE
+                   GO TO UST-FAIL-GF-9-3.
+       UST-DELETE-GF-9-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-9-3.
+       UST-FAIL-GF-9-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-9-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-9-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 8
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-9-4
+           ELSE
+                   GO TO UST-FAIL-GF-9-4.
+       UST-DELETE-GF-9-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-9-4.
+       UST-FAIL-GF-9-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    8 TO CORRECT-N.
+       UST-WRITE-GF-9-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-9-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-9-5
+           ELSE
+                   GO TO UST-FAIL-GF-9-5.
+       UST-DELETE-GF-9-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-9-5.
+       UST-FAIL-GF-9-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-9-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-10.
+           MOVE    "UST-TEST-GF-10" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "PIC S9 LEAD SEP" TO FEATURE.
+           MOVE    "1200000" TO ID1-XN-7.
+           MOVE    ZERO TO ID4-DS-LS-1V0.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-10.
+           UNSTRING ID1-XN-7 DELIMITED BY "0" INTO ID4-DS-LS-1V0
+                   DELIMITER ID5-XN-4
+                   COUNT ID6-DU-2V0
+                   POINTER ID10-DU-2V0
+                   TALLYING ID11-DU-2V0.
+           GO TO UST-TEST-GF-10-1.
+       UST-DELETE-GF-10.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-11.
+      *> 
+       UST-TEST-GF-10-1.
+           IF      ID4-DS-LS-1V0 = +2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-10-1
+           ELSE
+                   GO TO UST-FAIL-GF-10-1.
+       UST-DELETE-GF-10-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-10-1.
+       UST-FAIL-GF-10-1.
+           PERFORM FAIL
+           MOVE    ID4-DS-LS-1V0 TO COMPUTED-N
+           MOVE    +2 TO CORRECT-N.
+       UST-WRITE-GF-10-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-10-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-10-2
+           ELSE
+                   GO TO UST-FAIL-GF-10-2.
+       UST-DELETE-GF-10-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-10-2.
+       UST-FAIL-GF-10-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE    "0   " TO CORRECT-A.
+       UST-WRITE-GF-10-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-10-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-10-3
+           ELSE
+                   GO TO UST-FAIL-GF-10-3.
+       UST-DELETE-GF-10-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-10-3.
+       UST-FAIL-GF-10-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-10-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-10-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-10-4
+           ELSE
+                   GO TO UST-FAIL-GF-10-4.
+       UST-DELETE-GF-10-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-10-4.
+       UST-FAIL-GF-10-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-10-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-10-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-10-5
+           ELSE
+                   GO TO UST-FAIL-GF-10-5.
+       UST-DELETE-GF-10-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-10-5.
+       UST-FAIL-GF-10-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-10-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-11.
+           MOVE    "UST-TEST-GF-11" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "GROUP BOTTOM UP" TO FEATURE.
+           MOVE    "ABCDEFGHIJ" TO GRP1-XN-10.
+           MOVE    SPACES TO GRP4-XN-10.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    ZERO TO REC-CT.
+      *> 
+       UST-TEST-GF-11.
+           UNSTRING GRP1-XN-10 INTO ID4D-XXXX ID4C-XXX ID4B-XX ID4A-X.
+           IF      GRP4-XN-10 = "JHIEFGABCD"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-11-1
+           ELSE
+                   GO TO UST-FAIL-GF-11-1.
+       UST-DELETE-GF-11-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-11-1.
+       UST-FAIL-GF-11-1.
+           PERFORM FAIL
+           MOVE    GRP4-XN-10 TO COMPUTED-A
+           MOVE    "JHIEFGABCD" TO CORRECT-A.
+       UST-WRITE-GF-11-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-12.
+           MOVE   "UST-TEST-GF-12" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE   "OVERFLOW TEST" TO FEATURE.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    "ABCDEF" TO GRP1-XN-6.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-12-1.
+           UNSTRING GRP1-XN-6  INTO ID4A-XXXXX ID4B-X
+                   ON OVERFLOW GO TO UST-FAIL-GF-12-1.
+           PERFORM PASS.
+           GO TO UST-WRITE-GF-12-1.
+       UST-DELETE-GF-12-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-13.
+       UST-FAIL-GF-12-1.
+           PERFORM FAIL.
+           MOVE    "OVERFLOW SHOULD NOT HAVE OCCURED" TO RE-MARK.
+       UST-WRITE-GF-12-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-12-2.
+           MOVE    "UST-TEST-GF-12" TO PAR-NAME.
+           ADD     1 TO REC-CT.
+           IF      GRP4-XN-6 = "ABCDEF"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-12-2
+           ELSE
+                   GO TO UST-FAIL-GF-12-2.
+       UST-DELETE-GF-12-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-12-2.
+       UST-FAIL-GF-12-2.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE    "ABCDEF" TO CORRECT-A.
+       UST-WRITE-GF-12-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-13.
+           MOVE    "UST-TEST-GF-13" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "OVERFLOW EXPECTED" TO FEATURE.
+           MOVE    "ABCDEF" TO GRP1-XN-6.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+       UST-TEST-GF-13-1.
+           UNSTRING GRP1-XN-6 INTO ID4A-XXXXX OVERFLOW PERFORM PASS
+                                              GO TO UST-WRITE-GF-13-1.
+           GO      TO UST-FAIL-GF-13-1.
+       UST-DELETE-GF-13-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-14.
+       UST-FAIL-GF-13-1.
+           PERFORM FAIL.
+           MOVE    "OVERFLOW SHOULD HAVE OCCURED" TO RE-MARK.
+       UST-WRITE-GF-13-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-13-2.
+           ADD     1 TO REC-CT.
+           IF      GRP4-XN-6 = "ABCDE "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-13-2
+           ELSE
+                   GO TO UST-FAIL-GF-13-2.
+       UST-DELETE-GF-13-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-13-2.
+       UST-FAIL-GF-13-2.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE    "ABCDE " TO CORRECT-A.
+       UST-WRITE-GF-13-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-14.
+           MOVE    "UST-TEST-GF-14" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "INSTANT OVERFLOW" TO FEATURE.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    7 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-14-1.
+           UNSTRING GRP1-XN-6 INTO ID4A-XXXXX ID4B-X POINTER ID10-DU-2V0
+                   OVERFLOW PERFORM PASS
+                            GO TO UST-WRITE-GF-14-1.
+           GO      TO UST-FAIL-GF-14-1.
+       UST-DELETE-GF-14-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-15.
+       UST-FAIL-GF-14-1.
+           PERFORM FAIL.
+           MOVE    "OVERFLOW SHOULD HAVE OCCURED" TO RE-MARK.
+       UST-WRITE-GF-14-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-14-2.
+           MOVE    "UST-TEST-GF-14" TO PAR-NAME.
+           ADD     1 TO REC-CT.
+           IF      GRP4-XN-6 = SPACES
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-14-2
+           ELSE
+                   GO TO UST-FAIL-GF-14-2.
+       UST-DELETE-GF-14-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-14-2.
+       UST-FAIL-GF-14-2.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE    "ALL SPACES" TO CORRECT-A.
+       UST-WRITE-GF-14-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-14-3.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 7
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-14-3
+           ELSE
+                   GO TO UST-FAIL-GF-14-3.
+       UST-DELETE-GF-14-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-14-3.
+       UST-FAIL-GF-14-3.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    7 TO CORRECT-N.
+       UST-WRITE-GF-14-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-15.
+           MOVE    "UST-TEST-GF-15" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "POINTER NOT = 1" TO FEATURE.
+           MOVE    "ABCDEF" TO GRP1-XN-6.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    3 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-15-1.
+           UNSTRING GRP1-XN-6 INTO ID4A-XXXXX ID4B-X POINTER ID10-DU-2V0
+                   OVERFLOW GO TO UST-FAIL-GF-15-1.
+           PERFORM PASS
+           GO TO UST-WRITE-GF-15-1.
+       UST-DELETE-GF-15-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-16.
+       UST-FAIL-GF-15-1.
+           PERFORM FAIL.
+           MOVE    "OVERFLOW SHOULD NOT HAVE OCCURED" TO RE-MARK.
+       UST-WRITE-GF-15-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-15-2.
+           ADD     1 TO REC-CT.
+           IF      GRP4-XN-6 = "CDEF  "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-15-2
+           ELSE
+                   GO TO UST-FAIL-GF-15-2.
+       UST-DELETE-GF-15-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-15-2.
+       UST-FAIL-GF-15-2.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE    "CDEF  " TO CORRECT-A.
+       UST-WRITE-GF-15-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-15-3.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 7
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-15-3
+           ELSE
+                   GO TO UST-FAIL-GF-15-3.
+       UST-DELETE-GF-15-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-15-3.
+       UST-FAIL-GF-15-3.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    7 TO CORRECT-N.
+       UST-WRITE-GF-15-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-16.
+           MOVE    "UST-TEST-GF-16" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "TALLY 3 FIELDS TEST" TO FEATURE.
+           MOVE    "ABCDEF" TO GRP1-XN-6.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    "****" TO ID4C-XXXX.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-16-0.
+           UNSTRING GRP1-XN-6 INTO ID4A-XXXXX ID4B-X ID4C-XXXX
+                   TALLYING ID11-DU-2V0.
+           GO      TO UST-TEST-GF-16-1.
+       UST-DELETE-GF-16.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-17.
+      *> 
+       UST-TEST-GF-16-1.
+           IF      GRP4-XN-6 = "ABCDEF"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-16-1
+           ELSE
+                   GO TO UST-FAIL-GF-16-1.
+       UST-DELETE-GF-16-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-16-1.
+       UST-FAIL-GF-16-1.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE    "ABCDEF" TO CORRECT-A.
+       UST-WRITE-GF-16-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-16-2.
+           ADD     1 TO REC-CT.
+           IF      ID4C-XXXX = "****"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-16-2
+           ELSE
+                   GO TO UST-FAIL-GF-16-2.
+       UST-DELETE-GF-16-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-16-2.
+       UST-FAIL-GF-16-2.
+           PERFORM FAIL
+           MOVE    ID4C-XXXX TO COMPUTED-A
+           MOVE    "****" TO CORRECT-A.
+       UST-WRITE-GF-16-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-16-3.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-16-3
+           ELSE
+                   GO TO UST-FAIL-GF-16-3.
+       UST-DELETE-GF-16-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-16-3.
+       UST-FAIL-GF-16-3.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-16-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-17.
+           MOVE    "UST-TEST-GF-17" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "QUAL DEL BY POINT" TO FEATURE.
+           MOVE    "ABCDEFG" TO GRP1-XN-7.
+           MOVE    "BCDEFGH" TO GRP2-XN-7.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    ALL "*" TO ID5-XN-6.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    2 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-17.
+           UNSTRING GRP1-XN-7 DELIMITED BY ID2 (ID10-DU-2V0)
+                   INTO GRP4-XN-6
+                   DELIMITER IN ID5-XN-6
+                   COUNT ID6-DU-2V0
+                   POINTER ID10-DU-2V0.
+           GO TO UST-TEST-GF-17-1.
+       UST-DELETE-GF-17.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-18.
+      *> 
+       UST-TEST-GF-17-1.
+           IF      GRP4-XN-6 = "B     "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-17-1
+           ELSE
+                   GO TO UST-FAIL-GF-17-1.
+       UST-DELETE-GF-17-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-17-1.
+       UST-FAIL-GF-17-1.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE    "B     " TO CORRECT-A.
+       UST-WRITE-GF-17-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-17-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-6 = "C     "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-17-2
+           ELSE
+                   GO TO UST-FAIL-GF-17-2.
+       UST-DELETE-GF-17-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-17-2.
+       UST-FAIL-GF-17-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-6 TO COMPUTED-A
+           MOVE    "C     " TO CORRECT-A.
+       UST-WRITE-GF-17-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-17-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-17-3
+           ELSE
+                   GO TO UST-FAIL-GF-17-3.
+       UST-DELETE-GF-17-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-17-3.
+       UST-FAIL-GF-17-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-17-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-17-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-17-4
+           ELSE
+                   GO TO UST-FAIL-GF-17-4.
+       UST-DELETE-GF-17-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-17-4.
+       UST-FAIL-GF-17-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-17-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-18.
+           ADD     1 TO REC-CT.
+           MOVE    "UST-TEST-GF-18" TO PAR-NAME.
+           MOVE    "VI-136" TO ANSI-REFERENCE.
+           MOVE    "QUAL DEL BY TALLY" TO FEATURE.
+           MOVE    "ABCDEFG" TO GRP1-XN-7.
+           MOVE    "CE" TO GRP2-XN-2.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    "****" TO ID5-XN-4-2.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    ZERO TO ID6-DU-2V0-2.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    1 TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-18.
+           UNSTRING GRP1-XN-7 DELIMITED ID2A (ID10-DU-2V0)
+                    INTO ID4A-XXXXX
+                    DELIMITER IN ID5-XN-4
+                    COUNT ID6-DU-2V0
+                   ID4B-X DELIMITER IN ID5-XN-4-2
+                    COUNT ID6-DU-2V0-2
+                    TALLYING ID11-DU-2V0.
+           GO TO UST-TEST-GF-18-1.
+       UST-DELETE-GF-18.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-19.
+      *> 
+       UST-TEST-GF-18-1.
+           IF      GRP4-XN-6 = "AB   D"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-18-1
+           ELSE
+                   GO TO UST-FAIL-GF-18-1.
+       UST-DELETE-GF-18-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-18-1.
+       UST-FAIL-GF-18-1.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE    "AB   D" TO CORRECT-A.
+       UST-WRITE-GF-18-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-18-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "C   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-18-2
+           ELSE
+                   GO TO UST-FAIL-GF-18-2.
+       UST-DELETE-GF-18-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-18-2.
+       UST-FAIL-GF-18-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE    "C   " TO CORRECT-A.
+       UST-WRITE-GF-18-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-18-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-18-3
+           ELSE
+                   GO TO UST-FAIL-GF-18-3.
+       UST-DELETE-GF-18-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-18-3.
+       UST-FAIL-GF-18-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-18-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-18-4.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0-2 EQUAL TO 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-18-4
+           ELSE
+                   GO TO UST-FAIL-GF-18-4.
+       UST-DELETE-GF-18-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-18-4.
+       UST-FAIL-GF-18-4.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0-2 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-18-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-18-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 3
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-18-5
+           ELSE
+                   GO TO UST-FAIL-GF-18-5.
+       UST-DELETE-GF-18-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-18-5.
+       UST-FAIL-GF-18-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    3 TO CORRECT-N.
+       UST-WRITE-GF-18-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-18-6.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4-2 = SPACES  AND  ID6-DU-2V0-2 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-18-6
+           ELSE
+                   GO TO UST-FAIL-GF-18-6.
+       UST-DELETE-GF-18-6.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-18-6.
+       UST-FAIL-GF-18-6.
+           PERFORM FAIL
+           MOVE    ID5-XN-4-2   TO COMPUTED-A
+           MOVE    4 TO CORRECT-A.
+       UST-WRITE-GF-18-6.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-19.
+           MOVE "UST-TEST-GF-19" TO PAR-NAME.
+           MOVE "VI-135" TO ANSI-REFERENCE.
+           MOVE "QUALIFIED ID1" TO FEATURE.
+           MOVE "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" TO GRP1-XN-X-36.
+           MOVE SPACES TO GRP4-XN-6.
+           MOVE "****" TO ID5-XN-4.
+           MOVE ZERO TO ID6-DU-2V0.
+           MOVE 1 TO ID10-DU-2V0.
+           MOVE ZERO TO ID11-DU-2V0.
+           MOVE 1 TO REC-CT.
+      *> 
+       UST-TEST-GF-19-0.
+           UNSTRING ID1 OF GRP1-XN-X-36 (ID10-DU-2V0) INTO GRP4-XN-6
+                   POINTER ID10-DU-2V0.
+           GO TO UST-TEST-GF-19-1.
+       UST-DELETE-GF-19.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO UST-INIT-GF-20.
+      *> 
+       UST-TEST-GF-19-1.
+           IF      GRP4-XN-6 = "ABCDEF"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-19-1
+           ELSE
+                   GO TO UST-FAIL-GF-19-1.
+       UST-DELETE-GF-19-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-19-1.
+       UST-FAIL-GF-19-1.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE    "ABCDEF" TO CORRECT-A.
+       UST-WRITE-GF-19-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-19-2.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 7
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-19-2
+           ELSE
+                   GO TO UST-FAIL-GF-19-2.
+       UST-DELETE-GF-19-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-19-2.
+       UST-FAIL-GF-19-2.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    7 TO CORRECT-N.
+       UST-WRITE-GF-19-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-19-3.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = ZERO
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-19-3
+           ELSE
+                   GO TO UST-FAIL-GF-19-3.
+       UST-DELETE-GF-19-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-19-3.
+       UST-FAIL-GF-19-3.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    ZERO TO CORRECT-N.
+       UST-WRITE-GF-19-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-20.
+           MOVE    "UST-TEST-GF-20" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "MULT RECEIVE AREAS" TO FEATURE.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    "****" TO ID4C-XXXX.
+           MOVE    "*" TO ID4D-X.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    1 TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-20.
+           UNSTRING ID1 OF GRP1-XN-X-36 (ID11-DU-2V0)
+                    INTO ID4A-XXXXX ID4B-X ID4C-XXXX ID4D-X
+                    TALLYING ID11-DU-2V0.
+           GO TO UST-TEST-GF-20-1.
+       UST-DELETE-GF-20.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-21.
+      *> 
+       UST-TEST-GF-20-1.
+           IF      GRP4-XN-6 = "ABCDEF"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-20-1
+           ELSE
+                   GO TO UST-FAIL-GF-20-1.
+       UST-DELETE-GF-20-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-20-1.
+       UST-FAIL-GF-20-1.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE    "ABCDEF" TO CORRECT-A.
+       UST-WRITE-GF-20-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-20-2.
+           ADD     1 TO REC-CT.
+           IF      ID4C-XXXX = "****"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-20-2
+           ELSE
+                   GO TO UST-FAIL-GF-20-2.
+       UST-DELETE-GF-20-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-20-2.
+       UST-FAIL-GF-20-2.
+           PERFORM FAIL
+           MOVE    ID4C-XXXX TO COMPUTED-A
+           MOVE    "****" TO CORRECT-A.
+       UST-WRITE-GF-20-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-20-3.
+           ADD     1 TO REC-CT.
+           IF      ID4D-X = "*"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-20-3
+           ELSE
+                   GO TO UST-FAIL-GF-20-3.
+       UST-DELETE-GF-20-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-20-3.
+       UST-FAIL-GF-20-3.
+           PERFORM FAIL
+           MOVE    ID4D-X TO COMPUTED-A
+           MOVE    "*" TO CORRECT-A.
+       UST-WRITE-GF-20-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-20-4.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 3
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-20-4
+           ELSE
+                   GO TO UST-FAIL-GF-20-4.
+       UST-DELETE-GF-20-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-20-4.
+       UST-FAIL-GF-20-4.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    3 TO CORRECT-N.
+       UST-WRITE-GF-20-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-21.
+           MOVE    "UST-TEST-GF-21" TO PAR-NAME.
+           MOVE    "VI-135" TO ANSI-REFERENCE.
+           MOVE    "TRUNCATION CHECKS" TO FEATURE.
+           MOVE    "ABCDEFGHIJKL" TO ID1-XN-12.
+           MOVE    ALL "*" TO GRP4-XN-10.
+           MOVE    1 TO  ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-21.
+           UNSTRING ID1-XN-12
+                   DELIMITED BY "E" OR "H" OR "K" OR "L"
+                   INTO ID4C-XXX ID4B-XX ID4A-X
+                   TALLYING IN ID11-DU-2V0.
+           GO      TO UST-TEST-GF-21-1.
+       UNSTRING-DELETE.
+           PERFORM  DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO UST-INIT-GF-22.
+      *> 
+       UST-TEST-GF-21-1.
+           IF      ID4C-XXX = "ABC"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-21-1
+           ELSE
+                   GO TO UST-FAIL-GF-21-1.
+       UST-DELETE-GF-21-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-21-1.
+       UST-FAIL-GF-21-1.
+           PERFORM FAIL
+           MOVE    ID4C-XXX TO COMPUTED-A
+           MOVE    "ABC" TO CORRECT-A.
+       UST-WRITE-GF-21-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-21-2.
+           ADD     1 TO REC-CT.
+           IF      ID4B-XX = "FG"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-21-2
+           ELSE
+                   GO TO UST-FAIL-GF-21-2.
+       UST-DELETE-GF-21-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-21-2.
+       UST-FAIL-GF-21-2.
+           PERFORM FAIL
+           MOVE    ID4B-XX  TO COMPUTED-A
+           MOVE    "FG" TO CORRECT-A.
+       UST-WRITE-GF-21-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-21-3.
+           ADD     1 TO REC-CT.
+           IF      ID4A-X = "I"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-21-3
+           ELSE
+                   GO TO UST-FAIL-GF-21-3.
+       UST-DELETE-GF-21-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-21-3.
+       UST-FAIL-GF-21-3.
+           PERFORM FAIL
+           MOVE    ID4A-X   TO COMPUTED-A
+           MOVE    "I" TO CORRECT-A.
+       UST-WRITE-GF-21-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-21-4.
+           ADD     1 TO REC-CT.
+           IF       ID11-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-21-4
+           ELSE
+                   GO TO UST-FAIL-GF-21-4.
+       UST-DELETE-GF-21-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-21-4.
+       UST-FAIL-GF-21-4.
+           PERFORM FAIL
+           MOVE     ID11-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-21-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-22.
+      *>     ===--> "NOT ON OVERFLOW" PHRASE  <--===
+           MOVE   "VI-138 6.26.4 GR17" TO ANSI-REFERENCE.
+           MOVE   "UST-TEST-GF-22" TO PAR-NAME.
+           MOVE   "PIC X " TO FEATURE.
+           MOVE    ZERO TO ID4-X.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-22-1.
+           UNSTRING ID1-XN-7 DELIMITED BY ZERO INTO ID4-X DELIMITER IN
+                   ID5-XN-4 COUNT IN ID6-DU-2V0 WITH POINTER ID10-DU-2V0
+                   TALLYING ID11-DU-2V0
+               NOT ON OVERFLOW  GO TO UST-FAIL-GF-22-1.
+           PERFORM PASS.
+           GO TO UST-WRITE-GF-22-1.
+       UST-DELETE-GF-22-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   UST-INIT-GF-23.
+       UST-FAIL-GF-22-1.
+           PERFORM FAIL.
+           MOVE   "NOT ON OVERFLOW SHOULD NOT HAVE EXECUTED" TO RE-MARK.
+       UST-WRITE-GF-22-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-22-2.
+           ADD     1 TO REC-CT.
+           IF      ID4-X = "1"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-22-2
+           ELSE
+                   GO TO UST-FAIL-GF-22-2.
+       UST-DELETE-GF-22-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-22-2.
+       UST-FAIL-GF-22-2.
+           PERFORM FAIL
+           MOVE    ID4-X TO COMPUTED-A
+           MOVE    "1" TO CORRECT-A.
+       UST-WRITE-GF-22-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-22-3.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-22-3
+           ELSE
+                   GO TO UST-FAIL-GF-22-3.
+       UST-DELETE-GF-22-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-22-3.
+       UST-FAIL-GF-22-3.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE   "0   " TO CORRECT-A.
+       UST-WRITE-GF-22-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-22-4.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-22-4
+           ELSE
+                   GO TO UST-FAIL-GF-22-4.
+       UST-DELETE-GF-22-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-22-4.
+       UST-FAIL-GF-22-4.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-22-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-22-5.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-22-5
+           ELSE
+                   GO TO UST-FAIL-GF-22-5.
+       UST-DELETE-GF-22-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-22-5.
+       UST-FAIL-GF-22-5.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-22-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-22-6.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-22-6
+           ELSE
+                   GO TO UST-FAIL-GF-22-6.
+       UST-DELETE-GF-22-6.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-22-6.
+       UST-FAIL-GF-22-6.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-22-6.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-23.
+      *>     ===--> "NOT ON OVERFLOW" PHRASE  <--===
+           MOVE   "VI-138 6.26.4 GR17" TO ANSI-REFERENCE.
+           MOVE   "UST-TEST-GF-23" TO PAR-NAME.
+           MOVE   "OVERFLOW TEST" TO FEATURE.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-23-1.
+           UNSTRING GRP1-XN-6  INTO ID4A-XXXXX ID4B-X
+               NOT ON OVERFLOW PERFORM PASS
+                               GO TO UST-WRITE-GF-23-1.
+           GO TO   UST-FAIL-GF-23-1.
+       UST-DELETE-GF-23-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-24.
+       UST-FAIL-GF-23-1.
+           PERFORM FAIL.
+           MOVE    "OVERFLOW SHOULD NOT HAVE OCCURED" TO RE-MARK.
+       UST-WRITE-GF-23-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-23-2.
+           ADD     1 TO REC-CT.
+           IF      GRP4-XN-6 = "ABCDEF"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-23-2
+           ELSE
+                   GO TO UST-FAIL-GF-23-2.
+       UST-DELETE-GF-23-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-23-2.
+       UST-FAIL-GF-23-2.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE   "ABCDEF" TO CORRECT-A.
+       UST-WRITE-GF-23-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-24.
+      *>     ===-->  BOTH "OVERFLOW" PHRASES  <--===
+           MOVE   "VI-138 6.26.4 GR17" TO ANSI-REFERENCE.
+           MOVE   "UST-TEST-GF-24" TO PAR-NAME.
+           MOVE   "PIC X " TO FEATURE.
+           MOVE    ZERO TO ID4-X.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-24-1.
+           UNSTRING ID1-XN-7 DELIMITED BY ZERO INTO ID4-X
+                   DELIMITER IN ID5-XN-4
+                   COUNT IN ID6-DU-2V0
+                   WITH POINTER ID10-DU-2V0
+                   TALLYING ID11-DU-2V0
+                   ON OVERFLOW  PERFORM PASS
+                                GO TO UST-WRITE-GF-24-1
+               NOT ON OVERFLOW  GO TO UST-FAIL-GF-24-1.
+       UST-DELETE-GF-24-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   UST-INIT-GF-25.
+       UST-FAIL-GF-24-1.
+           PERFORM FAIL.
+           MOVE   "ON OVERFLOW SHOULD HAVE EXECUTED" TO RE-MARK.
+       UST-WRITE-GF-24-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-24-2.
+           ADD     1 TO REC-CT.
+           IF      ID4-X = "1"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-24-2
+           ELSE
+                   GO TO UST-FAIL-GF-24-2.
+       UST-DELETE-GF-24-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-24-2.
+       UST-FAIL-GF-24-2.
+           PERFORM FAIL
+           MOVE    ID4-X TO COMPUTED-A
+           MOVE    "1" TO CORRECT-A.
+       UST-WRITE-GF-24-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-24-3.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-24-3
+           ELSE
+                   GO TO UST-FAIL-GF-24-3.
+       UST-DELETE-GF-24-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-24-3.
+       UST-FAIL-GF-24-3.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE   "0   " TO CORRECT-A.
+       UST-WRITE-GF-24-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-24-4.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-24-4
+           ELSE
+                   GO TO UST-FAIL-GF-24-4.
+       UST-DELETE-GF-24-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-24-4.
+       UST-FAIL-GF-24-4.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-24-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-24-5.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-24-5
+           ELSE
+                   GO TO UST-FAIL-GF-24-5.
+       UST-DELETE-GF-24-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-24-5.
+       UST-FAIL-GF-24-5.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-24-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-24-6.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-24-6
+           ELSE
+                   GO TO UST-FAIL-GF-24-6.
+       UST-DELETE-GF-24-6.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-24-6.
+       UST-FAIL-GF-24-6.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-24-6.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-25.
+      *>     ===-->  BOTH "OVERFLOW" PHRASES  <--===
+           MOVE   "VI-138 6.26.4 GR17" TO ANSI-REFERENCE.
+           MOVE   "UST-TEST-GF-25" TO PAR-NAME.
+           MOVE   "OVERFLOW TEST" TO FEATURE.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    1 TO REC-CT.
+      *> 
+       UST-TEST-GF-25-1.
+           UNSTRING GRP1-XN-6  INTO ID4A-XXXXX ID4B-X
+                   ON OVERFLOW GO TO UST-FAIL-GF-25-1
+               NOT ON OVERFLOW PERFORM PASS
+                               GO TO UST-WRITE-GF-25-1.
+       UST-DELETE-GF-25-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-26.
+       UST-FAIL-GF-25-1.
+           PERFORM FAIL.
+           MOVE    "ON OVERFLOW SHOULD NOT HAVE EXECUTED" TO RE-MARK.
+       UST-WRITE-GF-25-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-25-2.
+           ADD     1 TO REC-CT.
+           IF      GRP4-XN-6 = "ABCDEF"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-25-2
+           ELSE
+                   GO TO UST-FAIL-GF-25-2.
+       UST-DELETE-GF-25-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-25-2.
+       UST-FAIL-GF-25-2.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE   "ABCDEF" TO CORRECT-A.
+       UST-WRITE-GF-25-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-26.
+      *>     ===-->  EXPLICIT SCOPE TERMINATOR  <--===
+           MOVE   "VI-138 6.26.4 GR19" TO ANSI-REFERENCE.
+           MOVE   "ABCDEF" TO GRP1-XN-6.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           MOVE    SPACE TO WRK-XN-00001-2.
+           MOVE    SPACE TO WRK-XN-00001-3.
+           MOVE    ZERO TO REC-CT.
+      *> 
+       UST-TEST-GF-26-0.
+           UNSTRING GRP1-XN-6  INTO ID4A-XXXXX ID4B-X
+                   ON OVERFLOW
+                           MOVE "A" TO WRK-XN-00001-1
+                           MOVE "B" TO WRK-XN-00001-2
+               NOT ON OVERFLOW
+                           MOVE "C" TO WRK-XN-00001-1
+                           MOVE "D" TO WRK-XN-00001-2
+           END-UNSTRING
+           MOVE   "Z"  TO WRK-XN-00001-3.
+           GO TO   UST-TEST-GF-26-1.
+       UST-DELETE-GF-26.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-27.
+      *> 
+       UST-TEST-GF-26-1.
+           ADD     1 TO REC-CT.
+           IF      GRP4-XN-6 = "ABCDEF"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-26-1
+           ELSE
+                   GO TO UST-FAIL-GF-26-1.
+       UST-DELETE-GF-26-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-26-1.
+       UST-FAIL-GF-26-1.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE   "ABCDEF" TO CORRECT-A.
+       UST-WRITE-GF-26-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-26-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-1 = "C"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-26-2
+           ELSE
+                   GO TO UST-FAIL-GF-26-2.
+       UST-DELETE-GF-26-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-26-2.
+       UST-FAIL-GF-26-2.
+           MOVE    WRK-XN-00001-1 TO COMPUTED-A
+           MOVE   "C" TO CORRECT-A.
+           MOVE   "NOT ON OVERFLOW SHOULD HAVE EXECUTED" TO RE-MARK
+           PERFORM FAIL.
+       UST-WRITE-GF-26-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-26-3.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-2 = "D"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-26-3
+           ELSE
+                   GO TO UST-FAIL-GF-26-3.
+       UST-DELETE-GF-26-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-26-3.
+       UST-FAIL-GF-26-3.
+           MOVE    WRK-XN-00001-2 TO COMPUTED-A
+           MOVE   "D" TO CORRECT-A.
+           MOVE   "NOT ON OVERFLOW SHOULD HAVE EXECUTED" TO RE-MARK
+           PERFORM FAIL.
+       UST-WRITE-GF-26-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-26-4.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-3 = "Z"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-26-4
+           ELSE
+                   GO TO UST-FAIL-GF-26-4.
+       UST-DELETE-GF-26-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-26-4.
+       UST-FAIL-GF-26-4.
+           MOVE    WRK-XN-00001-3 TO COMPUTED-A
+           MOVE   "Z" TO CORRECT-A.
+           MOVE   "SCOPE TERMINATOR IGNORED" TO RE-MARK
+           PERFORM FAIL.
+       UST-WRITE-GF-26-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-27.
+      *>     ===-->  EXPLICIT SCOPE TERMINATOR  <--===
+           MOVE   "VI-138 6.26.4 GR17" TO ANSI-REFERENCE.
+           MOVE   "UST-TEST-GF-27" TO PAR-NAME.
+           MOVE   "PIC X " TO FEATURE.
+           MOVE   "1200000" TO ID1-XN-7.
+           MOVE    ZERO TO ID4-X.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    ZERO TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           MOVE    SPACE TO WRK-XN-00001-2.
+           MOVE    SPACE TO WRK-XN-00001-3.
+      *> 
+       UST-TEST-GF-27-0.
+           UNSTRING ID1-XN-7 DELIMITED BY ZERO INTO ID4-X
+                   DELIMITER IN ID5-XN-4
+                   COUNT IN ID6-DU-2V0
+                   WITH POINTER ID10-DU-2V0
+                   TALLYING ID11-DU-2V0
+                   ON OVERFLOW
+                           MOVE "A" TO WRK-XN-00001-1
+                           MOVE "B" TO WRK-XN-00001-2
+           END-UNSTRING
+           MOVE   "Z"  TO WRK-XN-00001-3.
+           GO TO   UST-TEST-GF-27-1.
+       UST-DELETE-GF-27.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   UST-INIT-GF-28.
+      *> 
+       UST-TEST-GF-27-1.
+           ADD     1 TO REC-CT.
+           IF      ID4-X = "1"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-27-1
+           ELSE
+                   GO TO UST-FAIL-GF-27-1.
+       UST-DELETE-GF-27-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-27-1.
+       UST-FAIL-GF-27-1.
+           PERFORM FAIL
+           MOVE    ID4-X TO COMPUTED-A
+           MOVE    "1" TO CORRECT-A.
+       UST-WRITE-GF-27-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-27-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-27-2
+           ELSE
+                   GO TO UST-FAIL-GF-27-2.
+       UST-DELETE-GF-27-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-27-2.
+       UST-FAIL-GF-27-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE   "0   " TO CORRECT-A.
+       UST-WRITE-GF-27-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-27-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-27-3
+           ELSE
+                   GO TO UST-FAIL-GF-27-3.
+       UST-DELETE-GF-27-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-27-3.
+       UST-FAIL-GF-27-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-27-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-27-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-27-4
+           ELSE
+                   GO TO UST-FAIL-GF-27-4.
+       UST-DELETE-GF-27-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-27-4.
+       UST-FAIL-GF-27-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-27-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-27-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-27-5
+           ELSE
+                   GO TO UST-FAIL-GF-27-5.
+       UST-DELETE-GF-27-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-27-5.
+       UST-FAIL-GF-27-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-27-5.
+      *> 
+       UST-INIT-GF-28.
+      *>     ===--> "NOT ON OVERFLOW" PHRASE  <--===
+           MOVE   "VI-138 6.26.4 GR17" TO ANSI-REFERENCE.
+           MOVE   "UST-TEST-GF-28" TO PAR-NAME.
+           MOVE   "OVERFLOW TEST" TO FEATURE.
+           MOVE   "ABCDEF" TO GRP1-XN-6.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    ZERO TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           MOVE    SPACE TO WRK-XN-00001-2.
+           MOVE    SPACE TO WRK-XN-00001-3.
+      *> 
+       UST-TEST-GF-28-0.
+           UNSTRING GRP1-XN-6  INTO ID4A-XXXXX ID4B-X
+                   ON OVERFLOW
+                           MOVE "A" TO WRK-XN-00001-1
+                           MOVE "B" TO WRK-XN-00001-2
+           END-UNSTRING
+           MOVE   "Z"  TO WRK-XN-00001-3.
+           GO TO   UST-TEST-GF-28-1.
+       UST-DELETE-GF-28.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO UST-INIT-GF-29.
+      *> 
+       UST-TEST-GF-28-1.
+           ADD     1 TO REC-CT.
+           IF      GRP4-XN-6 = "ABCDEF"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-28-1
+           ELSE
+                   GO TO UST-FAIL-GF-28-1.
+       UST-DELETE-GF-28-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-28-1.
+       UST-FAIL-GF-28-1.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE   "ABCDEF" TO CORRECT-A.
+       UST-WRITE-GF-28-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       UST-INIT-GF-29.
+      *>     ===-->  EXPLICIT SCOPE TERMINATOR  <--===
+           MOVE   "VI-138 6.26.4 GR17" TO ANSI-REFERENCE.
+           MOVE   "UST-TEST-GF-29" TO PAR-NAME.
+           MOVE   "PIC X " TO FEATURE.
+           MOVE   "1200000" TO ID1-XN-7.
+           MOVE    ZERO TO ID4-X.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    ZERO TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           MOVE    SPACE TO WRK-XN-00001-2.
+           MOVE    SPACE TO WRK-XN-00001-3.
+      *> 
+       UST-TEST-GF-29-0.
+           UNSTRING ID1-XN-7 DELIMITED BY ZERO INTO ID4-X
+                   DELIMITER IN ID5-XN-4
+                   COUNT IN ID6-DU-2V0
+                   WITH POINTER ID10-DU-2V0
+                   TALLYING ID11-DU-2V0
+               NOT ON OVERFLOW
+                           MOVE "A" TO WRK-XN-00001-1
+                           MOVE "B" TO WRK-XN-00001-2
+           END-UNSTRING
+           MOVE   "Z"  TO WRK-XN-00001-3.
+           GO TO   UST-TEST-GF-29-1.
+       UST-DELETE-GF-29.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   UST-INIT-GF-30.
+      *> 
+       UST-TEST-GF-29-1.
+           MOVE   "UST-TEST-GF-29-1" TO PAR-NAME.
+           ADD     1 TO REC-CT.
+           IF      ID4-X = "1"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-29-1
+           ELSE
+                   GO TO UST-FAIL-GF-29-1.
+       UST-DELETE-GF-29-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-29-1.
+       UST-FAIL-GF-29-1.
+           PERFORM FAIL
+           MOVE    ID4-X TO COMPUTED-A
+           MOVE    "1" TO CORRECT-A.
+       UST-WRITE-GF-29-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-29-2.
+           ADD     1 TO REC-CT.
+           IF      ID5-XN-4 = "0   "
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-29-2
+           ELSE
+                   GO TO UST-FAIL-GF-29-2.
+       UST-DELETE-GF-29-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-29-2.
+       UST-FAIL-GF-29-2.
+           PERFORM FAIL
+           MOVE    ID5-XN-4 TO COMPUTED-A
+           MOVE   "0   " TO CORRECT-A.
+       UST-WRITE-GF-29-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-29-3.
+           ADD     1 TO REC-CT.
+           IF      ID6-DU-2V0 = 2
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-29-3
+           ELSE
+                   GO TO UST-FAIL-GF-29-3.
+       UST-DELETE-GF-29-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-29-3.
+       UST-FAIL-GF-29-3.
+           PERFORM FAIL
+           MOVE    ID6-DU-2V0 TO COMPUTED-N
+           MOVE    2 TO CORRECT-N.
+       UST-WRITE-GF-29-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-29-4.
+           ADD     1 TO REC-CT.
+           IF      ID10-DU-2V0 = 4
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-29-4
+           ELSE
+                   GO TO UST-FAIL-GF-29-4.
+       UST-DELETE-GF-29-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-29-4.
+       UST-FAIL-GF-29-4.
+           PERFORM FAIL
+           MOVE    ID10-DU-2V0 TO COMPUTED-N
+           MOVE    4 TO CORRECT-N.
+       UST-WRITE-GF-29-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-29-5.
+           ADD     1 TO REC-CT.
+           IF      ID11-DU-2V0 = 1
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-29-5
+           ELSE
+                   GO TO UST-FAIL-GF-29-5.
+       UST-DELETE-GF-29-5.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-29-5.
+       UST-FAIL-GF-29-5.
+           PERFORM FAIL
+           MOVE    ID11-DU-2V0 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       UST-WRITE-GF-29-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-29-6.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-1 = SPACE
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-29-6
+           ELSE
+                   GO TO UST-FAIL-GF-29-6.
+       UST-DELETE-GF-29-6.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-29-6.
+       UST-FAIL-GF-29-6.
+           MOVE    WRK-XN-00001-1 TO COMPUTED-A
+           MOVE    SPACE TO CORRECT-A.
+           MOVE "NOT ON OVERFLOW SHOULD NOT HAVE EXECUTED" TO RE-MARK
+           PERFORM FAIL.
+       UST-WRITE-GF-29-6.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-29-7.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-2 = SPACE
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-29-7
+           ELSE
+                   GO TO UST-FAIL-GF-29-7.
+       UST-DELETE-GF-29-7.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-29-7.
+       UST-FAIL-GF-29-7.
+           MOVE    WRK-XN-00001-2 TO COMPUTED-A
+           MOVE    SPACE TO CORRECT-A.
+           MOVE "NOT ON OVERFLOW SHOULD NOT HAVE EXECUTED" TO RE-MARK.
+           PERFORM FAIL.
+       UST-WRITE-GF-29-7.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-29-8.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-3 = "Z"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-29-8
+           ELSE
+                   GO TO UST-FAIL-GF-29-8.
+       UST-DELETE-GF-29-8.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-29-8.
+       UST-FAIL-GF-29-8.
+           MOVE    WRK-XN-00001-3 TO COMPUTED-A
+           MOVE   "Z" TO CORRECT-A.
+           MOVE   "SCOPE TERMINATOR IGNORED" TO RE-MARK
+           PERFORM FAIL.
+       UST-WRITE-GF-29-8.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-INIT-GF-30.
+      *>     ===--> "NOT ON OVERFLOW" PHRASE  <--===
+           MOVE   "VI-138 6.26.4 GR17" TO ANSI-REFERENCE.
+           MOVE   "UST-TEST-GF-30" TO PAR-NAME.
+           MOVE   "OVERFLOW TEST" TO FEATURE.
+           MOVE   "ABCDEF" TO GRP1-XN-6.
+           MOVE    SPACES TO GRP4-XN-6.
+           MOVE    "****" TO ID5-XN-4.
+           MOVE    ZERO TO ID6-DU-2V0.
+           MOVE    1 TO ID10-DU-2V0.
+           MOVE    ZERO TO ID11-DU-2V0.
+           MOVE    ZERO TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           MOVE    SPACE TO WRK-XN-00001-2.
+           MOVE    SPACE TO WRK-XN-00001-3.
+      *> 
+       UST-TEST-GF-30-0.
+           UNSTRING GRP1-XN-6  INTO ID4A-XXXXX ID4B-X
+               NOT ON OVERFLOW
+                           MOVE "A" TO WRK-XN-00001-1
+                           MOVE "B" TO WRK-XN-00001-2
+           END-UNSTRING
+           MOVE   "Z"  TO WRK-XN-00001-3.
+           GO TO   UST-TEST-GF-30-1.
+       UST-DELETE-GF-30.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO CCVS-EXIT.
+      *> 
+       UST-TEST-GF-30-1.
+           MOVE    1 TO REC-CT.
+           IF      GRP4-XN-6 = "ABCDEF"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-30-1
+           ELSE
+                   GO TO UST-FAIL-GF-30-1.
+       UST-DELETE-GF-30-1.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-30-1.
+       UST-FAIL-GF-30-1.
+           PERFORM FAIL
+           MOVE    GRP4-XN-6 TO COMPUTED-A
+           MOVE   "ABCDEF" TO CORRECT-A.
+       UST-WRITE-GF-30-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-30-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-1 = "A"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-30-2
+           ELSE
+                   GO TO UST-FAIL-GF-30-2.
+       UST-DELETE-GF-30-2.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-30-2.
+       UST-FAIL-GF-30-2.
+           MOVE    WRK-XN-00001-1 TO COMPUTED-A
+           MOVE   "A"    TO CORRECT-A.
+           MOVE   "NOT ON OVERFLOW SHOULD HAVE EXECUTED"  TO RE-MARK.
+           PERFORM FAIL.
+       UST-WRITE-GF-30-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-30-3.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-2 = "B"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-30-3
+           ELSE
+                   GO TO UST-FAIL-GF-30-3.
+       UST-DELETE-GF-30-3.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-30-3.
+       UST-FAIL-GF-30-3.
+           MOVE    WRK-XN-00001-2 TO COMPUTED-A
+           MOVE   "B"    TO CORRECT-A.
+           MOVE   "NOT ON OVERFLOW SHOULD HAVE EXECUTED" TO RE-MARK.
+           PERFORM FAIL.
+       UST-WRITE-GF-30-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       UST-TEST-GF-30-4.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-3 = "Z"
+                   PERFORM PASS
+                   GO TO UST-WRITE-GF-30-4
+           ELSE
+                   GO TO UST-FAIL-GF-30-4.
+       UST-DELETE-GF-30-4.
+           PERFORM DE-LETE.
+           GO TO UST-WRITE-GF-30-4.
+       UST-FAIL-GF-30-4.
+           MOVE    WRK-XN-00001-3 TO COMPUTED-A
+           MOVE   "Z" TO CORRECT-A.
+           MOVE   "SCOPE TERMINATOR IGNORED" TO RE-MARK
+           PERFORM FAIL.
+       UST-WRITE-GF-30-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC218A

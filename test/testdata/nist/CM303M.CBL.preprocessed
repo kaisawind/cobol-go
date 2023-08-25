@@ -1,0 +1,37 @@
+      *> HEADER,COBOL,CM303M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           CM303M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF
+      *> OBSOLETE FEATURES THAT ARE USED IN COMMUNICATIONS.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       
+       
+       DATA DIVISION.
+       FILE SECTION.
+       COMMUNICATION SECTION.
+       CD COMMNAME FOR INITIAL INPUT.
+       01 CREC.
+           03 CNAME1 PIC X(87).
+       
+       PROCEDURE DIVISION.
+       
+       CM303M-CONTROL.
+           PERFORM CM303M-DISABLE THRU CM303M-ENABLE.
+           STOP RUN.
+       
+       CM303M-DISABLE.
+           DISABLE INPUT COMMNAME WITH KEY CNAME1.
+      *> Message expected for above statement: OBSOLETE
+       
+       CM303M-ENABLE.
+           ENABLE INPUT COMMNAME WITH KEY CNAME1.
+      *> Message expected for above statement: OBSOLETE
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 2.
+      *> END-OF,CM303M

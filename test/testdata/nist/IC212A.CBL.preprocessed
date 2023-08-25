@@ -1,0 +1,42 @@
+      *> HEADER,COBOL,IC209A,SUBRTN,IC212A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC212A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>     THIS IS SUBPROGRAM IC212.
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       LINKAGE SECTION.
+       01  TEST-AREA.
+           02  TEST1                   PICTURE X.
+           02  TEST2                   PICTURE X.
+           02  TEST3                   PICTURE X.
+           02  TEST4                   PICTURE X.
+       PROCEDURE DIVISION USING TEST-AREA.
+       CALL-TEST-3.
+           MOVE "Y" TO TEST3.
+       IC212-EXIT.
+           EXIT PROGRAM.
+      *> END-OF,IC212A

@@ -1,0 +1,1035 @@
+      *> HEADER,COBOL,NC220M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC220M.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     PROGRAM NC220M TESTS THE USE OF INDEXED IDENTIFIERS AND   *
+      *>     QUALIFIED DATANAMES WITH FORMAT 1 OF THE "MULTIPLY"       *
+      *>     STATEMENT, FORMATS 3 & 4 OF THE "PERFORM" STATEMENT AND   *
+      *>     THE GENERAL FORMAT OF THE "DISPLAY" STATEMENT.            *
+      *>                                                               *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       SPECIAL-NAMES.
+           XXXXX056
+           IS DISPLAY-OUTPUT-DEVICE.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  TABLE1.
+           02  TABLE1-REC              PICTURE X(10)
+                                       OCCURS 2 TIMES
+                                       INDEXED BY INDEX1.
+       01  TABLE2.
+           02  NUMBER1                 PICTURE 99   VALUE 03.
+           02  NUMBER2                 PICTURE 99
+                                       OCCURS 4 TIMES
+                                       INDEXED BY INDEX2.
+           02  NUMBER3                 PICTURE 99   VALUE 06.
+       01  TABLE3.
+           02  NUMBER1                 PICTURE 99   VALUE 10.
+           02  NUMBER2                 PICTURE 99
+                                       OCCURS 4 TIMES
+                                       INDEXED BY INDEX3.
+           02  NUMBER3                 PICTURE 99   VALUE 13.
+       01  TABLE4.
+           02  TABLE4-NUM1             OCCURS 3 TIMES
+                                       INDEXED BY INDEX4-1.
+               03 TABLE4-NUM2          PICTURE 99
+                                       OCCURS 3 TIMES
+                                       INDEXED BY INDEX4-2.
+       01  TABLE5.
+           02  TABLE5-NUM              PICTURE 999
+                                       OCCURS 6 TIMES
+                                       INDEXED BY INDEX5.
+       01  TABLE6.
+           02  TABLE6-NUM              PICTURE 999
+                                       OCCURS 6 TIMES
+                                       INDEXED BY INDEX6.
+       01  TABLE7.
+           02  TABLE7-NUM              PICTURE 9
+                                       OCCURS 2 TIMES
+                                       INDEXED BY INDEX7.
+       01  TABLE8.
+           02  TABLE8-NUM              PICTURE 9
+                                       OCCURS 3 TIMES
+                                       INDEXED BY INDEX8.
+       01  NUM-9                       PICTURE 9.
+       01  NUM-999                     PICTURE 999.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC220M".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC220M-001 SECTION.
+       BUILD-TABLE1.
+           MOVE "LITERAL-02" TO TABLE1-REC (1).
+           MOVE "9876543210" TO TABLE1-REC (2).
+       BUILD-TABLE2.
+           MOVE 04 TO NUMBER2 OF TABLE2 (1).
+           MOVE 23 TO NUMBER2 OF TABLE2 (2).
+           MOVE 02 TO NUMBER2 OF TABLE2 (3).
+           MOVE 06 TO NUMBER2 OF TABLE2 (4).
+       BUILD-TABLE3.
+           MOVE 11 TO NUMBER2 OF TABLE3 (1).
+           MOVE 04 TO NUMBER2 OF TABLE3 (2).
+           MOVE 04 TO NUMBER2 OF TABLE3 (3).
+           MOVE 24 TO NUMBER2 OF TABLE3 (4).
+       BUILD-TABLE4.
+           MOVE 03 TO TABLE4-NUM2 (1, 1).
+           MOVE 04 TO TABLE4-NUM2 (1, 2).
+           MOVE 05 TO TABLE4-NUM2 (1, 3).
+           MOVE 12 TO TABLE4-NUM2 (2, 1).
+           MOVE 13 TO TABLE4-NUM2 (2, 2).
+           MOVE 14 TO TABLE4-NUM2 (2, 3).
+           MOVE 31 TO TABLE4-NUM2 (3, 1).
+           MOVE 32 TO TABLE4-NUM2 (3, 2).
+           MOVE 33 TO TABLE4-NUM2 (3, 3).
+       BUILD-TABLE5.
+           MOVE 011 TO TABLE5-NUM (1).
+           MOVE 005 TO TABLE5-NUM (2).
+           MOVE 597 TO TABLE5-NUM (3).
+           MOVE 036 TO TABLE5-NUM (4).
+           MOVE 082 TO TABLE5-NUM (5).
+           MOVE 125 TO TABLE5-NUM (6).
+       BUILD-TABLE7.
+           MOVE 1 TO TABLE7-NUM (1).
+           MOVE 9 TO TABLE7-NUM (2).
+       BUILD-TABLE8.
+           MOVE 4 TO TABLE8-NUM (1).
+           MOVE 7 TO TABLE8-NUM (2).
+           MOVE 2 TO TABLE8-NUM (3).
+      *> 
+       DIS-INIT-GF-1.
+           MOVE "DIS-TEST-GF-1" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE "DISPLAY UPON" TO FEATURE.
+           MOVE "RESULTS MUST BE" TO RE-MARK.
+           MOVE "LITERAL-02" TO CORRECT-A.
+           PERFORM BUILD-TABLE1.
+           SET INDEX1 TO 1.
+       DIS-TEST-GF-1.
+           DISPLAY "   " UPON DISPLAY-OUTPUT-DEVICE.
+           DISPLAY TABLE1-REC (INDEX1) UPON DISPLAY-OUTPUT-DEVICE.
+           PERFORM INSPT.
+           GO TO DIS-WRITE-GF-1.
+       DIS-DELETE-GF-1.
+           PERFORM DE-LETE.
+       DIS-WRITE-GF-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIS-INIT-GF-2.
+           MOVE "DIS-TEST-GF-2" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE "DISPLAY UPON" TO FEATURE.
+           MOVE "VISUALLY CHECKED" TO RE-MARK.
+           MOVE "9876543210" TO CORRECT-A.
+           PERFORM BUILD-TABLE1.
+           SET INDEX1 TO 1.
+       DIS-TEST-GF-2.
+           DISPLAY TABLE1-REC (INDEX1 + 1)
+              UPON DISPLAY-OUTPUT-DEVICE.
+           PERFORM INSPT.
+           GO TO DIS-WRITE-GF-2.
+       DIS-DELETE-GF-2.
+           PERFORM DE-LETE.
+       DIS-WRITE-GF-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MLT-INIT-F1-1.
+           MOVE "MLT-TEST-F1-1" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE "MULTIPLY BY" TO FEATURE.
+           PERFORM BUILD-TABLE2.
+           PERFORM BUILD-TABLE3.
+           SET INDEX2 TO 1.
+           SET INDEX3 TO 1.
+       MLT-TEST-F1-1.
+           MULTIPLY NUMBER2 OF TABLE2 (INDEX2)
+              BY NUMBER2 OF TABLE3 (INDEX3).
+           IF NUMBER2 OF TABLE3 (INDEX3) = 44
+              PERFORM PASS
+              ELSE GO TO MLT-FAIL-F1-1.
+           GO TO MLT-WRITE-F1-1.
+       MLT-DELETE-F1-1.
+           PERFORM DE-LETE.
+           GO TO MLT-WRITE-F1-1.
+       MLT-FAIL-F1-1.
+           PERFORM FAIL.
+           MOVE NUMBER2 OF TABLE3 (INDEX3) TO COMPUTED-18V0.
+           MOVE 44 TO CORRECT-18V0.
+       MLT-WRITE-F1-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MLT-INIT-F1-2.
+           MOVE "MLT-TEST-F1-2" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE "MULTIPLY BY" TO FEATURE.
+           PERFORM BUILD-TABLE2.
+           PERFORM BUILD-TABLE3.
+           PERFORM BUILD-TABLE4.
+           SET INDEX2 TO 1.
+           SET INDEX3 TO 1.
+       MLT-TEST-F1-2.
+           MULTIPLY NUMBER2 OF TABLE2 (INDEX2 + 1)
+              BY NUMBER2 OF TABLE3 (INDEX3 + 1).
+           IF NUMBER2 OF TABLE3 (INDEX3 + 1) = 92
+              PERFORM PASS
+              ELSE GO TO MLT-FAIL-F1-2.
+           GO TO MLT-WRITE-F1-2.
+       MLT-DELETE-F1-2.
+           PERFORM DE-LETE.
+           GO TO MLT-WRITE-F1-2.
+       MLT-FAIL-F1-2.
+           PERFORM FAIL.
+           MOVE NUMBER2 OF TABLE3 (INDEX3 + 1) TO COMPUTED-18V0.
+           MOVE 92 TO CORRECT-18V0.
+       MLT-WRITE-F1-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MLT-INIT-F1-3.
+           MOVE "MLT-TEST-F1-3" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE "MULTIPLY BY" TO FEATURE.
+           PERFORM BUILD-TABLE4.
+           SET INDEX4-1 TO 2.
+           SET INDEX4-2 TO 1.
+       MLT-TEST-F1-3.
+           MULTIPLY TABLE4-NUM2 (1, 3)
+              BY TABLE4-NUM2 (INDEX4-1, INDEX4-2).
+           IF TABLE4-NUM2 (INDEX4-1, INDEX4-2) = 60
+              PERFORM PASS
+              ELSE GO TO MLT-FAIL-F1-3.
+           GO TO MLT-WRITE-F1-3.
+       MLT-DELETE-F1-3.
+           PERFORM DE-LETE.
+           GO TO MLT-WRITE-F1-3.
+       MLT-FAIL-F1-3.
+           PERFORM FAIL.
+           MOVE TABLE4-NUM2 (INDEX4-1, INDEX4-2) TO COMPUTED-18V0.
+           MOVE 60 TO CORRECT-18V0.
+       MLT-WRITE-F1-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-INIT-F5-1.
+           MOVE "DIV-TEST-F5-1" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE "DIVIDE BY REMAINDER" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           MOVE ZEROS TO TABLE6.
+           MOVE ZEROS TO NUM-999.
+           PERFORM BUILD-TABLE5.
+           SET INDEX5 TO 1.
+           SET INDEX6 TO 1.
+       DIV-TEST-F5-1.
+           DIVIDE TABLE5-NUM (INDEX5) BY TABLE5-NUM (INDEX5 + 1)
+              GIVING TABLE6-NUM (INDEX6) REMAINDER NUM-999.
+           GO TO DIV-TEST-F5-1-1.
+       DIV-DELETE-F5-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO DIV-TEST-F5-2.
+      *> 
+       DIV-TEST-F5-1-1.
+           MOVE "QUOTIENT" TO RE-MARK.
+           IF TABLE6-NUM (INDEX6) = 2
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F5-1-1
+           ELSE
+                 GO TO DIV-FAIL-F5-1-1.
+       DIV-DELETE-F5-1-1.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F5-1-1.
+       DIV-FAIL-F5-1-1.
+           PERFORM FAIL
+           MOVE TABLE6-NUM (INDEX6) TO COMPUTED-18V0
+           MOVE 2 TO CORRECT-18V0.
+       DIV-WRITE-F5-1-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-TEST-F5-1-2.
+           ADD 1 TO REC-CT.
+           MOVE "REMAINDER" TO RE-MARK.
+           IF NUM-999 = 1
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F5-1-2
+           ELSE
+                 GO TO DIV-FAIL-F5-1-2.
+       DIV-DELETE-F5-1-2.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F5-1-2.
+       DIV-FAIL-F5-1-2.
+           PERFORM FAIL
+           MOVE NUM-999 TO COMPUTED-18V0
+           MOVE 1 TO CORRECT-18V0.
+       DIV-WRITE-F5-1-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-INIT-F5-2.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE "DIV-TEST-F5-2" TO PAR-NAME.
+           MOVE "DIVIDE BY REMAINDER" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           MOVE ZEROS TO TABLE6.
+           MOVE ZEROS TO NUM-999.
+           SET INDEX5 TO 3.
+           SET INDEX6 TO 3.
+       DIV-TEST-F5-2.
+           DIVIDE TABLE5-NUM (INDEX5) BY TABLE5-NUM (INDEX5 + 1)
+              GIVING NUM-999 REMAINDER TABLE6-NUM (INDEX6).
+           GO TO DIV-TEST-F5-2-1.
+       DIV-DELETE-F5-2.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO DIV-TEST-F5-3.
+      *> 
+       DIV-TEST-F5-2-1.
+           MOVE "QUOTIENT" TO RE-MARK.
+           IF NUM-999 = 16
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F5-2-1
+           ELSE
+                 GO TO DIV-FAIL-F5-2-1.
+       DIV-DELETE-F5-2-1.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F5-2-1.
+       DIV-FAIL-F5-2-1.
+           PERFORM FAIL
+           MOVE NUM-999 TO COMPUTED-18V0
+           MOVE 16 TO CORRECT-18V0.
+       DIV-WRITE-F5-2-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-TEST-F5-2-2.
+           ADD 1 TO REC-CT.
+           MOVE "REMAINDER" TO RE-MARK.
+           IF TABLE6-NUM (INDEX6) = 21
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F5-2-2
+           ELSE
+                 GO TO DIV-FAIL-F5-2-2.
+       DIV-DELETE-F5-2-2.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F5-2-2.
+       DIV-FAIL-F5-2-2.
+           PERFORM FAIL
+           MOVE TABLE6-NUM (INDEX6) TO COMPUTED-18V0
+           MOVE 21 TO CORRECT-18V0.
+       DIV-WRITE-F5-2-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-INIT-F5-3.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE "DIV-TEST-F5-3" TO PAR-NAME.
+           MOVE "DIVIDE BY REMAINDER" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           MOVE ZEROS TO TABLE6.
+           SET INDEX5 TO 5.
+           SET INDEX6 TO 5.
+       DIV-TEST-F5-3.
+           DIVIDE TABLE5-NUM (INDEX5) BY TABLE5-NUM (INDEX5 + 1)
+              GIVING TABLE6-NUM (INDEX6)
+              REMAINDER TABLE6-NUM (INDEX6 + 1).
+           GO TO DIV-TEST-F5-3-1.
+       DIV-DELETE-F5-3.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO DIV-TEST-F4-4.
+      *> 
+       DIV-TEST-F5-3-1.
+           MOVE "QUOTIENT" TO RE-MARK.
+           IF TABLE6-NUM (INDEX6) = 0
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F5-3-1
+           ELSE
+                 GO TO DIV-FAIL-F5-3-1.
+       DIV-DELETE-F5-3-1.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F5-3-1.
+       DIV-FAIL-F5-3-1.
+           PERFORM FAIL
+           MOVE TABLE6-NUM (INDEX6) TO COMPUTED-18V0
+           MOVE 0 TO CORRECT-18V0.
+       DIV-WRITE-F5-3-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-TEST-F5-3-2.
+           ADD 1 TO REC-CT.
+           MOVE "REMAINDER" TO RE-MARK.
+           IF TABLE6-NUM (INDEX6 + 1) = 82
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F5-3-2
+           ELSE
+                 GO TO DIV-FAIL-F5-3-2.
+       DIV-DELETE-F5-3-2.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F5-3-2.
+       DIV-FAIL-F5-3-2.
+           PERFORM FAIL
+           MOVE TABLE6-NUM (INDEX6 + 1) TO COMPUTED-18V0
+           MOVE 82 TO CORRECT-18V0.
+       DIV-WRITE-F5-3-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-INIT-F4-4.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE "DIV-TEST-F4-4" TO PAR-NAME.
+           MOVE "DIVIDE INTO REMNDER" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           MOVE ZEROS TO TABLE6.
+           MOVE ZEROS TO NUM-999.
+           SET INDEX5 TO 1.
+           SET INDEX6 TO 1.
+       DIV-TEST-F4-4.
+           DIVIDE TABLE5-NUM (INDEX5 + 1) INTO TABLE5-NUM (INDEX5)
+              GIVING TABLE6-NUM (INDEX6) REMAINDER NUM-999.
+           GO TO DIV-TEST-F4-4-1.
+       DIV-DELETE-F4-4.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO DIV-TEST-F4-5.
+      *> 
+       DIV-TEST-F4-4-1.
+           MOVE "QUOTIENT" TO RE-MARK.
+           IF TABLE6-NUM (INDEX6) = 2
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F4-4-1
+           ELSE
+                 GO TO DIV-FAIL-F4-4-1.
+       DIV-DELETE-F4-4-1.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F4-4-1.
+       DIV-FAIL-F4-4-1.
+           PERFORM FAIL
+           MOVE TABLE6-NUM (INDEX6) TO COMPUTED-18V0
+           MOVE 2 TO CORRECT-18V0.
+       DIV-WRITE-F4-4-1.
+           PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+      *> 
+       DIV-TEST-F4-4-2.
+           MOVE "REMAINDER" TO RE-MARK.
+           IF NUM-999 = 1
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F4-4-2
+           ELSE
+                 GO TO DIV-FAIL-F4-4-2.
+       DIV-DELETE-F4-4-2.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F4-4-2.
+       DIV-FAIL-F4-4-2.
+           PERFORM FAIL
+           MOVE NUM-999 TO COMPUTED-18V0
+           MOVE 1 TO CORRECT-18V0.
+       DIV-WRITE-F4-4-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-INIT-F4-5.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE "DIV-TEST-F4-5" TO PAR-NAME.
+           MOVE "DIVIDE INTO REMNDER" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           MOVE ZEROS TO TABLE6.
+           MOVE ZEROS TO NUM-999.
+           SET INDEX5 TO 3.
+           SET INDEX6 TO 3.
+       DIV-TEST-F4-5.
+           DIVIDE TABLE5-NUM (INDEX5 + 1) INTO TABLE5-NUM (INDEX5)
+              GIVING NUM-999 REMAINDER TABLE6-NUM (INDEX6).
+           GO TO DIV-TEST-F4-5-1.
+       DIV-DELETE-F4-5.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO DIV-TEST-F4-6.
+      *> 
+       DIV-TEST-F4-5-1.
+           MOVE "QUOTIENT" TO RE-MARK.
+           IF NUM-999 = 16
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F4-5-1
+           ELSE
+                 GO TO DIV-FAIL-F4-5-1.
+       DIV-DELETE-F4-5-1.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F4-5-1.
+       DIV-FAIL-F4-5-1.
+           PERFORM FAIL
+           MOVE NUM-999 TO COMPUTED-18V0
+           MOVE 16 TO CORRECT-18V0.
+       DIV-WRITE-F4-5-1.
+           PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+      *> 
+       DIV-TEST-F4-5-2.
+           MOVE "REMAINDER" TO RE-MARK.
+           IF TABLE6-NUM (INDEX6) = 21
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F4-5-2
+           ELSE
+                 GO TO DIV-FAIL-F4-5-2.
+       DIV-DELETE-F4-5-2.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F4-5-2.
+       DIV-FAIL-F4-5-2.
+           PERFORM FAIL
+           MOVE TABLE6-NUM (INDEX6) TO COMPUTED-18V0
+           MOVE 21 TO CORRECT-18V0.
+       DIV-WRITE-F4-5-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-INIT-F4-6.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE "DIV-TEST-F4-6" TO PAR-NAME.
+           MOVE "DIVIDE INTO REMNDER" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           MOVE ZEROS TO TABLE6.
+           MOVE ZEROS TO NUM-999.
+           SET INDEX5 TO 5.
+           SET INDEX6 TO 5.
+       DIV-TEST-F4-6.
+           DIVIDE TABLE5-NUM (INDEX5 + 1) INTO TABLE5-NUM (INDEX5)
+              GIVING TABLE6-NUM (INDEX6)
+              REMAINDER TABLE6-NUM (INDEX6 + 1).
+           GO TO DIV-TEST-F4-6-1.
+       DIV-DELETE-F4-6.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO DIV-TEST-F1-7.
+      *> 
+       DIV-TEST-F4-6-1.
+           MOVE "QUOTIENT" TO RE-MARK.
+           IF TABLE6-NUM (INDEX6) = 0
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F4-6-1
+           ELSE
+                 GO TO DIV-FAIL-F4-6-1.
+       DIV-DELETE-F4-6-1.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F4-6-1.
+       DIV-FAIL-F4-6-1.
+           PERFORM FAIL
+           MOVE TABLE6-NUM (INDEX6) TO COMPUTED-18V0
+           MOVE 0 TO CORRECT-18V0.
+       DIV-WRITE-F4-6-1.
+           PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+      *> 
+       DIV-TEST-F4-6-2.
+           MOVE "REMAINDER" TO RE-MARK.
+           IF TABLE6-NUM (INDEX6 + 1) = 82
+                 PERFORM PASS
+                 GO TO DIV-WRITE-F4-6-2
+           ELSE
+                 GO TO DIV-FAIL-F4-6-2.
+       DIV-DELETE-F4-6-2.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F4-6-2.
+       DIV-FAIL-F4-6-2.
+           PERFORM FAIL
+           MOVE TABLE6-NUM (INDEX6 + 1) TO COMPUTED-18V0
+           MOVE 82 TO CORRECT-18V0.
+       DIV-WRITE-F4-6-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-INIT-F1-7.
+           MOVE "DIV-TEST-F1-7" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE ZEROS TO REC-CT.
+           PERFORM BUILD-TABLE2.
+           PERFORM BUILD-TABLE3.
+           MOVE "DIVIDE INTO" TO FEATURE.
+           SET INDEX2 TO 3.
+           SET INDEX3 TO 3.
+       DIV-TEST-F1-7.
+           DIVIDE NUMBER2 OF TABLE2 (INDEX2)
+              INTO NUMBER2 OF TABLE3 (INDEX3).
+           IF NUMBER2 OF TABLE3 (INDEX3) = 2
+              PERFORM PASS
+              ELSE GO TO DIV-FAIL-F1-7.
+           GO TO DIV-WRITE-F1-7.
+       DIV-DELETE-F1-7.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F1-7.
+       DIV-FAIL-F1-7.
+           PERFORM FAIL.
+           MOVE NUMBER2 OF TABLE3 (INDEX3) TO COMPUTED-18V0.
+           MOVE 2 TO CORRECT-18V0.
+       DIV-WRITE-F1-7.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-INIT-F1-8.
+           MOVE "DIV-TEST-F1-8" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE ZEROS TO REC-CT.
+           PERFORM BUILD-TABLE2.
+           PERFORM BUILD-TABLE3.
+           MOVE "DIVIDE INTO" TO FEATURE.
+           SET INDEX2 TO 3.
+           SET INDEX3 TO 3.
+       DIV-TEST-F1-8.
+           DIVIDE NUMBER2 OF TABLE2 (INDEX2 + 1)
+              INTO NUMBER2 OF TABLE3 (INDEX3 + 1).
+           IF NUMBER2 OF TABLE3 (INDEX3 + 1) = 4
+              PERFORM PASS
+              ELSE GO TO DIV-FAIL-F1-8.
+           GO TO DIV-WRITE-F1-8.
+       DIV-DELETE-F1-8.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F1-8.
+       DIV-FAIL-F1-8.
+           PERFORM FAIL.
+           MOVE NUMBER2 OF TABLE3 (INDEX3 + 1) TO COMPUTED-18V0.
+           MOVE 4 TO CORRECT-18V0.
+       DIV-WRITE-F1-8.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-INIT-F5-9.
+           MOVE "DIV-TEST-F5-9" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE ZEROS TO REC-CT.
+           PERFORM BUILD-TABLE2.
+           PERFORM BUILD-TABLE3.
+           MOVE "DIVIDE BY GIVING" TO FEATURE.
+           SET INDEX2 TO 1.
+           SET INDEX3 TO 2.
+       DIV-TEST-F5-9.
+           DIVIDE NUMBER2 OF TABLE2 (INDEX2)
+              BY NUMBER2 OF TABLE3 (INDEX3)
+              GIVING NUMBER2 OF TABLE3 (INDEX3 + 1).
+           IF NUMBER2 OF TABLE3 (INDEX3 + 1) = 1
+              PERFORM PASS
+              ELSE GO TO DIV-FAIL-F5-9.
+           GO TO DIV-WRITE-F5-9.
+       DIV-DELETE-F5-9.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F5-9.
+       DIV-FAIL-F5-9.
+           PERFORM FAIL.
+           MOVE NUMBER2 OF TABLE3 (INDEX3 + 1) TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+       DIV-WRITE-F5-9.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DIV-INIT-F5-10.
+           MOVE "DIV-TEST-F5-10" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE ZEROS TO REC-CT.
+           PERFORM BUILD-TABLE2.
+           PERFORM BUILD-TABLE3.
+           MOVE "DIVIDE BY GIVING" TO FEATURE.
+           SET INDEX2 TO 2.
+           SET INDEX3 TO 3.
+       DIV-TEST-F5-10.
+           DIVIDE NUMBER2 OF TABLE3 (INDEX3 + 1)
+              BY NUMBER2 OF TABLE2 (INDEX2 + 2)
+              GIVING NUMBER2 OF TABLE2 (INDEX2).
+           IF NUMBER2 OF TABLE2 (INDEX2) = 4
+              PERFORM PASS
+              ELSE GO TO DIV-FAIL-F5-10.
+           GO TO DIV-WRITE-F5-10.
+       DIV-DELETE-F5-10.
+           PERFORM DE-LETE.
+           GO TO DIV-WRITE-F5-10.
+       DIV-FAIL-F5-10.
+           PERFORM FAIL.
+           MOVE NUMBER2 OF TABLE2 (INDEX2) TO COMPUTED-18V0.
+           MOVE 4 TO CORRECT-18V0.
+       DIV-WRITE-F5-10.
+           PERFORM PRINT-DETAIL.
+      *> 
+       PFM-INIT-F3-1.
+           MOVE "PFM-TEST-F3-1" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE ZEROS TO REC-CT.
+           MOVE "PERFORM UNTIL" TO FEATURE.
+           PERFORM BUILD-TABLE7.
+           PERFORM BUILD-TABLE8.
+           SET INDEX7 TO 1.
+           SET INDEX8 TO 1.
+       PFM-TEST-F3-1.
+           PERFORM PARAGRAPH-A UNTIL TABLE7-NUM (INDEX7)
+              IS EQUAL TO TABLE8-NUM (INDEX8).
+           IF TABLE7-NUM (INDEX7) = 4
+              PERFORM PASS
+              ELSE GO TO PFM-FAIL-F3-1.
+           GO TO PFM-WRITE-F3-1.
+       PFM-DELETE-F3-1.
+           PERFORM DE-LETE.
+           GO TO PFM-WRITE-F3-1.
+       PFM-FAIL-F3-1.
+           PERFORM FAIL.
+           MOVE TABLE7-NUM (INDEX7) TO COMPUTED-18V0.
+           MOVE 4 TO CORRECT-18V0.
+       PFM-WRITE-F3-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       PFM-INIT-F3-2.
+           MOVE "PFM-TEST-F3-2" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE ZEROS TO REC-CT.
+           MOVE "PERFORM UNTIL" TO FEATURE.
+           PERFORM BUILD-TABLE7.
+           PERFORM BUILD-TABLE8.
+           SET INDEX7 TO 1.
+           SET INDEX8 TO 1.
+       PFM-TEST-F3-2.
+           PERFORM PARAGRAPH-A UNTIL TABLE7-NUM (INDEX7)
+              IS GREATER THAN TABLE8-NUM (INDEX8).
+           IF TABLE7-NUM (INDEX7) = 5
+              PERFORM PASS
+              ELSE GO TO PFM-FAIL-F3-2.
+           GO TO PFM-WRITE-F3-2.
+       PFM-DELETE-F3-2.
+           PERFORM DE-LETE.
+           GO TO PFM-WRITE-F3-2.
+       PFM-FAIL-F3-2.
+           PERFORM FAIL.
+           MOVE TABLE7-NUM (INDEX7) TO COMPUTED-18V0.
+           MOVE 5 TO CORRECT-18V0.
+       PFM-WRITE-F3-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       PFM-INIT-F4-3.
+           MOVE "PFM-TEST-F4-3" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE ZEROS TO REC-CT.
+           MOVE "PERFORM VARYING" TO FEATURE.
+           MOVE ZEROS TO NUM-9.
+           PERFORM BUILD-TABLE7.
+           PERFORM BUILD-TABLE8.
+           SET INDEX7 TO 2.
+           SET INDEX8 TO 2.
+       PFM-TEST-F4-3.
+           PERFORM PARAGRAPH-B VARYING NUM-9
+              FROM 1 BY 1
+              UNTIL NUM-9 > TABLE8-NUM (INDEX8).
+           IF NUM-9 = 8
+              PERFORM PASS
+              ELSE GO TO PFM-FAIL-F4-3.
+           GO TO PFM-WRITE-F4-3.
+       PFM-DELETE-F4-3.
+           PERFORM DE-LETE.
+           GO TO PFM-WRITE-F4-3.
+       PFM-FAIL-F4-3.
+           PERFORM FAIL.
+           MOVE NUM-9 TO COMPUTED-18V0.
+           MOVE 8 TO CORRECT-18V0.
+       PFM-WRITE-F4-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       PFM-INIT-F4-4.
+           MOVE "PFM-TEST-F4-4" TO PAR-NAME.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE ZEROS TO REC-CT.
+           MOVE "PERFORM VARYING" TO FEATURE.
+           MOVE ZEROS TO NUM-9.
+           PERFORM BUILD-TABLE7.
+           PERFORM BUILD-TABLE8.
+           SET INDEX7 TO 2.
+           SET INDEX8 TO 3.
+       PFM-TEST-F4-4.
+           PERFORM PARAGRAPH-B VARYING NUM-9
+              FROM 7 BY -1
+              UNTIL NUM-9 < TABLE8-NUM (INDEX8).
+           IF NUM-9 = 1
+              PERFORM PASS
+              ELSE GO TO PFM-FAIL-F4-4.
+           GO TO PFM-WRITE-F4-4.
+       PFM-DELETE-F4-4.
+           PERFORM DE-LETE.
+           GO TO PFM-WRITE-F4-4.
+       PFM-FAIL-F4-4.
+           PERFORM FAIL.
+           MOVE NUM-9 TO COMPUTED-18V0.
+           MOVE 1 TO CORRECT-18V0.
+       PFM-WRITE-F4-4.
+           PERFORM PRINT-DETAIL.
+           GO TO CCVS-999999.
+      *> 
+       PARAGRAPH-A.
+           ADD 1 TO TABLE7-NUM (INDEX7).
+      *> 
+       PARAGRAPH-B.
+           MOVE NUM-9 TO TABLE7-NUM (INDEX7).
+      *> 
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC220M

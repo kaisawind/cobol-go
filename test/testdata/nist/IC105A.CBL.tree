@@ -1,0 +1,268 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n            
+					(programName 
+						(cobolWord IC105A)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(linkageSection LINKAGE SECTION .\n        
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 77 
+								(dataName 
+									(cobolWord DN1)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 999)))) .\n       )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 77 
+								(dataName 
+									(cobolWord DN2)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars S99))) 
+								(dataUsageClause COMPUTATIONAL) .\n       ))))) 
+			(procedureDivision PROCEDURE DIVISION 
+				(procedureDivisionUsingClause USING 
+					(procedureDivisionUsingParameter 
+						(procedureDivisionByReferencePhrase 
+							(procedureDivisionByReference 
+								(identifier 
+									(qualifiedDataName 
+										(qualifiedDataNameFormat1 
+											(dataName 
+												(cobolWord DN1)))))) 
+							(procedureDivisionByReference 
+								(identifier 
+									(qualifiedDataName 
+										(qualifiedDataNameFormat1 
+											(dataName 
+												(cobolWord DN2))))))))) .\n       
+				(procedureDivisionBody paragraphs 
+					(procedureSection 
+						(procedureSectionHeader 
+							(sectionName 
+								(cobolWord SECT-IC105-0001)) SECTION) .\n        
+						(paragraphs 
+							(paragraph 
+								(paragraphName 
+									(cobolWord EXIT-TEST-001)) .\n            
+								(sentence 
+									(statement 
+										(ifStatement IF 
+											(condition 
+												(combinableCondition 
+													(simpleCondition 
+														(relationCondition 
+															(relationArithmeticComparison 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(identifier 
+																					(qualifiedDataName 
+																						(qualifiedDataNameFormat1 
+																							(dataName 
+																								(cobolWord DN1))))))))) 
+																(relationalOperator IS NOT EQUAL TO) 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(literal 
+																					(numericLiteral 
+																						(integerLiteral 1)))))))))))) 
+											(ifThen 
+												(statement 
+													(goToStatement GO TO 
+														(goToStatementSimple 
+															(procedureName 
+																(paragraphName 
+																	(cobolWord EXIT-TEST-002))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 1)))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord DN2)))))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord EXIT-STATEMENT-001)) .\n            
+								(sentence 
+									(statement 
+										(exitStatement EXIT PROGRAM)) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord EXIT-TEST-002)) .\n            
+								(sentence 
+									(statement 
+										(ifStatement IF 
+											(condition 
+												(combinableCondition 
+													(simpleCondition 
+														(relationCondition 
+															(relationArithmeticComparison 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(identifier 
+																					(qualifiedDataName 
+																						(qualifiedDataNameFormat1 
+																							(dataName 
+																								(cobolWord DN1))))))))) 
+																(relationalOperator IS NOT EQUAL TO) 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(literal 
+																					(numericLiteral 
+																						(integerLiteral 2)))))))))))) 
+											(ifThen 
+												(statement 
+													(goToStatement GO TO 
+														(goToStatementSimple 
+															(procedureName 
+																(paragraphName 
+																	(cobolWord EXIT-TEST-003))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 2)))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord DN2)))))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord EXIT-STATEMENT-002)) .\n            
+								(sentence 
+									(statement 
+										(exitStatement EXIT PROGRAM)) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord EXIT-TEST-003)) .\n            
+								(sentence 
+									(statement 
+										(ifStatement IF 
+											(condition 
+												(combinableCondition 
+													(simpleCondition 
+														(relationCondition 
+															(relationArithmeticComparison 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(identifier 
+																					(qualifiedDataName 
+																						(qualifiedDataNameFormat1 
+																							(dataName 
+																								(cobolWord DN1))))))))) 
+																(relationalOperator NOT EQUAL TO) 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(literal 
+																					(numericLiteral 
+																						(integerLiteral 3)))))))))))) 
+											(ifThen 
+												(statement 
+													(goToStatement GO TO 
+														(goToStatementSimple 
+															(procedureName 
+																(paragraphName 
+																	(cobolWord EXIT-TEST-004))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 3)))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord DN2)))))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord EXIT-STATEMENT-003)) .\n            
+								(sentence 
+									(statement 
+										(exitStatement EXIT PROGRAM)) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord EXIT-TEST-004)) .\n            
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 4)))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord DN2)))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(goToStatement GO TO 
+											(goToStatementSimple 
+												(procedureName 
+													(paragraphName 
+														(cobolWord EXIT-STATEMENT-004)))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord EXTRANEOUS-PARAGRAPH)) .\n       
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 5)))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord DN2)))))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord EXIT-STATEMENT-004)) .\n            
+								(sentence 
+									(statement 
+										(exitStatement EXIT PROGRAM)) .\n      )))))))) <EOF>)

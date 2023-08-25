@@ -1,0 +1,1030 @@
+      *> HEADER,COBOL,NC122A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC122A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>    PROGRAM NC122A TESTS THE USE OF INDEXED IDENTIFIERS USING
+      *>    FORMATS 1, 2 AND 3 OF THE "INSPECT" STATEMENT.
+      *>    SINGLE LEVEL AND RELATIVE INDEXING ARE USED.
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  WRK-OK.
+         03  WRK-OK-1-20                  PIC X(20).
+         03  WRK-OK-21-40                 PIC X(20).
+         03  WRK-OK-41-60                 PIC X(20).
+         03  WRK-OK-61-80                 PIC X(20).
+         03  WRK-OK-81-83                 PIC X(3).
+       01  WRK-ER.
+         03  WRK-ER-1-20                  PIC X(20).
+         03  WRK-ER-21-40                 PIC X(20).
+         03  WRK-ER-41-60                 PIC X(20).
+         03  WRK-ER-61-80                 PIC X(20).
+         03  WRK-ER-81-83                 PIC X(3).
+       01  TABLE1.
+           02  TABLE1-REC              PICTURE X(83)
+                                       OCCURS 4 TIMES
+                                       INDEXED BY INDEX1.
+       01  TABLE2.
+           02  WRK-DU-999              PICTURE 999
+                                       OCCURS 4 TIMES
+                                       INDEXED BY INDEX2.
+       01  TABLE3.
+           02  TABLE3-SYMBOL           PICTURE X
+                                       OCCURS 3 TIMES
+                                       INDEXED BY INDEX3.
+       01  TABLE4.
+           02  TABLE4-LETTER           PICTURE X
+                                       OCCURS 9 TIMES
+                                       INDEXED BY INDEX4.
+       01  WC-XN-83  PIC X(83) VALUE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD.".
+       01  ANS-XN-83-1 PIC X(83) VALUE
+           "OH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD.".
+       01  ANS-XN-83-2 PIC X(83) VALUE
+           "AH YES,AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD.".
+       01  ANS-XN-83-3 PIC X(83) VALUE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL-BAD.".
+       01  ANS-XN-83-4 PIC X(83) VALUE
+           "EH YES EH YES W.C. FRITOES HERE. ENYONE WHO HETES DOGS END KIDS CEN NOT BE ELL BAD.".
+       01  ANS-XN-83-5 PIC X(83) VALUE
+           "AH YES OH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD.".
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC122A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       BUILD-TABLE1.
+           MOVE WC-XN-83 TO TABLE1-REC (1).
+           MOVE WC-XN-83 TO TABLE1-REC (2).
+           MOVE WC-XN-83 TO TABLE1-REC (3).
+           MOVE WC-XN-83 TO TABLE1-REC (4).
+       BUILD-TABLE3.
+           MOVE " " TO TABLE3-SYMBOL (1).
+           MOVE "," TO TABLE3-SYMBOL (2).
+           MOVE "-" TO TABLE3-SYMBOL (3).
+       BUILD-TABLE4.
+           MOVE "A" TO TABLE4-LETTER (1).
+           MOVE "D" TO TABLE4-LETTER (2).
+           MOVE "G" TO TABLE4-LETTER (3).
+           MOVE "H" TO TABLE4-LETTER (4).
+           MOVE "L" TO TABLE4-LETTER (5).
+           MOVE "O" TO TABLE4-LETTER (6).
+           MOVE "Y" TO TABLE4-LETTER (7).
+           MOVE "S" TO TABLE4-LETTER (8).
+           MOVE "Z" TO TABLE4-LETTER (9).
+       IND-INIT-GF-1.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 1.
+           SET INDEX2 TO 1.
+       IND-TEST-GF-1-0.
+           INSPECT TABLE1-REC (INDEX1) TALLYING WRK-DU-999 (INDEX2)
+              FOR CHARACTERS.
+       IND-TEST-GF-1-1.
+           IF WRK-DU-999 (INDEX2) EQUAL TO 83
+              PERFORM PASS
+              GO TO IND-WRITE-GF-1.
+           GO TO IND-FAIL-GF-1.
+       IND-DELETE-GF-1.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-1.
+       IND-FAIL-GF-1.
+           PERFORM FAIL.
+           MOVE WRK-DU-999 (INDEX2) TO COMPUTED-N.
+           MOVE 83 TO CORRECT-N.
+       IND-WRITE-GF-1.
+           MOVE "IND-TEST-GF-1" TO PAR-NAME.
+           MOVE "TALLY FOR CHARACTERS" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-2.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 2.
+           SET INDEX2 TO 2.
+           MOVE ZERO TO WRK-DU-999 (INDEX2).
+       IND-TEST-GF-2-0.
+           INSPECT TABLE1-REC (INDEX1) TALLYING WRK-DU-999 (INDEX2)
+              FOR ALL "A".
+       IND-TEST-GF-2-1.
+           IF WRK-DU-999 (INDEX2) EQUAL TO 8
+              PERFORM PASS
+              GO TO IND-WRITE-GF-2.
+           GO TO IND-FAIL-GF-2.
+       IND-DELETE-GF-2.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-2.
+       IND-FAIL-GF-2.
+           PERFORM FAIL.
+           MOVE WRK-DU-999 (INDEX2) TO COMPUTED-N.
+           MOVE 8 TO CORRECT-N.
+       IND-WRITE-GF-2.
+           MOVE "IND-TEST-GF-2" TO PAR-NAME.
+           MOVE "TALLY FOR LITERAL" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-3.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 3.
+           SET INDEX2 TO 3.
+           MOVE ZERO TO WRK-DU-999 (INDEX2).
+       IND-TEST-GF-3-0.
+           INSPECT TABLE1-REC (INDEX1) TALLYING WRK-DU-999 (INDEX2)
+              FOR ALL SPACE.
+       IND-TEST-GF-3-1.
+           IF WRK-DU-999 (INDEX2) EQUAL TO 17
+              PERFORM PASS
+              GO TO IND-WRITE-GF-3.
+           GO TO IND-FAIL-GF-3.
+       IND-DELETE-GF-3.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-3.
+       IND-FAIL-GF-3.
+           PERFORM FAIL.
+           MOVE WRK-DU-999 (INDEX2) TO COMPUTED-N.
+           MOVE 17 TO CORRECT-N.
+       IND-WRITE-GF-3.
+           MOVE "IND-TEST-GF-3" TO PAR-NAME.
+           MOVE "TALLY FOR ALL SPACE" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-4.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 4.
+           SET INDEX2 TO 4.
+           MOVE ZERO TO WRK-DU-999 (INDEX2).
+       IND-TEST-GF-4-0.
+           INSPECT TABLE1-REC (INDEX1) TALLYING WRK-DU-999 (INDEX2)
+              FOR LEADING "A".
+       IND-TEST-GF-4-1.
+           IF WRK-DU-999 (INDEX2) EQUAL TO 1
+              PERFORM PASS
+              GO TO IND-WRITE-GF-4.
+           GO TO IND-FAIL-GF-4.
+       IND-DELETE-GF-4.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-4.
+       IND-FAIL-GF-4.
+           PERFORM FAIL.
+           MOVE WRK-DU-999 (INDEX2) TO COMPUTED-N.
+           MOVE 1 TO CORRECT-N.
+       IND-WRITE-GF-4.
+           MOVE "IND-TEST-GF-4" TO PAR-NAME.
+           MOVE "TALLY LEADING LIT." TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-5.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           SET INDEX1 TO 1.
+           SET INDEX2 TO 2.
+           MOVE ZERO TO TABLE2.
+           MOVE ZERO TO WRK-DU-999 (INDEX2 + 1).
+       IND-TEST-GF-5-0.
+           INSPECT TABLE1-REC (INDEX1 + 1) TALLYING
+              WRK-DU-999 (INDEX2 + 1)
+              FOR CHARACTERS AFTER "W".
+       IND-TEST-GF-5-1.
+           IF WRK-DU-999 (INDEX2 + 1) EQUAL TO 68
+              PERFORM PASS
+              GO TO IND-WRITE-GF-5.
+           GO TO IND-FAIL-GF-5.
+       IND-DELETE-GF-5.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-5.
+       IND-FAIL-GF-5.
+           PERFORM FAIL.
+           MOVE WRK-DU-999 (INDEX2 + 1) TO COMPUTED-N.
+           MOVE 68 TO CORRECT-N.
+       IND-WRITE-GF-5.
+           MOVE "IND-TEST-GF-5" TO PAR-NAME.
+           MOVE "FOR CHARS AFTER LIT." TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-6.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 3.
+           SET INDEX2 TO 4.
+           MOVE ZERO TO WRK-DU-999 (INDEX2 - 2).
+       IND-TEST-GF-6-0.
+           INSPECT TABLE1-REC (INDEX1 - 1)
+              TALLYING WRK-DU-999 (INDEX2 - 2)
+              FOR ALL " " BEFORE INITIAL "W".
+       IND-TEST-GF-6-1.
+           IF WRK-DU-999 (INDEX2 - 2) EQUAL TO 4
+              PERFORM PASS
+              GO TO IND-WRITE-GF-6.
+           GO TO IND-FAIL-GF-6.
+       IND-DELETE-GF-6.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-6.
+       IND-FAIL-GF-6.
+           PERFORM FAIL.
+           MOVE WRK-DU-999 (INDEX2 - 2) TO COMPUTED-N.
+           MOVE 4 TO CORRECT-N.
+       IND-WRITE-GF-6.
+           MOVE "IND-TEST-GF-6" TO PAR-NAME.
+           MOVE "ALL BEFORE INITIAL" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-7.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 1.
+           SET INDEX2 TO 1.
+           MOVE ZERO TO WRK-DU-999 (INDEX2).
+       IND-TEST-GF-7-0.
+           INSPECT TABLE1-REC (INDEX1) TALLYING WRK-DU-999 (INDEX2)
+              FOR LEADING "Y" AFTER INITIAL SPACE.
+       IND-TEST-GF-7-1.
+           IF WRK-DU-999 (INDEX2) EQUAL TO 1
+              PERFORM PASS
+              GO TO IND-WRITE-GF-7.
+           GO TO IND-FAIL-GF-7.
+       IND-DELETE-GF-7.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-7.
+       IND-FAIL-GF-7.
+           PERFORM FAIL.
+           MOVE WRK-DU-999 (INDEX2) TO COMPUTED-N.
+           MOVE 1 TO CORRECT-N.
+       IND-WRITE-GF-7.
+           MOVE "IND-TEST-GF-7" TO PAR-NAME.
+           MOVE "LEAD. LIT. INITIAL" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-8.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           PERFORM BUILD-TABLE1.
+           SET INDEX1 TO 1.
+       IND-TEST-GF-8-0.
+           INSPECT TABLE1-REC (INDEX1) REPLACING CHARACTERS BY SPACE.
+       IND-TEST-GF-8-1.
+           IF TABLE1-REC (INDEX1) EQUAL TO SPACE
+              PERFORM PASS
+              GO TO IND-WRITE-GF-8.
+           GO TO IND-FAIL-GF-8.
+       IND-DELETE-GF-8.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-8.
+       IND-FAIL-GF-8.
+           PERFORM FAIL.
+           MOVE TABLE1-REC (INDEX1) TO COMPUTED-A.
+           MOVE "SPACES" TO CORRECT-A.
+       IND-WRITE-GF-8.
+           MOVE "IND-TEST-GF-8" TO PAR-NAME.
+           MOVE "REP. CHARS BY SPACE" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-9.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           PERFORM BUILD-TABLE1.
+           SET INDEX1 TO 2.
+       IND-TEST-GF-9-0.
+           INSPECT TABLE1-REC (INDEX1) REPLACING CHARACTERS
+              BY "O" BEFORE INITIAL "H".
+       IND-TEST-GF-9-1.
+           IF TABLE1-REC (INDEX1) EQUAL TO ANS-XN-83-1
+              PERFORM PASS
+              GO TO IND-WRITE-GF-9.
+           GO TO IND-FAIL-GF-9.
+       IND-DELETE-GF-9.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-9.
+       IND-FAIL-GF-9.
+           PERFORM FAIL.
+           MOVE    TABLE1-REC (INDEX1) TO WRK-ER.
+           MOVE    ANS-XN-83-1 TO WRK-OK.
+           MOVE    WRK-OK-1-20 TO CORRECT-X.
+           MOVE    WRK-ER-1-20 TO COMPUTED-X.
+           PERFORM PRINT-DETAIL.
+           MOVE    WRK-OK-21-40 TO CORRECT-X.
+           MOVE    WRK-ER-21-40 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-41-60 TO CORRECT-X.
+           MOVE    WRK-ER-41-60 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-61-80 TO CORRECT-X.
+           MOVE    WRK-ER-61-80 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-81-83 TO CORRECT-X.
+           MOVE    WRK-ER-81-83 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+       IND-WRITE-GF-9.
+           MOVE "IND-TEST-GF-9" TO PAR-NAME.
+           MOVE "CHARS BEFORE INITIAL" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-10.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           PERFORM BUILD-TABLE1.
+           SET INDEX1 TO 3.
+           SET INDEX3 TO 1.
+           SET INDEX4 TO 8.
+       IND-TEST-GF-10-0.
+           INSPECT TABLE1-REC (INDEX1) REPLACING LEADING
+              TABLE3-SYMBOL (INDEX3) BY TABLE3-SYMBOL (INDEX3 + 1)
+              AFTER INITIAL TABLE4-LETTER (INDEX4).
+       IND-TEST-GF-10-1.
+           IF TABLE1-REC (INDEX1) EQUAL TO ANS-XN-83-2
+              PERFORM PASS
+              GO TO IND-WRITE-GF-10.
+           GO TO IND-FAIL-GF-10.
+       IND-DELETE-GF-10.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-10.
+       IND-FAIL-GF-10.
+           PERFORM FAIL.
+           MOVE    TABLE1-REC (INDEX1) TO WRK-ER.
+           MOVE    ANS-XN-83-2 TO WRK-OK.
+           MOVE    WRK-OK-1-20 TO CORRECT-X.
+           MOVE    WRK-ER-1-20 TO COMPUTED-X.
+           PERFORM PRINT-DETAIL.
+           MOVE    WRK-OK-21-40 TO CORRECT-X.
+           MOVE    WRK-ER-21-40 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-41-60 TO CORRECT-X.
+           MOVE    WRK-ER-41-60 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-61-80 TO CORRECT-X.
+           MOVE    WRK-ER-61-80 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-81-83 TO CORRECT-X.
+           MOVE    WRK-ER-81-83 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+       IND-WRITE-GF-10.
+           MOVE "IND-TEST-GF-10" TO PAR-NAME.
+           MOVE "LEAD. AFTER INIT. ID" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-11.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           PERFORM BUILD-TABLE1.
+           SET INDEX1 TO 4.
+           SET INDEX4 TO 6.
+       IND-TEST-GF-11-0.
+           INSPECT TABLE1-REC (INDEX1) REPLACING FIRST "A"
+              BY TABLE4-LETTER (INDEX4) BEFORE INITIAL "H".
+       IND-TEST-GF-11-1.
+           IF TABLE1-REC (INDEX1) EQUAL TO ANS-XN-83-1
+              PERFORM PASS
+              GO TO IND-WRITE-GF-11.
+           GO TO IND-FAIL-GF-11.
+       IND-DELETE-GF-11.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-11.
+       IND-FAIL-GF-11.
+           PERFORM FAIL.
+           MOVE    TABLE1-REC (INDEX1) TO WRK-ER.
+           MOVE    ANS-XN-83-1 TO WRK-OK.
+           MOVE    WRK-OK-1-20 TO CORRECT-X.
+           MOVE    WRK-ER-1-20 TO COMPUTED-X.
+           PERFORM PRINT-DETAIL.
+           MOVE    WRK-OK-21-40 TO CORRECT-X.
+           MOVE    WRK-ER-21-40 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-41-60 TO CORRECT-X.
+           MOVE    WRK-ER-41-60 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-61-80 TO CORRECT-X.
+           MOVE    WRK-ER-61-80 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-81-83 TO CORRECT-X.
+           MOVE    WRK-ER-81-83 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+       IND-WRITE-GF-11.
+           MOVE "IND-TEST-GF-11" TO PAR-NAME.
+           MOVE "FIRST BY ID BEFORE" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-12.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           PERFORM BUILD-TABLE1.
+           SET INDEX1 TO 1.
+           SET INDEX3 TO 1.
+           SET INDEX4 TO 5.
+       IND-TEST-GF-12-0.
+           INSPECT TABLE1-REC (INDEX1 + 1) REPLACING ALL
+            TABLE3-SYMBOL (INDEX3) BY "-" AFTER TABLE4-LETTER (INDEX4).
+       IND-TEST-GF-12-1.
+           IF TABLE1-REC (INDEX1 + 1) EQUAL TO ANS-XN-83-3
+              PERFORM PASS
+              GO TO IND-WRITE-GF-12.
+           GO TO IND-FAIL-GF-12.
+       IND-DELETE-GF-12.
+           PERFORM DE-LETE.
+           GO TO IND-WRITE-GF-12.
+       IND-FAIL-GF-12.
+           PERFORM FAIL.
+           MOVE    TABLE1-REC (INDEX1 + 1) TO WRK-ER.
+           MOVE    ANS-XN-83-3 TO WRK-OK.
+           MOVE    WRK-OK-1-20 TO CORRECT-X.
+           MOVE    WRK-ER-1-20 TO COMPUTED-X.
+           PERFORM PRINT-DETAIL.
+           MOVE    WRK-OK-21-40 TO CORRECT-X.
+           MOVE    WRK-ER-21-40 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-41-60 TO CORRECT-X.
+           MOVE    WRK-ER-41-60 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-61-80 TO CORRECT-X.
+           MOVE    WRK-ER-61-80 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+           MOVE    WRK-OK-81-83 TO CORRECT-X.
+           MOVE    WRK-ER-81-83 TO COMPUTED-X.
+           PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+       IND-WRITE-GF-12.
+           MOVE "IND-TEST-GF-12" TO PAR-NAME.
+           MOVE "ALL ID BY LIT. AFTER" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IND-INIT-GF-13.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE "IND-TEST-GF-13" TO PAR-NAME.
+           MOVE "TALLY REPLACE CHARS" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           PERFORM BUILD-TABLE1.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 1.
+           SET INDEX2 TO 1.
+           MOVE 0 TO WRK-DU-999 (INDEX2).
+       IND-TEST-GF-13-0.
+           INSPECT TABLE1-REC (INDEX1) TALLYING WRK-DU-999 (INDEX2)
+              FOR CHARACTERS REPLACING CHARACTERS BY " ".
+           GO TO IND-TEST-GF-13-1.
+       IND-DELETE-GF-13.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO IND-INIT-GF-14.
+       IND-TEST-GF-13-1.
+           IF WRK-DU-999 (INDEX2) EQUAL TO 83
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE WRK-DU-999 (INDEX2) TO COMPUTED-N
+              MOVE 83 TO CORRECT-N
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       IND-TEST-GF-13-2.
+           IF TABLE1-REC (INDEX1) EQUAL TO SPACE
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+           ELSE
+               PERFORM FAIL
+               MOVE    TABLE1-REC (INDEX1) TO WRK-ER
+               MOVE    SPACES TO WRK-OK
+               MOVE    WRK-OK-1-20 TO CORRECT-X
+               MOVE    WRK-ER-1-20 TO COMPUTED-X
+               PERFORM PRINT-DETAIL
+               MOVE    WRK-OK-21-40 TO CORRECT-X
+               MOVE    WRK-ER-21-40 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-41-60 TO CORRECT-X
+               MOVE    WRK-ER-41-60 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-61-80 TO CORRECT-X
+               MOVE    WRK-ER-61-80 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-81-83 TO CORRECT-X
+               MOVE    WRK-ER-81-83 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+       IND-INIT-GF-14.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE "IND-TEST-GF-14" TO PAR-NAME.
+           MOVE "LIT. BY BEFORE INIT." TO FEATURE.
+           MOVE 1 TO REC-CT.
+           PERFORM BUILD-TABLE1.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 4.
+           SET INDEX2 TO 2.
+           SET INDEX4 TO 5.
+       IND-TEST-GF-14-0.
+           INSPECT TABLE1-REC (INDEX1 - 2) TALLYING
+              WRK-DU-999 (INDEX2 + 2) FOR CHARACTERS
+              AFTER TABLE4-LETTER (INDEX4 - 1) REPLACING ALL
+              "A" BY "E" BEFORE INITIAL TABLE4-LETTER (INDEX4).
+           GO TO IND-TEST-GF-14-1.
+       IND-DELETE-GF-14.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO IND-INIT-GF-15.
+       IND-TEST-GF-14-1.
+           IF WRK-DU-999 (INDEX2 + 2) EQUAL TO 81
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE WRK-DU-999 (INDEX2 + 2) TO COMPUTED-N
+              MOVE 6 TO CORRECT-N
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       IND-TEST-GF-14-2.
+           IF TABLE1-REC (INDEX1 - 2) EQUAL TO ANS-XN-83-4
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+           ELSE
+              PERFORM FAIL
+               MOVE    TABLE1-REC (INDEX1 - 2) TO WRK-ER
+               MOVE    ANS-XN-83-4 TO WRK-OK
+               MOVE    WRK-OK-1-20 TO CORRECT-X
+               MOVE    WRK-ER-1-20 TO COMPUTED-X
+               PERFORM PRINT-DETAIL
+               MOVE    WRK-OK-21-40 TO CORRECT-X
+               MOVE    WRK-ER-21-40 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-41-60 TO CORRECT-X
+               MOVE    WRK-ER-41-60 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-61-80 TO CORRECT-X
+               MOVE    WRK-ER-61-80 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-81-83 TO CORRECT-X
+               MOVE    WRK-ER-81-83 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+       IND-INIT-GF-15.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE "IND-TEST-GF-15" TO PAR-NAME.
+           MOVE "REPL. FIRST AFTER" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           PERFORM BUILD-TABLE1.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 1.
+           SET INDEX2 TO 1.
+           SET INDEX4 TO 4.
+           MOVE 0 TO WRK-DU-999 (INDEX2).
+       IND-TEST-GF-15-0.
+           INSPECT TABLE1-REC (INDEX1) TALLYING WRK-DU-999 (INDEX2)
+              FOR ALL "A" BEFORE TABLE4-LETTER (INDEX4 + 1)
+              REPLACING FIRST TABLE4-LETTER (INDEX4 - 3)
+              BY "O" AFTER INITIAL TABLE4-LETTER (INDEX4).
+           GO TO IND-TEST-GF-15-1.
+       IND-DELETE-GF-15.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO IND-INIT-GF-16.
+       IND-TEST-GF-15-1.
+           IF WRK-DU-999 (INDEX2) EQUAL TO 7
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE WRK-DU-999 (INDEX2) TO COMPUTED-N
+              MOVE 7 TO CORRECT-N
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       IND-TEST-GF-15-2.
+           IF TABLE1-REC (INDEX1) EQUAL TO ANS-XN-83-5
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE
+               PERFORM FAIL
+               MOVE    TABLE1-REC (INDEX1) TO WRK-ER
+               MOVE    ANS-XN-83-5 TO WRK-OK
+               MOVE    WRK-OK-1-20 TO CORRECT-X
+               MOVE    WRK-ER-1-20 TO COMPUTED-X
+               PERFORM PRINT-DETAIL
+               MOVE    WRK-OK-21-40 TO CORRECT-X
+               MOVE    WRK-ER-21-40 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-41-60 TO CORRECT-X
+               MOVE    WRK-ER-41-60 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-61-80 TO CORRECT-X
+               MOVE    WRK-ER-61-80 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-81-83 TO CORRECT-X
+               MOVE    WRK-ER-81-83 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+       IND-INIT-GF-16.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE "IND-TEST-GF-16" TO PAR-NAME.
+           MOVE "FOR LEADING" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           PERFORM BUILD-TABLE1.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 2.
+           SET INDEX2 TO 2.
+           SET INDEX4 TO 1.
+           MOVE 0 TO WRK-DU-999 (INDEX2).
+       IND-TEST-GF-16-0.
+           INSPECT TABLE1-REC (INDEX1) TALLYING WRK-DU-999 (INDEX2)
+              FOR LEADING TABLE4-LETTER (INDEX4) REPLACING
+              LEADING TABLE4-LETTER (INDEX4) BY "O".
+           GO TO IND-TEST-GF-16-1.
+       IND-DELETE-GF-16.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO IND-INIT-GF-17.
+       IND-TEST-GF-16-1.
+           IF WRK-DU-999 (INDEX2) EQUAL TO 1
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE WRK-DU-999 (INDEX2) TO COMPUTED-N
+              MOVE 1 TO CORRECT-N
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       IND-TEST-GF-16-2.
+           IF TABLE1-REC (INDEX1) EQUAL TO ANS-XN-83-1
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE
+               PERFORM FAIL
+               MOVE    TABLE1-REC (INDEX1) TO WRK-ER
+               MOVE    ANS-XN-83-1 TO WRK-OK
+               MOVE    WRK-OK-1-20 TO CORRECT-X
+               MOVE    WRK-ER-1-20 TO COMPUTED-X
+               PERFORM PRINT-DETAIL
+               MOVE    WRK-OK-21-40 TO CORRECT-X
+               MOVE    WRK-ER-21-40 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-41-60 TO CORRECT-X
+               MOVE    WRK-ER-41-60 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-61-80 TO CORRECT-X
+               MOVE    WRK-ER-61-80 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-81-83 TO CORRECT-X
+               MOVE    WRK-ER-81-83 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+       IND-INIT-GF-17.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE "IND-TEST-GF-17" TO PAR-NAME.
+           MOVE "LIT. BY AFTER INIT." TO FEATURE.
+           MOVE 1 TO REC-CT.
+           PERFORM BUILD-TABLE1.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 3.
+           SET INDEX2 TO 3.
+           SET INDEX4 TO 7.
+           MOVE 0 TO WRK-DU-999 (INDEX2).
+       IND-TEST-GF-17-0.
+           INSPECT TABLE1-REC (INDEX1) TALLYING WRK-DU-999 (INDEX2)
+              FOR ALL "A" REPLACING FIRST "A" BY "O"
+              AFTER INITIAL TABLE4-LETTER (INDEX4).
+           GO TO IND-TEST-GF-17-1.
+       IND-DELETE-GF-17.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO IND-INIT-GF-18.
+       IND-TEST-GF-17-1.
+           IF WRK-DU-999 (INDEX2) EQUAL TO 8
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE WRK-DU-999 (INDEX2) TO COMPUTED-N
+              MOVE 8 TO CORRECT-N
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       IND-TEST-GF-17-2.
+           IF TABLE1-REC (INDEX1) EQUAL TO ANS-XN-83-5
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE
+               PERFORM FAIL
+               MOVE    TABLE1-REC (INDEX1) TO WRK-ER
+               MOVE    ANS-XN-83-1 TO WRK-OK
+               MOVE    WRK-OK-1-20 TO CORRECT-X
+               MOVE    WRK-ER-1-20 TO COMPUTED-X
+               PERFORM PRINT-DETAIL
+               MOVE    WRK-OK-21-40 TO CORRECT-X
+               MOVE    WRK-ER-21-40 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-41-60 TO CORRECT-X
+               MOVE    WRK-ER-41-60 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-61-80 TO CORRECT-X
+               MOVE    WRK-ER-61-80 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-81-83 TO CORRECT-X
+               MOVE    WRK-ER-81-83 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+       IND-INIT-GF-18.
+           MOVE "IV-21 4.3.8.2.3/4" TO ANSI-REFERENCE.
+           MOVE "IND-TEST-GF-18" TO PAR-NAME.
+           MOVE "CHARS AFTER ALL BEF." TO FEATURE.
+           MOVE 1 TO REC-CT.
+           PERFORM BUILD-TABLE1.
+           MOVE ZERO TO TABLE2.
+           SET INDEX1 TO 4.
+           SET INDEX2 TO 4.
+           SET INDEX4 TO 1.
+           MOVE 0 TO WRK-DU-999 (INDEX2).
+       IND-TEST-GF-18-0.
+           INSPECT TABLE1-REC (INDEX1) TALLYING WRK-DU-999 (INDEX2)
+              FOR CHARACTERS AFTER TABLE4-LETTER (INDEX4)
+              REPLACING ALL "A" BY "O"
+              BEFORE TABLE4-LETTER (INDEX4 + 3).
+           GO TO IND-TEST-GF-18-1.
+       IND-DELETE-GF-18.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO CCVS-999999.
+       IND-TEST-GF-18-1.
+           IF WRK-DU-999 (INDEX2) EQUAL TO 82
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE WRK-DU-999 (INDEX2) TO COMPUTED-N
+              MOVE 82 TO CORRECT-N
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       IND-TEST-GF-18-2.
+           IF TABLE1-REC (INDEX1) EQUAL TO ANS-XN-83-1
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE
+               PERFORM FAIL
+               MOVE    TABLE1-REC (INDEX1) TO WRK-ER
+               MOVE    ANS-XN-83-1 TO WRK-OK
+               MOVE    WRK-OK-1-20 TO CORRECT-X
+               MOVE    WRK-ER-1-20 TO COMPUTED-X
+               PERFORM PRINT-DETAIL
+               MOVE    WRK-OK-21-40 TO CORRECT-X
+               MOVE    WRK-ER-21-40 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-41-60 TO CORRECT-X
+               MOVE    WRK-ER-41-60 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-61-80 TO CORRECT-X
+               MOVE    WRK-ER-61-80 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX
+               MOVE    WRK-OK-81-83 TO CORRECT-X
+               MOVE    WRK-ER-81-83 TO COMPUTED-X
+               PERFORM FAIL-ROUTINE-WRITE THRU FAIL-ROUTINE-EX.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC122A

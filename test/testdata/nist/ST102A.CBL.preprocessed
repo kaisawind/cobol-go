@@ -1,0 +1,80 @@
+      *> HEADER,COBOL,ST101A,SUBPRG,ST102A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           ST102A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT SORTFILE-1B ASSIGN TO
+           XXXXX027.
+           SELECT SORTIN-1B ASSIGN TO
+           XXXXD001.
+           SELECT SORTOUT-1B ASSIGN TO
+           XXXXP002.
+       DATA DIVISION.
+       FILE SECTION.
+       SD  SORTFILE-1B
+           RECORD CONTAINS 120 CHARACTERS
+           DATA RECORD S-RECORD.
+       01  S-RECORD.
+           02  KEYS-GROUP.
+               03  KEY-1 PICTURE 9.
+               03  KEY-2 PICTURE 99.
+               03  KEY-3 PICTURE 999.
+               03  KEY-4 PICTURE 9999.
+               03  KEY-5 PICTURE 9(5).
+           02  FILLER  PICTURE X(105).
+       FD  SORTIN-1B
+           BLOCK CONTAINS 10 RECORDS
+           LABEL RECORDS ARE STANDARD
+           VALUE OF
+           XXXXX074
+           IS
+           XXXXX075
+      *>     XXXXX069
+           DATA RECORD IS INSORT.
+       01  INSORT PICTURE X(120).
+       FD  SORTOUT-1B
+           BLOCK CONTAINS 10 RECORDS
+           LABEL RECORD STANDARD
+           VALUE OF
+           XXXXX074
+           IS
+           XXXXX076
+      *>     XXXXX069
+           DATA RECORD OUTSORT.
+       01  OUTSORT PICTURE X(120).
+       PROCEDURE DIVISION.
+       SORT-STATEMENT.
+           SORT SORTFILE-1B
+               ON DESCENDING KEY KEY-1
+               ON ASCENDING KEY KEY-2
+               ON DESCENDING KEY KEY-3
+               ASCENDING KEY-4 KEY-5
+             USING SORTIN-1B
+             GIVING SORTOUT-1B.
+       STOP-RUN-STATEMENT.
+           STOP RUN.
+      *> END-OF,ST102A

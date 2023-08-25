@@ -1,0 +1,1850 @@
+      *> HEADER,COBOL,SQ101M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SQ101M.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>     USING CCVS85 VERSION 1.0 ISSUED IN JANUARY 1986.          *
+      *>                              REVISED 1986, AUGUST             *
+      *>                                                               *
+      *>     CREATION DATE     /     VALIDATION DATE                   *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>             X-55   SYSTEM PRINTER                             *
+      *>             X-82   SOURCE-COMPUTER                            *
+      *>             X-83   OBJECT-COMPUTER.                           *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     SQ101M TESTS THE LEVEL 1 FACILITIES FOR CONTROL OF THE    *
+      *>     POSITION OF LINES ON A PRINTED PAGE.  THE PRINCIPAL       *
+      *>     FACILITY IS THE ADVANCING PHRASE OF THE WRITE STATEMENT   *
+      *>     WHEN THE ASSOCIATED PHYSICAL FILE IS DESIGNATED AS A      *
+      *>     PRINTER.  THE FROM PHRASE OF THE WRITE STATEMENT IS ALSO  *
+      *>     TESTED.                                                   *
+      *>                                                               *
+      *>     ALL POSSIBLE LEVEL 1 COMBINATIONS OF THE FORMAT OF THE    *
+      *>     ADVANCING PHRASE ARE TESTED WITH AND WITHOUT THE FROM     *
+      *>     PHRASE.  THE VALUES USED FOR INTEGER INCLUDE ONE-DIGIT    *
+      *>     AND TWO-DIGIT UNSIGNED NUMERIC LITERALS, EIGHTEEN DIGIT   *
+      *>     NUMERIC LITERALS WITH LEADING ZEROS, AND THE FIGURATIVE   *
+      *>     CONSTANT ZERO.  DATA ITEMS USED AS IDENTIFIER-2 INCLUDE   *
+      *>     LEVEL 77, LEVEL 01, AND SUBORDINATE ELEMENTARY ITEMS.  A  *
+      *>     SIMILAR RANGE OF TYPES, BUT INCLUDING GROUP ITEMS, IS     *
+      *>     USED FOR IDENTIFIER-2.                                    *
+      *>                                                               *
+      *>     IN ADDITION TO THE ABOVE TESTS, A TEST IS MADE TO ENSURE  *
+      *>     THAT CHARACTERS DESIGNATED TO BE PRINTED IN COLUMN 1 DO   *
+      *>     NOT ACT AS CARRIAGE CONTROL CHARACTERS.                   *
+      *>                                                               *
+      *>     BECAUSE OF THE NATURE OF THESE TESTS A "PASS" OR "FAIL"   *
+      *>     CANNOT BE DETERMINED WITHIN THE PROGRAM.  THE PRINTED     *
+      *>     OUTPUT MUST BE EXAMINED TO DETERMINE WHETHER EACH TEST    *
+      *>     HAS BEEN PASSED OR FAILED.                                *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+      *> 
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+      *> 
+      *>     SELECT RAW-DATA   ASSIGN TO
+      *>     XXXXX062
+      *>           ORGANIZATION IS INDEXED
+      *>           ACCESS MODE  IS RANDOM
+      *>           RECORD-KEY   IS RAW-DATA-KEY.
+      *> 
+      *> 
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE
+           LABEL RECORDS
+           XXXXX084
+           DATA RECORD IS PRINT-REC DUMMY-RECORD
+                     .
+       01  PRINT-REC    PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+      *> 
+      *> FD  RAW-DATA.
+      *> 01  RAW-DATA-SATZ.
+      *>     05  RAW-DATA-KEY        PIC X(6).
+      *>     05  C-DATE              PIC 9(6).
+      *>     05  C-TIME              PIC 9(8).
+      *>     05  NO-OF-TESTS         PIC 99.
+      *>     05  C-OK                PIC 999.
+      *>     05  C-ALL               PIC 999.
+      *>     05  C-FAIL              PIC 999.
+      *>     05  C-DELETED           PIC 999.
+      *>     05  C-INSPECT           PIC 999.
+      *>     05  C-NOTE              PIC X(13).
+      *>     05  C-INDENT            PIC X.
+      *>     05  C-ABORT             PIC X(8).
+      *> 
+      *> 
+       WORKING-STORAGE SECTION.
+      *> 
+      *> **************************************************************
+      *>                                                              *
+      *>     WORKING-STORAGE DATA ITEMS SPECIFIC TO THIS TEST SUITE   *
+      *>                                                              *
+      *> **************************************************************
+      *> 
+       77  QU-OTE             PIC X   VALUE QUOTE.
+       77  IDENTIFIER-2       PIC 99       VALUE 0.
+       77  LONG-ZERO          PIC 9(18)    VALUE 0.
+       77  LONG-ONE           PIC 9(18)    VALUE 1.
+       01  IDENT-2-S99        PIC S99.
+       01  IDENT-2-C99        PIC 99  COMP.
+      *> 
+       01  ONE                PIC 9        VALUE 1.
+      *> 
+       01  SPACING-VALUES-1.
+           02 TWO               PIC 9      VALUE 2.
+           02 SPACING-VALUES-2.
+              03 THREE            PIC 9    VALUE 3.
+              03 SPACING-VALUES-3.
+                 04 FOUR            PIC 9  VALUE 4.
+      *> 
+       01  CHAR-LINE.
+           03  LIN-CH   PIC X.
+           03  FILLER   PIC X.
+           03  LIN-SER  PIC 999.
+           03  FILLER   PIC X(115).
+      *> 
+       77  SEVENTY-SEVEN     PIC X(120)   VALUE "  THIS WAS WRITTEN FROM A 77 LEVEL ENTRY.  IT SHOULD BE 2 LINES BELOW AND 1 LINE ABOVE THE BRACKETING WRT-TEST LINES.".
+      *> 
+       77  SEVENTY-SEVEN-2    PIC X(120)   VALUE "THIS LINE WAS WRITTEN FROM A 77 LEVEL ENTRY.  IT SHOULD BE 7 LINES BELOW AND 1 LINE ABOVE THE BRACKETING WRT-TEST LINES.".
+      *> 
+       01  OH-ONE             PIC X(120)   VALUE "THIS LINE WAS WRITTEN FROM AN 01 LEVEL ENTRY. IT SHOULD BE 1 LINE BELOW AND 5 LINES ABOVE THE BRACKETING WRT-TEST LINES.".
+      *> 
+       01  LEVEL-1.
+           03 OH-THREE        PIC X(120)   VALUE "THIS LINE WAS WRITTEN FROM AN 03 LEVEL ENTRY. IT SHOULD BE 1 LINE BELOW AND 6 LINES ABOVE THE BRACKETING WRT-TEST LINES.".
+      *> 
+       01  TEST-LINE-1.
+           02 FILLER          PIC X(20)  VALUE SPACE.
+           02 FILLER          PIC X(20)  VALUE "THIS LINE SHOULD BE ".
+           02 LINES-BELOW-1   PIC XX.
+           02 FILLER          PIC X(17)  VALUE " LINES BELOW AND ".
+           02 LINES-ABOVE-1   PIC XX.
+           02 FILLER          PIC X(59)  VALUE
+                        " LINES ABOVE THE BRACKETING WRT-TEST LINES".
+      *> 
+       01  LEVEL-ONE.
+           02 LEVEL-TWO.
+              03 TEST-LINE-2.
+                 04 FILLER          PIC X(20)   VALUE SPACE.
+                 04 FILLER          PIC X(20)   VALUE "THIS LINE SHOULD BE ".
+                 04 LINES-BELOW-2   PIC XX.
+                 04 FILLER          PIC X(17) VALUE " LINES BELOW AND ".
+                 04 LINES-ABOVE-2   PIC XX.
+                 04 FILLER          PIC X(59)   VALUE
+                        " LINES ABOVE THE BRACKETING WRT-TEST LINES".
+      *> 
+       01  OVERPRINTED-LINE.
+           02 FILLER            PIC X(20)  VALUE SPACE.
+           02 FILLER            PIC X(9)   VALUE "WRT-TEST-".
+           02 OVERPRINTED-TEST  PIC XX.
+           02 FILLER            PIC X(89)  VALUE "/ THIS LINE SHOULD BE OVERPRINTED. AAAAAAA".
+       01  OVERPRINT-LINE.
+           02 FILLER            PIC X(68)  VALUE SPACE.
+           02 FILLER            PIC X(17)  VALUE "BBBBBBB WRT-TEST-".
+           02 OVERPRINT-TEST    PIC XX.
+           02 FILLER            PIC X(33)  VALUE
+                  "/ THIS LINE SHOULD OVERPRINT".
+       01  LAST-LINE.
+           02 FILLER            PIC X(20)  VALUE SPACE.
+           02 FILLER            PIC X(100) VALUE "THIS LINE SHOULD BE 1 LINE BELOW THE WRT-TEST LINE AND ALSO BE THE LAST LINE ON THIS PAGE".
+      *> 
+       01  NEW-PAGE-LINE.
+           02 FILLER            PIC X(20)  VALUE SPACE.
+           02 FILLER            PIC X(100) VALUE "THIS LINE SHOULD APPEAR AT THE TOP OF A NEW PAGE".
+       01  NEXT-LINE.
+           02 FILLER            PIC X(20)  VALUE SPACE.
+           02 FILLER            PIC X(100) VALUE "A WRT-TEST LINE SHOULD FOLLOW IMMEDIATELY ON THE NEXT LINE".
+      *> 
+       01  NOTE-1.
+           02 FILLER          PIC X(40)    VALUE "BECAUSE OF THE NATURE OF THESE TESTS A ".
+           02 FILLER          PIC X        VALUE QUOTE.
+           02 FILLER          PIC X(4)     VALUE "PASS".
+           02 FILLER          PIC X        VALUE QUOTE.
+           02 FILLER          PIC X(4)     VALUE " OR ".
+           02 FILLER          PIC X        VALUE QUOTE.
+           02 FILLER          PIC X(4)     VALUE "FAIL".
+           02 FILLER          PIC X        VALUE QUOTE.
+           02 FILLER          PIC X(64)    VALUE " CANNOT BE DETERMINED WITHIN THE PROGRAM. THE USER MUST VISUALLY".
+       01  NOTE-2             PIC X(120)   VALUE "CHECK THE POSITION OF EACH LINE TO DETERMINE THE ACCURACY OF THE VARIOUS WRITE OPTIONS.  NOTE THAT SOME OVERPRINTING".
+       01  NOTE-3             PIC X(120)   VALUE "SHOULD OCCUR, AND IN EVERY CASE THE OVERPRINTED LINE WILL READ---".
+       01  NOTE-4.
+           02 FILLER          PIC X(20)    VALUE SPACE.
+           02 FILLER          PIC X(100)   VALUE "WRT-TEST-XX/ THIS LINE SHOULD BE OVERPRINTED. AAAAAAA".
+       01  NOTE-5             PIC X(120)   VALUE "---AND THE LINE WHICH OVERPRINTS SHOULD READ---".
+       01  NOTE-6.
+           02 FILLER          PIC X(68)    VALUE SPACE.
+           02 FILLER          PIC X(52)    VALUE "BBBBBBB WRT-TEST-XX/ THIS LINE SHOULD OVERPRINT".
+       01  NOTE-7             PIC X(120)   VALUE "ONLY FIVE OF THE LETTERS A AND B SHOULD BE JUMBLED TOGETHER; THE REST SHOULD BE READABLE.  IF ANY OTHER LINE IS".
+      *> 
+       01  NOTE-8             PIC X(120)   VALUE
+               "INVOLVED IN OVERPRINTING, AN ERROR HAS OCCURRED".
+      *> 
+      *> **************************************************************
+      *>                                                              *
+      *>     WORKING-STORAGE DATA ITEMS USED BY THE CCVS              *
+      *>                                                              *
+      *> **************************************************************
+      *> 
+       01  REC-SKEL-SUB   PIC 99.
+      *> 
+       01  FILE-RECORD-INFORMATION-REC.
+           03 FILE-RECORD-INFO-SKELETON.
+              05 FILLER                 PICTURE X(48)       VALUE
+                   "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+              05 FILLER                 PICTURE X(46)       VALUE
+                   ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+              05 FILLER                 PICTURE X(26)       VALUE
+                   ",LFIL=000000,ORG=  ,LBLR= ".
+              05 FILLER                 PICTURE X(37)       VALUE
+                   ",RECKEY=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY1=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY2=                             ".
+              05 FILLER                 PICTURE X(7)        VALUE SPACE.
+           03 FILE-RECORD-INFO          OCCURS  10  TIMES.
+              05 FILE-RECORD-INFO-P1-120.
+                 07 FILLER              PIC X(5).
+                 07 XFILE-NAME          PIC X(6).
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-NAME        PIC X(6).
+                 07 FILLER              PIC X(1).
+                 07 REELUNIT-NUMBER     PIC 9(1).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-NUMBER      PIC 9(6).
+                 07 FILLER              PIC X(6).
+                 07 UPDATE-NUMBER       PIC 9(2).
+                 07 FILLER              PIC X(5).
+                 07 ODO-NUMBER          PIC 9(4).
+                 07 FILLER              PIC X(5).
+                 07 XPROGRAM-NAME       PIC X(5).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-LENGTH      PIC 9(6).
+                 07 FILLER              PIC X(7).
+                 07 CHARS-OR-RECORDS    PIC X(2).
+                 07 FILLER              PIC X(1).
+                 07 XBLOCK-SIZE         PIC 9(4).
+                 07 FILLER              PIC X(6).
+                 07 RECORDS-IN-FILE     PIC 9(6).
+                 07 FILLER              PIC X(5).
+                 07 XFILE-ORGANIZATION  PIC X(2).
+                 07 FILLER              PIC X(6).
+                 07 XLABEL-TYPE         PIC X(1).
+              05 FILE-RECORD-INFO-P121-240.
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-KEY         PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY1      PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY2      PIC X(29).
+                 07 FILLER              PIC X(7).
+      *> 
+       01  TEST-RESULTS.
+           02 FILLER              PIC X      VALUE SPACE.
+           02 FEATURE             PIC X(24)  VALUE SPACE.
+           02 FILLER              PIC X      VALUE SPACE.
+           02 P-OR-F              PIC X(5)   VALUE SPACE.
+           02 FILLER              PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER              PIC X(14)  VALUE SPACE.
+             03 PARDOT-X            PIC X      VALUE SPACE.
+             03 DOTVALUE            PIC 99     VALUE ZERO.
+           02 FILLER              PIC X(9)   VALUE SPACE.
+           02 RE-MARK             PIC X(61).
+       01  TEST-COMPUTED.
+         02 FILLER  PIC X(30)  VALUE SPACE.
+         02 FILLER  PIC X(17)  VALUE "      COMPUTED =".
+         02 COMPUTED-X.
+           03 COMPUTED-A    PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N    REDEFINES COMPUTED-A PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+              04 COMPUTED-18V0                   PIC -9(18).
+              04 FILLER                          PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(4)     VALUE SPACE.
+           02 FILLER  PIC IS X(98)    VALUE IS "FEATURE               PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER           PIC X(17)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER           PIC XXXX     VALUE SPACE.
+           02 FILLER           PIC X(6)     VALUE "TESTED".
+           02 FILLER           PIC X(16)    VALUE SPACE.
+           02 FILLER           PIC X(4)     VALUE "FAIL".
+           02 FILLER           PIC X(90)    VALUE SPACE.
+       01  REC-SKL-SUB       PIC 9(2)     VALUE ZERO.
+       01  REC-CT            PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER    PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER     PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER   PIC 999      VALUE ZERO.
+       01  PASS-COUNTER      PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR       PIC 999      VALUE ZERO.
+       01  ERROR-HOLD        PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD        PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT      PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE    PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER          PIC X(39)    VALUE SPACES.
+           02  FILLER          PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER          PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER            PIC X(40)  VALUE SPACE.
+         02  FILLER            PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER            PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER            PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER            PIC X(41)  VALUE SPACE.
+      *> 
+       01  CCVS-H-2B.
+         02  FILLER            PIC X(15)  VALUE "TEST RESULT OF ".
+         02  TEST-ID           PIC X(9).
+         02  FILLER            PIC X(4)   VALUE " IN ".
+         02  FILLER            PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER            PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER            PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER          PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER          PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER          PIC X(28)  VALUE
+                  "  COPYRIGHT   1985,1986 ".
+       01  CCVS-E-1.
+           02 FILLER           PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN         PIC X(9).
+           02 FILLER           PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER          PIC X(31)  VALUE SPACE.
+           02  FILLER          PIC X(21)  VALUE SPACE.
+           02  CCVS-E-2-2.
+               03 ERROR-TOTAL    PIC XXX    VALUE SPACE.
+               03 FILLER         PIC X      VALUE SPACE.
+               03 ENDER-DESC     PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER          PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER          PIC X(12)  VALUE SPACE.
+           02  FILLER          PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER          PIC X(8)   VALUE SPACE.
+           02  FILLER          PIC X(20)  VALUE
+                   " COPYRIGHT 1985,1986".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1       PIC XXX    VALUE SPACE.
+           02 FILLER           PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2       PIC XXX    VALUE SPACE.
+           02 FILLER           PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER           PIC X(19)  VALUE "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER             PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED         PIC X(20).
+             04 FILLER             PIC X(5)   VALUE SPACE.
+             04 XXCORRECT          PIC X(20).
+           02 INF-ANSI-REFERENCE PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID  PIC X(9)   VALUE
+           "SQ101M".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+      *>     OPEN    I-O RAW-DATA.
+      *>     MOVE    CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ    RAW-DATA INVALID KEY GO TO END-E-1.
+      *>     MOVE   "ABORTED "   TO C-ABORT.
+      *>     ADD     1           TO C-NO-OF-TESTS.
+      *>     ACCEPT  C-DATE      FROM DATE.
+      *>     ACCEPT  C-TIME      FROM TIME.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY CONTINUE.
+      *> END-E-1.
+      *>     CLOSE   RAW-DATA.
+           OPEN    OUTPUT PRINT-FILE.
+           MOVE    CCVS-PGM-ID TO TEST-ID.
+           MOVE    CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE    ZERO TO REC-SKEL-SUB.
+           PERFORM CCVS-INIT-FILE 10 TIMES.
+           GO TO CCVS1-EXIT.
+      *> 
+       CCVS-INIT-FILE.
+           ADD     1 TO REC-SKL-SUB.
+           MOVE    FILE-RECORD-INFO-SKELETON TO
+                        FILE-RECORD-INFO (REC-SKL-SUB).
+      *> 
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13.
+           CLOSE   PRINT-FILE.
+      *>     OPEN    I-O RAW-DATA.
+      *>     MOVE    CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ    RAW-DATA INVALID KEY GO TO END-E-2.
+      *>     MOVE   "OK.     " TO C-ABORT.
+      *>     MOVE    PASS-COUNTER  TO C-OK.
+      *>     MOVE    ERROR-HOLD    TO C-ALL.
+      *>     MOVE    ERROR-COUNTER TO C-FAIL.
+      *>     MOVE    DELETE-CNT    TO C-DELETED.
+      *>     MOVE    INSPECT-COUNTER TO C-INSPECT.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY CONTINUE.
+      *> END-E-2.
+      *>     CLOSE   RAW-DATA.
+       TERMINATE-CCVS.
+      *>     EXIT    PROGRAM.
+           STOP    RUN.
+      *> 
+       INSPT.
+           MOVE   "INSPT" TO P-OR-F.
+           ADD     1 TO INSPECT-COUNTER.
+      *> 
+       PASS.
+           MOVE   "PASS " TO P-OR-F.
+           ADD     1 TO PASS-COUNTER.
+      *> 
+       FAIL.
+           MOVE   "FAIL*" TO P-OR-F.
+           ADD     1 TO ERROR-COUNTER.
+      *> 
+       DE-LETE.
+           MOVE   "****TEST DELETED****" TO RE-MARK.
+           MOVE   "*****" TO P-OR-F.
+           ADD     1 TO DELETE-COUNTER.
+           PERFORM PRINT-DETAIL.
+      *> 
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+               MOVE   "." TO PARDOT-X
+               MOVE    REC-CT TO DOTVALUE.
+           MOVE    TEST-RESULTS TO PRINT-REC.
+           PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"
+               PERFORM WRITE-LINE
+               PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+           ELSE
+               PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE    SPACE TO P-OR-F.
+           MOVE    SPACE TO COMPUTED-X.
+           MOVE    SPACE TO CORRECT-X.
+           IF REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE    SPACE TO RE-MARK.
+      *> 
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE    HYPHEN-LINE TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE    CCVS-E-1 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 2 TIMES.
+      *> 
+       END-ROUTINE-1.
+           ADD     ERROR-COUNTER   TO ERROR-HOLD
+           ADD     INSPECT-COUNTER TO ERROR-HOLD.
+           ADD     DELETE-COUNTER  TO ERROR-HOLD.
+           ADD     PASS-COUNTER    TO ERROR-HOLD.
+           MOVE    PASS-COUNTER    TO CCVS-E-4-1.
+           MOVE    ERROR-HOLD      TO CCVS-E-4-2.
+           MOVE    CCVS-E-4        TO CCVS-E-2-2.
+           MOVE    CCVS-E-2        TO DUMMY-RECORD
+           PERFORM WRITE-LINE.
+           MOVE   "TEST(S) FAILED" TO ENDER-DESC.
+           IF ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE   "NO " TO ERROR-TOTAL
+           ELSE
+               MOVE    ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE    CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE   "NO " TO ERROR-TOTAL
+           ELSE
+               MOVE    DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE   "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE    CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+           IF INSPECT-COUNTER EQUAL TO ZERO
+               MOVE   "NO " TO ERROR-TOTAL
+           ELSE
+               MOVE    INSPECT-COUNTER TO ERROR-TOTAL.
+           MOVE   "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+           MOVE    CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE    CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+      *> 
+       WRITE-LINE.
+           ADD     1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE  DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE  SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE  CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE  CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE  HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE  DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE  ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+      *> 
+       WRT-LN.
+           WRITE   DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE    SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE    ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE    XXINFO TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 2 TIMES.
+           MOVE    SPACES TO INF-ANSI-REFERENCE.
+           GO TO   FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE    TEST-COMPUTED  TO PRINT-REC
+           PERFORM WRITE-LINE
+           MOVE    ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE    TEST-CORRECT   TO PRINT-REC
+           PERFORM WRITE-LINE 2 TIMES.
+           MOVE    SPACES         TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX.
+           EXIT.
+       BAIL-OUT.
+           IF COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE    CORRECT-A      TO XXCORRECT.
+           MOVE    COMPUTED-A     TO XXCOMPUTED.
+           MOVE    ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE    XXINFO TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 2 TIMES.
+           MOVE    SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX.
+           EXIT.
+       CCVS1-EXIT.
+           EXIT.
+      *> 
+      *> ***************************************************************
+      *>                                                               *
+      *>     THIS POINT MARKS THE END OF THE CCVS MONITOR ROUTINES AND *
+      *>     THE START OF THE TESTS OF SPECIFIC COBOL FEATURES.        *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+       SECT-SQ101-0001 SECTION.
+       WRT-PREAMBLE.
+           MOVE NOTE-1 TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE NOTE-2 TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE NOTE-3 TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE NOTE-4 TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE NOTE-5 TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE NOTE-6 TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE NOTE-7 TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE NOTE-8 TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE SPACE TO DUMMY-RECORD.
+           PERFORM BLANK-LINE-PRINT.
+      *> 
+      *> ***************************************************************
+      *>                                                               *
+      *>     THE STANDARD PAGE HEADING OF THE MONITOR OUTPUT AND THE   *
+      *>     PREAMBLE DESCRIBING MONTORING REQUIREMENTS WILL HAVE USED *
+      *>     24 LINES ON THE FIRST PAGE OF PRINTED OUTPUT.  THE TESTS  *
+      *>     ARE ARRANGED WHEREVER POSSIBLE SO THAT THE BLANK LINES    *
+      *>     WHICH MUST BE COUNTED DO NOT INCLUDE A BOUNDARY BETWEEN   *
+      *>     TWO PAGES.                                                *
+      *>                                                               *
+      *>     IT IS ASSUMED THAT A PHYSICAL PAGE CAN SHOW AT LEAST 60   *
+      *>     PRINTED LINES.  THERE ARE THUS AT LEAST 36 LINES LEFT ON  *
+      *>     THIS FIRST PAGE.                                          *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+       WRT-INIT-GF-01.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 8 LINES
+      *> 
+           MOVE   "WRT BEFORE ADV INT LINES" TO FEATURE.
+           MOVE   "WRT-TEST-GF-01" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-01.
+       WRT-DELETE-GF-01.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-01.
+       WRT-TEST-GF-01.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE "1" TO LINES-BELOW-1.
+           MOVE "8" TO LINES-ABOVE-1.
+           MOVE TEST-LINE-1 TO PRINT-REC.
+           WRITE PRINT-REC BEFORE ADVANCING 7 LINES.
+       WRT-END-GF-01.
+      *> 
+       WRT-INIT-GF-02.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 7 LINES
+      *> 
+           MOVE   "WRT BEFORE ADV INT LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-02" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-02.
+       WRT-DELETE-GF-02.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-02.
+       WRT-TEST-GF-02.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE "1" TO LINES-BELOW-1.
+           MOVE "7" TO LINES-ABOVE-1.
+           MOVE TEST-LINE-1 TO DUMMY-RECORD.
+           WRITE DUMMY-RECORD BEFORE ADVANCING 6 LINE.
+       WRT-END-GF-02.
+      *> 
+       WRT-INIT-GF-03.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 6 LINES
+      *> 
+           MOVE   "WRT BEFORE INTEGER LINES" TO FEATURE.
+           MOVE   "WRT-TEST-GF-03" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-03.
+       WRT-DELETE-GF-03.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-03.
+       WRT-TEST-GF-03.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-2.
+           MOVE   "6" TO LINES-ABOVE-2.
+           MOVE    TEST-LINE-2 TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE 5 LINES.
+       WRT-END-GF-03.
+      *> 
+       WRT-INIT-GF-04.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 5 LINES
+      *> 
+           MOVE   "WRT BEFORE INTEGER LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-04" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-04.
+       WRT-DELETE-GF-04.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-04.
+       WRT-TEST-GF-04.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE "1" TO LINES-BELOW-2.
+           MOVE "5" TO LINES-ABOVE-2.
+           MOVE TEST-LINE-2 TO DUMMY-RECORD.
+           WRITE DUMMY-RECORD BEFORE 4 LINE.
+       WRT-END-GF-04.
+      *> 
+       WRT-INIT-GF-05.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 5 LINES
+      *> 
+           MOVE   "WRT AFTER ADV INT LINES" TO FEATURE.
+           MOVE   "WRT-TEST-GF-05" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-05.
+       WRT-DELETE-GF-05.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-05.
+       WRT-TEST-GF-05.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE "4" TO LINES-BELOW-1.
+           MOVE "1" TO LINES-ABOVE-1.
+           MOVE TEST-LINE-1 TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 3 LINES.
+       WRT-END-GF-05.
+      *> 
+       WRT-INIT-GF-06.
+      *> 
+      *>     THE NEXT TEST IN NORMAL SEQUENCE WOULD COME VERY NEAR TO
+      *>     OVERFLOWING THE CURRENT PAGE, SO THE FIRST OF THE TESTS OF
+      *>     ADVANCING PAGE IS INSERTED HERE.  IT SHOULD LEAVE LINE 2
+      *>     ON THE NEW PAGE AS THE CURRENT LINE, SO THAT THE FIRST
+      *>     WRT-TEST LINE ON THE NEW PAGE IS THE THIRD PRINTABLE LINE.
+      *> 
+           MOVE   "WRT BEFORE ADV PAGE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-06" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-06.
+       WRT-DELETE-GF-06.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-06.
+       WRT-TEST-GF-06.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    LAST-LINE TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ADVANCING PAGE.
+           MOVE    NEW-PAGE-LINE TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ADVANCING 1 LINE.
+           MOVE    NEXT-LINE TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ADVANCING 0 LINE.
+       WRT-END-GF-06.
+      *> 
+       WRT-INIT-GF-07.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 4 LINES TO LINE 6
+      *> 
+           MOVE   "WRT AFTER ADV INT LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-07" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-07.
+       WRT-DELETE-GF-07.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-07.
+       WRT-TEST-GF-07.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "3" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO DUMMY-RECORD.
+           WRITE   DUMMY-RECORD AFTER ADVANCING 2 LINES.
+       WRT-END-GF-07.
+      *> 
+       WRT-INIT-GF-08.
+      *> 
+      *>     THIS TEST IS IN TWO PARTS.  IT PRINTS ON THE LINE BELOW
+      *>     THE MARKER LINE, THEN OVERPRINTS THAT LINE, ADVANCING ZERO
+      *>     LINES AFTER PRINTING.
+      *>     TOTAL PAPER ADVANCE IS TWO LINES, TO LINE 8.
+      *> 
+           MOVE   "WRT AFTER INT LINE/S" TO FEATURE.
+           MOVE   "WRT-TEST-GF-08" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-08.
+       WRT-DELETE-GF-08.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-08.
+       WRT-TEST-GF-08.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "08" TO OVERPRINTED-TEST.
+           MOVE    OVERPRINTED-LINE TO PRINT-REC.
+           WRITE   PRINT-REC AFTER 1 LINES.
+           MOVE   "08" TO OVERPRINT-TEST.
+           MOVE    OVERPRINT-LINE TO PRINT-REC.
+           WRITE   PRINT-REC AFTER 0 LINE.
+       WRT-END-GF-08.
+      *> 
+       WRT-INIT-GF-09.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 12 LINES, TO LINE 20
+      *> 
+           MOVE    1 TO REC-CT.
+           MOVE   "WRT FRM BFR ADV INT LINS" TO FEATURE.
+           MOVE   "WRT-TEST-GF-09" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-09.
+       WRT-DELETE-GF-09.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-09.
+       WRT-TEST-GF-09.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "11" TO LINES-ABOVE-1.
+           WRITE  PRINT-REC FROM TEST-LINE-1 BEFORE ADVANCING 10 LINES.
+       WRT-END-GF-09.
+      *> 
+       WRT-INIT-GF-10.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 22 LINES, TO LINE 44
+      *> 
+           MOVE   "WRT FRM BFR ADV INT LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-10" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-10.
+       WRT-DELETE-GF-10.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-10.
+       WRT-TEST-GF-10.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-2.
+           MOVE   "21" TO LINES-ABOVE-2.
+           WRITE DUMMY-RECORD FROM TEST-LINE-2 BEFORE ADVANCING 20 LINE.
+       WRT-END-GF-10.
+      *> 
+       WRT-INIT-GF-11.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 13 LINES, TO LINE 57
+      *> 
+           MOVE   "WRT FRM BEFORE INT LINES" TO FEATURE.
+           MOVE   "WRT-TEST-GF-11" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-11.
+       WRT-DELETE-GF-11.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-11.
+       WRT-TEST-GF-11.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "12" TO LINES-ABOVE-1.
+           WRITE   PRINT-REC FROM TEST-LINE-1 BEFORE 11 LINES.
+       WRT-END-GF-11.
+      *> 
+       WRT-INIT-GF-12.
+      *> 
+      *>     THE NEXT TEST IN NORMAL SEQUENCE WOULD PROBABLY OVERFLOW
+      *>     THE CURRENT PAGE, SO ANOTHER TEST OF ADVANCING PAGE IS
+      *>     INSERTED HERE.  IT SHOULD LEAVE LINE 2 ON THE NEW PAGE AS
+      *>     THE CURRENT LINE, SO THAT THE FIRST WRT-TEST LINE ON THE
+      *>     NEW PAGE IS ON THE THIRD PRINTABLE LINE.
+      *> 
+           MOVE   "WRITE BEFORE PAGE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-12" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-12.
+       WRT-DELETE-GF-12.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-12.
+       WRT-TEST-GF-12.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    LAST-LINE TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE PAGE.
+           MOVE    NEW-PAGE-LINE TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ADVANCING 1 LINE.
+           MOVE    NEXT-LINE TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ADVANCING 0 LINE.
+       WRT-END-GF-12.
+      *> 
+       WRT-INIT-GF-13.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 42 LINES, TO LINE 44
+      *> 
+           MOVE   "WRT FROM BEFORE INT LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-13" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-13.
+       WRT-DELETE-GF-13.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-13.
+       WRT-TEST-GF-13.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE "1" TO LINES-BELOW-2.
+           MOVE "41" TO LINES-ABOVE-2.
+           WRITE DUMMY-RECORD FROM TEST-LINE-2 BEFORE 40 LINE.
+       WRT-END-GF-13.
+      *> 
+       WRT-INIT-GF-14.
+      *> 
+      *>     THE NEXT TEST IN NORMAL SEQUENCE WOULD PROBABLY OVERFLOW
+      *>     THE CURRENT PAGE, SO ANOTHER TEST OF ADVANCING PAGE IS
+      *>     INSERTED HERE.  IT SHOULD LEAVE LINE 2 ON THE NEW PAGE AS
+      *>     THE CURRENT LINE, SO THAT THE FIRST WRT-TEST LINE ON THE
+      *>     NEW PAGE IS ON THE THIRD PRINTABLE LINE.
+      *> 
+           MOVE   "WRT AFTER ADV PAGE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-14" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-14.
+       WRT-DELETE-GF-14.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-14.
+       WRT-TEST-GF-14.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE NEW-PAGE-LINE TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING PAGE.
+           MOVE NEXT-LINE TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+       WRT-END-GF-14.
+      *> 
+       WRT-INIT-GF-15.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 52 LINES, TO LINE 54
+      *> 
+           MOVE   "WRT FRM AFT ADV INT LINS" TO FEATURE.
+           MOVE   "WRT-TEST-GF-15" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-15.
+       WRT-DELETE-GF-15.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-15.
+       WRT-TEST-GF-15.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE "51" TO LINES-BELOW-1.
+           MOVE "1" TO LINES-ABOVE-1.
+           WRITE PRINT-REC FROM TEST-LINE-1 AFTER ADVANCING 50 LINES.
+       WRT-END-GF-15.
+      *> 
+       WRT-INIT-GF-16.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 3 LINES, TO LINE 55
+      *> 
+           MOVE   "WRT FRM AFT ADV INT LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-16" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-16.
+       WRT-DELETE-GF-16.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-16.
+       WRT-TEST-GF-16.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "2" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           WRITE   PRINT-REC FROM TEST-LINE-1 AFTER ADVANCING 1 LINE.
+       WRT-END-GF-16.
+      *> 
+       WRT-INIT-GF-17.
+      *> 
+      *>     THE NEXT TEST IN NORMAL SEQUENCE WOULD PROBABLY OVERFLOW
+      *>     THE CURRENT PAGE, SO ANOTHER TEST OF ADVANCING PAGE IS
+      *>     INSERTED HERE.  IT SHOULD LEAVE LINE 2 ON THE NEW PAGE AS
+      *>     THE CURRENT LINE, SO THAT THE FIRST WRT-TEST LINE ON THE
+      *>     NEW PAGE IS ON THE THIRD PRINTABLE LINE.
+      *> 
+           MOVE   "WRITE AFTER PAGE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-17" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-17.
+       WRT-DELETE-GF-17.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-17.
+       WRT-TEST-GF-17.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    NEW-PAGE-LINE TO PRINT-REC.
+           WRITE   PRINT-REC AFTER PAGE.
+           MOVE    NEXT-LINE TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING 1 LINE.
+       WRT-END-GF-17.
+      *> 
+       WRT-INIT-GF-18.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 3 LINES, TO LINE 5
+      *> 
+           MOVE   "WRT FRM AFTER INT LINE/S" TO FEATURE.
+           MOVE   "WRT-TEST-GF-18" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-18.
+       WRT-DELETE-GF-18.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-18.
+       WRT-TEST-GF-18.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE "18" TO OVERPRINTED-TEST.
+           WRITE PRINT-REC FROM OVERPRINTED-LINE AFTER
+                    000000000000000001 LINE.
+           MOVE "18" TO OVERPRINT-TEST.
+           WRITE PRINT-REC FROM OVERPRINT-LINE AFTER
+                    000000000000000000 LINES.
+       WRT-END-GF-18.
+      *> 
+       WRT-INIT-GF-19.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 3 LINES, TO LINE 8
+      *> 
+           MOVE   "WRITE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-19" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-19.
+       WRT-DELETE-GF-19.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-19.
+       WRT-TEST-GF-19.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "2" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE   PRINT-REC.
+       WRT-END-GF-19.
+      *> 
+       WRT-INIT-GF-20.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 3 LINES, TO LINE 11
+      *> 
+           MOVE   "WRITE FROM" TO FEATURE.
+           MOVE   "WRT-TEST-GF-20" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-20.
+       WRT-DELETE-GF-20.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-20.
+       WRT-TEST-GF-20.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "2" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           WRITE   PRINT-REC FROM TEST-LINE-1.
+       WRT-END-GF-20.
+      *> 
+       WRT-INIT-GF-21.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 3 LINES, TO LINE 14
+      *>     IDENTIFIER-1 IS A SUBORDINATE GROUP ITEM
+      *> 
+           MOVE   "WRT SUBGR BFR ADV INT" TO FEATURE.
+           MOVE   "WRT-TEST-GF-21" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-21.
+       WRT-DELETE-GF-21.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-21.
+       WRT-TEST-GF-21.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-2.
+           MOVE   "2" TO LINES-ABOVE-2.
+           WRITE   PRINT-REC FROM TEST-LINE-2 BEFORE ADVANCING 1.
+       WRT-END-GF-21.
+      *> 
+       WRT-INIT-GF-22.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 4 LINES, TO LINE 18
+      *>     IDENTIFIER-1 IS A SUBORDINATE GROUP ITEM
+      *> 
+           MOVE   "WRT SUBGRP BEFORE INT" TO FEATURE.
+           MOVE   "WRT-TEST-GF-22" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-22.
+       WRT-DELETE-GF-22.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-22.
+       WRT-TEST-GF-22.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-2.
+           MOVE   "3" TO LINES-ABOVE-2.
+           WRITE   PRINT-REC FROM TEST-LINE-2 BEFORE 2.
+       WRT-END-GF-22.
+      *> 
+       WRT-INIT-GF-23.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 3 LINES, TO LINE 21
+      *> 
+           MOVE   "WRT FROM 77 AFT ADV INT" TO FEATURE.
+           MOVE   "WRT-TEST-23" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-23.
+       WRT-DELETE-GF-23.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-23.
+       WRT-TEST-GF-23.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           WRITE PRINT-REC FROM SEVENTY-SEVEN AFTER ADVANCING 1.
+       WRT-END-GF-23.
+      *> 
+       WRT-INIT-GF-24.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 5 LINES, TO LINE 26
+      *> 
+           MOVE   "WRT FROM AFTER INT" TO FEATURE.
+           MOVE   "WRT-TEST-GF-24" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-24.
+       WRT-DELETE-GF-24.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-24.
+       WRT-TEST-GF-24.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "4" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           WRITE   PRINT-REC FROM TEST-LINE-1 AFTER 3.
+       WRT-END-GF-24.
+      *> 
+       WRT-INIT-GF-25.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 2 LINES, TO LINE 28
+      *> 
+           MOVE   "WRT BEFORE ADV ZERO" TO FEATURE.
+           MOVE   "WRT-TEST-GF-25" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-25.
+       WRT-DELETE-GF-25.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-25.
+       WRT-TEST-GF-25.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           MOVE TEST-LINE-1 TO PRINT-REC.
+           WRITE PRINT-REC BEFORE ADVANCING ZERO.
+       WRT-END-GF-25.
+      *> 
+       WRT-INIT-GF-26.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 7 LINES, TO LINE 35
+      *> 
+           MOVE   "WRT BEFORE INT" TO FEATURE.
+           MOVE   "WRT-TEST-GF-26" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-26.
+       WRT-DELETE-GF-26.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-26.
+       WRT-TEST-GF-26.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-2.
+           MOVE   "6" TO LINES-ABOVE-2.
+           MOVE    TEST-LINE-2 TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE 5.
+       WRT-END-GF-26.
+      *> 
+       WRT-INIT-GF-27.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 7 LINES, TO LINE 42
+      *> 
+           MOVE   "WRT AFTER ADVANCING INT" TO FEATURE.
+           MOVE   "WRT-TEST-GF-27" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-27.
+       WRT-DELETE-GF-27.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-27.
+       WRT-TEST-GF-27.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "6" TO LINES-BELOW-2.
+           MOVE   "1" TO LINES-ABOVE-2.
+           MOVE    TEST-LINE-2 TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING 5.
+       WRT-END-GF-27.
+      *> 
+       WRT-INIT-GF-28.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 3 LINES, TO LINE 45
+      *> 
+           MOVE   "WRT AFTER INT" TO FEATURE.
+           MOVE   "WRT-TEST-GF-28" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-28.
+       WRT-DELETE-GF-28.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-28.
+       WRT-TEST-GF-28.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "2" TO LINES-BELOW-2.
+           MOVE   "1" TO LINES-ABOVE-2.
+           MOVE    TEST-LINE-2 TO PRINT-REC.
+           WRITE   PRINT-REC AFTER 1.
+       WRT-END-GF-28.
+      *> 
+       WRT-INIT-GF-29.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION TO A NEW PAGE.  IT
+      *>     SHOULD LEAVE LINE 2 ON THE NEW PAGE AS THE CURRENT LINE, SO
+      *>     THAT THE FIRST WRT-TEST LINE ON THE NEW PAGE IS ON THE
+      *>     THIRD PRINTABLE LINE.
+      *> 
+           MOVE   "WRT FROM BEFORE ADV PAGE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-29" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-29.
+       WRT-DELETE-GF-29.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-29.
+       WRT-TEST-GF-29.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           WRITE   DUMMY-RECORD FROM LAST-LINE BEFORE ADVANCING PAGE.
+           MOVE    NEW-PAGE-LINE TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ADVANCING 1 LINE.
+           MOVE    NEXT-LINE TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ADVANCING 0 LINE.
+       WRT-END-GF-29.
+      *> 
+       WRT-INIT-GF-30.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION MANY LINES, 
+      *>     OVERFLOWING SEVERAL PAGES.  NO SPECIAL PROVISION IS MADE
+      *>     FOR OVERFLOW HANDLING.
+      *> 
+           MOVE   "CHARACTERS IN COLUMN 1" TO FEATURE.
+           MOVE   "WRT-TEST-GF-30" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-30.
+       WRT-DELETE-GF-30.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-30.
+       WRT-TEST-GF-30.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           PERFORM BLANK-LINE-PRINT.
+           MOVE " COLUMN 1 OF EACH OF THE LINES BELOW CONTAINS A NON-BLANK CHARACTER.  IN THE PAST, CHARACTERS IN THIS POSITION MIGHT"     TO PRINT-REC.
+           WRITE PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE " HAVE CONTROLLED PAPER MOVEMENT AND BEEN SUPPRESSED.  THIS PRACTICE DOES NOT CONFORM TO THE STANDARD."
+                   TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING 1 LINES.
+           MOVE   " ALL LINES SHOULD BE PRINTED SINGLE-SPACED, AND EACH  CONTAINS A SEQUENCE NUMBER, STARTING WITH 001"
+                   TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING 1 LINES.
+           MOVE " THE CHARACTERS PRINTED SHOULD BE AS FOLLOWS --- 0 1 2 3 4 5 6 7 8 9 + - * / = $ , . ; ( ) < > A B C . . . Z AND"
+                   TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE   " a b c . . . z AND QUOTE"  TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE   " PRINTING BEGINS ON THE NEXT LINE BELOW ---"
+                   TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE    SPACES TO CHAR-LINE.
+           MOVE    ZERO TO LIN-SER.
+           MOVE "0" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "1" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "2" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "3" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "4" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "5" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "6" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "7" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "8" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "9" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "+" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "-" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "*" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "/" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "=" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "$" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "," TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "." TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE ";" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "(" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE ")" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "<" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE ">" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "A" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "B" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "C" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "D" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "E" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "F" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "G" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "H" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "I" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "J" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "K" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "L" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "M" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "N" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "O" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "P" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "Q" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "R" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "S" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "T" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "U" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "V" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "W" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "X" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "Y" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "Z" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "a" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "b" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "c" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "d" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "e" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "f" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "g" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "h" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "i" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "j" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "k" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "l" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "m" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "n" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "o" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "p" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "q" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "r" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "s" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "t" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "u" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "v" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "w" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "x" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "y" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE "z" TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+           MOVE QU-OTE TO LIN-CH PERFORM COL-1-CHAR-PRINT.
+       WRT-END-GF-30.
+      *> 
+       WRT-INIT-GF-31.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION TO A NEW PAGE.  IT
+      *>     SHOULD LEAVE LINE 2 ON THE NEW PAGE AS THE CURRENT LINE, SO
+      *>     THAT THE FIRST WRT-TEST LINE ON THE NEW PAGE IS ON THE
+      *>     THIRD PRINTABLE LINE.
+      *> 
+           MOVE   "WRT FROM BEFORE PAGE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-31" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-31.
+       WRT-DELETE-GF-31.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-31.
+       WRT-TEST-GF-31.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           WRITE   DUMMY-RECORD FROM LAST-LINE BEFORE PAGE.
+           MOVE    NEW-PAGE-LINE TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ADVANCING 1 LINE.
+           MOVE    NEXT-LINE TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ADVANCING 0 LINE.
+       WRT-END-GF-31.
+      *> 
+       WRT-INIT-GF-32.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 2 LINES, TO LINE 5
+      *> 
+           MOVE   "WRT FRM BFR ADV P99 LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-32" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-32.
+       WRT-DELETE-GF-32.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-32.
+       WRT-TEST-GF-32.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    0 TO IDENTIFIER-2.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           WRITE PRINT-REC FROM TEST-LINE-1 BEFORE ADVANCING
+                    IDENTIFIER-2 LINE.
+       WRT-END-GF-32.
+      *> 
+       WRT-INIT-GF-33.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 3 LINES, TO LINE 8
+      *> 
+           MOVE   "WRT FRM BFR ADV P99 LINS" TO FEATURE.
+           MOVE   "WRT-TEST-GF-33" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-33.
+       WRT-DELETE-GF-33.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-33.
+       WRT-TEST-GF-33.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    1 TO IDENTIFIER-2.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "2" TO LINES-ABOVE-1.
+           WRITE PRINT-REC FROM TEST-LINE-1 BEFORE ADVANCING
+                    IDENTIFIER-2 LINES.
+       WRT-END-GF-33.
+      *> 
+       WRT-INIT-GF-34.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 4 LINES, TO LINE 12
+      *> 
+           MOVE "WRT FRM BEFORE ADV PIC99" TO FEATURE.
+           MOVE "WRT-TEST-GF-34" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-34.
+       WRT-DELETE-GF-34.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-34.
+       WRT-TEST-GF-34.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    2 TO IDENTIFIER-2.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "3" TO LINES-ABOVE-1.
+           WRITE   PRINT-REC FROM TEST-LINE-1 BEFORE ADVANCING
+                    IDENTIFIER-2.
+       WRT-END-GF-34.
+      *> 
+       WRT-INIT-GF-35.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 5 LINES, TO LINE 17
+      *> 
+           MOVE   "WRT FROM BEFORE P99 LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-35" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-35.
+       WRT-DELETE-GF-35.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-35.
+       WRT-TEST-GF-35.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    3 TO IDENTIFIER-2.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "4" TO LINES-ABOVE-1.
+           WRITE PRINT-REC FROM TEST-LINE-1 BEFORE IDENTIFIER-2 LINE.
+       WRT-END-GF-35.
+      *> 
+       WRT-INIT-GF-36.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 6 LINES, TO LINE 23
+      *> 
+           MOVE   "WRT FRM BEFORE P99 LINES" TO FEATURE.
+           MOVE   "WRT-TEST-GF-36" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-36.
+       WRT-DELETE-GF-36.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-36.
+       WRT-TEST-GF-36.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    4 TO IDENTIFIER-2.
+           WRITE   PRINT-REC FROM OH-ONE BEFORE IDENTIFIER-2 LINES.
+       WRT-END-GF-36.
+      *> 
+       WRT-INIT-GF-37.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 7 LINES, TO LINE 29
+      *> 
+           MOVE   "WRT FROM 03 BEFORE PIC99" TO FEATURE.
+           MOVE   "WRT-TEST-GF-37" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-37.
+       WRT-DELETE-GF-37.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-37.
+       WRT-TEST-GF-37.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    5 TO IDENTIFIER-2.
+           WRITE   PRINT-REC FROM OH-THREE BEFORE IDENTIFIER-2.
+       WRT-END-GF-37.
+      *> 
+       WRT-INIT-GF-38.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 8 LINES, TO LINE 37
+      *> 
+           MOVE   "WRT FRM AFT ADV P99 LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-38" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-38.
+       WRT-DELETE-GF-38.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-38.
+       WRT-TEST-GF-38.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    6 TO IDENTIFIER-2.
+           WRITE   PRINT-REC FROM SEVENTY-SEVEN-2 AFTER ADVANCING
+                    IDENTIFIER-2 LINE.
+       WRT-END-GF-38.
+      *> 
+       WRT-INIT-GF-39.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 9 LINES, TO LINE 46
+      *> 
+           MOVE   "WRT FRM AFT ADV P99 LINS" TO FEATURE.
+           MOVE   "WRT-TEST-GF-39" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-39.
+       WRT-DELETE-GF-39.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-39.
+       WRT-TEST-GF-39.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    7 TO IDENTIFIER-2.
+           MOVE   "8" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           WRITE   PRINT-REC FROM TEST-LINE-1 AFTER ADVANCING
+                    IDENTIFIER-2 LINES.
+       WRT-END-GF-39.
+      *> 
+       WRT-INIT-GF-40.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 10 LINES, TO LINE 56
+      *> 
+           MOVE "WRT FRM AFT ADV ID2" TO FEATURE.
+           MOVE "WRT-TEST-44" TO PAR-NAME.
+           PERFORM WRITE-TEST-LINE.
+           MOVE 8 TO IDENTIFIER-2.
+           MOVE "9" TO LINES-BELOW-1.
+           MOVE "1" TO LINES-ABOVE-1.
+           WRITE PRINT-REC FROM TEST-LINE-1 AFTER ADVANCING
+                    IDENTIFIER-2.
+       WRT-END-GF-40.
+      *> 
+       WRT-INIT-GF-41.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION TO A NEW PAGE.  IT
+      *>     SHOULD LEAVE LINE 2 ON THE NEW PAGE AS THE CURRENT LINE, SO
+      *>     THAT THE FIRST WRT-TEST LINE ON THE NEW PAGE IS ON THE
+      *>     THIRD PRINTABLE LINE.
+      *> 
+           MOVE   "WRT FROM AFTER ADV PAGE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-41" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-41.
+       WRT-DELETE-GF-41.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-41.
+       WRT-TEST-GF-41.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           WRITE   PRINT-REC FROM NEW-PAGE-LINE AFTER ADVANCING PAGE.
+           MOVE    NEXT-LINE TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING 1 LINE.
+       WRT-END-GF-41.
+      *> 
+       WRT-INIT-GF-42.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 2 LINES, TO LINE 5
+      *> 
+           MOVE   "WRT FROM AFTER ID2 LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-42" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-42.
+       WRT-DELETE-GF-42.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-42.
+       WRT-TEST-GF-42.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    0 TO IDENTIFIER-2.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           WRITE PRINT-REC FROM TEST-LINE-1 AFTER IDENTIFIER-2 LINE.
+       WRT-END-GF-42.
+      *> 
+       WRT-INIT-GF-43.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 4 LINES, TO LINE 9
+      *> 
+           MOVE   "WRT FROM AFTER S99 LINES" TO FEATURE.
+           MOVE   "WRT-TEST-GF-43" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-43.
+       WRT-DELETE-GF-43.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-43.
+       WRT-TEST-GF-43.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    2 TO IDENT-2-S99.
+           MOVE   "3" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           WRITE   PRINT-REC FROM TEST-LINE-1 AFTER IDENT-2-S99 LINES.
+       WRT-END-GF-43.
+      *> 
+       WRT-INIT-GF-44.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 3 LINES, TO LINE 12
+      *> 
+           MOVE   "WRT FROM AFTER C99" TO FEATURE.
+           MOVE   "WRT-TEST-GF-44" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-44.
+       WRT-DELETE-GF-44.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-44.
+       WRT-TEST-GF-44.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    1 TO IDENT-2-C99.
+           MOVE   "2" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           WRITE   PRINT-REC FROM TEST-LINE-1 AFTER IDENT-2-C99.
+       WRT-END-GF-44.
+      *> 
+       WRT-INIT-GF-45.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 4 LINES, TO LINE 16
+      *> 
+           MOVE   "WRT BEFORE ADV S99 LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-45" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-45.
+       WRT-DELETE-GF-45.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-45.
+       WRT-TEST-GF-45.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    2 TO IDENT-2-S99.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "3" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE PRINT-REC BEFORE ADVANCING IDENT-2-S99 LINE.
+       WRT-END-GF-45.
+      *> 
+       WRT-INIT-GF-46.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 4 LINES, TO LINE 20
+      *> 
+           MOVE   "WRT BEFORE ADV S99 LINES" TO FEATURE.
+           MOVE   "WRT-TEST-GF-46" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-46.
+       WRT-DELETE-GF-46.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-46.
+       WRT-TEST-GF-46.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    2 TO IDENT-2-S99.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "3" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ADVANCING IDENT-2-S99 LINES.
+       WRT-END-GF-46.
+      *> 
+       WRT-INIT-GF-47.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 4 LINES, TO LINE 24
+      *> 
+           MOVE   "WRT BEFORE ADV S99" TO FEATURE.
+           MOVE   "WRT-TEST-GF-47" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-47.
+       WRT-DELETE-GF-47.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-47.
+       WRT-TEST-GF-47.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    2 TO IDENT-2-S99.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "3" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ADVANCING IDENT-2-S99.
+       WRT-END-GF-47.
+      *> 
+       WRT-INIT-GF-48.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 3 LINES, TO LINE 27
+      *> 
+           MOVE   "WRT BEFORE PIC9 LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-48" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-48.
+       WRT-DELETE-GF-48.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-48.
+       WRT-TEST-GF-48.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "2" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE ONE LINE.
+           PERFORM INSPT.
+       WRT-END-GF-48.
+      *> 
+       WRT-INIT-GF-49.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 4 LINES, TO LINE 31
+      *> 
+           MOVE   "WRT BEFORE PIC9 LINES" TO FEATURE.
+           MOVE   "WRT-TEST-GF-49" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-49.
+       WRT-DELETE-GF-49.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-49.
+       WRT-TEST-GF-49.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "3" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE TWO LINES.
+       WRT-END-GF-49.
+      *> 
+       WRT-INIT-GF-50.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 5 LINES, TO LINE 36
+      *> 
+           MOVE   "WRT BEFORE PIC9" TO FEATURE.
+           MOVE   "WRT-TEST-GF-50" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-50.
+       WRT-DELETE-GF-50.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-50.
+       WRT-TEST-GF-50.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "4" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE   PRINT-REC BEFORE THREE.
+       WRT-END-GF-50.
+      *> 
+       WRT-INIT-GF-51.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 6 LINES, TO LINE 42
+      *> 
+           MOVE   "WRT AFTER ADV PIC9 LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-51" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-51.
+       WRT-DELETE-GF-51.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-51.
+       WRT-TEST-GF-51.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "5" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING FOUR LINE.
+       WRT-END-GF-51.
+      *> 
+       WRT-INIT-GF-52.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 2 LINES, TO LINE 44
+      *> 
+           MOVE   "WRT AFT ADV 9(18) LINES" TO FEATURE.
+           MOVE   "WRT-TEST-GF-52" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-52.
+       WRT-DELETE-GF-52.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-52.
+       WRT-TEST-GF-52.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "1" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING LONG-ZERO LINES.
+       WRT-END-GF-52.
+      *> 
+       WRT-INIT-GF-53.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 3 LINES, TO LINE 47
+      *> 
+           MOVE   "WRT AFTER ADV 9(18)" TO FEATURE.
+           MOVE   "WRT-TEST-GF-53" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-53.
+       WRT-DELETE-GF-53.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-53.
+       WRT-TEST-GF-53.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE   "2" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING LONG-ONE.
+       WRT-END-GF-53.
+      *> 
+       WRT-INIT-GF-54.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 4 LINES, TO LINE 51
+      *> 
+           MOVE   "WRT AFTER S99 LINE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-54" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-54.
+       WRT-DELETE-GF-54.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-54.
+       WRT-TEST-GF-54.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    2 TO IDENT-2-S99.
+           MOVE   "3" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE   PRINT-REC AFTER IDENT-2-S99 LINE.
+       WRT-END-GF-54.
+      *> 
+       WRT-INIT-GF-55.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 4 LINES, TO LINE 55
+      *> 
+           MOVE   "WRT AFTER PIC99 LINES" TO FEATURE.
+           MOVE   "WRT-TEST-GF-55" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-55.
+       WRT-DELETE-GF-55.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-55.
+       WRT-TEST-GF-55.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    2 TO IDENTIFIER-2.
+           MOVE   "3" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           MOVE    TEST-LINE-1 TO PRINT-REC.
+           WRITE   PRINT-REC AFTER IDENTIFIER-2 LINES.
+       WRT-END-GF-55.
+      *> 
+       WRT-INIT-GF-56.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION 4 LINES, TO LINE 59
+      *> 
+           MOVE   "WRT AFTER PIC99" TO FEATURE.
+           MOVE   "WRT-TEST-GF-56" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-56.
+       WRT-DELETE-GF-56.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-56.
+       WRT-TEST-GF-56.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           MOVE    2 TO IDENTIFIER-2.
+           MOVE   "3" TO LINES-BELOW-1.
+           MOVE   "1" TO LINES-ABOVE-1.
+           MOVE TEST-LINE-1 TO PRINT-REC.
+           WRITE PRINT-REC AFTER IDENTIFIER-2.
+       WRT-END-GF-56.
+      *> 
+       WRT-INIT-GF-57.
+      *> 
+      *>     THIS TEST ADVANCES THE PRINT POSITION TO A NEW PAGE.  IT
+      *>     SHOULD LEAVE LINE 2 ON THE NEW PAGE AS THE CURRENT LINE, SO
+      *>     THAT THE FIRST WRT-TEST LINE ON THE NEW PAGE IS ON THE
+      *>     THIRD PRINTABLE LINE.
+      *> 
+           MOVE   "WRT FROM AFTER PAGE" TO FEATURE.
+           MOVE   "WRT-TEST-GF-57" TO PAR-NAME.
+           GO TO   WRT-TEST-GF-57.
+       WRT-DELETE-GF-57.
+           PERFORM DE-LETE.
+           GO TO   WRT-END-GF-57.
+       WRT-TEST-GF-57.
+           PERFORM INSPT.
+           PERFORM WRITE-TEST-LINE.
+           WRITE   PRINT-REC FROM NEW-PAGE-LINE AFTER PAGE.
+           MOVE    NEXT-LINE TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING 1 LINE.
+       WRT-END-GF-57.
+      *> 
+       AFTER-LAST-TEST.
+           MOVE    "FINAL WRT TEST LINE" TO FEATURE.
+           MOVE     "AFTER-LAST-TEST" TO PAR-NAME.
+           PERFORM  WRITE-TEST-LINE.
+      *> 
+      *> 
+       SQ-END-ROUTINE.
+           GO TO CCVS-EXIT.
+      *> 
+       WRITE-TEST-LINE.
+           MOVE    TEST-RESULTS TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING 1 LINE.
+           MOVE    SPACE TO PRINT-REC.
+           WRITE   PRINT-REC AFTER ADVANCING 1 LINE.
+      *> 
+       COL-1-CHAR-PRINT.
+           ADD     1 TO LIN-SER
+           MOVE    CHAR-LINE TO PRINT-REC
+           WRITE   PRINT-REC AFTER ADVANCING 1 LINE.
+      *> 
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,SQ101M

@@ -1,0 +1,87 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n            
+					(programName 
+						(cobolWord IC212A)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(linkageSection LINKAGE SECTION .\n        
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord TEST-AREA)) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord TEST1)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord TEST2)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord TEST3)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord TEST4)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X))) .\n       ))))) 
+			(procedureDivision PROCEDURE DIVISION 
+				(procedureDivisionUsingClause USING 
+					(procedureDivisionUsingParameter 
+						(procedureDivisionByReferencePhrase 
+							(procedureDivisionByReference 
+								(identifier 
+									(qualifiedDataName 
+										(qualifiedDataNameFormat1 
+											(dataName 
+												(cobolWord TEST-AREA))))))))) .\n        
+				(procedureDivisionBody 
+					(paragraphs 
+						(paragraph 
+							(paragraphName 
+								(cobolWord CALL-TEST-3)) .\n            
+							(sentence 
+								(statement 
+									(moveStatement MOVE 
+										(moveToStatement 
+											(moveToSendingArea 
+												(literal "Y")) TO 
+											(identifier 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord TEST3)))))))) .\n       )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IC212-EXIT)) .\n            
+							(sentence 
+								(statement 
+									(exitStatement EXIT PROGRAM)) .\n      ))))))) <EOF>)

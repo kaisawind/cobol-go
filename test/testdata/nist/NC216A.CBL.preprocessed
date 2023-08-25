@@ -1,0 +1,2178 @@
+      *> HEADER,COBOL,NC216A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC216A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     PROGRAM NC216A TESTS ALL FOUR FORMATS OF THE "INSPECT"    *
+      *>     STATEMENT USING VARIOUS COMBINATIONS OF THE OPTIONAL      *
+      *>     PHRASES: CHARACTERS, ALL, LEADING, FIRST, BEFORE, AFTER.  *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  WRK-DU-999-1 PIC 999.
+       01  WRK-DU-999-2 PIC 999.
+       01  WRK-DU-999-3 PIC 999.
+       01  WRK-DU-999-4 PIC 999.
+       01  JUST-XN-20-1 PIC X(20) JUSTIFIED.
+       01  SPACE-XN-1-1 PIC X VALUE SPACE.
+       01  COMMA-XN-1-1 PIC X VALUE ",".
+       01  HYPEN-XN-1-1 PIC X VALUE "-".
+       01  A-XN-1-1 PIC X VALUE "A".
+       01  D-XN-1-1 PIC X VALUE "D".
+       01  G-XN-1-1 PIC X VALUE "G".
+       01  H-XN-1-1 PIC X VALUE "H".
+       01  L-XN-1-1 PIC X VALUE "L".
+       01  O-XN-1-1 PIC X VALUE "O".
+       01  P-XN-1-1 PIC X VALUE "P".
+       01  S-XN-1-1 PIC X VALUE "S".
+       01  Z-XN-1-1 PIC X VALUE "Z".
+       01  AH-XN-2 PIC X(2) VALUE "AH".
+       01  HSPACE-XN-2 PIC X(2) VALUE "H ".
+       01  OH-XN-2 PIC X(2) VALUE "OH".
+       01  ALL-XN-3 PIC X(3) VALUE "ALL".
+       01  YES-XN-3 PIC X(3) VALUE "YES".
+       01  X-SPACE-X-XN-3                  PICTURE X(3) VALUE "X X".
+       01  AABA-XN-4                       PICTURE X(4) VALUE "AABA".
+       01  WRK-XN-83-1 PIC X(83).
+       01  WRK-XN-83-2  PIC X(83).
+       01  WRK-DS-5V0-1  PIC S9(5) VALUE -12345.
+       01  WRK-NE-1  PIC -999,999.99/9 VALUE "-123,456.78/9".
+       01  KIDS-CAN-NOT-BE  PIC  X(15)  VALUE "KIDS CAN NOT BE".
+       01  BLANK-PERIOD PIC X(2) VALUE " ." .
+       01  WC-XN-83  PIC X(83) VALUE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD.".
+       01  ANS-XN-83-1 PIC X(83) VALUE
+           "OH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD.".
+       01  ANS-XN-83-2 PIC X(83) VALUE
+           "AH YES,AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD.".
+       01  ANS-XN-83-3 PIC X(83) VALUE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL-BAD.".
+       01  ANS-XN-83-4 PIC X(83) VALUE
+           "EH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD.".
+       01  ANS-XN-83-5 PIC X(83) VALUE
+           "AH YES OH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD.".
+       01  ANS-XN-83-6 PIC X(83) VALUE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALZZZZZZ".
+       01  ANS-XN-83-7 PIC X(83) VALUE
+           "OH-YES-AH-YES-W.P.-ZRITOES-HERE.-ANYONE-WHO-HATES-DOGS-AND-KIDS-CAN-NOT-BE-ALZZZZZZ".
+       01  ANS-XN-83-8 PIC X(83) VALUE
+           "AH-YES-AH-YES-W.C.-FRITOES-HERE.-ANYONE-WHO-HATES-DOGS-AND-KIDS-CAN-NOT-BE-ALL-BAD.".
+       01  ANS-XN-83-9  PIC X(83) VALUE
+           "OH YES AH YES W.C. FROTOES HERE, ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD.".
+       01  ANS-XN-83-10 PIC X(83) VALUE
+           "OH YES AH YES W.C. FRITOES HE                                           BE ALL BAD.".
+       01  ANS-XN-83-11 PIC X(83) VALUE
+           "OH YES AH                                                                        D.".
+       
+       
+       01  WS-RIGHT-1-83.
+         03  WS-RIGHT-1-20                PIC X(20).
+         03  WS-RIGHT-21-40               PIC X(20).
+         03  WS-RIGHT-41-60               PIC X(20).
+         03  WS-RIGHT-61-80               PIC X(20).
+         03  WS-RIGHT-81-83               PIC X(3).
+       01  WS-WRONG-1-83.
+         03  WS-WRONG-1-20                PIC X(20).
+         03  WS-WRONG-21-40               PIC X(20).
+         03  WS-WRONG-41-60               PIC X(20).
+         03  WS-WRONG-61-80               PIC X(20).
+         03  WS-WRONG-81-83               PIC X(3).
+       
+       01  INSPECT-FIELDS.
+         03  GRP-A.
+           05  PIC X(7)  VALUE "XXXXXXX".
+           05  PIC X(7)  VALUE "YYYYYYY".
+           05  PIC X(7)  VALUE "AAABAAA".
+           05  PIC X(7)  VALUE "SSSSSSS".
+           05  PIC X(7)  VALUE "TTTTTTT".
+         03  GRP-B       REDEFINES GRP-A.
+           05  DATA-FIELD  PIC X(7) OCCURS 5.
+       01  LOCATE-CHARS.
+         03  GRP-C.
+           05  PIC X  VALUE "G".
+           05  PIC X  VALUE "H".
+           05  PIC X  VALUE "B".
+           05  PIC X  VALUE "D".
+           05  PIC X  VALUE "C".
+         03  GRP-D       REDEFINES GRP-C.
+           05  END-CHAR  PIC X OCCURS 5.
+       01  SUB PIC 9 COMP.
+       01  WS-BB         PIC XX VALUE "BB".
+       01  WS-Y          PIC X  VALUE "Y".
+       01  WS-3          PIC X  VALUE "3".
+       01  WS-E          PIC X  VALUE "E".
+       01  XN-DF         PIC XX VALUE "DF".
+       01  XN-67         PIC XX VALUE "67".
+       01  XN-B          PIC X  VALUE "B".
+       01  TEST-31-DATA.
+         03  FILLER PIC X(48)  VALUE
+                  "AABBCCDDEBBBBGHDDIJJXXAABBCCDDEEEFFGGHHIIJJKKLLM".
+       01  TEST-32-DATA.
+         03  FILLER PIC X(48)  VALUE
+                  "AABSSSSSEBBTTTT1URSTSTSTVVDYYDEEEFFGSSSSTZSTZSTM".
+       01  TEST-34-DATA.
+         03  FILLER PIC X(20)  VALUE
+                  "AAFSSA  ET U V W H S".
+       01  TEST-34-ANSWER.
+         03  FILLER PIC X(20)  VALUE
+                  "AAFXXA  ET Y Y Y H S".
+       01  TEST-35-DATA.
+         03  FILLER PIC X(20)  VALUE
+                  "AX SSA YEG U V W H S".
+       01  TEST-35-ANSWER.
+         03  FILLER PIC X(20)  VALUE
+                  "AX AAA YEG       H S".
+       01  TEST-38-DATA.
+         03  FILLER PIC X(20)  VALUE
+                  "AXESSA YEGTUASSW H S".
+       01  TEST-39-DATA.
+         03  FILLER PIC X(20)  VALUE
+                  "ABESSA YE TUTCGW H S".
+       01  TEST-40-DATA.
+         03  FILLER PIC X(13)  VALUE
+                  "GADQAUZTABAGA".
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC216A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC216A-001 SECTION.
+      *> 
+       INS-INIT-F1-1.
+           MOVE "INS-TEST-F1-1" TO PAR-NAME.
+           MOVE   "VI-94" TO ANSI-REFERENCE.
+           MOVE "TALLY FOR CHARACTERS" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE    ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-1.
+           INSPECT WC-XN-83 TALLYING WRK-DU-999-1 FOR CHARACTERS.
+           IF      WRK-DU-999-1 EQUAL TO 83
+                   PERFORM PASS
+                   GO TO   INS-WRITE-F1-1.
+           GO TO INS-FAIL-F1-1.
+       INS-DELETE-F1-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-1.
+       INS-FAIL-F1-1.
+           PERFORM FAIL.
+           MOVE WRK-DU-999-1 TO COMPUTED-N.
+           MOVE 83 TO CORRECT-N.
+       INS-WRITE-F1-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-2.
+           MOVE "INS-TEST-F1-2" TO PAR-NAME.
+           MOVE   "VI-94" TO ANSI-REFERENCE.
+           MOVE "TALLY ALL LITERAL" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-2.
+           INSPECT WC-XN-83 TALLYING WRK-DU-999-1 FOR ALL "A".
+           IF      WRK-DU-999-1 EQUAL TO 8
+                  PERFORM PASS
+                  GO      TO INS-WRITE-F1-2.
+           GO TO INS-FAIL-F1-2.
+       INS-DELETE-F1-2.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-2.
+       INS-FAIL-F1-2.
+           PERFORM FAIL.
+           MOVE WRK-DU-999-1 TO COMPUTED-N.
+           MOVE 8 TO CORRECT-N.
+       INS-WRITE-F1-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-3.
+           MOVE "INS-TEST-F1-3" TO PAR-NAME.
+           MOVE   "VI-94" TO ANSI-REFERENCE.
+           MOVE "TALLY FOR ALL SPACES" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-3.
+           INSPECT WC-XN-83 TALLYING WRK-DU-999-1 FOR ALL SPACES.
+           IF      WRK-DU-999-1 EQUAL TO 17
+           PERFORM PASS
+           GO      TO INS-WRITE-F1-3.
+           GO TO INS-FAIL-F1-3.
+       INS-DELETE-F1-3.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-3.
+       INS-FAIL-F1-3.
+           PERFORM FAIL.
+           MOVE WRK-DU-999-1 TO COMPUTED-N.
+           MOVE 17 TO CORRECT-N.
+       INS-WRITE-F1-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-4.
+           MOVE "INS-TEST-F1-4" TO PAR-NAME.
+           MOVE   "VI-94" TO ANSI-REFERENCE.
+           MOVE "TALLY LEADING LIT" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-4.
+           INSPECT WC-XN-83 TALLYING WRK-DU-999-1 FOR LEADING "AH".
+           IF      WRK-DU-999-1 EQUAL TO 1
+           PERFORM PASS
+           GO      TO INS-WRITE-F1-4.
+           GO TO INS-FAIL-F1-4.
+       INS-DELETE-F1-4.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-4.
+       INS-FAIL-F1-4.
+           PERFORM FAIL.
+           MOVE WRK-DU-999-1 TO COMPUTED-N.
+           MOVE 1 TO CORRECT-N.
+       INS-WRITE-F1-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-5.
+           MOVE "INS-TEST-F1-5" TO PAR-NAME.
+           MOVE   "VI-94" TO ANSI-REFERENCE.
+           MOVE "FOR CHARS AFTER LIT" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-5.
+           INSPECT WC-XN-83 TALLYING WRK-DU-999-1 FOR CHARACTERS
+               AFTER " W".
+           IF      WRK-DU-999-1 EQUAL TO 68
+           PERFORM PASS
+           GO      TO INS-WRITE-F1-5.
+           GO TO INS-FAIL-F1-5.
+       INS-DELETE-F1-5.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-5.
+       INS-FAIL-F1-5.
+           PERFORM FAIL.
+           MOVE WRK-DU-999-1 TO COMPUTED-N.
+           MOVE 68 TO CORRECT-N.
+       INS-WRITE-F1-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-6.
+           MOVE "INS-TEST-F1-6" TO PAR-NAME.
+           MOVE   "VI-94" TO ANSI-REFERENCE.
+           MOVE "ALL BEFORE INITIAL" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-6.
+           INSPECT WC-XN-83 TALLYING WRK-DU-999-1 FOR ALL " "
+               BEFORE INITIAL "W.C.".
+           IF      WRK-DU-999-1 EQUAL TO 4
+           PERFORM PASS
+           GO      TO INS-WRITE-F1-6.
+           GO TO INS-FAIL-F1-6.
+       INS-DELETE-F1-6.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-6.
+       INS-FAIL-F1-6.
+           PERFORM FAIL.
+           MOVE WRK-DU-999-1 TO COMPUTED-N.
+           MOVE 4 TO CORRECT-N.
+       INS-WRITE-F1-6.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-7.
+           MOVE "INS-TEST-F1-7" TO PAR-NAME.
+           MOVE   "VI-94" TO ANSI-REFERENCE.
+           MOVE "LEAD LIT INITIAL FIG" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-7.
+           INSPECT WC-XN-83 TALLYING WRK-DU-999-1 FOR LEADING "Y"
+               AFTER INITIAL SPACES.
+           IF      WRK-DU-999-1 EQUAL TO 1
+           PERFORM PASS
+           GO      TO INS-WRITE-F1-7.
+           GO TO INS-FAIL-F1-7.
+       INS-DELETE-F1-7.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-7.
+       INS-FAIL-F1-7.
+           PERFORM FAIL.
+           MOVE WRK-DU-999-1 TO COMPUTED-N.
+           MOVE 1 TO CORRECT-N.
+       INS-WRITE-F1-7.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F2-8.
+           MOVE "INS-TEST-F2-8" TO PAR-NAME.
+           MOVE   "VI-94 6.17.3" TO ANSI-REFERENCE.
+           MOVE "REP CHARS BY SPACES" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE    WC-XN-83 TO WRK-XN-83-1.
+           MOVE
+           "AH YES OH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO ANS-XN-83-5.
+       INS-TEST-F2-8.
+           INSPECT WRK-XN-83-1 REPLACING CHARACTERS BY SPACES.
+           IF      WRK-XN-83-1 EQUAL TO SPACES
+                   PERFORM PASS
+                   GO      TO INS-WRITE-F2-8.
+           GO TO INS-FAIL-F2-8.
+       INS-DELETE-F2-8.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F2-8.
+       INS-FAIL-F2-8.
+           PERFORM FAIL.
+           MOVE    "83 SPACES" TO RE-MARK.
+           MOVE    WRK-XN-83-1 TO WS-WRONG-1-83.
+           MOVE    SPACES      TO WS-RIGHT-1-83.
+           PERFORM FAIL.
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83.
+           MOVE    ANS-XN-83-5     TO WS-RIGHT-1-83.
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A.
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A.
+           PERFORM PRINT-DETAIL.
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A.
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A.
+           PERFORM PRINT-DETAIL.
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A.
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A.
+           PERFORM PRINT-DETAIL.
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL.
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F2-8.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F2-9.
+           MOVE "INS-TEST-F2-9" TO PAR-NAME.
+           MOVE   "VI-94 6.17.3" TO ANSI-REFERENCE.
+           MOVE "CHARS BEFORE INITIAL" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE
+           "OH YES AH YES W.C. FROTOES HERE, ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO ANS-XN-83-9.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+           MOVE    1 TO REC-CT.
+       INS-TEST-F2-9.
+           INSPECT WRK-XN-83-1
+               REPLACING LEADING "AH" BY "OH" BEFORE INITIAL " AH YES"
+                         FIRST "I" BY "O" AFTER INITIAL "."
+                         ALL ". " BY ", " AFTER INITIAL "HE".
+           MOVE    WRK-XN-83-1 TO WRK-XN-83-2.
+           INSPECT WRK-XN-83-1
+               REPLACING ALL "OT" BY "IT" BEFORE "HE"
+                         LEADING ", " BY ". " AFTER "RE"
+                         FIRST "KIDS CAN NOT BE" BY  KIDS-CAN-NOT-BE
+                         ALL BLANK-PERIOD BY " ." AFTER "BAD".
+           GO      TO INS-TEST-F2-9-1.
+       INS-DELETE-F2-9.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO INS-TEST-F2-10.
+      *> 
+       INS-TEST-F2-9-1.
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-1
+                   PERFORM PASS
+                   GO TO INS-WRITE-F2-9-1
+           ELSE
+                   GO TO INS-FAIL-F2-9-1.
+       INS-DELETE-F2-9-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F2-9-1.
+       INS-FAIL-F2-9-1.
+           PERFORM FAIL
+           MOVE    WRK-XN-83-1 TO COMPUTED-A
+           MOVE    ANS-XN-83-1 TO CORRECT-A.
+       INS-WRITE-F2-9-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F2-9-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-83-2 EQUAL TO ANS-XN-83-9
+                   PERFORM PASS
+                   GO TO INS-WRITE-F2-9-2
+           ELSE
+                   GO TO INS-FAIL-F2-9-2.
+       INS-FAIL-F2-9-2.
+           PERFORM FAIL
+           MOVE    WRK-XN-83-2     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-9     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F2-9-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F2-10.
+           MOVE "INS-TEST-F2-10" TO PAR-NAME.
+           MOVE   "VI-94 6.17.3" TO ANSI-REFERENCE.
+           MOVE "LEAD AFTER INIT ID" TO FEATURE.
+           MOVE    ZERO TO REC-CT.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+       INS-TEST-F2-10.
+           INSPECT WRK-XN-83-1 REPLACING LEADING SPACE-XN-1-1
+               BY COMMA-XN-1-1 AFTER INITIAL YES-XN-3.
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-2
+           PERFORM PASS
+           GO      TO INS-WRITE-F2-10.
+           GO TO INS-FAIL-F2-10.
+       INS-DELETE-F2-10.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F2-10.
+       INS-FAIL-F2-10.
+           PERFORM FAIL.
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-2     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F2-10.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F2-11.
+           MOVE "INS-TEST-F2-11" TO PAR-NAME.
+           MOVE   "VI-94 6.17.3" TO ANSI-REFERENCE.
+           MOVE "FIRST BY ID BEFORE" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+           MOVE "O" TO O-XN-1-1.
+       INS-TEST-F2-11.
+           INSPECT WRK-XN-83-1 REPLACING FIRST "A" BY O-XN-1-1
+               BEFORE INITIAL "H YES".
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-1
+           PERFORM PASS
+           GO      TO INS-WRITE-F2-11.
+           GO TO INS-FAIL-F2-11.
+       INS-DELETE-F2-11.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F2-11.
+       INS-FAIL-F2-11.
+           PERFORM FAIL.
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-1     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F2-11.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F2-12.
+           MOVE "INS-TEST-F2-12" TO PAR-NAME.
+           MOVE   "VI-94 6.17.3" TO ANSI-REFERENCE.
+           MOVE "ALL ID BY LIT AFTER" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+       INS-TEST-F2-12.
+           INSPECT WRK-XN-83-1 REPLACING ALL SPACE-XN-1-1 BY "-"
+               AFTER ALL-XN-3.
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-3
+           PERFORM PASS
+           GO      TO INS-WRITE-F2-12.
+           GO TO INS-FAIL-F2-12.
+       INS-DELETE-F2-12.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F2-12.
+       INS-FAIL-F2-12.
+           PERFORM FAIL.
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-3     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F2-12.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-13.
+           MOVE "INS-TEST-F3-13" TO PAR-NAME.
+           MOVE "VI-94 6.17.3"   TO ANSI-REFERENCE.
+           MOVE "TALLY-REPLACE CHARS" TO FEATURE.
+           MOVE ZERO TO WRK-DU-999-1.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+           MOVE    1 TO REC-CT.
+       INS-TEST-F3-13-0.
+           INSPECT WRK-XN-83-1 TALLYING WRK-DU-999-1 FOR CHARACTERS
+               REPLACING CHARACTERS BY SPACES.
+           GO      TO INS-TEST-F3-13-1.
+       INS-DELETE-F3-13.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO INS-INIT-F3-14.
+      *> 
+       INS-TEST-F3-13-1.
+           IF      WRK-DU-999-1 EQUAL TO 83
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-13-1
+           ELSE
+                   GO TO INS-FAIL-F3-13-1.
+       INS-DELETE-F3-13-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-13-1.
+       INS-FAIL-F3-13-1.
+           PERFORM FAIL
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    83 TO CORRECT-N.
+       INS-WRITE-F3-13-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       TEST-13-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-83-1 EQUAL TO SPACES
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-13-2
+           ELSE
+                   GO TO INS-FAIL-F3-13-2.
+       INS-DELETE-F3-13-2.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-13-2.
+       INS-FAIL-F3-13-2.
+           PERFORM FAIL
+           MOVE    WRK-XN-83-1 TO COMPUTED-A
+           MOVE    "83 SPACES" TO CORRECT-A.
+       INS-WRITE-F3-13-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-14.
+           MOVE "INS-TEST-F3-14" TO PAR-NAME.
+           MOVE "VI-94 6.17.3"   TO ANSI-REFERENCE.
+           MOVE "LIT BY BEFORE INIT" TO FEATURE.
+           MOVE ZERO TO WRK-DU-999-1.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+           MOVE    1 TO REC-CT.
+       INS-TEST-F3-14-0.
+           INSPECT WRK-XN-83-1 TALLYING WRK-DU-999-1 FOR CHARACTERS
+               AFTER L-XN-1-1 REPLACING ALL "A" BY "E" BEFORE INITIAL
+           HSPACE-XN-2.
+           GO TO INS-TEST-F3-14-1.
+       INS-DELETE-F3-14.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO INS-INIT-F3-15.
+      *> 
+       INS-TEST-F3-14-1.
+           IF      WRK-DU-999-1 EQUAL TO 6
+           PERFORM PASS
+                   GO TO INS-WRITE-F3-14-1
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F3-14-1.
+       INS-DELETE-F3-14-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-14-1.
+       INS-FAIL-F3-14-1.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    6 TO CORRECT-N.
+       INS-WRITE-F3-14-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-14-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-4
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-14-2
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F3-14-2.
+       INS-DELETE-F3-14-2.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-14-2.
+       INS-FAIL-F3-14-2.
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-4     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F3-14-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-15.
+           MOVE "INS-TEST-F3-15" TO PAR-NAME.
+           MOVE "VI-94 6.17.3"   TO ANSI-REFERENCE.
+           MOVE "REPL FIRST AFTER" TO FEATURE.
+           MOVE ZERO TO WRK-DU-999-1.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+           MOVE
+           "AH YES OH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO ANS-XN-83-5.
+           MOVE    1 TO REC-CT.
+       INS-TEST-F3-15-0.
+           INSPECT WRK-XN-83-1 TALLYING WRK-DU-999-1 FOR ALL "A" BEFORE
+               L-XN-1-1 REPLACING FIRST  AH-XN-2 BY "OH" AFTER
+               INITIAL HSPACE-XN-2.
+           GO      TO INS-TEST-F3-15-1.
+       INS-DELETE-F3-15.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO INS-INIT-F3-16.
+      *> 
+       INS-TEST-F3-15-1.
+           IF      WRK-DU-999-1 EQUAL TO 7
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-15-1
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F3-15-1.
+       INS-DELETE-F3-15-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-15-1.
+       INS-FAIL-F3-15-1.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    7 TO CORRECT-N.
+       INS-WRITE-F3-15-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-15-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-5
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-15-2
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F3-15-2.
+       INS-DELETE-F3-15-2.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-15-2.
+       INS-FAIL-F3-15-2.
+           MOVE    WRK-XN-83-1 TO COMPUTED-A
+           MOVE    ANS-XN-83-5 TO CORRECT-A.
+       INS-WRITE-F3-15-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-16.
+           MOVE "INS-TEST-F3-16" TO PAR-NAME.
+           MOVE "VI-94 6.17.3"   TO ANSI-REFERENCE.
+           MOVE "FOR LEADING" TO FEATURE.
+           MOVE ZERO TO WRK-DU-999-1.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE
+           "AH YES OH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO ANS-XN-83-5.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+           MOVE    1 TO REC-CT.
+       INS-TEST-F3-16-0.
+           INSPECT WRK-XN-83-1 TALLYING WRK-DU-999-1 FOR LEADING
+               AH-XN-2 REPLACING LEADING AH-XN-2 BY "OH".
+           GO      TO INS-TEST-F3-16-1.
+       INS-DELETE-F3-16.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO INS-INIT-F3-17.
+      *> 
+       INS-TEST-F3-16-1.
+           IF      WRK-DU-999-1 EQUAL TO 1
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-16-1
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F3-16-1.
+       INS-DELETE-F3-16-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-16-1.
+       INS-FAIL-F3-16-1.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       INS-WRITE-F3-16-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-16-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-1
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-16-2
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F3-16-2.
+       INS-DELETE-F3-16-2.
+           PERFORM DE-LETE.
+           GO TO   INS-WRITE-F3-16-2.
+       INS-FAIL-F3-16-2.
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-1     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F3-16-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-17.
+           MOVE "INS-TEST-F3-17" TO PAR-NAME.
+           MOVE "VI-94 6.17.3"   TO ANSI-REFERENCE.
+           MOVE "LIT BY AFTER INIT" TO FEATURE.
+           MOVE ZERO TO WRK-DU-999-1.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+           MOVE
+           "AH YES OH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO ANS-XN-83-5.
+           MOVE    1 TO REC-CT.
+       INS-TEST-F3-17-0.
+           INSPECT WRK-XN-83-1 TALLYING WRK-DU-999-1 FOR ALL "A"
+               REPLACING FIRST "AH" BY "OH" AFTER INITIAL "YES".
+           GO      TO INS-TEST-F3-17-1.
+       INS-DELETE-F3-17.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO INS-INIT-F3-18.
+      *> 
+       INS-TEST-F3-17-1.
+           IF      WRK-DU-999-1 EQUAL TO 8
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-17-1
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F3-17-1.
+       INS-DELETE-F3-17-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-17-1.
+       INS-FAIL-F3-17-1.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    8 TO CORRECT-N.
+       INS-WRITE-F3-17-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-17-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-5
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-17-2
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F3-17-2.
+       INS-DELETE-F3-17-2.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-17-2.
+       INS-FAIL-F3-17-2.
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-5     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F3-17-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-18.
+           MOVE "INS-TEST-F3-18" TO PAR-NAME.
+           MOVE "VI-94 6.17.3"   TO ANSI-REFERENCE.
+           MOVE "CHAR AFTER ALL BEF" TO FEATURE.
+           MOVE ZERO TO WRK-DU-999-1.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+           MOVE 1 TO REC-CT.
+       INS-TEST-F3-18-0.
+           INSPECT WRK-XN-83-1 TALLYING WRK-DU-999-1 FOR CHARACTERS
+               AFTER AH-XN-2 REPLACING ALL "AH" BY "OH" BEFORE YES-XN-3.
+           GO      TO INS-TEST-F3-18-1.
+       INS-DELETE-F3-18.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO INS-INIT-F3-19.
+      *> 
+       INS-TEST-F3-18-1.
+           IF      WRK-DU-999-1 EQUAL TO 81
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-18-1
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F3-18-1.
+       INS-DELETE-F3-18-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-18-1.
+       INS-FAIL-F3-18-1.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    81 TO CORRECT-N.
+       INS-WRITE-F3-18-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-18-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-1
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-18-2
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F3-18-2.
+       INS-DELETE-F3-18-2.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-18-2.
+       INS-FAIL-F3-18-2.
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-1     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F3-18-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-19.
+           MOVE "INS-TEST-F3-19" TO PAR-NAME.
+           MOVE "VI-94 6.17.3"   TO ANSI-REFERENCE.
+           MOVE "TALLY SERIES" TO FEATURE.
+           MOVE ZERO TO WRK-DU-999-1 WRK-DU-999-2 WRK-DU-999-3
+               WRK-DU-999-4.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+           MOVE 1 TO REC-CT.
+           INSPECT WRK-XN-83-1 TALLYING WRK-DU-999-1 FOR ALL "A"
+                   WRK-DU-999-2 FOR LEADING "AH"
+                   WRK-DU-999-3 FOR CHARACTERS BEFORE "."
+                   WRK-DU-999-4 FOR CHARACTERS AFTER "AL"
+                   REPLACING
+                       FIRST "L " BY "ZZ" AFTER INITIAL "AL"
+                       FIRST "BAD" BY "ZZZ" AFTER "L "
+                       LEADING "BAD" BY "ZZZ" BEFORE INITIAL "Q"
+                       FIRST "BAD" BY "ZZZ" BEFORE INITIAL "Z"
+                       FIRST "BAD" BY "ZZZ" AFTER "ALL "
+                       ALL "." BY "Z" AFTER "AL".
+           GO TO INS-TEST-F3-19-1.
+       INS-DELETE-F3-19.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO INS-INIT-F3-20.
+      *> 
+       INS-TEST-F3-19-1.
+           IF WRK-DU-999-1 = 8
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-19-1
+           ELSE
+                   GO TO INS-FAIL-F3-19-1.
+       INS-DELETE-F3-19-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-19-1.
+       INS-FAIL-F3-19-1.
+           PERFORM FAIL
+           MOVE WRK-DU-999-1 TO COMPUTED-N
+           MOVE 8 TO CORRECT-N.
+       INS-WRITE-F3-19-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-19-2.
+           ADD 1 TO REC-CT.
+           IF WRK-DU-999-2 = 0
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-19-2
+           ELSE
+                   GO TO INS-FAIL-F3-19-2.
+       INS-DELETE-F3-19-2.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-19-2.
+       INS-FAIL-F3-19-2.
+           PERFORM FAIL
+           MOVE WRK-DU-999-2 TO COMPUTED-N
+           MOVE 0 TO CORRECT-N.
+       INS-WRITE-F3-19-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-19-3.
+           ADD 1 TO REC-CT.
+           IF WRK-DU-999-3 = 13
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-19-3
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F3-19-3.
+       INS-DELETE-F3-19-3.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-19-3.
+       INS-FAIL-F3-19-3.
+           MOVE WRK-DU-999-3 TO COMPUTED-N
+           MOVE 13 TO CORRECT-N.
+       INS-WRITE-F3-19-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-19-4.
+           ADD 1 TO REC-CT.
+           IF WRK-DU-999-4 = 5
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-19-4
+           ELSE
+                   GO TO INS-FAIL-F3-19-4.
+       INS-DELETE-F3-19-4.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-19-4.
+       INS-FAIL-F3-19-4.
+           PERFORM FAIL
+           MOVE WRK-DU-999-4 TO COMPUTED-N
+           MOVE 5 TO CORRECT-N.
+       INS-WRITE-F3-19-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-19-5.
+           ADD 1 TO REC-CT.
+           IF WRK-XN-83-1 = ANS-XN-83-6
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-19-5
+           ELSE
+                   GO TO INS-FAIL-F3-19-5.
+       INS-DELETE-F3-19-5.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-19-5.
+       INS-FAIL-F3-19-5.
+           PERFORM FAIL
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-6     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F3-19-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-20.
+           MOVE "INS-TEST-F3-20" TO PAR-NAME.
+           MOVE "VI-94 6.17.3"   TO ANSI-REFERENCE.
+           MOVE "REPLACE SERIES" TO FEATURE.
+           MOVE ZERO TO REC-CT WRK-DU-999-1.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE WC-XN-83 TO WRK-XN-83-1.
+           MOVE    1 TO REC-CT.
+       INS-TEST-F3-20-0.
+           INSPECT WRK-XN-83-1 TALLYING WRK-DU-999-1  FOR CHARACTERS
+                   BEFORE "."
+                   REPLACING
+                   ALL "L BAD." BY "ZZZZZZ" AFTER L-XN-1-1
+                   ALL " " BY HYPEN-XN-1-1
+                   FIRST "C" BY P-XN-1-1
+                   LEADING AH-XN-2 BY OH-XN-2
+                   ALL "F" BY "Z" BEFORE G-XN-1-1.
+           GO      TO INS-TEST-F3-20-1.
+       INS-DELETE-F3-20.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO CCVS-999999.
+      *> 
+       INS-TEST-F3-20-1.
+           IF      WRK-DU-999-1 EQUAL TO 15
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-20-1
+           ELSE
+                   GO TO INS-FAIL-F3-20-1.
+       INS-DELETE-F3-20-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-20-1.
+       INS-FAIL-F3-20-1.
+           PERFORM FAIL
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    15 TO CORRECT-N.
+       INS-WRITE-F3-20-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-20-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-7
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-20-2
+           ELSE
+                   GO TO INS-FAIL-F3-20-2.
+       INS-DELETE-F3-20-2.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-20-2.
+       INS-FAIL-F3-20-2.
+           PERFORM FAIL
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-7     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F3-20-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F2-21.
+           MOVE    ZERO TO REC-CT.
+           MOVE    SPACES TO PAR-NAME.
+           MOVE "INS-TEST-F2-21" TO PAR-NAME.
+           MOVE "VI-94 6.17.3"   TO ANSI-REFERENCE.
+           MOVE "REPLACE BEFORE" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE    WC-XN-83 TO WRK-XN-83-1.
+       INS-TEST-F2-21.
+           INSPECT WRK-XN-83-1
+               REPLACING ALL SPACE-XN-1-1 BY "-" BEFORE INITIAL "Z".
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-8
+                   PERFORM PASS
+                   GO TO INS-WRITE-F2-21-1
+           ELSE
+                   GO TO INS-FAIL-F2-21-1.
+       INS-DELETE-F2-21-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F2-21-1.
+       INS-FAIL-F2-21-1.
+           PERFORM FAIL
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-8     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F2-21-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F2-22.
+           MOVE "INS-TEST-F2-22" TO PAR-NAME.
+           MOVE "VI-94 6.17.3"   TO ANSI-REFERENCE.
+           MOVE  "REPLACE AFTER" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE    WC-XN-83 TO WRK-XN-83-1.
+       INS-TEST-F2-22.
+           INSPECT WRK-XN-83-1
+               REPLACING ALL SPACE-XN-1-1 BY "-" AFTER INITIAL "Z".
+           IF      WRK-XN-83-1 EQUAL TO WC-XN-83
+                   PERFORM PASS
+                   GO TO INS-WRITE-F2-22
+           ELSE
+                   GO TO INS-FAIL-F2-22.
+       INS-DELETE-F2-22.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F2-22.
+       INS-FAIL-F2-22.
+           PERFORM FAIL
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    WC-XN-83        TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F2-22.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-23.
+           MOVE "INS-TEST-F1-23" TO PAR-NAME.
+           MOVE   "VI-94" TO ANSI-REFERENCE.
+           MOVE    "TALLY SIGNED NUM." TO FEATURE.
+           MOVE    -12345 TO WRK-DS-5V0-1.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE    ZERO TO WRK-DU-999-2.
+           MOVE    1 TO REC-CT.
+       INS-TEST-F1-23-0.
+           INSPECT WRK-DS-5V0-1
+               TALLYING WRK-DU-999-1 FOR ALL "-"
+                        WRK-DU-999-2 FOR ALL "5".
+           GO      TO INS-TEST-F1-23-1.
+       INS-DELETE-F1-23.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO INS-INIT-F1-24.
+      *> 
+       INS-TEST-F1-23-1.
+           IF      WRK-DU-999-1 EQUAL 0
+                   PERFORM PASS
+                   GO TO INS-WRITE-F1-23-1
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F1-23-1.
+       INS-DELETE-F1-23-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-23-1.
+       INS-FAIL-F1-23-1.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    ZERO TO CORRECT-N.
+       INS-WRITE-F1-23-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F1-23-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-DU-999-2 EQUAL TO 1
+           PERFORM PASS
+                   GO TO INS-WRITE-F1-23-2
+           ELSE
+                   PERFORM FAIL
+                   GO TO INS-FAIL-F1-23-2.
+       INS-DELETE-F1-23-2.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-23-2.
+       INS-FAIL-F1-23-2.
+           MOVE    WRK-DU-999-2 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       INS-WRITE-F1-23-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-24.
+           MOVE "INS-TEST-F1-24" TO PAR-NAME.
+           MOVE "NUMERIC EDITED FIELD" TO FEATURE.
+           MOVE "VI-94" TO ANSI-REFERENCE.
+           MOVE  123456.789  TO WRK-NE-1.
+           MOVE    ZERO TO REC-CT.
+           MOVE    ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-24.
+           INSPECT WRK-NE-1  TALLYING WRK-DU-999-1  FOR ALL ",".
+           IF WRK-DU-999-1 EQUAL TO 1
+                   PERFORM PASS
+                   GO TO INS-WRITE-F1-24
+           ELSE
+                   GO TO INS-FAIL-F1-24.
+       INS-DELETE-F1-24.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-24.
+       INS-FAIL-F1-24.
+           PERFORM FAIL
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    1 TO CORRECT-N.
+       INS-WRITE-F1-24.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-25.
+           MOVE "INS-TEST-F1-25" TO PAR-NAME.
+           MOVE   "VI-94" TO ANSI-REFERENCE.
+           MOVE    "NUMERIC EDITED FIELD" TO FEATURE.
+           MOVE    123456.789 TO WRK-NE-1.
+           MOVE    ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-25.
+           INSPECT WRK-NE-1  TALLYING WRK-DU-999-1  FOR ALL "-".
+           IF      WRK-DU-999-1 EQUAL TO ZERO
+                   PERFORM PASS
+                   GO TO INS-WRITE-F1-25
+           ELSE
+                   GO TO INS-FAIL-F1-25.
+       INS-DELETE-F1-25.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-25.
+       INS-FAIL-F1-25.
+           PERFORM FAIL
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    ZERO TO CORRECT-N.
+       INS-WRITE-F1-25.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-26.
+           MOVE    "INS-TEST-F1-26" TO PAR-NAME.
+           MOVE    "VI-94" TO ANSI-REFERENCE.
+           MOVE    "2 CHARACTER MASK" TO FEATURE.
+           MOVE    "X X" TO X-SPACE-X-XN-3.
+           MOVE    ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-26.
+           INSPECT X-SPACE-X-XN-3 TALLYING WRK-DU-999-1 FOR ALL "X ".
+           IF      WRK-DU-999-1 EQUAL TO 1
+                   PERFORM PASS
+                   GO TO INS-WRITE-F1-26
+           ELSE
+                   GO TO INS-FAIL-F1-26.
+       INS-DELETE-F1-26.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-26.
+       INS-FAIL-F1-26.
+           PERFORM FAIL
+           MOVE WRK-DU-999-1 TO COMPUTED-N
+           MOVE 1 TO CORRECT-N.
+       INS-WRITE-F1-26.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-27.
+           MOVE   "INS-TEST-F1-27" TO PAR-NAME.
+           MOVE   "VI-94" TO ANSI-REFERENCE.
+           MOVE   "ORDER OF COMPARE" TO FEATURE.
+           MOVE   "AABA" TO AABA-XN-4.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE    ZERO TO WRK-DU-999-2.
+       INS-TEST-F1-27.
+           INSPECT AABA-XN-4 TALLYING WRK-DU-999-1 FOR ALL "AA"
+                                      WRK-DU-999-2 FOR ALL "A".
+           IF      WRK-DU-999-1 EQUAL TO 1
+               AND
+                   WRK-DU-999-2 EQUAL TO 1
+                   PERFORM PASS
+                   GO TO INS-WRITE-F1-27
+           ELSE
+                   GO TO INS-FAIL-F1-27.
+       INS-DELETE-F1-27.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F1-27.
+       INS-FAIL-F1-27.
+           PERFORM FAIL
+           MOVE WRK-DU-999-1 TO COMPUTED-N
+           MOVE WRK-DU-999-2 TO CORRECT-N
+           MOVE "BOTH SHOULD BE 1" TO RE-MARK.
+       INS-WRITE-F1-27.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-28.
+      *>     ===-->  BEFORE AND AFTER PHRASES  <--===
+           MOVE   "INS-TEST-F1-28" TO PAR-NAME.
+           MOVE   "VI-94 6.17.3 SR4" TO ANSI-REFERENCE.
+           MOVE   "TALLY FOR ALL SPACES" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE    ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-28.
+           INSPECT WC-XN-83 TALLYING WRK-DU-999-1 FOR ALL SPACES
+                   AFTER  "C."
+                   BEFORE "DO".
+           IF      WRK-DU-999-1 EQUAL TO 6
+                   PERFORM PASS
+                   GO TO   INS-WRITE-F1-28.
+           GO TO   INS-FAIL-F1-28.
+       INS-DELETE-F1-28.
+           PERFORM DE-LETE.
+           GO TO   INS-WRITE-F1-28.
+       INS-FAIL-F1-28.
+           PERFORM FAIL.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N.
+           MOVE    6 TO CORRECT-N.
+       INS-WRITE-F1-28.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-29.
+      *>     ===-->  BEFORE AND AFTER PHRASES  <--===
+           MOVE "INS-TEST-F1-29" TO PAR-NAME.
+           MOVE "VI-94 6.17.3 SR4" TO ANSI-REFERENCE.
+           MOVE "FOR CHARS AFTER LIT" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE    ZERO TO WRK-DU-999-1.
+       INS-TEST-F1-29.
+           INSPECT WC-XN-83 TALLYING WRK-DU-999-1 FOR CHARACTERS
+                   BEFORE "KI"
+                   AFTER  " W".
+           IF      WRK-DU-999-1 EQUAL TO 44
+                   PERFORM PASS
+                   GO TO   INS-WRITE-F1-29.
+           GO TO   INS-FAIL-F1-29.
+       INS-DELETE-F1-29.
+           PERFORM DE-LETE.
+           GO TO   INS-WRITE-F1-29.
+       INS-FAIL-F1-29.
+           PERFORM FAIL.
+           MOVE WRK-DU-999-1 TO COMPUTED-N.
+           MOVE 44 TO CORRECT-N.
+       INS-WRITE-F1-29.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-30.
+      *>     ===-->  EVALUATION OF SUBSCRIPTED IDENTIFIERS  <--===
+           MOVE   "INS-TEST-F1-30" TO PAR-NAME.
+           MOVE   "VI-95 6.17.4 GR4 & VI-97 6.17.4 GR8"
+                TO ANSI-REFERENCE.
+           MOVE   "FOR CHARS AFTER LIT" TO FEATURE.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE "XXXXXXXYYYYYYYAAABAAASSSSSSSTTTTTTT"
+                TO INSPECT-FIELDS.
+           MOVE "GHBDC" TO LOCATE-CHARS.
+           MOVE    3    TO SUB.
+       INS-TEST-F1-30-0.
+           INSPECT DATA-FIELD (SUB)
+                   TALLYING WRK-DU-999-1
+                   FOR ALL "A" BEFORE END-CHAR (SUB)
+                       ALL END-CHAR (SUB).
+       INS-TEST-F1-30-1.
+           IF      WRK-DU-999-1 EQUAL TO 4
+                   PERFORM PASS
+                   GO TO   INS-WRITE-F1-30-1.
+           GO TO   INS-FAIL-F1-30-1.
+       INS-DELETE-F1-30-1.
+           PERFORM DE-LETE.
+           GO TO   INS-WRITE-F1-30-1.
+       INS-FAIL-F1-30-1.
+           PERFORM FAIL.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N.
+           MOVE    4 TO CORRECT-N.
+       INS-WRITE-F1-30-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-31.
+           MOVE   "INS-TEST-F1-31" TO PAR-NAME.
+           MOVE   "VI-93" TO ANSI-REFERENCE.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE   "AABBCCDDEBBBBGHDDIJJXXAABBCCDDEEEFFGGHHIIJJKKLLM"
+               TO TEST-31-DATA.
+           MOVE "BB" TO WS-BB.
+       INS-TEST-F1-31-0.
+           INSPECT TEST-31-DATA TALLYING WRK-DU-999-1
+                   FOR ALL "A"    BEFORE "X"
+                       ALL  WS-BB BEFORE "X"
+                       ALL "D"    BEFORE "X".
+       INS-TEST-F1-31-1.
+           IF      WRK-DU-999-1 EQUAL TO 9
+                   PERFORM PASS
+                   GO TO   INS-WRITE-F1-31-1.
+           GO TO   INS-FAIL-F1-31-1.
+       INS-DELETE-F1-31-1.
+           PERFORM DE-LETE.
+           GO TO   INS-WRITE-F1-31-1.
+       INS-FAIL-F1-31-1.
+           PERFORM FAIL.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N.
+           MOVE    10 TO CORRECT-N.
+       INS-WRITE-F1-31-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F1-32.
+           MOVE   "INS-TEST-F1-32" TO PAR-NAME.
+           MOVE   "VI-93" TO ANSI-REFERENCE.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE "AABSSSSSEBBTTTT1URSTSTSTVVDYYDEEEFFGSSSSTZSTZSTM"
+               TO TEST-32-DATA.
+           MOVE "Y" TO WS-Y.
+       INS-TEST-F1-32-0.
+           INSPECT TEST-32-DATA TALLYING WRK-DU-999-1
+                   FOR LEADING "S" AFTER WS-Y
+                               "S" AFTER "U"
+                               "T" AFTER WS-Y
+                               "T" AFTER "U".
+       INS-TEST-F1-32-1.
+           IF      WRK-DU-999-1 EQUAL TO 0
+                   PERFORM PASS
+                   GO TO   INS-WRITE-F1-32-1.
+           GO TO   INS-FAIL-F1-32-1.
+       INS-DELETE-F1-32-1.
+           PERFORM DE-LETE.
+           GO TO   INS-WRITE-F1-32-1.
+       INS-FAIL-F1-32-1.
+           PERFORM FAIL.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N.
+           MOVE    0 TO CORRECT-N.
+       INS-WRITE-F1-32-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F2-33.
+      *>     ===--> "BEFORE" AND "AFTER" PHRASES  <--===
+           MOVE "INS-TEST-F2-33" TO PAR-NAME.
+           MOVE "VI-94 6.17.3 SR4" TO ANSI-REFERENCE.
+           MOVE "REP CHARS BY SPACES" TO FEATURE.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE    WC-XN-83 TO WRK-XN-83-1.
+           MOVE
+           "AH YES AH YES W.C                                                       BE ALL BAD."
+               TO ANS-XN-83-10.
+       INS-TEST-F2-33-0.
+           INSPECT WRK-XN-83-1 REPLACING CHARACTERS BY SPACES
+                   BEFORE "B" AFTER "C".
+       INS-TEST-F2-33-1.
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-10
+                   PERFORM PASS
+                   GO TO   INS-WRITE-F2-33-1.
+           GO TO   INS-FAIL-F2-33-1.
+       INS-DELETE-F2-33-1.
+           PERFORM DE-LETE.
+           GO TO   INS-WRITE-F2-33-1.
+       INS-FAIL-F2-33-1.
+           PERFORM FAIL.
+           MOVE    WRK-XN-83-1  TO WS-WRONG-1-83.
+           MOVE    ANS-XN-83-10 TO WS-RIGHT-1-83.
+           MOVE "THERE SHOUD BE 55 SPACES BETWEEN ""B"" AND ""C""."
+                TO RE-MARK.
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A.
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A.
+           PERFORM PRINT-DETAIL.
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A.
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A.
+           PERFORM PRINT-DETAIL.
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A.
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A.
+           PERFORM PRINT-DETAIL.
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A.
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A.
+           PERFORM PRINT-DETAIL.
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A.
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F2-33-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F2-34.
+      *>     ===-->  MULTIPLE "CHARACTERS" PHRASES WITH  <--===
+      *>     ===-->         "BEFORE" AND "AFTER"         <--===
+           MOVE   "INS-TEST-F2-34" TO PAR-NAME.
+           MOVE   "VI-93 6.17.2" TO ANSI-REFERENCE.
+           MOVE   "AAFSSQ  ET U V W H S" TO TEST-34-DATA.
+           MOVE   "AAFXXQ  ETYYYYYYYH S" TO TEST-34-ANSWER.
+       INS-TEST-F2-34-0.
+           INSPECT TEST-34-DATA
+                   REPLACING
+                   CHARACTERS BY "X" AFTER "F" BEFORE "Q"
+                   CHARACTERS BY "Y" AFTER "T" BEFORE "H".
+       INS-TEST-F2-34-1.
+           IF      TEST-34-DATA = TEST-34-ANSWER
+                   PERFORM PASS
+                   GO TO   INS-WRITE-F2-34-1.
+           GO TO   INS-FAIL-F2-34-1.
+       INS-DELETE-F2-34-1.
+           PERFORM DE-LETE.
+           GO TO   INS-WRITE-F2-34-1.
+       INS-FAIL-F2-34-1.
+           PERFORM FAIL.
+           MOVE    TEST-34-DATA TO COMPUTED-A.
+           MOVE    TEST-34-ANSWER TO CORRECT-A.
+       INS-WRITE-F2-34-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-35.
+      *>     ===-->  MULTIPLE "CHARACTERS" PHRASES WITH  <--===
+      *>     ===-->         "BEFORE" AND "AFTER"         <--===
+           MOVE   "INS-TEST-F3-35-1" TO PAR-NAME.
+           MOVE   "VI-93 6.17.2" TO ANSI-REFERENCE.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE "AX SSA YEG U V W H S"  TO TEST-35-DATA.
+           MOVE "AXAAAAAYEG       H S"  TO TEST-35-ANSWER.
+       INS-TEST-F3-35-0.
+           INSPECT TEST-35-DATA TALLYING WRK-DU-999-1
+                   FOR CHARACTERS
+                   REPLACING
+                   CHARACTERS BY   "A" AFTER "X" BEFORE "Y"
+                   CHARACTERS BY SPACE AFTER "G" BEFORE "H".
+       INS-TEST-F3-35-1.
+           IF      TEST-35-DATA = TEST-35-ANSWER
+                   PERFORM PASS
+                   GO TO   INS-WRITE-F3-35-1.
+           GO TO   INS-FAIL-F3-35-1.
+       INS-DELETE-F3-35-1.
+           PERFORM DE-LETE.
+           GO TO   INS-WRITE-F3-35-1.
+       INS-FAIL-F3-35-1.
+           PERFORM FAIL.
+           MOVE    TEST-35-DATA TO COMPUTED-A.
+           MOVE    TEST-35-ANSWER TO CORRECT-A.
+       INS-WRITE-F3-35-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-36.
+      *>     ===-->    "BEFORE" AND "AFTER" PHRASES     <--===
+           MOVE   "INS-TEST-F3-36" TO PAR-NAME.
+           MOVE   "TALLY-REPLACE CHARS" TO FEATURE.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAZ."
+               TO WC-XN-83.
+           MOVE    WC-XN-83 TO WRK-XN-83-1.
+           MOVE
+           "AH                                                                               Z."
+                TO ANS-XN-83-11.
+           MOVE    1 TO REC-CT.
+       INS-TEST-F3-36-0.
+           INSPECT WRK-XN-83-1
+                   TALLYING  WRK-DU-999-1 FOR CHARACTERS
+                             BEFORE "LL" AFTER "ES"
+                   REPLACING CHARACTERS BY SPACES
+                             AFTER "H" BEFORE "Z".
+           GO TO   INS-TEST-F3-36-1.
+       INS-DELETE-F3-36.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO INS-INIT-F3-37.
+       INS-TEST-F3-36-1.
+           IF      WRK-DU-999-1 EQUAL TO 70
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-36-1
+           ELSE
+                   GO TO INS-FAIL-F3-36-1.
+       INS-DELETE-F3-36-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-36-1.
+       INS-FAIL-F3-36-1.
+           PERFORM FAIL
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    70 TO CORRECT-N.
+       INS-WRITE-F3-36-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-36-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-83-1 = ANS-XN-83-11
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-36-2
+           ELSE
+                   GO TO INS-FAIL-F3-36-2.
+       INS-DELETE-F3-36-2.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-36-2.
+       INS-FAIL-F3-36-2.
+           PERFORM FAIL
+           MOVE    WRK-XN-83-1  TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-11 TO WS-RIGHT-1-83
+           MOVE "THERE SHOULD BE 81 SPACES BETWEEN ""H"" AND ""Z""."
+                   TO RE-MARK
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F3-36-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-37.
+      *>     ===-->    "BEFORE" AND "AFTER" PHRASES     <--===
+           MOVE   "INS-TEST-F3-37" TO PAR-NAME.
+           MOVE   "REPL FIRST AFTER" TO FEATURE.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE
+           "AH YES AH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO WC-XN-83.
+           MOVE    WC-XN-83 TO WRK-XN-83-1.
+           MOVE
+           "AH YES OH YES W.C. FRITOES HERE. ANYONE WHO HATES DOGS AND KIDS CAN NOT BE ALL BAD."
+               TO ANS-XN-83-5.
+           MOVE    1 TO REC-CT.
+       INS-TEST-F3-37-0.
+           INSPECT WRK-XN-83-1
+                   TALLYING  WRK-DU-999-1 FOR ALL "A"
+                             BEFORE L-XN-1-1
+                             AFTER  "YE"
+                   REPLACING FIRST  AH-XN-2 BY "OH"
+                             AFTER  INITIAL HSPACE-XN-2
+                             BEFORE "F".
+           GO TO INS-TEST-F3-37-1.
+       INS-DELETE-F3-37.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO      TO INS-INIT-F3-38.
+       INS-TEST-F3-37-1.
+           IF      WRK-DU-999-1 EQUAL TO 6
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-37-1
+           ELSE
+                   GO TO INS-FAIL-F3-37-1.
+       INS-DELETE-F3-37-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-37-1.
+       INS-FAIL-F3-37-1.
+           PERFORM FAIL
+           MOVE    WRK-DU-999-1 TO COMPUTED-N
+           MOVE    6 TO CORRECT-N.
+       INS-WRITE-F3-37-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-TEST-F3-37-2.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-83-1 EQUAL TO ANS-XN-83-5
+                   PERFORM PASS
+                   GO TO INS-WRITE-F3-37-2
+           ELSE
+                   GO TO INS-FAIL-F3-37-2.
+       INS-DELETE-F3-37-2.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F3-37-2.
+       INS-FAIL-F3-37-2.
+           PERFORM FAIL
+           MOVE    WRK-XN-83-1     TO WS-WRONG-1-83
+           MOVE    ANS-XN-83-5     TO WS-RIGHT-1-83
+           MOVE    WS-RIGHT-1-20   TO CORRECT-A
+           MOVE    WS-WRONG-1-20   TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-21-40  TO CORRECT-A
+           MOVE    WS-WRONG-21-40  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-41-60  TO CORRECT-A
+           MOVE    WS-WRONG-41-60  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-61-80  TO CORRECT-A
+           MOVE    WS-WRONG-61-80  TO COMPUTED-A
+           PERFORM PRINT-DETAIL
+           MOVE    WS-RIGHT-81-83  TO CORRECT-A
+           MOVE    WS-WRONG-81-83  TO COMPUTED-A.
+       INS-WRITE-F3-37-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-38.
+      *>     ===-->  MULTIPLE OPERANDS FOR "ALL"         <--===
+           MOVE   "INS-TEST-F3-38" TO PAR-NAME.
+           MOVE   "VI-93 6.17.2" TO ANSI-REFERENCE.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE "E" TO WS-E.
+           MOVE "AXESSA YEGTUASSW H S"  TO TEST-38-DATA.
+           MOVE    ZERO TO REC-CT.
+       INS-TEST-F3-38-0.
+           INSPECT TEST-38-DATA TALLYING WRK-DU-999-1
+                   FOR
+                   ALL "A" AFTER WS-E
+                       "A" AFTER "T"
+                       "S" AFTER WS-E
+                       "S" AFTER "T".
+       INS-TEST-F3-38-1.
+           IF      WRK-DU-999-1 = 7
+                   PERFORM PASS
+                   GO TO   INS-WRITE-F3-38.
+           GO TO   INS-FAIL-F3-38.
+       INS-DELETE-F3-38.
+           PERFORM DE-LETE.
+           GO TO   INS-WRITE-F3-38.
+       INS-FAIL-F3-38.
+           PERFORM FAIL.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N.
+           MOVE    7 TO CORRECT-N.
+       INS-WRITE-F3-38.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F3-39.
+      *>     ===-->  MULTIPLE OPERANDS FOR "LEADING"     <--===
+           MOVE   "INS-TEST-F3-39" TO PAR-NAME.
+           MOVE   "VI-93 6.17.2" TO ANSI-REFERENCE.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE "ABESSA YE TUTCGW H S" TO TEST-39-DATA.
+       INS-TEST-F3-39-0.
+           INSPECT TEST-39-DATA
+                   TALLYING   WRK-DU-999-1
+                   FOR        LEADING "B"
+                              LEADING WS-E
+                              BEFORE  "C"
+                   REPLACING
+                   CHARACTERS BY   "A" AFTER "X" BEFORE "Y"
+                   CHARACTERS BY SPACE AFTER "G" BEFORE "H".
+       INS-TEST-F3-39-1.
+           IF      WRK-DU-999-1 = 0
+                   PERFORM PASS
+                   GO TO   INS-WRITE-F3-39-1.
+           GO TO   INS-FAIL-F3-39-1.
+       INS-DELETE-F3-39-1.
+           PERFORM DE-LETE.
+           GO TO   INS-WRITE-F3-39-1.
+       INS-FAIL-F3-39-1.
+           PERFORM FAIL.
+           MOVE    WRK-DU-999-1 TO COMPUTED-N.
+           MOVE    0            TO CORRECT-N.
+       INS-WRITE-F3-39-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F4-40.
+      *>     ===-->        INSPECT CONVERTING            <--===
+           MOVE   "INS-TEST-F4-40" TO PAR-NAME.
+           MOVE   "VI-943" TO ANSI-REFERENCE.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE "GADQAUZTABAGA" TO TEST-40-DATA.
+       INS-TEST-F4-40-0.
+           INSPECT TEST-40-DATA
+                   CONVERTING "AU" TO "23" BEFORE "B" AFTER "Q".
+           GO TO   INS-TEST-F4-40-1.
+       INS-DELETE-F4-40.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   INS-INIT-F4-41.
+       INS-TEST-F4-40-1.
+           IF      TEST-40-DATA = "GADQ23ZT2BAGA"
+                   PERFORM PASS
+                   GO TO INS-WRITE-F4-40-1
+           ELSE
+                   GO TO INS-FAIL-F4-40-1.
+       INS-DELETE-F4-40-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F4-40-1.
+       INS-FAIL-F4-40-1.
+           MOVE   "GADQ23ZT2BAGA" TO CORRECT-A
+           MOVE    TEST-40-DATA TO COMPUTED-A
+           PERFORM FAIL.
+       INS-WRITE-F4-40-1.
+           PERFORM PRINT-DETAIL.
+       INS-INIT-F4-41.
+      *>     ===-->        INSPECT CONVERTING            <--===
+           MOVE   "INS-TEST-F4-41" TO PAR-NAME.
+           MOVE   "VI-943" TO ANSI-REFERENCE.
+           MOVE   "GADQ23ZT2BAGA"  TO TEST-40-DATA.
+           MOVE   "DF" TO XN-DF.
+           MOVE    ZERO TO WRK-DU-999-1.
+       INS-TEST-F4-41-0.
+           INSPECT TEST-40-DATA
+                   CONVERTING XN-DF TO "45".
+           GO TO   INS-TEST-F4-41-1.
+       INS-DELETE-F4-41.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   INS-INIT-F4-42.
+       INS-TEST-F4-41-1.
+           IF      TEST-40-DATA = "GA4Q23ZT2BAGA"
+                   PERFORM PASS
+                   GO TO INS-WRITE-F4-41-1
+           ELSE
+                   GO TO INS-FAIL-F4-41-1.
+       INS-DELETE-F4-41-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F4-41-1.
+       INS-FAIL-F4-41-1.
+           MOVE   "GA4Q23ZT2BAGA" TO CORRECT-A
+           MOVE    TEST-40-DATA TO COMPUTED-A
+           PERFORM FAIL.
+       INS-WRITE-F4-41-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       INS-INIT-F4-42.
+      *>     ===-->        INSPECT CONVERTING            <--===
+           MOVE   "INS-TEST-F4-42" TO PAR-NAME.
+           MOVE   "VI-943" TO ANSI-REFERENCE.
+           MOVE    ZERO TO WRK-DU-999-1.
+           MOVE   "GA4Q23ZT2BAGA" TO TEST-40-DATA.
+           MOVE   "67" TO XN-67.
+       INS-TEST-F4-42-0.
+           INSPECT TEST-40-DATA
+                   CONVERTING  "GA" TO XN-67 BEFORE XN-B.
+           GO TO   INS-TEST-F4-42-1.
+       INS-DELETE-F4-42.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CCVS-EXIT.
+       INS-TEST-F4-42-1.
+           IF      TEST-40-DATA = "674Q23ZT2BAGA"
+                   PERFORM PASS
+                   GO TO INS-WRITE-F4-42-1
+           ELSE
+                   GO TO INS-FAIL-F4-42-1.
+       INS-DELETE-F4-42-1.
+           PERFORM DE-LETE.
+           GO TO INS-WRITE-F4-42-1.
+       INS-FAIL-F4-42-1.
+           MOVE   "674Q23ZT2BAGA" TO CORRECT-A
+           MOVE    TEST-40-DATA TO COMPUTED-A
+           PERFORM FAIL.
+       INS-WRITE-F4-42-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC216A

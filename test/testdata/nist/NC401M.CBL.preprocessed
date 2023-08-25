@@ -1,0 +1,330 @@
+      *> HEADER,COBOL,NC401M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+            NC401M.
+       
+       
+      *> THIS PROGRAM TESTS THE FLAGGING OF HIGH SUBSET NUCLEUS
+      *> FEATURES.
+       DATE-COMPILED. *>CE  22ND AUG 1988.
+      *>CE Message expected for above statement: NON-CONFORMING STANDARD
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       SPECIAL-NAMES.
+           XXXXX056
+           IS VDUNIT
+           ALPHABET
+           TEST-ALPHABET IS "A" THRU "F"
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+           SYMBOLIC CHARACTERS A IS 32.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT TFIL ASSIGN
+           XXXXX001.
+           SELECT TFIL-2 ASSIGN
+           XXXXX002.
+       DATA DIVISION.
+       FILE SECTION.
+       FD TFIL.
+       01 FREC.
+           03 GUBBINS PIC X(100).
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       FD TFIL-2.
+       01 FREC-2.
+           03 COLONTEST PIC X(100).
+           03 GUBBINS PIC X(100).
+       
+       
+       WORKING-STORAGE SECTION.
+       
+       01 TEST-CUSTOMER-RECORD.
+           03 TEST-AR-CUSTOMER-ID PIC X(4).
+           03 TEST-AR-CUSTOMER-NAME PIC X(20).
+           03 TEST-AR-NUMBER-INVOICES PIC S9(2).
+           03 TEST-AR-INVOICE-DATA OCCURS 1 TO 15 TIMES
+                                   DEPENDING ON
+                                       TEST-AR-NUMBER-INVOICES
+                                   INDEXED BY WS-INDEX.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+               05 TEST-INVOICE-DATE.
+                   07 TEST-INVOICE-YY PIC 99.
+                   07 TEST-INVOICE-MM PIC 99.
+                   07 TEST-INVOICE-DD PIC 99.
+       
+       01 TEST-DESCEND-RECORD.
+           03 TEST-DESCEND-CUST-ID PIC X(4).
+           03 TEST-DESCEND-CUST-NAME PIC X(20).
+           03 TEST-DESCEND-NO-INV PIC S9(2).
+           03 TEST-DESCEND-INVOICE OCCURS 15 TIMES
+                                   ASCENDING KEY IS
+                                       TEST-ASCEND-TIME
+                                   DESCENDING KEY IS
+                                       TEST-DESC-DATE.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+                   05 TEST-DESC-DATE.
+                       07 TEST-DESC-YY PIC 99.
+                       07 TEST-DESC-MM PIC 99.
+                       07 TEST-DESC-DD PIC 99.
+                   05 TEST-ASCEND-TIME PIC 9(6).
+       
+       01 TEST-CODE-TABLE.
+           03 TEST-CODE PIC X(3)
+                           OCCURS 40 TIMES
+                           INDEXED BY CODE-INDEX.
+       
+       01 CUST-REC.
+           03 CUST-CODES PIC X.
+               88 CUST-PAID VALUE "A".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       01 GROUP-1.
+           03 ITEM-1 PIC 99 VALUE 10.
+           03 ITEM-2 PIC 99 VALUE 12.
+           03 ITEM-3 PIC 99 VALUE 14.
+       
+       01 GROUP-2.
+           03 ITEM-1 PIC 99 VALUE 10.
+           03 ITEM-2 PIC 99 VALUE 12.
+           03 ITEM-3 PIC 99 VALUE 14.
+       
+       01 SALES-DATA.
+           03 STORE-INFO  PIC X(30).
+           03 MON-SALES OCCURS 2 TIMES.
+               05 AM-SALES PIC 9(3).
+               05 TUE-SALES OCCURS 2 TIMES.
+                   07 AM-SALES PIC 9(3).
+                   07 WED-SALES OCCURS 2 TIMES.
+                       09 AM-SALES PIC 9(3).
+                       09 THU-SALES OCCURS 2 TIMES.
+                           11 AM-SALES PIC 9(3).
+                           11 FRI-SALES OCCURS 2 TIMES.
+                               13 PM-SALES PIC 9(3).
+       
+       01 VARIABLES.
+           03 EDFIELD PIC Z,ZZZ.99.
+       
+       
+           03 STATE PIC X(4) VALUE ALL "A".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+           03 RKEY PIC 9(8) VALUE ZERO.
+       
+       
+       
+           03 GRANDTOTAL PIC 9(7)V99 VALUE ZERO.
+           03 BOX-A PIC 99 VALUE ZERO.
+           03 BOX-B PIC 99 VALUE ZERO.
+           03 BOX-C PIC 999 VALUE ZERO.
+           03 BOX-D PIC 999 VALUE ZERO.
+       
+       
+           03 MARYPOPPINS PIC X(34) VALUE "SUPERCALIFRAGILISTICEXPIALIDOCIOUS".
+           03 MP-1 REDEFINES MARYPOPPINS.
+              04  MP-1-A  PICTURE X(5).
+              04  MP-1-A-1  REDEFINES MP-1-A.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+                   05  MP-1-A-1-A  PICTURE X(3).
+                   05  FILLER  PICTURE X(2).
+              04  FILLER  PICTURE X(29).
+       
+           03 VARA PIC X(4).
+           03 VARB PIC X(4).
+           03 VARC PIC X(4).
+               66 VARA
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+                       RENAMES VARB THRU VARC.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       01 DDAY PIC 9(5).
+       
+       01 VARD PIC X(4).
+       
+       01 VARE PIC X(4).
+       
+       01 VARF PIC 9(7)V99.
+       
+       PROCEDURE DIVISION.
+       
+       
+       NC401M-CONTROL.
+           OPEN INPUT TFIL.
+           PERFORM NC401M-COLON THRU NC401M-END 1 TIMES.
+           ALTER NC401M-GOTO TO PROCEED TO NC401M-GOTO-2, 
+               NC401M-GOTO-2 TO PROCEED TO NC401M-NESTIF.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+           CLOSE TFIL.
+           STOP RUN.
+       
+       
+       NC401M-COLON.
+           DISPLAY COLONTEST(1:20).
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-QUALIF.
+           MOVE GUBBINS OF FREC TO GUBBINS OF FREC-2.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-SUBSCR.
+           MOVE ZERO TO
+              PM-SALES (BOX-A, BOX-B, BOX-C, BOX-D, 1).
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       NC401M-CHARBR1.
+           MULTIPLY BOX-A BY BOX-B GIVING BOX-C.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-CHARBR2.
+           MOVE 20 TO BOX-A.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       NC401M-ARITHEXP.
+           IF BOX-A + 1 IS NOT GREATER THAN BOX-B + 2
+               DISPLAY "ARITHEXP-TEST".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-SIGCOND.
+           IF BOX-A IS NOT NEGATIVE
+               DISPLAY "SIGCOND-TEST".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-COMPCOND.
+           IF BOX-A IS GREATER THAN BOX-B AND NOT BOX-C IS GREATER
+               THAN BOX-A THEN MOVE 7 TO BOX-B.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-CORRESADD.
+           ADD CORRESPONDING GROUP-1 TO GROUP-2.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-CORRESMOVE.
+           MOVE CORRESPONDING GROUP-1 TO GROUP-2.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-CORRESSUB.
+           SUBTRACT CORRESPONDING GROUP-2 FROM GROUP-1.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-COMPUTE.
+           COMPUTE BOX-A = 10 + 6.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-GETDAY.
+           ACCEPT DDAY FROM DAY-OF-WEEK.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-DISPUPON.
+           DISPLAY "PFILE" UPON VDUNIT.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401-DIVREMAINDER.
+           DIVIDE BOX-A INTO BOX-B GIVING BOX-C REMAINDER BOX-D.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-EVAL.
+           EVALUATE BOX-A
+               WHEN 1 MOVE "A" TO VARC
+               WHEN 2 MOVE "B" TO VARC.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-GOTO.
+           GO TO.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       NC401M-GOTO-2.
+           GO TO.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-NESTIF.
+           IF BOX-A IS GREATER THAN BOX-B THEN
+               MOVE "AAAA" TO VARD
+           ELSE
+           IF BOX-B IS GREATER THAN BOX-C THEN
+               MOVE "BBBB" TO VARD
+           ELSE
+               MOVE "CCCC" TO VARD.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-INIT.
+           INITIALIZE VARB.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-INSCT.
+           INSPECT MARYPOPPINS CONVERTING "A" TO "Z".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       
+       NC401M-PWT.
+           PERFORM NC401M-NESTIF THRU NC401M-INIT WITH TEST AFTER
+               UNTIL BOX-B IS EQUAL TO BOX-A.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-PWV.
+           PERFORM NC401M-NESTIF THRU NC401M-INIT
+           VARYING BOX-A FROM BOX-B BY BOX-C
+               UNTIL GRANDTOTAL IS EQUAL TO VARF.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-SEARCH.
+           SEARCH TEST-CODE
+               WHEN BOX-A IS EQUAL TO BOX-B
+                   NEXT SENTENCE.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-STT.
+           SET CUST-PAID TO TRUE.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-ST.
+           STRING VARD DELIMITED BY VARB INTO VARC.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-UST.
+           UNSTRING VARD INTO VARE.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       NC401M-END.
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 40.
+      *> Message expected for following statement: NON-CONFORMING STANDARD
+       END PROGRAM NC401M.
+      *> END-OF,NC401M

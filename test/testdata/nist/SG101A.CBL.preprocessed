@@ -1,0 +1,2846 @@
+      *> HEADER,COBOL,SG101A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SG101A.
+       AUTHOR.
+      *>CE     FEDERAL COMPILER TESTING CENTER.
+       INSTALLATION.
+      *>CE     GENERAL SERVICES ADMINISTRATION
+      *>CE      AUTOMATED DATA AND TELECOMMUNICATION SERVICE.
+      *>CE     SOFTWARE DEVELOPMENT OFFICE.
+      *>CE     5203 LEESBURG PIKE  SUITE 1100
+      *>CE     FALLS CHURCH VIRGINIA 22041.
+      *>CE 
+      *>CE     PHONE   (703) 756-6153
+      *>CE 
+      *>CE     " HIGH       ".
+       DATE-WRITTEN.
+      *>CE     CCVS-74 VERSION 4.0 - 1980 JULY 1.
+      *>CE     CREATION DATE     /    VALIDATION DATE
+      *>CE     "4.2 ".
+       SECURITY.
+      *>CE     NONE.
+      *>CE       THE FOLLOWING FEATURES ARE TESTED BY THIS PROGRAM ---
+      *>CE         THE ABILITY OF THE COMPILER TO ACCEPT 100 SEGMENTS
+      *>CE         AND REFERENCE SEGMENTS GREATER THAN 49 IN THEIR INITIAL
+      *>CE         STATE WITH SEGMENTS LESS THAN 50 IN THEIR LAST-USED
+      *>CE         STATE
+      *>CE 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE
+           LABEL RECORDS
+           XXXXX084
+           DATA RECORD IS PRINT-REC DUMMY-RECORD.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  TEST-CHECK                    PICTURE XXXX VALUE SPACE.
+       01  TEST-RESULTS.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 FEATURE                   PICTURE X(20) VALUE SPACE.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 P-OR-F                    PICTURE X(5) VALUE SPACE.
+           02 FILLER                    PICTURE X  VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER PICTURE X(12) VALUE SPACE.
+             03  PARDOT-X PICTURE X  VALUE SPACE.
+             03 DOTVALUE PICTURE 99  VALUE ZERO.
+             03 FILLER PIC X(5) VALUE SPACE.
+           02 FILLER PIC X(10) VALUE SPACE.
+           02 RE-MARK PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A                PICTURE X(20) VALUE SPACE.
+           03 COMPUTED-N REDEFINES COMPUTED-A PICTURE -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A  PICTURE -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A  PICTURE -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A  PICTURE -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                   PICTURE -9(18).
+               04 FILLER                          PICTURE X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                 PICTURE X(20) VALUE SPACE.
+           03 CORRECT-N REDEFINES CORRECT-A PICTURE -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A    PICTURE -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A    PICTURE -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A    PICTURE -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                    PICTURE -9(18).
+               04 FILLER                          PICTURE X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER PICTURE IS X(99) VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                  REMARKS".
+           02 FILLER PICTURE IS X(20) VALUE IS SPACE.
+       01  CCVS-C-2.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(6) VALUE IS "TESTED".
+           02 FILLER PICTURE IS X(15) VALUE IS SPACE.
+           02 FILLER PICTURE IS X(4) VALUE IS "FAIL".
+           02 FILLER PICTURE IS X(94) VALUE IS SPACE.
+       01  REC-SKL-SUB PICTURE 9(2) VALUE ZERO.
+       01  REC-CT PICTURE 99 VALUE ZERO.
+       01  DELETE-CNT                   PICTURE 999  VALUE ZERO.
+       01  ERROR-COUNTER PICTURE IS 999 VALUE IS ZERO.
+       01  INSPECT-COUNTER PIC 999 VALUE ZERO.
+       01  PASS-COUNTER PIC 999 VALUE ZERO.
+       01  TOTAL-ERROR PIC 999 VALUE ZERO.
+       01  ERROR-HOLD PIC 999 VALUE ZERO.
+       01  DUMMY-HOLD PIC X(120) VALUE SPACE.
+       01  RECORD-COUNT PIC 9(5) VALUE ZERO.
+       01  CCVS-H-1.
+           02  FILLER   PICTURE X(27)  VALUE SPACE.
+           02 FILLER PICTURE X(67) VALUE
+           " FEDERAL COMPILER TESTING CENTER COBOL COMPILER VALIDATION   SYSTEM".
+           02  FILLER     PICTURE X(26)  VALUE SPACE.
+       01  CCVS-H-2.
+           02 FILLER PICTURE X(52) VALUE IS
+           "CCVS74 NCC  COPY, NOT FOR DISTRIBUTION.".
+           02 FILLER PICTURE IS X(19) VALUE IS "TEST RESULTS SET-  ".
+           02 TEST-ID PICTURE IS X(9).
+           02 FILLER PICTURE IS X(40) VALUE IS SPACE.
+       01  CCVS-H-3.
+           02  FILLER PICTURE X(34) VALUE
+           " FOR OFFICIAL USE ONLY    ".
+           02  FILLER PICTURE X(58) VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER PICTURE X(28) VALUE
+           "  COPYRIGHT   1974 ".
+       01  CCVS-E-1.
+           02 FILLER PICTURE IS X(52) VALUE IS SPACE.
+           02 FILLER PICTURE IS X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN PICTURE IS X(9).
+           02 FILLER PICTURE X(45) VALUE IS
+           " NTIS DISTRIBUTION COBOL 74".
+       01  CCVS-E-2.
+           02  FILLER                   PICTURE X(31)  VALUE
+           SPACE.
+           02  FILLER                   PICTURE X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL PICTURE IS XXX VALUE IS SPACE.
+               03 FILLER PICTURE IS X VALUE IS SPACE.
+               03 ENDER-DESC PIC X(44) VALUE "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER PICTURE X(22) VALUE
+           " FOR OFFICIAL USE ONLY".
+           02  FILLER PICTURE X(12) VALUE SPACE.
+           02  FILLER PICTURE X(58) VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER PICTURE X(13) VALUE SPACE.
+           02 FILLER PIC X(15) VALUE " COPYRIGHT 1974".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1 PIC XXX VALUE SPACE.
+           02 FILLER PIC XXXX VALUE " OF ".
+           02 CCVS-E-4-2 PIC XXX VALUE SPACE.
+           02 FILLER PIC X(40) VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER PIC X(30) VALUE "        *** INFORMATION  ***".
+           02 INFO-TEXT.
+           04 FILLER PIC X(20) VALUE SPACE.
+           04 XXCOMPUTED PIC X(20).
+           04 FILLER PIC X(5) VALUE SPACE.
+           04 XXCORRECT PIC X(20).
+       01  HYPHEN-LINE.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(65) VALUE IS "*****************************************************************".
+           02 FILLER PICTURE IS X(54) VALUE IS "******************************************************".
+       01  CCVS-PGM-ID PIC X(6) VALUE
+           "SG101A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-CNT.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+           MOVE CCVS-H-3 TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-CNT TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-CNT IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-CNT TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           GO TO FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-SG-01-001 SECTION 00.
+       SG-01-001.
+           MOVE "SEGMENTATION" TO FEATURE.
+           GO TO SEG-TEST-1.
+       00  SECTION 00.
+       PARA-00.
+           MOVE "GOOD" TO TEST-CHECK.
+       RUN-THE-TESTS SECTION.
+       SEG-TEST-1.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 00.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-1.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-1.
+       SEG-DELETE-1.
+           PERFORM DE-LETE.
+       SEG-WRITE-1.
+           MOVE "SEG-TEST-1  " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-2.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 01.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-2.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-2.
+       SEG-DELETE-2.
+           PERFORM DE-LETE.
+       SEG-WRITE-2.
+           MOVE "SEG-TEST-2  " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-3.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 02.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-3.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-3.
+       SEG-DELETE-3.
+           PERFORM DE-LETE.
+       SEG-WRITE-3.
+           MOVE "SEG-TEST-3  " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-4.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 03.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-4.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-4.
+       SEG-DELETE-4.
+           PERFORM DE-LETE.
+       SEG-WRITE-4.
+           MOVE "SEG-TEST-4  " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-5.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 04.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-5.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-5.
+       SEG-DELETE-5.
+           PERFORM DE-LETE.
+       SEG-WRITE-5.
+           MOVE "SEG-TEST-5  " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-6.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 05.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-6.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-6.
+       SEG-DELETE-6.
+           PERFORM DE-LETE.
+       SEG-WRITE-6.
+           MOVE "SEG-TEST-6  " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-7.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 06.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-7.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-7.
+       SEG-DELETE-7.
+           PERFORM DE-LETE.
+       SEG-WRITE-7.
+           MOVE "SEG-TEST-7  " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-8.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 07.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-8.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-8.
+       SEG-DELETE-8.
+           PERFORM DE-LETE.
+       SEG-WRITE-8.
+           MOVE "SEG-TEST-8  " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-9.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 08.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-9.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-9.
+       SEG-DELETE-9.
+           PERFORM DE-LETE.
+       SEG-WRITE-9.
+           MOVE "SEG-TEST-9  " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-10.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 09.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-10.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-10.
+       SEG-DELETE-10.
+           PERFORM DE-LETE.
+       SEG-WRITE-10.
+           MOVE "SEG-TEST-10 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-11.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 10.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-11.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-11.
+       SEG-DELETE-11.
+           PERFORM DE-LETE.
+       SEG-WRITE-11.
+           MOVE "SEG-TEST-11 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-12.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 11.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-12.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-12.
+       SEG-DELETE-12.
+           PERFORM DE-LETE.
+       SEG-WRITE-12.
+           MOVE "SEG-TEST-12 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-13.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 12.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-13.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-13.
+       SEG-DELETE-13.
+           PERFORM DE-LETE.
+       SEG-WRITE-13.
+           MOVE "SEG-TEST-13 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-14.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 13.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-14.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-14.
+       SEG-DELETE-14.
+           PERFORM DE-LETE.
+       SEG-WRITE-14.
+           MOVE "SEG-TEST-14 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-15.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 14.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-15.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-15.
+       SEG-DELETE-15.
+           PERFORM DE-LETE.
+       SEG-WRITE-15.
+           MOVE "SEG-TEST-15 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-16.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 15.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-16.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-16.
+       SEG-DELETE-16.
+           PERFORM DE-LETE.
+       SEG-WRITE-16.
+           MOVE "SEG-TEST-16 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-17.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 16.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-17.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-17.
+       SEG-DELETE-17.
+           PERFORM DE-LETE.
+       SEG-WRITE-17.
+           MOVE "SEG-TEST-17 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-18.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 17.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-18.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-18.
+       SEG-DELETE-18.
+           PERFORM DE-LETE.
+       SEG-WRITE-18.
+           MOVE "SEG-TEST-18 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-19.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 18.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-19.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-19.
+       SEG-DELETE-19.
+           PERFORM DE-LETE.
+       SEG-WRITE-19.
+           MOVE "SEG-TEST-19 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-20.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 19.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-20.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-20.
+       SEG-DELETE-20.
+           PERFORM DE-LETE.
+       SEG-WRITE-20.
+           MOVE "SEG-TEST-20 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-21.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 20.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-21.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-21.
+       SEG-DELETE-21.
+           PERFORM DE-LETE.
+       SEG-WRITE-21.
+           MOVE "SEG-TEST-21 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-22.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 21.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-22.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-22.
+       SEG-DELETE-22.
+           PERFORM DE-LETE.
+       SEG-WRITE-22.
+           MOVE "SEG-TEST-22 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-23.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 22.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-23.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-23.
+       SEG-DELETE-23.
+           PERFORM DE-LETE.
+       SEG-WRITE-23.
+           MOVE "SEG-TEST-23 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-24.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 23.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-24.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-24.
+       SEG-DELETE-24.
+           PERFORM DE-LETE.
+       SEG-WRITE-24.
+           MOVE "SEG-TEST-24 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-25.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 24.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-25.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-25.
+       SEG-DELETE-25.
+           PERFORM DE-LETE.
+       SEG-WRITE-25.
+           MOVE "SEG-TEST-25 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-26.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 25.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-26.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-26.
+       SEG-DELETE-26.
+           PERFORM DE-LETE.
+       SEG-WRITE-26.
+           MOVE "SEG-TEST-26 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-27.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 26.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-27.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-27.
+       SEG-DELETE-27.
+           PERFORM DE-LETE.
+       SEG-WRITE-27.
+           MOVE "SEG-TEST-27 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-28.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 27.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-28.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-28.
+       SEG-DELETE-28.
+           PERFORM DE-LETE.
+       SEG-WRITE-28.
+           MOVE "SEG-TEST-28 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-29.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 28.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-29.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-29.
+       SEG-DELETE-29.
+           PERFORM DE-LETE.
+       SEG-WRITE-29.
+           MOVE "SEG-TEST-29 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-30.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 29.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-30.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-30.
+       SEG-DELETE-30.
+           PERFORM DE-LETE.
+       SEG-WRITE-30.
+           MOVE "SEG-TEST-30 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-31.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 30.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-31.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-31.
+       SEG-DELETE-31.
+           PERFORM DE-LETE.
+       SEG-WRITE-31.
+           MOVE "SEG-TEST-31 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-32.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 31.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-32.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-32.
+       SEG-DELETE-32.
+           PERFORM DE-LETE.
+       SEG-WRITE-32.
+           MOVE "SEG-TEST-32 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-33.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 32.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-33.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-33.
+       SEG-DELETE-33.
+           PERFORM DE-LETE.
+       SEG-WRITE-33.
+           MOVE "SEG-TEST-33 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-34.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 33.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-34.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-34.
+       SEG-DELETE-34.
+           PERFORM DE-LETE.
+       SEG-WRITE-34.
+           MOVE "SEG-TEST-34 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-35.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 34.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-35.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-35.
+       SEG-DELETE-35.
+           PERFORM DE-LETE.
+       SEG-WRITE-35.
+           MOVE "SEG-TEST-35 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-36.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 35.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-36.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-36.
+       SEG-DELETE-36.
+           PERFORM DE-LETE.
+       SEG-WRITE-36.
+           MOVE "SEG-TEST-36 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-37.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 36.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-37.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-37.
+       SEG-DELETE-37.
+           PERFORM DE-LETE.
+       SEG-WRITE-37.
+           MOVE "SEG-TEST-37 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-38.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 37.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-38.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-38.
+       SEG-DELETE-38.
+           PERFORM DE-LETE.
+       SEG-WRITE-38.
+           MOVE "SEG-TEST-38 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-39.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 38.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-39.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-39.
+       SEG-DELETE-39.
+           PERFORM DE-LETE.
+       SEG-WRITE-39.
+           MOVE "SEG-TEST-39 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-40.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 39.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-40.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-40.
+       SEG-DELETE-40.
+           PERFORM DE-LETE.
+       SEG-WRITE-40.
+           MOVE "SEG-TEST-40 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-41.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 40.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-41.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-41.
+       SEG-DELETE-41.
+           PERFORM DE-LETE.
+       SEG-WRITE-41.
+           MOVE "SEG-TEST-41 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-42.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 41.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-42.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-42.
+       SEG-DELETE-42.
+           PERFORM DE-LETE.
+       SEG-WRITE-42.
+           MOVE "SEG-TEST-42 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-43.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 42.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-43.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-43.
+       SEG-DELETE-43.
+           PERFORM DE-LETE.
+       SEG-WRITE-43.
+           MOVE "SEG-TEST-43 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-44.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 43.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-44.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-44.
+       SEG-DELETE-44.
+           PERFORM DE-LETE.
+       SEG-WRITE-44.
+           MOVE "SEG-TEST-44 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-45.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 44.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-45.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-45.
+       SEG-DELETE-45.
+           PERFORM DE-LETE.
+       SEG-WRITE-45.
+           MOVE "SEG-TEST-45 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-46.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 45.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-46.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-46.
+       SEG-DELETE-46.
+           PERFORM DE-LETE.
+       SEG-WRITE-46.
+           MOVE "SEG-TEST-46 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-47.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 46.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-47.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-47.
+       SEG-DELETE-47.
+           PERFORM DE-LETE.
+       SEG-WRITE-47.
+           MOVE "SEG-TEST-47 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-48.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 47.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-48.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-48.
+       SEG-DELETE-48.
+           PERFORM DE-LETE.
+       SEG-WRITE-48.
+           MOVE "SEG-TEST-48 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-49.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 48.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-49.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-49.
+       SEG-DELETE-49.
+           PERFORM DE-LETE.
+       SEG-WRITE-49.
+           MOVE "SEG-TEST-49 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-50.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 49.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-50.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-50.
+       SEG-DELETE-50.
+           PERFORM DE-LETE.
+       SEG-WRITE-50.
+           MOVE "SEG-TEST-50 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-51.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 50.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-51.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-51.
+       SEG-DELETE-51.
+           PERFORM DE-LETE.
+       SEG-WRITE-51.
+           MOVE "SEG-TEST-51 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-52.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 51.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-52.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-52.
+       SEG-DELETE-52.
+           PERFORM DE-LETE.
+       SEG-WRITE-52.
+           MOVE "SEG-TEST-52 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-53.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 52.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-53.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-53.
+       SEG-DELETE-53.
+           PERFORM DE-LETE.
+       SEG-WRITE-53.
+           MOVE "SEG-TEST-53 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-54.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 53.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-54.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-54.
+       SEG-DELETE-54.
+           PERFORM DE-LETE.
+       SEG-WRITE-54.
+           MOVE "SEG-TEST-54 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-55.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 54.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-55.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-55.
+       SEG-DELETE-55.
+           PERFORM DE-LETE.
+       SEG-WRITE-55.
+           MOVE "SEG-TEST-55 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-56.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 55.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-56.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-56.
+       SEG-DELETE-56.
+           PERFORM DE-LETE.
+       SEG-WRITE-56.
+           MOVE "SEG-TEST-56 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-57.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 56.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-57.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-57.
+       SEG-DELETE-57.
+           PERFORM DE-LETE.
+       SEG-WRITE-57.
+           MOVE "SEG-TEST-57 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-58.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 57.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-58.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-58.
+       SEG-DELETE-58.
+           PERFORM DE-LETE.
+       SEG-WRITE-58.
+           MOVE "SEG-TEST-58 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-59.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 58.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-59.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-59.
+       SEG-DELETE-59.
+           PERFORM DE-LETE.
+       SEG-WRITE-59.
+           MOVE "SEG-TEST-59 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-60.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 59.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-60.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-60.
+       SEG-DELETE-60.
+           PERFORM DE-LETE.
+       SEG-WRITE-60.
+           MOVE "SEG-TEST-60 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-61.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 60.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-61.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-61.
+       SEG-DELETE-61.
+           PERFORM DE-LETE.
+       SEG-WRITE-61.
+           MOVE "SEG-TEST-61 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-62.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 61.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-62.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-62.
+       SEG-DELETE-62.
+           PERFORM DE-LETE.
+       SEG-WRITE-62.
+           MOVE "SEG-TEST-62 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-63.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 62.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-63.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-63.
+       SEG-DELETE-63.
+           PERFORM DE-LETE.
+       SEG-WRITE-63.
+           MOVE "SEG-TEST-63 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-64.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 63.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-64.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-64.
+       SEG-DELETE-64.
+           PERFORM DE-LETE.
+       SEG-WRITE-64.
+           MOVE "SEG-TEST-64 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-65.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 64.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-65.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-65.
+       SEG-DELETE-65.
+           PERFORM DE-LETE.
+       SEG-WRITE-65.
+           MOVE "SEG-TEST-65 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-66.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 65.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-66.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-66.
+       SEG-DELETE-66.
+           PERFORM DE-LETE.
+       SEG-WRITE-66.
+           MOVE "SEG-TEST-66 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-67.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 66.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-67.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-67.
+       SEG-DELETE-67.
+           PERFORM DE-LETE.
+       SEG-WRITE-67.
+           MOVE "SEG-TEST-67 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-68.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 67.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-68.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-68.
+       SEG-DELETE-68.
+           PERFORM DE-LETE.
+       SEG-WRITE-68.
+           MOVE "SEG-TEST-68 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-69.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 68.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-69.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-69.
+       SEG-DELETE-69.
+           PERFORM DE-LETE.
+       SEG-WRITE-69.
+           MOVE "SEG-TEST-69 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-70.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 69.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-70.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-70.
+       SEG-DELETE-70.
+           PERFORM DE-LETE.
+       SEG-WRITE-70.
+           MOVE "SEG-TEST-70 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-71.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 70.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-71.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-71.
+       SEG-DELETE-71.
+           PERFORM DE-LETE.
+       SEG-WRITE-71.
+           MOVE "SEG-TEST-71 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-72.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 71.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-72.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-72.
+       SEG-DELETE-72.
+           PERFORM DE-LETE.
+       SEG-WRITE-72.
+           MOVE "SEG-TEST-72 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-73.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 72.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-73.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-73.
+       SEG-DELETE-73.
+           PERFORM DE-LETE.
+       SEG-WRITE-73.
+           MOVE "SEG-TEST-73 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-74.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 73.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-74.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-74.
+       SEG-DELETE-74.
+           PERFORM DE-LETE.
+       SEG-WRITE-74.
+           MOVE "SEG-TEST-74 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-75.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 74.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-75.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-75.
+       SEG-DELETE-75.
+           PERFORM DE-LETE.
+       SEG-WRITE-75.
+           MOVE "SEG-TEST-75 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-76.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 75.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-76.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-76.
+       SEG-DELETE-76.
+           PERFORM DE-LETE.
+       SEG-WRITE-76.
+           MOVE "SEG-TEST-76 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-77.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 76.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-77.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-77.
+       SEG-DELETE-77.
+           PERFORM DE-LETE.
+       SEG-WRITE-77.
+           MOVE "SEG-TEST-77 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-78.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 77.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-78.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-78.
+       SEG-DELETE-78.
+           PERFORM DE-LETE.
+       SEG-WRITE-78.
+           MOVE "SEG-TEST-78 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-79.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 78.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-79.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-79.
+       SEG-DELETE-79.
+           PERFORM DE-LETE.
+       SEG-WRITE-79.
+           MOVE "SEG-TEST-79 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-80.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 79.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-80.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-80.
+       SEG-DELETE-80.
+           PERFORM DE-LETE.
+       SEG-WRITE-80.
+           MOVE "SEG-TEST-80 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-81.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 80.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-81.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-81.
+       SEG-DELETE-81.
+           PERFORM DE-LETE.
+       SEG-WRITE-81.
+           MOVE "SEG-TEST-81 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-82.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 81.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-82.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-82.
+       SEG-DELETE-82.
+           PERFORM DE-LETE.
+       SEG-WRITE-82.
+           MOVE "SEG-TEST-82 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-83.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 82.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-83.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-83.
+       SEG-DELETE-83.
+           PERFORM DE-LETE.
+       SEG-WRITE-83.
+           MOVE "SEG-TEST-83 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-84.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 83.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-84.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-84.
+       SEG-DELETE-84.
+           PERFORM DE-LETE.
+       SEG-WRITE-84.
+           MOVE "SEG-TEST-84 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-85.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 84.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-85.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-85.
+       SEG-DELETE-85.
+           PERFORM DE-LETE.
+       SEG-WRITE-85.
+           MOVE "SEG-TEST-85 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-86.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 85.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-86.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-86.
+       SEG-DELETE-86.
+           PERFORM DE-LETE.
+       SEG-WRITE-86.
+           MOVE "SEG-TEST-86 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-87.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 86.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-87.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-87.
+       SEG-DELETE-87.
+           PERFORM DE-LETE.
+       SEG-WRITE-87.
+           MOVE "SEG-TEST-87 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-88.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 87.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-88.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-88.
+       SEG-DELETE-88.
+           PERFORM DE-LETE.
+       SEG-WRITE-88.
+           MOVE "SEG-TEST-88 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-89.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 88.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-89.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-89.
+       SEG-DELETE-89.
+           PERFORM DE-LETE.
+       SEG-WRITE-89.
+           MOVE "SEG-TEST-89 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-90.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 89.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-90.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-90.
+       SEG-DELETE-90.
+           PERFORM DE-LETE.
+       SEG-WRITE-90.
+           MOVE "SEG-TEST-90 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-91.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 90.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-91.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-91.
+       SEG-DELETE-91.
+           PERFORM DE-LETE.
+       SEG-WRITE-91.
+           MOVE "SEG-TEST-91 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-92.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 91.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-92.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-92.
+       SEG-DELETE-92.
+           PERFORM DE-LETE.
+       SEG-WRITE-92.
+           MOVE "SEG-TEST-92 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-93.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 92.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-93.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-93.
+       SEG-DELETE-93.
+           PERFORM DE-LETE.
+       SEG-WRITE-93.
+           MOVE "SEG-TEST-93 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-94.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 93.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-94.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-94.
+       SEG-DELETE-94.
+           PERFORM DE-LETE.
+       SEG-WRITE-94.
+           MOVE "SEG-TEST-94 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-95.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 94.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-95.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-95.
+       SEG-DELETE-95.
+           PERFORM DE-LETE.
+       SEG-WRITE-95.
+           MOVE "SEG-TEST-95 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-96.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 95.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-96.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-96.
+       SEG-DELETE-96.
+           PERFORM DE-LETE.
+       SEG-WRITE-96.
+           MOVE "SEG-TEST-96 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-97.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 96.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-97.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-97.
+       SEG-DELETE-97.
+           PERFORM DE-LETE.
+       SEG-WRITE-97.
+           MOVE "SEG-TEST-97 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-98.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 97.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-98.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-98.
+       SEG-DELETE-98.
+           PERFORM DE-LETE.
+       SEG-WRITE-98.
+           MOVE "SEG-TEST-98 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-99.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 98.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-99.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-99.
+       SEG-DELETE-99.
+           PERFORM DE-LETE.
+       SEG-WRITE-99.
+           MOVE "SEG-TEST-99 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-100.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 99.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-100.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-100.
+       SEG-DELETE-100.
+           PERFORM DE-LETE.
+       SEG-WRITE-100.
+           MOVE "SEG-TEST-100" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO SECOND-HALF.
+       01  SECTION 01.
+       PARA-01.
+           MOVE "GOOD" TO TEST-CHECK.
+       02  SECTION 02.
+       PARA-02.
+           MOVE "GOOD" TO TEST-CHECK.
+       03  SECTION 03.
+       PARA-03.
+           MOVE "GOOD" TO TEST-CHECK.
+       04  SECTION 04.
+       PARA-04.
+           MOVE "GOOD" TO TEST-CHECK.
+       05  SECTION 05.
+       PARA-05.
+           MOVE "GOOD" TO TEST-CHECK.
+       06  SECTION 06.
+       PARA-06.
+           MOVE "GOOD" TO TEST-CHECK.
+       07  SECTION 07.
+       PARA-07.
+           MOVE "GOOD" TO TEST-CHECK.
+       08  SECTION 08.
+       PARA-08.
+           MOVE "GOOD" TO TEST-CHECK.
+       09  SECTION 09.
+       PARA-09.
+           MOVE "GOOD" TO TEST-CHECK.
+       10  SECTION 10.
+       PARA-10.
+           MOVE "GOOD" TO TEST-CHECK.
+       11  SECTION 11.
+       PARA-11.
+           MOVE "GOOD" TO TEST-CHECK.
+       12  SECTION 12.
+       PARA-12.
+           MOVE "GOOD" TO TEST-CHECK.
+       13  SECTION 13.
+       PARA-13.
+           MOVE "GOOD" TO TEST-CHECK.
+       14  SECTION 14.
+       PARA-14.
+           MOVE "GOOD" TO TEST-CHECK.
+       15  SECTION 15.
+       PARA-15.
+           MOVE "GOOD" TO TEST-CHECK.
+       16  SECTION 16.
+       PARA-16.
+           MOVE "GOOD" TO TEST-CHECK.
+       17  SECTION 17.
+       PARA-17.
+           MOVE "GOOD" TO TEST-CHECK.
+       18  SECTION 18.
+       PARA-18.
+           MOVE "GOOD" TO TEST-CHECK.
+       19  SECTION 19.
+       PARA-19.
+           MOVE "GOOD" TO TEST-CHECK.
+       20  SECTION 20.
+       PARA-20.
+           MOVE "GOOD" TO TEST-CHECK.
+       21  SECTION 21.
+       PARA-21.
+           MOVE "GOOD" TO TEST-CHECK.
+       22  SECTION 22.
+       PARA-22.
+           MOVE "GOOD" TO TEST-CHECK.
+       23  SECTION 23.
+       PARA-23.
+           MOVE "GOOD" TO TEST-CHECK.
+       24  SECTION 24.
+       PARA-24.
+           MOVE "GOOD" TO TEST-CHECK.
+       25  SECTION 25.
+       PARA-25.
+           MOVE "GOOD" TO TEST-CHECK.
+       26  SECTION 26.
+       PARA-26.
+           MOVE "GOOD" TO TEST-CHECK.
+       27  SECTION 27.
+       PARA-27.
+           MOVE "GOOD" TO TEST-CHECK.
+       28  SECTION 28.
+       PARA-28.
+           MOVE "GOOD" TO TEST-CHECK.
+       29  SECTION 29.
+       PARA-29.
+           MOVE "GOOD" TO TEST-CHECK.
+       30  SECTION 30.
+       PARA-30.
+           MOVE "GOOD" TO TEST-CHECK.
+       31  SECTION 31.
+       PARA-31.
+           MOVE "GOOD" TO TEST-CHECK.
+       32  SECTION 32.
+       PARA-32.
+           MOVE "GOOD" TO TEST-CHECK.
+       33  SECTION 33.
+       PARA-33.
+           MOVE "GOOD" TO TEST-CHECK.
+       34  SECTION 34.
+       PARA-34.
+           MOVE "GOOD" TO TEST-CHECK.
+       35  SECTION 35.
+       PARA-35.
+           MOVE "GOOD" TO TEST-CHECK.
+       36  SECTION 36.
+       PARA-36.
+           MOVE "GOOD" TO TEST-CHECK.
+       37  SECTION 37.
+       PARA-37.
+           MOVE "GOOD" TO TEST-CHECK.
+       38  SECTION 38.
+       PARA-38.
+           MOVE "GOOD" TO TEST-CHECK.
+       39  SECTION 39.
+       PARA-39.
+           MOVE "GOOD" TO TEST-CHECK.
+       40  SECTION 40.
+       PARA-40.
+           MOVE "GOOD" TO TEST-CHECK.
+       41  SECTION 41.
+       PARA-41.
+           MOVE "GOOD" TO TEST-CHECK.
+       42  SECTION 42.
+       PARA-42.
+           MOVE "GOOD" TO TEST-CHECK.
+       43  SECTION 43.
+       PARA-43.
+           MOVE "GOOD" TO TEST-CHECK.
+       44  SECTION 44.
+       PARA-44.
+           MOVE "GOOD" TO TEST-CHECK.
+       45  SECTION 45.
+       PARA-45.
+           MOVE "GOOD" TO TEST-CHECK.
+       46  SECTION 46.
+       PARA-46.
+           MOVE "GOOD" TO TEST-CHECK.
+       47  SECTION 47.
+       PARA-47.
+           MOVE "GOOD" TO TEST-CHECK.
+       48  SECTION 48.
+       PARA-48.
+           MOVE "GOOD" TO TEST-CHECK.
+       49  SECTION 49.
+       PARA-49.
+           MOVE "GOOD" TO TEST-CHECK.
+       SECOND-HALF SECTION 50.
+       SEG-TEST-101.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 50.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-101.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-101.
+       SEG-DELETE-101.
+           PERFORM DE-LETE.
+       SEG-WRITE-101.
+           MOVE "SEG-TEST-101" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-102.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 49.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-102.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-102.
+       SEG-DELETE-102.
+           PERFORM DE-LETE.
+       SEG-WRITE-102.
+           MOVE "SEG-TEST-102" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-103.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 48.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-103.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-103.
+       SEG-DELETE-103.
+           PERFORM DE-LETE.
+       SEG-WRITE-103.
+           MOVE "SEG-TEST-103" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-104.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 47.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-104.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-104.
+       SEG-DELETE-104.
+           PERFORM DE-LETE.
+       SEG-WRITE-104.
+           MOVE "SEG-TEST-104" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-105.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 46.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-105.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-105.
+       SEG-DELETE-105.
+           PERFORM DE-LETE.
+       SEG-WRITE-105.
+           MOVE "SEG-TEST-105" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-106.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 45.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-106.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-106.
+       SEG-DELETE-106.
+           PERFORM DE-LETE.
+       SEG-WRITE-106.
+           MOVE "SEG-TEST-106" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-107.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 44.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-107.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-107.
+       SEG-DELETE-107.
+           PERFORM DE-LETE.
+       SEG-WRITE-107.
+           MOVE "SEG-TEST-107" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-108.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 43.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-108.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-108.
+       SEG-DELETE-108.
+           PERFORM DE-LETE.
+       SEG-WRITE-108.
+           MOVE "SEG-TEST-108" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-109.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 42.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-109.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-109.
+       SEG-DELETE-109.
+           PERFORM DE-LETE.
+       SEG-WRITE-109.
+           MOVE "SEG-TEST-109" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-110.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 41.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-110.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-110.
+       SEG-DELETE-110.
+           PERFORM DE-LETE.
+       SEG-WRITE-110.
+           MOVE "SEG-TEST-110" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-111.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 40.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-111.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-111.
+       SEG-DELETE-111.
+           PERFORM DE-LETE.
+       SEG-WRITE-111.
+           MOVE "SEG-TEST-111" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-112.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 39.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-112.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-112.
+       SEG-DELETE-112.
+           PERFORM DE-LETE.
+       SEG-WRITE-112.
+           MOVE "SEG-TEST-112" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-113.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 38.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-113.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-113.
+       SEG-DELETE-113.
+           PERFORM DE-LETE.
+       SEG-WRITE-113.
+           MOVE "SEG-TEST-113" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-114.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 37.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-114.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-114.
+       SEG-DELETE-114.
+           PERFORM DE-LETE.
+       SEG-WRITE-114.
+           MOVE "SEG-TEST-114" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-115.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 36.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-115.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-115.
+       SEG-DELETE-115.
+           PERFORM DE-LETE.
+       SEG-WRITE-115.
+           MOVE "SEG-TEST-115" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-116.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 35.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-116.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-116.
+       SEG-DELETE-116.
+           PERFORM DE-LETE.
+       SEG-WRITE-116.
+           MOVE "SEG-TEST-116" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-117.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 34.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-117.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-117.
+       SEG-DELETE-117.
+           PERFORM DE-LETE.
+       SEG-WRITE-117.
+           MOVE "SEG-TEST-117" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-118.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 33.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-118.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-118.
+       SEG-DELETE-118.
+           PERFORM DE-LETE.
+       SEG-WRITE-118.
+           MOVE "SEG-TEST-118" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-119.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 32.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-119.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-119.
+       SEG-DELETE-119.
+           PERFORM DE-LETE.
+       SEG-WRITE-119.
+           MOVE "SEG-TEST-119" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-120.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 31.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-120.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-120.
+       SEG-DELETE-120.
+           PERFORM DE-LETE.
+       SEG-WRITE-120.
+           MOVE "SEG-TEST-120" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-121.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 30.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-121.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-121.
+       SEG-DELETE-121.
+           PERFORM DE-LETE.
+       SEG-WRITE-121.
+           MOVE "SEG-TEST-121" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-122.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 29.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-122.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-122.
+       SEG-DELETE-122.
+           PERFORM DE-LETE.
+       SEG-WRITE-122.
+           MOVE "SEG-TEST-122" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-123.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 28.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-123.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-123.
+       SEG-DELETE-123.
+           PERFORM DE-LETE.
+       SEG-WRITE-123.
+           MOVE "SEG-TEST-123" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-124.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 27.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-124.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-124.
+       SEG-DELETE-124.
+           PERFORM DE-LETE.
+       SEG-WRITE-124.
+           MOVE "SEG-TEST-124" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-125.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 26.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-125.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-125.
+       SEG-DELETE-125.
+           PERFORM DE-LETE.
+       SEG-WRITE-125.
+           MOVE "SEG-TEST-125" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-126.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 25.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-126.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-126.
+       SEG-DELETE-126.
+           PERFORM DE-LETE.
+       SEG-WRITE-126.
+           MOVE "SEG-TEST-126" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-127.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 24.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-127.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-127.
+       SEG-DELETE-127.
+           PERFORM DE-LETE.
+       SEG-WRITE-127.
+           MOVE "SEG-TEST-127" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-128.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 23.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-128.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-128.
+       SEG-DELETE-128.
+           PERFORM DE-LETE.
+       SEG-WRITE-128.
+           MOVE "SEG-TEST-128" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-129.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 22.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-129.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-129.
+       SEG-DELETE-129.
+           PERFORM DE-LETE.
+       SEG-WRITE-129.
+           MOVE "SEG-TEST-129" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-130.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 21.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-130.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-130.
+       SEG-DELETE-130.
+           PERFORM DE-LETE.
+       SEG-WRITE-130.
+           MOVE "SEG-TEST-130" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-131.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 20.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-131.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-131.
+       SEG-DELETE-131.
+           PERFORM DE-LETE.
+       SEG-WRITE-131.
+           MOVE "SEG-TEST-131" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-132.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 19.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-132.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-132.
+       SEG-DELETE-132.
+           PERFORM DE-LETE.
+       SEG-WRITE-132.
+           MOVE "SEG-TEST-132" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-133.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 18.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-133.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-133.
+       SEG-DELETE-133.
+           PERFORM DE-LETE.
+       SEG-WRITE-133.
+           MOVE "SEG-TEST-133" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-134.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 17.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-134.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-134.
+       SEG-DELETE-134.
+           PERFORM DE-LETE.
+       SEG-WRITE-134.
+           MOVE "SEG-TEST-134" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-135.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 16.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-135.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-135.
+       SEG-DELETE-135.
+           PERFORM DE-LETE.
+       SEG-WRITE-135.
+           MOVE "SEG-TEST-135" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-136.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 15.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-136.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-136.
+       SEG-DELETE-136.
+           PERFORM DE-LETE.
+       SEG-WRITE-136.
+           MOVE "SEG-TEST-136" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-137.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 14.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-137.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-137.
+       SEG-DELETE-137.
+           PERFORM DE-LETE.
+       SEG-WRITE-137.
+           MOVE "SEG-TEST-137" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-138.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 13.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-138.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-138.
+       SEG-DELETE-138.
+           PERFORM DE-LETE.
+       SEG-WRITE-138.
+           MOVE "SEG-TEST-138" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-139.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 12.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-139.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-139.
+       SEG-DELETE-139.
+           PERFORM DE-LETE.
+       SEG-WRITE-139.
+           MOVE "SEG-TEST-139" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-140.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 11.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-140.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-140.
+       SEG-DELETE-140.
+           PERFORM DE-LETE.
+       SEG-WRITE-140.
+           MOVE "SEG-TEST-140" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-141.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 10.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-141.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-141.
+       SEG-DELETE-141.
+           PERFORM DE-LETE.
+       SEG-WRITE-141.
+           MOVE "SEG-TEST-141" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-142.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 09.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-142.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-142.
+       SEG-DELETE-142.
+           PERFORM DE-LETE.
+       SEG-WRITE-142.
+           MOVE "SEG-TEST-142" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-143.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 08.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-143.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-143.
+       SEG-DELETE-143.
+           PERFORM DE-LETE.
+       SEG-WRITE-143.
+           MOVE "SEG-TEST-143" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-144.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 07.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-144.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-144.
+       SEG-DELETE-144.
+           PERFORM DE-LETE.
+       SEG-WRITE-144.
+           MOVE "SEG-TEST-144" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-145.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 06.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-145.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-145.
+       SEG-DELETE-145.
+           PERFORM DE-LETE.
+       SEG-WRITE-145.
+           MOVE "SEG-TEST-145" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-146.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 05.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-146.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-146.
+       SEG-DELETE-146.
+           PERFORM DE-LETE.
+       SEG-WRITE-146.
+           MOVE "SEG-TEST-146" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-147.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 04.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-147.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-147.
+       SEG-DELETE-147.
+           PERFORM DE-LETE.
+       SEG-WRITE-147.
+           MOVE "SEG-TEST-147" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-148.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 03.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-148.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-148.
+       SEG-DELETE-148.
+           PERFORM DE-LETE.
+       SEG-WRITE-148.
+           MOVE "SEG-TEST-148" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-149.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 02.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-149.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-149.
+       SEG-DELETE-149.
+           PERFORM DE-LETE.
+       SEG-WRITE-149.
+           MOVE "SEG-TEST-149" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-150.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 01.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-150.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-150.
+       SEG-DELETE-150.
+           PERFORM DE-LETE.
+       SEG-WRITE-150.
+           MOVE "SEG-TEST-150" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEG-TEST-151.
+           MOVE SPACE TO TEST-CHECK.
+           PERFORM 00.
+           IF TEST-CHECK EQUAL TO "GOOD"
+               PERFORM PASS
+               GO TO SEG-WRITE-151.
+           MOVE SPACE TO COMPUTED-A.
+           MOVE "GOOD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SEG-WRITE-151.
+       SEG-DELETE-151.
+           PERFORM DE-LETE.
+       SEG-WRITE-151.
+           MOVE "SEG-TEST-151" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO     CLOSE-FILES.
+       50  SECTION 50.
+       PARA-50.
+           MOVE "GOOD" TO TEST-CHECK.
+       51  SECTION 51.
+       PARA-51.
+           MOVE "GOOD" TO TEST-CHECK.
+       52  SECTION 52.
+       PARA-52.
+           MOVE "GOOD" TO TEST-CHECK.
+       53  SECTION 53.
+       PARA-53.
+           MOVE "GOOD" TO TEST-CHECK.
+       54  SECTION 54.
+       PARA-54.
+           MOVE "GOOD" TO TEST-CHECK.
+       55  SECTION 55.
+       PARA-55.
+           MOVE "GOOD" TO TEST-CHECK.
+       56  SECTION 56.
+       PARA-56.
+           MOVE "GOOD" TO TEST-CHECK.
+       57  SECTION 57.
+       PARA-57.
+           MOVE "GOOD" TO TEST-CHECK.
+       58  SECTION 58.
+       PARA-58.
+           MOVE "GOOD" TO TEST-CHECK.
+       59  SECTION 59.
+       PARA-59.
+           MOVE "GOOD" TO TEST-CHECK.
+       60  SECTION 60.
+       PARA-60.
+           MOVE "GOOD" TO TEST-CHECK.
+       61  SECTION 61.
+       PARA-61.
+           MOVE "GOOD" TO TEST-CHECK.
+       62  SECTION 62.
+       PARA-62.
+           MOVE "GOOD" TO TEST-CHECK.
+       63  SECTION 63.
+       PARA-63.
+           MOVE "GOOD" TO TEST-CHECK.
+       64  SECTION 64.
+       PARA-64.
+           MOVE "GOOD" TO TEST-CHECK.
+       65  SECTION 65.
+       PARA-65.
+           MOVE "GOOD" TO TEST-CHECK.
+       66  SECTION 66.
+       PARA-66.
+           MOVE "GOOD" TO TEST-CHECK.
+       67  SECTION 67.
+       PARA-67.
+           MOVE "GOOD" TO TEST-CHECK.
+       68  SECTION 68.
+       PARA-68.
+           MOVE "GOOD" TO TEST-CHECK.
+       69  SECTION 69.
+       PARA-69.
+           MOVE "GOOD" TO TEST-CHECK.
+       70  SECTION 70.
+       PARA-70.
+           MOVE "GOOD" TO TEST-CHECK.
+       71  SECTION 71.
+       PARA-71.
+           MOVE "GOOD" TO TEST-CHECK.
+       72  SECTION 72.
+       PARA-72.
+           MOVE "GOOD" TO TEST-CHECK.
+       73  SECTION 73.
+       PARA-73.
+           MOVE "GOOD" TO TEST-CHECK.
+       74  SECTION 74.
+       PARA-74.
+           MOVE "GOOD" TO TEST-CHECK.
+       75  SECTION 75.
+       PARA-75.
+           MOVE "GOOD" TO TEST-CHECK.
+       76  SECTION 76.
+       PARA-76.
+           MOVE "GOOD" TO TEST-CHECK.
+       77  SECTION 77.
+       PARA-77.
+           MOVE "GOOD" TO TEST-CHECK.
+       78  SECTION 78.
+       PARA-78.
+           MOVE "GOOD" TO TEST-CHECK.
+       79  SECTION 79.
+       PARA-79.
+           MOVE "GOOD" TO TEST-CHECK.
+       80  SECTION 80.
+       PARA-80.
+           MOVE "GOOD" TO TEST-CHECK.
+       81  SECTION 81.
+       PARA-81.
+           MOVE "GOOD" TO TEST-CHECK.
+       82  SECTION 82.
+       PARA-82.
+           MOVE "GOOD" TO TEST-CHECK.
+       83  SECTION 83.
+       PARA-83.
+           MOVE "GOOD" TO TEST-CHECK.
+       84  SECTION 84.
+       PARA-84.
+           MOVE "GOOD" TO TEST-CHECK.
+       85  SECTION 85.
+       PARA-85.
+           MOVE "GOOD" TO TEST-CHECK.
+       86  SECTION 86.
+       PARA-86.
+           MOVE "GOOD" TO TEST-CHECK.
+       87  SECTION 87.
+       PARA-87.
+           MOVE "GOOD" TO TEST-CHECK.
+       88  SECTION 88.
+       PARA-88.
+           MOVE "GOOD" TO TEST-CHECK.
+       89  SECTION 89.
+       PARA-89.
+           MOVE "GOOD" TO TEST-CHECK.
+       90  SECTION 90.
+       PARA-90.
+           MOVE "GOOD" TO TEST-CHECK.
+       91  SECTION 91.
+       PARA-91.
+           MOVE "GOOD" TO TEST-CHECK.
+       92  SECTION 92.
+       PARA-92.
+           MOVE "GOOD" TO TEST-CHECK.
+       93  SECTION 93.
+       PARA-93.
+           MOVE "GOOD" TO TEST-CHECK.
+       94  SECTION 94.
+       PARA-94.
+           MOVE "GOOD" TO TEST-CHECK.
+       95  SECTION 95.
+       PARA-95.
+           MOVE "GOOD" TO TEST-CHECK.
+       96  SECTION 96.
+       PARA-96.
+           MOVE "GOOD" TO TEST-CHECK.
+       97  SECTION 97.
+       PARA-97.
+           MOVE "GOOD" TO TEST-CHECK.
+       98  SECTION 98.
+       PARA-98.
+           MOVE "GOOD" TO TEST-CHECK.
+       99  SECTION 99.
+       PARA-99.
+           MOVE "GOOD" TO TEST-CHECK.
+      *> END-OF,SG101A

@@ -1,0 +1,1708 @@
+      *> HEADER,COBOL,NC252A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC252A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     THIS PROGRAM TESTS THE "REDEFINES" AND "RENAMES" CLAUSES. *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  WS-REMAINDERS.
+         03  WS-REM                    PIC 99 OCCURS 20.
+       01  WRK-XN-00001-1              PIC X.
+       01  WRK-XN-00001-2              PIC X.
+       01  WS-46.
+         03  WS-1-20                   PIC X(20).
+         03  WS-21-40                  PIC X(20).
+         03  WS-41-46                  PIC X(6).
+       77  11A                PICTURE 9999  VALUE 9.
+       77  11B   PICTURE 99; VALUE 8.
+       77  1111C PICTURE 99 VALUE 9.
+       77  WRK-DS-02V00                 PICTURE S99.
+           88 TEST-2NUC-COND-99         VALUE 99.
+       77  A99-DS-02V00                 PICTURE S99    VALUE 99.
+       77  WRK-DS-18V00                 PICTURE S9(18).
+       77  A18ONES-DS-18V00             PICTURE S9(18)
+                                        VALUE 111111111111111111.
+       77  A18TWOS-DS-18V00             PICTURE S9(18)
+                                        VALUE 222222222222222222.
+       77  WRK-DS-05V00                 PICTURE S9(5).
+       77  A02TWOS-DU-02V00             PICTURE 99     VALUE 22.
+       77  A02TWOS-DS-03V02             PICTURE S999V99 VALUE +022.00.
+       77  ATWO-DS-01V00                PICTURE S9     VALUE 2.
+       77  AZERO-DS-05V05               PICTURE S9(5)V9(5) VALUE ZERO.
+       77  WRK-DS-06V06                 PICTURE S9(6)V9(6).
+       77  WRK-DS-0201P                 PICTURE S99P.
+       77  A05ONES-DS-05V00             PICTURE S9(5)  VALUE 11111.
+       77  WRK-DS-09V00                 PICTURE S9(9).
+       77  WRK-DS-09V09                 PICTURE S9(9)V9(9).
+       77  WRK-DS-18V00-S REDEFINES WRK-DS-09V09
+                                        PICTURE S9(18).
+       77  XRAY                    PICTURE IS X.
+       77  W-1                     PICTURE IS 9.
+       77  W-2                     PICTURE IS 99.
+       77  W-3                     PICTURE IS 999.
+       77  W-5                PICTURE 99  VALUE ZERO.
+       77  W-9                     PICTURE 999.
+       77  W-11               PICTURE S99V9.
+       77  D-1                PICTURE S9V99  VALUE 1.06.
+       77  D-7                PICTURE S99V99  VALUE 1.09.
+       77  ONE                     PICTURE IS 9      VALUE IS 1.
+       77  TWO                     PICTURE IS S9     VALUE IS 2.
+       77  THREE                   PICTURE IS S9     VALUE IS 3.
+       77  FOUR                    PICTURE IS S9     VALUE IS 4.
+       77  FIVE                    PICTURE IS S9     VALUE IS 5.
+       77  SIX                     PICTURE IS S9     VALUE IS 6.
+       77  SEVEN                   PICTURE IS S9     VALUE IS 7.
+       77  EIGHT                   PICTURE IS 9      VALUE IS 8.
+       77  NINE                    PICTURE IS S9     VALUE IS 9.
+       77  TEN                     PICTURE IS S99    VALUE IS 10.
+       77  FIFTEEN                 PICTURE IS S99    VALUE IS 15.
+       77  TWENTY                  PICTURE IS S99    VALUE IS 20.
+       77  TWENTY-5                PICTURE IS S99    VALUE IS 25.
+          1 COMPUTE-DATA.
+                                                                      02
+           COMPUTE-1                    PICTURE 999V9999  VALUE ZERO.
+           2 COMPUTE-1A            PICTURE 9(3)V9(4) VALUE 654.1873.
+           2 COMPUTE-2             PICTURE 9999V9    VALUE ZERO.
+           02 COMPUTE-3            PICTURE 999V99    VALUE ZERO.
+           2 COMPUTE-3A            PICTURE 999V99    VALUE 86.14.
+           2 COMPUTE-3B            PICTURE 999V99    VALUE 33.75.
+           2 COMPUTE-4             PICTURE 999       VALUE ZERO.
+           2 COMPUTE-4A            PICTURE 999       VALUE 124.
+           2 COMPUTE-4B            PICTURE 999       VALUE 217.
+           2 COMPUTE-5             PICTURE 9999V99   VALUE ZERO.
+           02 COMPUTE-5A           PICTURE 999V9     VALUE 11.1.
+           2 COMPUTE-6             PICTURE 999V9     VALUE ZERO.
+           2 COMPUTE-6A            PICTURE 999V9     VALUE 374.4.
+           2 COMPUTE-7             PICTURE 999       VALUE ZERO.
+           2 COMPUTE-8             PICTURE 999       VALUE ZERO.
+           02 COMPUTE-9            PICTURE 9999      VALUE ZERO.
+           2 COMPUTE-10            PICTURE 999V9999  VALUE ZERO.
+           2 COMPUTE-11            PICTURE 999V9     VALUE ZERO.
+           2 COMPUTE-11A           PICTURE 999V9     VALUE 371.2.
+           2 COMPUTE-11B           PICTURE 999V9     VALUE 468.9.
+           2 COMPUTE-12            PICTURE 99V99     VALUE ZERO.
+           2 COMPUTE-12A           PICTURE 999V9     VALUE 336.4.
+           2 COMPUTE-12B           PICTURE 999V9     VALUE 281.7.
+       01  RENAMES-DATA.
+           02  NAME1.
+               03 NAME1A PICTURE XX VALUE SPACE.
+               03 NAME1B PICTURE XXX VALUE SPACE.
+           02  NAME2 PICTURE X(10) VALUE SPACE.
+           02  NAME3.
+               09 NAME3A PICTURE XXX VALUE SPACE.
+               09 NAME3B PICTURE XX VALUE SPACE.
+       66  RENAME1 RENAMES NAME1 THRU NAME3.
+       66  RENAME2 RENAMES NAME1A THRU NAME1B.
+       66  RENAME3 RENAMES NAME2.
+       66  RENAME4 RENAMES NAME1.
+       01  GRP-FOR-RENAMES.
+           03  SUB-GRP-FOR-RENAMES-1.
+           05  ELEM-FOR-RENAMES-1      PICTURE X    VALUE "X".
+           05  FILLER                  PICTURE XX   VALUE SPACE.
+           03  SUB-GRP-FOR-RENAMES-2.
+           49  ELEM-FOR-RENAMES-2      PICTURE 999  VALUE 123.
+           49  FILLER                  PICTURE 9    VALUE ZERO.
+           49  ELEM-FOR-RENAMES-3      PICTURE XXXX VALUE ZERO.
+           66  RENAMES-TEST-1 RENAMES ELEM-FOR-RENAMES-2.
+           66  RENAMES-TEST-2 RENAMES SUB-GRP-FOR-RENAMES-1
+               OF GRP-FOR-RENAMES.
+           66  RENAMES-TEST-3 RENAMES SUB-GRP-FOR-RENAMES-1
+               THRU ELEM-FOR-RENAMES-2.
+           66  RENAMES-TEST-4 RENAMES ELEM-FOR-RENAMES-1
+               THRU ELEM-FOR-RENAMES-2 IN GRP-FOR-RENAMES.
+       01  T-RENAMES-DATA.
+           02 TAG-1.
+              03 TAG-1A       PICTURE XXXX.
+               03 TAG-1B      PICTURE XXXXXX.
+           02 NAME-2          PICTURE XXXXXXX.
+       66  RENAME-5 RENAMES TAG-1A THRU TAG-1B.
+       66  RENAME-6 RENAMES TAG-1A THRU NAME-2 OF T-RENAMES-DATA.
+       01  U-RENAMES-DATA.
+           02 UNIT-1.
+               03 UNIT-1A     PICTURE XXXXXXX VALUE "VERMONT".
+               03 UNIT-1B     PICTURE XXXX    VALUE "OHIO".
+           02 NAME-2          PICTURE XXXXX   VALUE "MAINE".
+       66  RENAME-5 RENAMES UNIT-1A THROUGH UNIT-1B.
+       66  RENAME-6 RENAMES UNIT-1A THRU NAME-2 OF U-RENAMES-DATA.
+       01  V-RENAMES-DATA.
+           02 ITEM-1          PICTURE X(5).
+           02 TABLE-2.
+               03 TABLE-ITEM-2 PICTURE XXX OCCURS 5 TIMES.
+       66  RENAME-7 RENAMES ITEM-1 THRU TABLE-2.
+       01  W-RENAMES-DATA.
+           02 WIDGET-1        PICTURE 99V9.
+           02 WIDGET-2        PICTURE ***,***.**.
+           02 WIDGET-3        PICTURE XXXX.
+           02 WIDGET-4        PICTURE 9(4).
+           02 WIDGET-5        PICTURE 9(4).
+       66  RENAME-8  RENAMES WIDGET-1 THRU WIDGET-3.
+       66  RENAME-9  RENAMES WIDGET-3 THRU WIDGET-5.
+       66  RENAME-10 RENAMES WIDGET-4 THRU WIDGET-5.
+       66  RENAME-11 RENAMES WIDGET-2.
+       66  RENAME-12 RENAMES WIDGET-4.
+       01  REDEF10.
+           02  RDFDATA1                PICTURE X(10) VALUE "ABC98765DE".
+           02  RDFDATA2                PICTURE 9(4)V99 VALUE 9116.44.
+           02  RDFDATA3.
+               08  RDFDATA4            PICTURE X(6)  VALUE "ALLDON".
+               08  RDFDATA5            PICTURE XX99  VALUE "XX66".
+           02  RDF3 REDEFINES RDFDATA3.
+               03  RDF3-4              PICTURE X(8).
+               03  RDF3-5              PIC 99.
+               03  RDF3-5-1 REDEFINES RDF3-5.
+                   04  RDF3-5-14  PIC 9.
+                   04  RDF3-5-15  PIC 9.
+                       88  HARD  VALUE 0.
+                       88 SOFT  VALUE 1.
+           02  RDFDATA6                PICTURE A(20) VALUE
+           "ZYXWVUTSRQPONMLKJIHG".
+           66  RDF3-5-16 RENAMES RDF3-5.
+       01  REDEF11 REDEFINES REDEF10.
+           02  RDFDATA7                PICTURE X(20).
+           02  RDF8.
+               03   RDFDATA8 OCCURS 36 TIMES PICTURE XX.
+           02  RDEF8 REDEFINES RDF8.
+               03  RDF8-1              PICTURE X(50).
+               03  RDF8-2              PIC X(9).
+               03  RDF8-3 REDEFINES RDF8-2.
+                   04  RDF8-4          PIC X(5).
+                   04  RDF8-5          PICTURE XX.
+                   04  RDF8-6  PIC XX.
+               03  RDF8-8              PIC X(13).
+           66  RDF8-7 RENAMES RDF8-5 THRU RDF8-6.
+       01  REDEF12 REDEFINES REDEF10.
+           02  RDFDATA9                PICTURE A(3).
+           02  RDFDATA10     PIC 9(5).
+           02  RDFDATA11.
+               03  RDFDATA12.
+                   04  RDFDATA13       PICTURE XX.
+                   04  RDFDATA14 OCCURS 6 TIMES PICTURE 9.
+               03  RDFDATA15           PICTURE X(8).
+           02  RDFDATA16               PICTURE 99.
+           02  RDFDATA17               PICTURE X(80).
+           02  RDFDATA18               PICTURE X(14).
+       01  GRP-REDEF125   REDEFINES REDEF10.
+           02 AN0020-X-0001             PIC X(26).
+           02 AN0002-O036F-X-0002       PIC XX  OCCURS 36 TIMES.
+       01  WRK-DU-05V00-0001            PIC 9(5).
+       01  WRK-DS-05V00-0002            PIC S9(5).
+       01  WRK-CS-05V00-0003            PIC S9(5) COMP.
+       01  WRK-DU-04V02-0004            PIC 9(4)V9(2).
+       01  WRK-DS-04V01-0005            PIC S9(4)V9.
+       01  NE-0008                      PIC $9(4).99-.
+       01  NE-0009                      PIC ***99.
+       01  NE-04V01-0006     PIC ****.9.
+       01  GRP-0010.
+           02 WRK-DU-03V00-L-0011       PIC 9(03) SYNC LEFT.
+           02 WRK-O005F-0012        OCCURS   5  TIMES.
+              03 WRK-O003F-0013     OCCURS   3  TIMES.
+                 05 WRK-DS-03V04-0003F-0014 PIC S9(3)V9999
+                                                  OCCURS 3 TIMES.
+       01  DS-02V00-0001                PIC S99  VALUE  16.
+       01  DS-03V00-0002                PIC S999 VALUE  174.
+       01  CS-05V00-0003                PIC S9(5) COMP  VALUE 10.
+       01    TA--X           PIC 9(5)  COMP VALUE ZERO.
+       01  REDEF13.
+           02  FILLER                  PICTURE X(57)   VALUE
+           "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA".
+           02  FILLER                  PICTURE X(57)   VALUE
+           "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA".
+           02  FILLER                  PICTURE X(6)    VALUE "AAAAAA".
+       01  MINUS-NAMES.
+           02  WHOLE-FIELD              PICTURE S9(18).
+           02  PLUS-NAME1  PICTURE S9(18) VALUE +333333333333333333.
+           02  EVEN-NAME1  PICTURE S9(18) VALUE +1.
+           02  PLUS-NAME2  PICTURE S9(18) VALUE +999999999999999999.
+           02  ALPHA-LIT                PICTURE X(5)  VALUE SPACE.
+           02  SNEG-LIT2                PICTURE S9(5)  VALUE -70718.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC252A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC252A-001 SECTION.
+       RDF-INIT.
+           MOVE "REDEFINES " TO FEATURE.
+       RDF-TEST-1.
+           IF HARD
+               MOVE RDF3-5-15 TO COMPUTED-A
+               MOVE 6 TO CORRECT-A
+               PERFORM FAIL
+               GO TO RDF-WRITE-1.
+      *>     NOTE 88 LEVEL CONDITION TEST ON REDEFINED FIELD.
+           PERFORM PASS.
+           GO TO RDF-WRITE-1.
+       RDF-DELETE-1.
+           PERFORM DE-LETE.
+       RDF-WRITE-1.
+           MOVE "RDF-TEST-1 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RDF-TEST-2.
+           IF RDF3-5-16 EQUAL TO 66
+               PERFORM PASS
+               GO TO RDF-WRITE-2.
+      *>     NOTE USING A RENAMES DATANAME THAT IS ALSO REDEFINED.
+           MOVE RDF3-5-16 TO COMPUTED-A.
+           MOVE 66 TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO RDF-WRITE-2.
+       RDF-DELETE-2.
+           PERFORM DE-LETE.
+       RDF-WRITE-2.
+           MOVE "RDF-TEST-2 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RDF-TEST-003.
+           IF   AN0002-O036F-X-0002  (8)  EQUAL TO  "LK"
+                PERFORM  PASS
+                GO TO   RDF-WRITE-003.
+      *> 
+      *>     NOTE  REFERENCING    SUBSCRIPTED DATA ITEM WHICH IS
+      *>           SUBORDINATE TO A REDEFINES CLAUSE.
+      *> 
+           MOVE  AN0002-O036F-X-0002 (8) TO  COMPUTED-A.
+           MOVE   "LK"  TO CORRECT-A.
+           PERFORM  FAIL.
+           GO TO    RDF-WRITE-003.
+       RDF-DELETE-003.
+           PERFORM  DE-LETE.
+       RDF-WRITE-003.
+           MOVE     "RDF-TEST-003"  TO  PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RDF-TEST-4.
+           IF RDFDATA7 EQUAL TO "ABC98765DE911644ALLD"
+               PERFORM PASS
+               GO TO RDF-WRITE-4.
+      *>     NOTE THIS IS THE FIRST REFERENCE TO THESE REDEFINED
+      *>         DATANAMES, SO, THE FIELDS CONTAIN THE WORKING-STORAGE
+      *>         ASSIGNED VALUES.
+           MOVE RDFDATA7 TO COMPUTED-A.
+           MOVE "ABC98765DE911644ALLD" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO RDF-WRITE-4.
+       RDF-DELETE-4.
+           PERFORM DE-LETE.
+       RDF-WRITE-4.
+           MOVE "RDF-TEST-4 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RDF-TEST-5.
+           IF RDFDATA8 (13) EQUAL TO "HG"
+               PERFORM PASS
+               GO TO RDF-WRITE-5.
+           MOVE "HG" TO CORRECT-A.
+           MOVE RDFDATA8 (13) TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO RDF-WRITE-5.
+       RDF-DELETE-5.
+           PERFORM DE-LETE.
+       RDF-WRITE-5.
+           MOVE "RDF-TEST-5 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RDF-TEST-6.
+           IF RDFDATA2 EQUAL TO 9116.44
+               PERFORM PASS
+               GO TO RDF-WRITE-6.
+           MOVE 9116.44 TO COMPUTED-N.
+           MOVE RDFDATA2 TO CORRECT-N.
+           PERFORM FAIL.
+           GO TO RDF-WRITE-6.
+       RDF-DELETE-6.
+           PERFORM DE-LETE.
+       RDF-WRITE-6.
+           MOVE "RDF-TEST-6 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RDF-TEST-7.
+           IF RDFDATA16 EQUAL TO 66
+               PERFORM PASS
+               GO TO RDF-WRITE-7.
+           MOVE RDFDATA16 TO COMPUTED-A.
+           MOVE 66 TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO RDF-WRITE-7.
+       RDF-DELETE-7.
+           PERFORM DE-LETE.
+       RDF-WRITE-7.
+           MOVE "RDF-TEST-7 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RDF-TEST-8.
+           MOVE SPACE TO REDEF12.
+           IF REDEF11 EQUAL TO SPACE
+               PERFORM PASS
+               GO TO RDF-WRITE-8.
+           MOVE "SPACE EXPECTED " TO CORRECT-A.
+           MOVE "NON BLANK CHARACTERS" TO COMPUTED-A.
+           MOVE "REDEF11 CONTAINS NON BLANKS" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO RDF-WRITE-8.
+       RDF-DELETE-8.
+           PERFORM DE-LETE.
+       RDF-WRITE-8.
+           MOVE "RDF-TEST-8 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RDF-TEST-9.
+           MOVE ZERO TO REDEF12.
+           MOVE SPACE TO REDEF11.
+      *>     NOTE  CHECKS RDFDATA18 WHICH SHOULD NOT BE DISTURBED BY THE
+      *>         MOVE SPACE STATEMENT TO A SHORTER REDEFINED AREA.
+           IF RDFDATA18 EQUAL TO ZERO
+               PERFORM PASS
+               GO TO RDF-WRITE-9.
+           MOVE "00000000000000" TO CORRECT-A.
+           MOVE RDFDATA18 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO RDF-WRITE-9.
+       RDF-DELETE-9.
+           PERFORM DE-LETE.
+       RDF-WRITE-9.
+           MOVE "RDF-TEST-9 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RDF-TEST-10.
+           MOVE ZERO TO REDEF12.
+           MOVE "MOVING DATA TO A REDEFINED FIELD CAN BE RISKY "
+               TO REDEF10.
+           IF RDFDATA8 (14) EQUAL TO "00"
+               PERFORM PASS
+               GO TO RDF-WRITE-10.
+           MOVE 00 TO CORRECT-A.
+           MOVE RDFDATA8 (14) TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO RDF-WRITE-10.
+       RDF-DELETE-10.
+           PERFORM DE-LETE.
+       RDF-WRITE-10.
+           MOVE "RDF-TEST-10 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RDF-INIT-11.
+           MOVE REDEF13 TO REDEF12.
+           MOVE "RDF-TEST-11 " TO PAR-NAME.
+       RDF-TEST-11.
+           IF REDEF10 EQUAL TO
+               "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+               PERFORM PASS
+               PERFORM PRINT-DETAIL
+               GO TO   RDF-TEST-12.
+           MOVE    1 TO REC-CT.
+           MOVE    REDEF10 TO WS-46.
+           MOVE   "AAAAAAAAAAAAAAAAAAAA" TO CORRECT-A.
+           MOVE    WS-1-20 TO COMPUTED-A.
+           MOVE   "FIELDS DIDNT COMPARE EQUAL " TO RE-MARK.
+           PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+           MOVE   "AAAAAAAAAAAAAAAAAAAA" TO CORRECT-A.
+           MOVE    WS-21-40 TO COMPUTED-A.
+           MOVE   "FIELDS DIDNT COMPARE EQUAL " TO RE-MARK.
+           PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+           MOVE   "AAAAAA"  TO CORRECT-A.
+           MOVE    WS-41-46 TO COMPUTED-A.
+           MOVE   "FIELDS DIDNT COMPARE EQUAL " TO RE-MARK.
+           PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+           GO TO   RDF-TEST-12.
+       RDF-DELETE-11.
+           PERFORM DE-LETE.
+       RDF-TEST-12.
+           MOVE 11 TO RDFDATA16.
+      *>     NOTE 88 LEVEL TEST ON REDEFINED AREA.
+           IF  SOFT
+               PERFORM PASS
+           ELSE
+               MOVE "CONDITION-NAME TEST" TO RE-MARK
+               PERFORM FAIL.
+           GO TO RDF-WRITE-12.
+       RDF-DELETE-12.
+           PERFORM DE-LETE.
+       RDF-WRITE-12.
+           MOVE "RDF-TEST-12" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RDF-TEST-13.
+           MOVE REDEF13 TO REDEF12.
+           MOVE SPACE TO REDEF10.
+           IF RDF8-7 EQUAL TO SPACE
+               MOVE RDF8-7 TO COMPUTED-A
+               MOVE "AAAA" TO CORRECT-A
+               PERFORM FAIL
+               GO TO RDF-WRITE-13.
+           PERFORM PASS.
+           GO TO RDF-WRITE-13.
+       RDF-DELETE-13.
+           PERFORM DE-LETE.
+       RDF-WRITE-13.
+           MOVE "RDF-TEST-13 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RDF-TEST-14.
+           MOVE SPACE TO REDEF12.
+           MOVE REDEF13 TO REDEF10.
+           IF RDF8-3 EQUAL TO "AAAAAAAAA"
+               MOVE RDF8-3 TO COMPUTED-A
+               MOVE SPACE TO CORRECT-A
+               PERFORM FAIL
+               GO TO RDF-WRITE-14.
+           PERFORM PASS.
+           GO TO RDF-WRITE-14.
+       RDF-DELETE-14.
+           PERFORM DE-LETE.
+       RDF-WRITE-14.
+           MOVE "RDF-TEST-14 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RNM-INIT.
+           PERFORM END-ROUTINE.
+           MOVE "RENAMES" TO FEATURE.
+       RENAM-TEST-1.
+           MOVE "AB" TO NAME1A.
+           MOVE "CD" TO NAME1B.
+           IF RENAME4 EQUAL TO "ABCD "
+                    PERFORM PASS
+                    GO TO RNM-WRITE-1.
+           MOVE RENAME4 TO COMPUTED-A.
+           MOVE "ABCD" TO CORRECT-A.
+      *>     NOTE  CORRECT ANSWER IS   ABCD-BLANK.
+           PERFORM FAIL.
+           GO TO RNM-WRITE-1.
+       RNM-DELETE-1.
+           PERFORM DE-LETE.
+       RNM-WRITE-1.
+           MOVE "RENAM-TEST-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RENAM-TEST-2.
+           MOVE ALL "A" TO RENAMES-DATA.
+           IF RENAME3 EQUAL TO "AAAAAAAAAA"
+                    PERFORM PASS
+                    GO TO RNM-WRITE-2.
+           MOVE RENAME3 TO COMPUTED-A.
+           MOVE "AAAAAAAAAA" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO RNM-WRITE-2.
+       RNM-DELETE-2.
+           PERFORM DE-LETE.
+       RNM-WRITE-2.
+           MOVE "RENAM-TEST-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RENAM-TEST-3.
+           MOVE ALL "A" TO RENAMES-DATA.
+           MOVE ALL "X" TO RENAME1.
+           IF NAME1 NOT EQUAL TO "XXXXX" GO TO RNM-FAIL-3.
+           IF NAME2 NOT EQUAL TO "XXXXXXXXXX" GO TO RNM-FAIL-3.
+           IF NAME3 NOT EQUAL TO "XXXXX" GO TO RNM-FAIL-3.
+           PERFORM PASS.
+           GO TO RNM-WRITE-3.
+       RNM-DELETE-3.
+           PERFORM DE-LETE.
+           GO TO RNM-WRITE-3.
+       RNM-FAIL-3.
+           MOVE RENAMES-DATA TO COMPUTED-A.
+           MOVE "XXXXXXXXXXXXXXXXXXXX" TO CORRECT-A.
+           PERFORM FAIL.
+       RNM-WRITE-3.
+           MOVE "RENAM-TEST-3" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RENAM-TEST-4.
+           IF RENAMES-TEST-1 EQUAL TO 123
+               PERFORM PASS
+               GO TO RENAM-WRITE-4.
+           MOVE RENAMES-TEST-1 TO COMPUTED-A.
+           MOVE 123 TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO RENAM-WRITE-4.
+       RENAM-DELETE-4.
+           PERFORM DE-LETE.
+       RENAM-WRITE-4.
+           MOVE "RENAM-TEST-4" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RENAM-TEST-5.
+           IF RENAMES-TEST-3 EQUAL TO "X  123"
+               PERFORM PASS
+               GO TO RENAM-WRITE-5.
+           MOVE RENAMES-TEST-3 TO COMPUTED-A.
+           MOVE "X  123" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO RENAM-WRITE-5.
+       RENAM-DELETE-5.
+           PERFORM DE-LETE.
+       RENAM-WRITE-5.
+           MOVE "RENAM-TEST-5" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RENAM-TEST-6.
+           IF RENAMES-TEST-4 EQUAL TO "X  123"
+               PERFORM PASS
+               GO TO RENAM-WRITE-6.
+           MOVE RENAMES-TEST-4 TO COMPUTED-A.
+           MOVE "X  123" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO RENAM-WRITE-6.
+       RENAM-DELETE-6.
+           PERFORM DE-LETE.
+       RENAM-WRITE-6.
+           MOVE "RENAM-TEST-6" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RENAM-TEST-7.
+           IF RENAMES-TEST-2 EQUAL TO "X  "
+               PERFORM PASS
+               GO TO RENAM-WRITE-7.
+           MOVE RENAMES-TEST-2 TO COMPUTED-A.
+           MOVE "X  " TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO RENAM-WRITE-7.
+       RENAM-DELETE-7.
+           PERFORM DE-LETE.
+       RENAM-WRITE-7.
+           MOVE "RENAM-TEST-7" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RENAM-INIT-C.
+           MOVE     "QUALIFIED RENAMES" TO FEATURE.
+       RENAM-TEST-8.
+           MOVE     "IOWA" TO TAG-1A.
+           MOVE     "OREGON" TO TAG-1B.
+           MOVE     "CALIFORNIA" TO RENAME-5 OF T-RENAMES-DATA.
+           IF       TAG-1 EQUAL TO "CALIFORNIA"
+                    PERFORM PASS GO TO RENAM-WRITE-8.
+           GO       TO RENAM-FAIL-8.
+       RENAM-DELETE-8.
+           PERFORM  DE-LETE.
+           GO       TO RENAM-WRITE-8.
+       RENAM-FAIL-8.
+           PERFORM FAIL.
+           MOVE     TAG-1 TO COMPUTED-A.
+           MOVE     "CALIFORNIA" TO CORRECT-A.
+       RENAM-WRITE-8.
+           MOVE     "RENAM-TEST-8 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RENAM-TEST-9.
+           IF       UNIT-1 EQUAL TO "VERMONTOHIO"
+                    PERFORM PASS GO TO RENAM-WRITE-9.
+      *>         NOTE THIS TEST FURTHER CHECKS THE RESULTS OF
+      *>              THE PREVIOUS TEST - THIS ITEM SHOULD BE UNCHANGED.
+           GO       TO RENAM-FAIL-9.
+       RENAM-DELETE-9.
+           PERFORM  DE-LETE.
+           GO       TO RENAM-WRITE-9.
+       RENAM-FAIL-9.
+           PERFORM FAIL.
+           MOVE     UNIT-1 TO COMPUTED-A.
+           MOVE     "VERMONTOHIO" TO CORRECT-A.
+       RENAM-WRITE-9.
+           MOVE     "RENAM-TEST-9 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RENAM-TEST-10.
+           MOVE     "IOWAOREGONFLORIDA" TO T-RENAMES-DATA.
+           IF       RENAME-6 IN T-RENAMES-DATA EQUAL TO
+                    "IOWAOREGONFLORIDA"
+                    PERFORM PASS GO TO RENAM-WRITE-10.
+           GO       TO RENAM-FAIL-10.
+       RENAM-DELETE-10.
+           PERFORM  DE-LETE.
+           GO       TO RENAM-WRITE-10.
+       RENAM-FAIL-10.
+           PERFORM FAIL.
+           MOVE    RENAME-6 IN T-RENAMES-DATA TO COMPUTED-A.
+           MOVE   "IOWAOREGONFLORIDA" TO CORRECT-A.
+       RENAM-WRITE-10.
+           MOVE   "RENAM-TEST-10" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       RENAM-TEST-11.
+           MOVE   "BOSTO" TO ITEM-1.
+           MOVE   "N M" TO TABLE-ITEM-2 (1).
+           MOVE   "ASS" TO TABLE-ITEM-2 (2).
+           MOVE   "ACH" TO TABLE-ITEM-2 (3).
+           MOVE   "USE" TO TABLE-ITEM-2 (4).
+           MOVE   "TTS" TO TABLE-ITEM-2 (5).
+           IF      RENAME-7 EQUAL TO "BOSTON MASSACHUSETTS"
+                   PERFORM PASS GO TO RENAM-WRITE-11.
+           GO      TO RENAM-FAIL-11.
+       RENAM-DELETE-11.
+           PERFORM  DE-LETE.
+           GO       TO RENAM-WRITE-11.
+       RENAM-FAIL-11.
+           PERFORM FAIL.
+           MOVE     RENAME-7 TO COMPUTED-A.
+           MOVE     "BOSTON MASSACHUSETTS" TO CORRECT-A.
+       RENAM-WRITE-11.
+           MOVE     "RENAMES A TABLE" TO FEATURE.
+           MOVE     "RENAM-TEST-11" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RENAM-INIT-D.
+           MOVE     "RENAMED DATA ---" TO FEATURE.
+           PERFORM  PRINT-DETAIL.
+       RENAM-TEST-12.
+           MOVE     SPACE TO W-RENAMES-DATA.
+           MOVE     12.3 TO WIDGET-1.
+           MOVE     45678.9 TO WIDGET-2.
+           MOVE     ZERO TO WIDGET-3.
+           IF       RENAME-8 EQUAL TO "123*45,678.900000"
+                    PERFORM PASS GO TO RENAM-WRITE-12.
+           GO       TO RENAM-FAIL-12.
+       RENAM-DELETE-12.
+           PERFORM  DE-LETE.
+           GO       TO RENAM-WRITE-12.
+       RENAM-FAIL-12.
+           PERFORM FAIL.
+           MOVE     RENAME-8 TO COMPUTED-A.
+           MOVE     "123*45,678.900000" TO CORRECT-A.
+       RENAM-WRITE-12.
+           MOVE     "  GROUP COMPARISON" TO FEATURE
+           MOVE     "RENAM-TEST-12" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RENAM-TEST-13.
+           MOVE     SPACE TO W-RENAMES-DATA.
+           MOVE     "123456789" TO RENAME-10.
+           IF       RENAME-9 EQUAL TO "    12345678"
+                    PERFORM PASS GO TO RENAM-WRITE-13.
+           GO       TO RENAM-FAIL-13.
+       RENAM-DELETE-13.
+           PERFORM  DE-LETE.
+           GO       TO RENAM-WRITE-13.
+       RENAM-FAIL-13.
+           PERFORM FAIL.
+           MOVE     RENAME-9 TO COMPUTED-A
+           MOVE     "    12345678" TO CORRECT-A.
+       RENAM-WRITE-13.
+           MOVE     "  GRP MOVE, COMPARE" TO FEATURE.
+           MOVE     "RENAM-TEST-13" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RENAM-TEST-14.
+           MOVE     SPACE TO W-RENAMES-DATA.
+           MOVE     123456 TO RENAME-10
+           IF       WIDGET-4 EQUAL TO 1234
+                    PERFORM PASS GO TO RENAM-WRITE-14.
+           GO       TO RENAM-FAIL-14.
+       RENAM-DELETE-14.
+           PERFORM  DE-LETE.
+           GO       TO RENAM-WRITE-14.
+       RENAM-FAIL-14.
+           PERFORM FAIL.
+           MOVE     WIDGET-4 TO COMPUTED-N.
+           MOVE     1234 TO CORRECT-N.
+       RENAM-WRITE-14.
+           MOVE     "  GROUP MOVE" TO FEATURE.
+           MOVE     "RENAM-TEST-14" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RENAM-TEST-15.
+           MOVE     SPACE TO W-RENAMES-DATA.
+           MOVE     234.5 TO RENAME-11.
+           IF       WIDGET-2 EQUAL TO "****234.50"
+                    PERFORM PASS GO TO RENAM-WRITE-15.
+           GO       TO RENAM-FAIL-15.
+       RENAM-DELETE-15.
+           PERFORM  DE-LETE.
+           GO       TO RENAM-WRITE-15.
+       RENAM-FAIL-15.
+           PERFORM FAIL.
+           MOVE     WIDGET-2 TO COMPUTED-A.
+           MOVE     "****234.50" TO CORRECT-A.
+       RENAM-WRITE-15.
+           MOVE     "  EDITED MOVE" TO FEATURE.
+           MOVE     "RENAM-TEST-15" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RENAM-INIT-E.
+           MOVE     "  ADD, SIZE ERROR" TO FEATURE.
+      *>         NOTE THE NEXT TWO TESTS ARE INTERRELATED.
+       RENAM-TEST-16.
+           MOVE     8000 TO WIDGET-4.
+           ADD      3500 TO RENAME-12 ON SIZE ERROR
+                    PERFORM PASS GO TO RENAM-WRITE-16.
+           GO       TO RENAM-FAIL-16.
+       RENAM-DELETE-16.
+           PERFORM  DE-LETE.
+           GO       TO RENAM-WRITE-16.
+       RENAM-FAIL-16.
+           PERFORM FAIL.
+           MOVE     "SIZE ERROR DID NOT OCCUR" TO RE-MARK.
+       RENAM-WRITE-16.
+           MOVE     "RENAM-TEST-16" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RENAM-TEST-17.
+           IF       RENAME-12 EQUAL TO 8000
+                    PERFORM PASS GO TO RENAM-WRITE-17.
+           GO       TO RENAM-FAIL-17.
+       RENAM-DELETE-17.
+           PERFORM  DE-LETE.
+           GO       TO RENAM-WRITE-17.
+       RENAM-FAIL-17.
+           PERFORM FAIL.
+           MOVE     RENAME-12 TO COMPUTED-N.
+           MOVE     8000 TO CORRECT-N.
+       RENAM-WRITE-17.
+           MOVE     "RENAM-TEST-17" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       RENAM-TEST-18.
+           MOVE     SPACE TO U-RENAMES-DATA.
+           MOVE     "CHICAGO ILLINOIS" TO RENAME-5 OF U-RENAMES-DATA.
+           IF       U-RENAMES-DATA EQUAL TO "CHICAGO ILL     "
+                    PERFORM PASS GO TO RENAM-WRITE-18.
+           PERFORM  FAIL.
+           GO       TO RENAM-FAIL-18.
+       RENAM-DELETE-18.
+           PERFORM  DE-LETE.
+           GO       TO RENAM-WRITE-18.
+       RENAM-FAIL-18.
+           PERFORM  FAIL.
+           MOVE     U-RENAMES-DATA TO COMPUTED-A.
+           MOVE     "CHICAGO ILL     " TO CORRECT-A.
+       RENAM-WRITE-18.
+           MOVE     "  THROUGH" TO FEATURE.
+           MOVE     "RENAM-TEST-18" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+       COMPUTING SECTION.
+       COMPUTE-INIT.
+           MOVE SPACES TO TEST-RESULTS.
+           PERFORM END-ROUTINE.
+           MOVE "THE COMPUTED RESULT FOR THE FOLLOWING TESTS"
+                   TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "IS ALLOWED TO DEVIATE FROM THE INDICATED"
+                   TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "CORRECT RESULT BY" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "+ OR - (CORRECT RESULT * (.2 ** 5))."
+                   TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "COMPUTE        " TO FEATURE.
+       COMP-TEST-1.
+           COMPUTE COMPUTE-1 = COMPUTE-1A.
+           IF ( COMPUTE-1 < 654.20038) AND
+              ( COMPUTE-1 > 654.17422) THEN
+                    PERFORM PASS
+                    GO TO COMP-WRITE-1.
+           PERFORM FAIL.
+           MOVE COMPUTE-1 TO COMPUTED-N.
+           MOVE "+654.1873" TO CORRECT-A.
+           GO TO COMP-WRITE-1.
+       COMP-DELETE-1.
+           PERFORM DE-LETE.
+       COMP-WRITE-1.
+           MOVE "COMP-TEST-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-2.
+           COMPUTE COMPUTE-2 = 2233.9
+           IF ( COMPUTE-2 < 2233.94468) AND
+               ( COMPUTE-2 > 2233.85532) THEN
+                    PERFORM PASS
+                    GO TO COMP-WRITE-2.
+           PERFORM FAIL.
+           MOVE COMPUTE-2 TO COMPUTED-N.
+           MOVE "+2233.9" TO CORRECT-A.
+           GO TO COMP-WRITE-2.
+       COMP-DELETE-2.
+           PERFORM DE-LETE.
+       COMP-WRITE-2.
+           MOVE "COMP-TEST-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-3.
+           COMPUTE COMPUTE-3 = COMPUTE-3A - COMPUTE-3B.
+           IF ( COMPUTE-3 NOT < 52.39105) AND
+              ( COMPUTE-3 NOT > 52.38895) THEN
+                    PERFORM FAIL
+                     MOVE COMPUTE-3 TO COMPUTED-N
+                    MOVE "+52.39" TO CORRECT-A
+                    GO TO COMP-WRITE-3.
+           PERFORM PASS.
+           GO TO COMP-WRITE-3.
+       COMP-DELETE-3.
+           PERFORM DE-LETE.
+       COMP-WRITE-3.
+           MOVE "COMP-TEST-3" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-4.
+           COMPUTE COMPUTE-4 = COMPUTE-4A + COMPUTE-4B.
+              IF COMPUTE-4 NOT = 341
+                    PERFORM FAIL
+                    MOVE COMPUTE-4 TO COMPUTED-N
+                    MOVE "+341" TO CORRECT-A
+                    GO TO COMP-WRITE-4.
+           PERFORM PASS.
+           GO TO COMP-WRITE-4.
+       COMP-DELETE-4.
+           PERFORM DE-LETE.
+       COMP-WRITE-4.
+           MOVE "COMP-TEST-4" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-5.
+           COMPUTE COMPUTE-5 = COMPUTE-5A * 36.1
+           IF ( COMPUTE-5 > 400.71801) OR
+              ( COMPUTE-5 < 400.70199) THEN
+                    PERFORM FAIL
+                    MOVE COMPUTE-5 TO COMPUTED-N
+                    MOVE "+400.71" TO CORRECT-A
+                    GO TO COMP-WRITE-5.
+           PERFORM PASS.
+           GO TO COMP-WRITE-5.
+       COMP-DELETE-5.
+           PERFORM DE-LETE.
+       COMP-WRITE-5.
+           MOVE "COMP-TEST-5" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-6.
+           COMPUTE COMPUTE-6 = COMPUTE-6A / 6.0
+           IF ( COMPUTE-6 > 62.40125) OR
+              ( COMPUTE-6 < 62.39875) THEN
+                    PERFORM FAIL
+                    MOVE COMPUTE-6 TO COMPUTED-N
+                    MOVE "+062.40" TO CORRECT-A
+                    GO TO COMP-WRITE-6.
+           PERFORM PASS.
+           GO TO COMP-WRITE-6.
+       COMP-DELETE-6.
+           PERFORM DE-LETE.
+       COMP-WRITE-6.
+           MOVE "COMP-TEST-6" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-7.
+           COMPUTE COMPUTE-7 = 2.0 ** 4.
+              IF COMPUTE-7 = 16
+                    PERFORM PASS
+                    GO TO COMP-WRITE-7.
+           PERFORM FAIL.
+           MOVE COMPUTE-7 TO COMPUTED-N.
+           MOVE "+16" TO CORRECT-A.
+           GO TO COMP-WRITE-7.
+       COMP-DELETE-7.
+           PERFORM DE-LETE.
+       COMP-WRITE-7.
+           MOVE "COMP-TEST-7" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-8.
+           COMPUTE COMPUTE-8 = (((24.0 + 1) * (60 - 10)) / 125) ** 2.
+                   IF COMPUTE-8 = 100
+                PERFORM PASS
+                GO TO COMP-WRITE-8.
+           PERFORM FAIL.
+           MOVE COMPUTE-8 TO COMPUTED-N.
+           MOVE "+100" TO CORRECT-A.
+           GO TO COMP-WRITE-8.
+       COMP-DELETE-8.
+           PERFORM DE-LETE.
+       COMP-WRITE-8.
+           MOVE "COMP-TEST-8" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-9.
+           COMPUTE COMPUTE-9 ROUNDED = COMPUTE-6A * 7.0
+           IF (COMPUTE-9 > 2621.05242) OR
+              (COMPUTE-9 < 2620.94758) THEN
+                    PERFORM FAIL
+                    MOVE COMPUTE-9 TO COMPUTED-N
+                    MOVE "+2621" TO CORRECT-A
+                    GO TO COMP-WRITE-9.
+           PERFORM PASS.
+           GO TO COMP-WRITE-9.
+       COMP-DELETE-9.
+           PERFORM DE-LETE.
+       COMP-WRITE-9.
+           MOVE "COMP-TEST-9" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-10.
+           COMPUTE COMPUTE-10 = COMPUTE-1A + COMPUTE-6A ON SIZE ERROR
+           MOVE "R" TO XRAY.
+           IF XRAY EQUAL TO "R"
+                    PERFORM PASS
+                    GO TO COMP-WRITE-10.
+           PERFORM FAIL.
+           MOVE "OSE NOT EXECUTED" TO RE-MARK.
+           GO TO COMP-WRITE-10.
+       COMP-DELETE-10.
+           PERFORM DE-LETE.
+       COMP-WRITE-10.
+           MOVE "COMP-TEST-10" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-11.
+           IF (COMPUTE-10 > 0.00002) OR
+              (COMPUTE-10 < -0.00002)
+                    PERFORM FAIL
+                    MOVE COMPUTE-10 TO COMPUTED-N
+                    MOVE ZERO TO CORRECT-N
+                    GO TO COMP-WRITE-11.
+           PERFORM PASS.
+           GO TO COMP-WRITE-11.
+       COMP-DELETE-11.
+           PERFORM DE-LETE.
+       COMP-WRITE-11.
+           MOVE "COMP-TEST-11" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-12.
+           COMPUTE COMPUTE-11 = COMPUTE-11A + COMPUTE-11B - 121.6
+           IF ( COMPUTE-11 < 718.51437) AND
+              ( COMPUTE-11 > 718.48563) THEN
+                    PERFORM PASS
+                    GO TO COMP-WRITE-12.
+           PERFORM FAIL.
+           MOVE COMPUTE-11 TO COMPUTED-N.
+           MOVE "+718.5" TO CORRECT-A.
+           GO TO COMP-WRITE-12.
+       COMP-DELETE-12.
+           PERFORM DE-LETE.
+       COMP-WRITE-12.
+           MOVE "COMP-TEST-12" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-13.
+           COMPUTE COMPUTE-12 = COMPUTE-12A * 5.1 / 281.7.
+           IF (COMPUTE-12 < 6.09012) AND
+              (COMPUTE-12 > 6.08988) THEN
+                    PERFORM PASS
+                    GO TO COMP-WRITE-13.
+           PERFORM FAIL.
+           MOVE COMPUTE-12 TO COMPUTED-N.
+           MOVE "+6.09" TO CORRECT-A.
+           GO TO COMP-WRITE-13.
+       COMP-DELETE-13.
+           PERFORM DE-LETE.
+       COMP-WRITE-13.
+           MOVE "COMP-TEST-13" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMPUTE-ROUTINE SECTION.
+       COMPUTE-TEST.
+           MOVE "COMPUTE" TO FEATURE.
+           MOVE ZERO TO W-1.
+           MOVE ZERO TO W-2.
+       COMP-TEST-14.
+           COMPUTE W-1 = NINE.
+              IF W-1 = 9
+                    PERFORM PASS
+                    GO TO COMP-WRITE-14.
+           PERFORM FAIL.
+           MOVE W-1 TO COMPUTED-A.
+           MOVE 9 TO W-1.
+           MOVE 9 TO CORRECT-A.
+           GO TO COMP-WRITE-14.
+       COMP-DELETE-14.
+           PERFORM DE-LETE.
+       COMP-WRITE-14.
+           MOVE "COMP-TEST-14" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-15.
+           COMPUTE W-2 = W-1 + 20.
+              IF W-2 = 29
+                    PERFORM PASS
+                    GO TO COMP-WRITE-15.
+           PERFORM FAIL.
+           MOVE W-2 TO COMPUTED-N.
+           MOVE "+29" TO CORRECT-A.
+           MOVE 29 TO W-2.
+           GO TO COMP-WRITE-15.
+       COMP-DELETE-15.
+           PERFORM DE-LETE.
+       COMP-WRITE-15.
+           MOVE "COMP-TEST-15" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-16.
+           MOVE ZERO TO W-11.
+           COMPUTE W-11 = W-1 - W-2.
+           IF ( W-11 > -20.00040) AND
+              ( W-11 < -19.99960) THEN
+                    PERFORM PASS
+                    GO TO COMP-WRITE-16.
+           PERFORM FAIL.
+           MOVE W-11 TO COMPUTED-N.
+           MOVE "-20" TO CORRECT-A.
+           GO TO COMP-WRITE-16.
+       COMP-DELETE-16.
+           PERFORM DE-LETE.
+       COMP-WRITE-16.
+           MOVE "COMP-TEST-16" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-17.
+           MOVE ZERO TO W-3.
+           COMPUTE W-3 = TEN * 30.
+              IF W-3 = 300
+                    PERFORM PASS
+                    GO TO COMP-WRITE-17.
+           PERFORM FAIL.
+           MOVE W-3 TO COMPUTED-N.
+           MOVE "+300" TO CORRECT-A.
+           GO TO COMP-WRITE-17.
+       COMP-DELETE-17.
+           PERFORM DE-LETE.
+       COMP-WRITE-17.
+           MOVE "COMP-TEST-17" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-18.
+           MOVE ZERO TO W-5.
+           COMPUTE W-5 = 42 / SEVEN.
+              IF W-5 = 6
+                    PERFORM PASS
+                    GO TO COMP-WRITE-18.
+           PERFORM FAIL.
+           MOVE W-5 TO COMPUTED-N.
+           MOVE "+6" TO CORRECT-A.
+           GO TO COMP-WRITE-18.
+       COMP-DELETE-18.
+           PERFORM DE-LETE.
+       COMP-WRITE-18.
+           MOVE "COMP-TEST-18" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-19.
+           MOVE ZERO TO W-2.
+           COMPUTE W-2 = FOUR ** 3.
+              IF W-2 = 64
+                    PERFORM PASS
+                    GO TO COMP-WRITE-19.
+           PERFORM FAIL.
+           MOVE W-2 TO COMPUTED-N.
+           MOVE "+64" TO CORRECT-A.
+           GO TO COMP-WRITE-19.
+       COMP-DELETE-19.
+           PERFORM DE-LETE.
+       COMP-WRITE-19.
+           MOVE "COMP-TEST-19" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-20.
+           MOVE 555 TO W-3.
+           COMPUTE W-3 = TWENTY-5 + 101 + 222.
+              IF W-3 = 348
+                    PERFORM PASS
+                    GO TO COMP-WRITE-20.
+                    PERFORM FAIL.
+                    MOVE W-3 TO COMPUTED-N.
+                    MOVE "+348" TO CORRECT-A.
+           GO TO COMP-WRITE-20.
+       COMP-DELETE-20.
+           PERFORM DE-LETE.
+       COMP-WRITE-20.
+           MOVE "COMP-TEST-20" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-21.
+           MOVE ZERO TO W-9.
+           COMPUTE W-9 = TWO * (3 + 4).
+              IF W-9 = 14
+                    PERFORM PASS
+                    GO TO COMP-WRITE-21.
+           PERFORM FAIL.
+           MOVE W-9 TO COMPUTED-N.
+           MOVE "+14" TO CORRECT-A.
+           GO TO COMP-WRITE-21.
+       COMP-DELETE-21.
+           PERFORM DE-LETE.
+       COMP-WRITE-21.
+           MOVE "COMP-TEST-21" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+        COMP-TEST-22.
+           MOVE ZERO TO W-9.
+           COMPUTE W-9 = (TWO + (3 * FOUR) / (2 * THREE)) ** 2 - 1.
+                   IF W-9 = 15     PERFORM PASS
+               GO TO COMP-WRITE-22.
+           PERFORM FAIL.
+           MOVE W-9 TO COMPUTED-N.
+           MOVE "+15" TO CORRECT-A.
+           GO TO COMP-WRITE-22.
+       COMP-DELETE-22.
+           PERFORM DE-LETE.
+       COMP-WRITE-22.
+           MOVE "COMP-TEST-22" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-23.
+           MOVE ZERO TO XRAY.
+           MOVE 10 TO W-2.
+           COMPUTE W-2 = 96 + TWENTY ON SIZE ERROR
+           MOVE 8 TO XRAY.
+           IF XRAY IS EQUAL TO "8"
+                    PERFORM PASS
+                    GO TO COMP-WRITE-23.
+           PERFORM FAIL.
+           MOVE "8" TO CORRECT-A.
+           MOVE XRAY TO COMPUTED-A.
+           MOVE "OSE NOT EXECUTED" TO RE-MARK.
+           GO TO COMP-WRITE-23.
+       COMP-DELETE-23.
+           PERFORM DE-LETE.
+       COMP-WRITE-23.
+           MOVE "COMP-TEST-23" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-24.
+              IF W-2 = 10
+                    PERFORM PASS
+                    GO TO COMP-WRITE-24.
+           PERFORM FAIL.
+           MOVE W-2 TO COMPUTED-A.
+           MOVE "10" TO CORRECT-A.
+           MOVE "NOT PROTECTED BY OES" TO RE-MARK.
+           GO TO COMP-WRITE-24.
+       COMP-DELETE-24.
+           PERFORM DE-LETE.
+       COMP-WRITE-24.
+           MOVE "COMP-TEST-24" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-25.
+           MOVE ZERO TO W-11.
+           COMPUTE W-11 ROUNDED = D-1 + D-7.
+           IF ( W-11 < 2.20004) AND
+              ( W-11 > 2.19996) THEN
+                    PERFORM PASS
+                    GO TO COMP-WRITE-25.
+           PERFORM FAIL.
+           MOVE W-11 TO COMPUTED-N.
+           MOVE "+2.2" TO CORRECT-A.
+           GO TO COMP-WRITE-25.
+       COMP-DELETE-25.
+           PERFORM DE-LETE.
+       COMP-WRITE-25.
+           MOVE "COMP-TEST-25" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-26.
+           MOVE ZERO TO W-11.
+           COMPUTE W-11 ROUNDED = 25 / 10.
+           IF ( W-11 < 2.50005) AND
+              ( W-11 > 2.49995) THEN
+                    PERFORM PASS
+                    GO TO COMP-WRITE-26.
+           PERFORM FAIL.
+           MOVE W-11 TO COMPUTED-N.
+           MOVE "+2.5" TO CORRECT-A.
+           GO TO COMP-WRITE-26.
+       COMP-DELETE-26.
+           PERFORM DE-LETE.
+       COMP-WRITE-26.
+           MOVE "COMP-TEST-26" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CTST-END.
+           EXIT.
+       COMP-INIT-A.
+           MOVE     "COMPUTE" TO FEATURE.
+       COMP-TEST-27.
+           MOVE     ZERO TO WRK-DS-02V00.
+           COMPUTE  WRK-DS-02V00 = -9.
+              IF WRK-DS-02V00 = -9
+                    PERFORM PASS
+                    GO TO COMP-WRITE-27.
+           MOVE     WRK-DS-02V00 TO COMPUTED-N.
+           MOVE     -9 TO CORRECT-N.
+           PERFORM  FAIL.
+           GO TO COMP-WRITE-27.
+       COMP-DELETE-27.
+           PERFORM DE-LETE.
+       COMP-WRITE-27.
+           MOVE     "COMP-TEST-27" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-28.
+           MOVE     ZERO TO WRK-DS-02V00.
+           COMPUTE  WRK-DS-02V00 = A99-DS-02V00.
+              IF WRK-DS-02V00 = 99
+                    PERFORM PASS
+                    GO TO COMP-WRITE-28.
+           MOVE     WRK-DS-02V00 TO COMPUTED-N.
+           MOVE     99 TO CORRECT-N.
+           PERFORM  FAIL.
+           GO TO COMP-WRITE-28.
+       COMP-DELETE-28.
+           PERFORM DE-LETE.
+       COMP-WRITE-28.
+           MOVE     "COMP-TEST-28" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-29.
+           MOVE     ZERO TO WRK-DS-18V00.
+           COMPUTE  WRK-DS-18V00 = A18ONES-DS-18V00 + A18ONES-DS-18V00.
+           IF       WRK-DS-18V00 = 222222222222222222
+                    PERFORM PASS
+                    GO TO COMP-WRITE-29.
+           MOVE     WRK-DS-18V00 TO COMPUTED-18V0.
+           MOVE     222222222222222222 TO CORRECT-18V0.
+           PERFORM  FAIL.
+           GO TO COMP-WRITE-29.
+       COMP-DELETE-29.
+           PERFORM DE-LETE.
+       COMP-WRITE-29.
+           MOVE     "COMP-TEST-29" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-30.
+           MOVE     ZERO TO WRK-DS-18V00.
+           COMPUTE  WRK-DS-18V00 = A18TWOS-DS-18V00 - A18ONES-DS-18V00.
+           IF       WRK-DS-18V00 = 111111111111111111
+                    PERFORM PASS
+                    GO TO COMP-WRITE-30.
+           MOVE     WRK-DS-18V00 TO COMPUTED-18V0.
+           MOVE     111111111111111111 TO CORRECT-18V0.
+           PERFORM  FAIL.
+           GO TO COMP-WRITE-30.
+       COMP-DELETE-30.
+           PERFORM DE-LETE.
+       COMP-WRITE-30.
+           MOVE     "COMP-TEST-30" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-31.
+           MOVE   ZERO TO   TA--X.
+           COMPUTE     TA--X  =  3 * A02TWOS-DU-02V00.
+              IF TA--X = 66
+                    PERFORM PASS
+                    GO TO COMP-WRITE-31.
+           MOVE       TA--X TO COMPUTED-N
+           MOVE     66 TO CORRECT-N.
+           PERFORM  FAIL.
+           GO TO COMP-WRITE-31.
+       COMP-DELETE-31.
+           PERFORM DE-LETE.
+       COMP-WRITE-31.
+           MOVE     "COMP-TEST-31" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-32.
+           MOVE     ZERO TO WRK-DS-05V00.
+           COMPUTE  WRK-DS-05V00 = A02TWOS-DU-02V00 / A02TWOS-DS-03V02.
+              IF WRK-DS-05V00 = 1
+                    PERFORM PASS
+                    GO TO COMP-WRITE-32.
+           MOVE     WRK-DS-05V00 TO COMPUTED-N.
+           MOVE     1 TO CORRECT-N.
+           PERFORM  FAIL.
+           GO TO COMP-WRITE-32.
+       COMP-DELETE-32.
+           PERFORM DE-LETE.
+       COMP-WRITE-32.
+           MOVE     "COMP-TEST-32" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-33.
+           MOVE     ZERO TO WRK-DS-05V00.
+           COMPUTE  WRK-DS-05V00 = 3 ** ATWO-DS-01V00.
+              IF WRK-DS-05V00 = 9
+                    PERFORM PASS
+                    GO TO COMP-WRITE-33.
+           MOVE     WRK-DS-05V00 TO COMPUTED-N.
+           MOVE     9 TO CORRECT-N.
+           PERFORM  FAIL.
+           GO TO COMP-WRITE-33.
+       COMP-DELETE-33.
+                    PERFORM DE-LETE.
+       COMP-WRITE-33.
+           MOVE     "COMP-TEST-33" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-34.
+           MOVE     ZERO TO WRK-DS-02V00.
+           COMPUTE  WRK-DS-02V00 ROUNDED  = A99-DS-02V00
+                    +   AZERO-DS-05V05 - 2.5.
+              IF WRK-DS-02V00 = 97
+                    PERFORM PASS
+                    GO TO COMP-WRITE-34.
+           MOVE     WRK-DS-02V00 TO COMPUTED-N.
+           MOVE     97 TO CORRECT-N.
+           PERFORM  FAIL.
+           GO TO COMP-WRITE-34.
+       COMP-DELETE-34.
+           PERFORM DE-LETE.
+       COMP-WRITE-34.
+           MOVE     "COMP-TEST-34" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-35.
+           MOVE     ZERO TO WRK-DS-02V00.
+           COMPUTE  WRK-DS-02V00 = A99-DS-02V00 + AZERO-DS-05V05
+                    ON SIZE ERROR
+                    MOVE "SIZE ERR SHOULD NOT EXCUTE" TO RE-MARK
+                    PERFORM FAIL
+                    GO TO COMP-WRITE-35.
+           PERFORM  PASS.
+           GO       TO COMP-WRITE-35.
+       COMP-DELETE-35.
+           PERFORM  DE-LETE.
+       COMP-WRITE-35.
+           MOVE     "COMP-TEST-35" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-36.
+           IF       TEST-2NUC-COND-99
+                    PERFORM PASS
+                    GO TO COMP-WRITE-36.
+      *>     NOTE     THIS TEST DEPENDS UPON THE RESULT OF COMP-TEST-35.
+           MOVE     WRK-DS-02V00 TO COMPUTED-N.
+           MOVE     99 TO CORRECT-N.
+           PERFORM  FAIL.
+           GO TO COMP-WRITE-36.
+       COMP-DELETE-36.
+           PERFORM DE-LETE.
+       COMP-WRITE-36.
+           MOVE     "COMP-TEST-36" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-37.
+           MOVE     ZERO TO WRK-DS-0201P.
+           COMPUTE  WRK-DS-0201P ROUNDED = A05ONES-DS-05V00 / 5
+                    ON SIZE ERROR
+                    PERFORM PASS
+                    GO TO COMP-WRITE-37.
+           MOVE     "ON SIZE ERROR NOT EXECUTED" TO RE-MARK.
+           PERFORM  FAIL.
+           GO TO COMP-WRITE-37.
+       COMP-DELETE-37.
+           PERFORM DE-LETE.
+       COMP-WRITE-37.
+           MOVE     "COMP-TEST-37" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-38.
+              IF WRK-DS-0201P = ZERO
+                    PERFORM PASS
+                    GO TO COMP-WRITE-38.
+      *>     NOTE     THIS TEST DEPENDS UPON THE RESULT OF COMP-TEST-37.
+           MOVE     WRK-DS-0201P TO COMPUTED-N.
+           MOVE     ZERO TO CORRECT-N.
+           PERFORM  FAIL.
+           GO TO COMP-WRITE-38.
+       COMP-DELETE-38.
+           PERFORM DE-LETE.
+       COMP-WRITE-38.
+           MOVE     "COMP-TEST-38" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-39-42.
+           MOVE SPACES TO TEST-RESULTS.
+           MOVE "NOT USED" TO RE-MARK.
+           MOVE "COMP-TEST-39" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE "NOT USED" TO RE-MARK.
+           MOVE "COMP-TEST-40" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE "NOT USED" TO RE-MARK.
+           MOVE "COMP-TEST-41" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE "NOT USED" TO RE-MARK.
+           MOVE "COMP-TEST-42" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE "COMPUTE" TO FEATURE.
+       COMP-TEST-43.
+           MOVE    ZEROS TO WHOLE-FIELD.
+           COMPUTE WHOLE-FIELD =
+           (1 + (2 - (3 + (4 - (5 + (6 - (7 + (8 - (9 + (10 -
+           EVEN-NAME1)))))))))).
+           IF (WHOLE-FIELD < 10.0002) AND
+              (WHOLE-FIELD > 9.9998) PERFORM PASS
+               GO TO COMP-WRITE-43.
+           MOVE WHOLE-FIELD TO COMPUTED-18V0.
+           MOVE 10 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO COMP-WRITE-43.
+       COMP-DELETE-43.
+           PERFORM DE-LETE.
+       COMP-WRITE-43.
+           MOVE "COMP-TEST-43" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-TEST-44.
+           MOVE    ZEROS TO WHOLE-FIELD.
+           COMPUTE  WHOLE-FIELD =
+           (ONE + (TWO - (THREE + (FOUR - (FIVE + (SIX - (SEVEN +
+               (EIGHT - (NINE + (TEN - EVEN-NAME1)))))))))).
+              IF WHOLE-FIELD = 10    PERFORM PASS
+               GO TO COMP-WRITE-44.
+           MOVE WHOLE-FIELD TO COMPUTED-18V0.
+           MOVE 10 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO COMP-WRITE-44.
+       COMP-DELETE-44.
+           PERFORM DE-LETE.
+       COMP-WRITE-44.
+           MOVE "COMP-TEST-44" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       COMP-INT-045.
+           MOVE    "COMPUTE SERIES"  TO FEATURE.
+           MOVE    "COMP-TEST-045"  TO PAR-NAME.
+       COMP-TEST-045.
+           COMPUTE  WRK-DS-05V00-0002
+                    WRK-DS-04V01-0005   ROUNDED
+                    WRK-DS-03V04-0003F-0014  (2, 2, 2) =  174 / 16.
+      *> 
+      *>     IDENTIFIER SERIES  -  WITH AND WITHOUT ROUNDED  -
+      *>              SUBSCRIPTED DATA ITEM.
+      *> 
+           MOVE "COMP-TEST-045-1" TO PAR-NAME.
+              IF WRK-DS-05V00-0002 NOT = 10
+                    MOVE      +00010  TO  CORRECT-N
+                    MOVE     WRK-DS-05V00-0002   TO COMPUTED-N
+                    PERFORM COMP-WRITE-045 GO TO COMP-TEST-045-2.
+           PERFORM PASS.  PERFORM COMP-WRITE-045.
+       COMP-TEST-045-2.
+           MOVE "COMP-TEST-045-2" TO PAR-NAME.
+           IF (WRK-DS-04V01-0005 > 10.9002180) OR
+              (WRK-DS-04V01-0005 < 10.8997820) PERFORM FAIL
+                    MOVE +10.9 TO CORRECT-N
+                    MOVE WRK-DS-04V01-0005 TO COMPUTED-N
+                    PERFORM COMP-WRITE-045 GO TO COMP-TEST-045-3.
+           PERFORM PASS.  PERFORM COMP-WRITE-045.
+       COMP-TEST-045-3.
+           MOVE "COMP-TEST-045-3" TO PAR-NAME.
+           IF (WRK-DS-03V04-0003F-0014 (2, 2, 2) > 10.87521750) OR
+              (WRK-DS-03V04-0003F-0014 (2, 2, 2) < 10.87479250)
+                   PERFORM FAIL MOVE +010.8750 TO CORRECT-N
+                   MOVE WRK-DS-03V04-0003F-0014 (2, 2, 2) TO COMPUTED-N
+                   GO TO COMP-WRITE-045.
+           PERFORM PASS.
+           GO TO      COMP-WRITE-045.
+       COMP-DELETE-045.
+           PERFORM  DE-LETE.
+       COMP-WRITE-045.
+           PERFORM  PRINT-DETAIL.
+       COMP-TEST-045-EXIT.
+           EXIT.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC252A

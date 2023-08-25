@@ -1,0 +1,983 @@
+000100 IDENTIFICATION                    DIVISION.
+000200******************************************************************
+000300*P    ユーザー名      ＸＸＸ工業株式会社殿
+000400*P    システム名      移管システム
+000500*P    プログラム名称  ＢＢ２１付替金額補正データ生成
+000600*P    プログラムＩＤ  LBLI0420.
+000700*P    機能概要        月頭稼動日のみ金額を再計算し、
+000800*P                    差異があるものは逆伝票で取消し、再計上する。
+000900*P
+001000*P    作成者          高橋
+001100*P    作成日          04.10.18
+001200*P    更新日          XX.XX.XX
+001300*P    版              VER.001
+001400******************************************************************
+001500 PROGRAM-ID.                       LBLI0420.
+001600 AUTHOR.                           HITACHI.
+001700*** 入出力ファイル：
+001800***
+001900***  I00 : 付替情報ﾕﾆｰｸKEY採番ﾌｧｲﾙ (IN)
+      ***  I01 : 業務日付ﾌｧｲﾙ            (IN)
+      ***  I02 : 請求処理日付ﾌｧｲﾙ        (IN)
+      ***  D00 : 新日付ﾏｽﾀ               (IN)
+      ***  D01 : 一般諸元ﾏｽﾀ             (IN)
+      ***  D02 : 新取引先ﾏｽﾀ             (IN)
+      ***  D03 : 会計ＤＰ用ＩＦﾃｰﾌﾞﾙ     (IN/OUT)
+002000***  O30 : 付替情報ﾕﾆｰｸKEY採番ﾌｧｲﾙ (OUT)
+002100***
+002200 ENVIRONMENT                       DIVISION.
+002300 CONFIGURATION                     SECTION.
+002400 SOURCE-COMPUTER.                  3500.
+002500 OBJECT-COMPUTER.                  3500.
+002600 SPECIAL-NAMES.
+002700                                   C01  IS  PCHANGE.
+002800 INPUT-OUTPUT                      SECTION.
+002900 FILE-CONTROL.
+         SELECT  I00
+             ASSIGN    TO       UT-SYS100
+             ORGANIZATION LINE SEQUENTIAL.
+         SELECT  I01
+             ASSIGN    TO       UT-SYS101
+             ORGANIZATION LINE SEQUENTIAL.
+         SELECT  I02
+             ASSIGN    TO       UT-SYS102
+             ORGANIZATION LINE SEQUENTIAL.
+003100   SELECT  O30
+003200       ASSIGN    TO       UT-SYS300.
+003300**
+003400 DATA                              DIVISION.
+003500 FILE                              SECTION.
+       FD   I00.
+           COPY  rlbliw06                PREFIXING  I00-.
+       FD   I01.
+           COPY  rlbebw03                PREFIXING  I01-.
+       FD   I02.
+           COPY  rlbebw03                PREFIXING  I02-.
+003600 FD   O30.
+003700     COPY  rlbliw06                PREFIXING  O30-.
+004000   02  O30-NEWLINE                 PIC  X(01).
+004100******************************************************************
+004200 WORKING-STORAGE                   SECTION.
+004300******************************************************************
+004400*D   日付エリア
+004500 01  W-HIZUKE.
+004600   03  W-DATE.
+004700     05  W-D-YYYY.
+004800       07  W-D-YY-U2               PIC  X(02).
+004900       07  W-D-YY-L2               PIC  X(02).
+005000     05  W-D-MM                    PIC  X(02).
+005100     05  W-D-DD                    PIC  X(02).
+005200   03  W-TIME.
+005300     05  W-T-HH                    PIC  X(02).
+005400     05  W-T-MM                    PIC  X(02).
+005500     05  W-T-SS                    PIC  X(02).
+005600     05  W-T-SS100                 PIC  X(02).
+005700   03  FILLER                      PIC  X(05).
+      *D   業務日付エリア
+       01  GYOMU-YYMD.
+         03  GYOMU-YYM.
+           05  GYOMU-YY                  PIC  X(4).
+           05  GYOMU-MM                  PIC  X(2).
+         03  GYOMU-DD                    PIC  X(2).
+      *D   請求処理日付エリア
+       01  SEIKYU-YYMD.
+         03  SEIKYU-YYM.
+           05  SEIKYU-YY                 PIC  X(4).
+           05  SEIKYU-MM                 PIC  X(2).
+         03  SEIKYU-DD                   PIC  X(2).
+005800**
+005900******************************************************************
+006000*D  ＡＢＥＮＤメッセージ
+006100 01  MSG-ABN-AREA.
+006200   03  MSG-ABN0.
+006300     05  FILLER                    PIC  X(15)  VALUE ALL '*'.
+006400     05  FILLER                    PIC  X(19)
+006500                                    VALUE 'ABEND ﾒｯｾｰｼﾞ  START'.
+006600     05  FILLER                    PIC  X(16)  VALUE ALL '*'.
+006700*L プログラムＩＤ
+006800   03  MSG-ABN1.
+006900     05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+007000     05  ABN-PGMID                 PIC  X(08)  VALUE SPACE.
+007100     05  FILLER                    PIC  X(37)  VALUE ALL '*'.
+007200*L セクション名
+007300   03  MSG-ABN2.
+007400     05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+007500     05  ABN-SEC                   PIC  X(30)  VALUE SPACE.
+007600     05  FILLER                    PIC  X(15)  VALUE ALL '*'.
+007700*L アベンドコード
+007800   03  MSG-ABN3.
+007900     05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+008000     05  FILLER                    PIC  X(13)
+008100                                    VALUE 'ｱﾍﾞﾝﾄﾞｺｰﾄﾞ = '.
+008200     05  ABN-CD                    PIC  ----9.
+008300     05  FILLER                    PIC  X(27)  VALUE ALL '*'.
+008400*L アクセスＫＥＹ
+008500   03  MSG-ABN4.
+008600     05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+008700     05  ABN-KEY                   PIC  X(20)  VALUE SPACE.
+008800     05  FILLER                    PIC  X(25)  VALUE ALL '*'.
+008900*L コメント１
+009000   03  MSG-ABN5.
+009100     05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+009200     05  ABN-CMT1                  PIC  X(40)  VALUE SPACE.
+009300     05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+009400*L コメント２
+009500   03  MSG-ABN6.
+009600     05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+009700     05  ABN-CMT2                  PIC  X(40)  VALUE SPACE.
+009800     05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+009900*L コメント３
+010000   03  MSG-ABN7.
+010100     05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+010200     05  ABN-CMT3                  PIC  X(40)  VALUE SPACE.
+010300     05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+010400*L アベンドメッセージ終了
+010500   03  MSG-ABN8.
+010600     05  FILLER                    PIC  X(10)  VALUE ALL '*'.
+010700     05  FILLER                    PIC  X(17)
+010800                                    VALUE 'ABEND ﾒｯｾｰｼﾞ  END'.
+010900     05  FILLER                    PIC  X(23)  VALUE ALL '*'.
+011000**
+011100*D   開始メッセージ
+011200 01  MSG-START.
+011300   03  FILLER                      PIC  X(10)  VALUE '       ***'.
+011400   03  START-PGMID                 PIC  X(10)  VALUE SPACE.
+011500   03  FILLER                      PIC  X(10)  VALUE ' START ***'.
+011600**
+011700*D   終了メッセージ
+011800 01  MSG-END.
+011900   03  FILLER                      PIC  X(10)  VALUE '       ***'.
+012000   03  END-PGMID                   PIC  X(10)  VALUE SPACE.
+012100   03  FILLER                      PIC  X(10)  VALUE '  END  ***'.
+012200**
+012300*D   メッセージ
+012400 01  MSG.
+012500*D   入出力件数メッセージ
+         03  I00-MSG.
+           05  FILLER                    PIC  X(30)
+                                       VALUE '付替情報ﾕﾆｰｸKEY採番ﾌｧｲﾙ'.
+           05  FILLER                    PIC  X(20)
+                                       VALUE '入力レコード件数 = '.
+           05  I00-IN                    PIC  ZZZ,ZZZ,ZZ9.
+         03  I01-MSG.
+           05  FILLER                    PIC  X(30)
+                                       VALUE '業務日付ﾌｧｲﾙ'.
+           05  FILLER                    PIC  X(20)
+                                       VALUE '入力レコード件数 = '.
+           05  I01-IN                    PIC  ZZZ,ZZZ,ZZ9.
+         03  I02-MSG.
+           05  FILLER                    PIC  X(30)
+                                       VALUE '請求処理日付ﾌｧｲﾙ'.
+           05  FILLER                    PIC  X(20)
+                                       VALUE '入力レコード件数 = '.
+           05  I02-IN                    PIC  ZZZ,ZZZ,ZZ9.
+         03  D00-MSG.
+           05  FILLER                    PIC  X(30)
+                                       VALUE '新日付ﾏｽﾀ'.
+           05  FILLER                    PIC  X(20)
+                                       VALUE '入力レコード件数 = '.
+           05  D00-IN                    PIC  ZZZ,ZZZ,ZZ9.
+         03  D01-MSG.
+           05  FILLER                    PIC  X(30)
+                                       VALUE '一般諸元ﾏｽﾀ'.
+           05  FILLER                    PIC  X(20)
+                                       VALUE '入力レコード件数 = '.
+           05  D01-IN                    PIC  ZZZ,ZZZ,ZZ9.
+         03  D02-MSG.
+           05  FILLER                    PIC  X(30)
+                                       VALUE '新取引先ﾏｽﾀ'.
+           05  FILLER                    PIC  X(20)
+                                       VALUE '入力レコード件数 = '.
+           05  D02-IN                    PIC  ZZZ,ZZZ,ZZ9.
+         03  D03-MSG-IN.
+           05  FILLER                    PIC  X(30)
+                                       VALUE '会計ＤＰ用ＩＦﾃｰﾌﾞﾙ'.
+           05  FILLER                    PIC  X(20)
+                                       VALUE '入力レコード件数 = '.
+           05  D03-IN                    PIC  ZZZ,ZZZ,ZZ9.
+         03  D03-MSG-OUT.
+           05  FILLER                    PIC  X(30)
+                                       VALUE '会計ＤＰ用ＩＦﾃｰﾌﾞﾙ'.
+           05  FILLER                    PIC  X(20)
+                                       VALUE '出力レコード件数 = '.
+           05  D03-OUT                   PIC  ZZZ,ZZZ,ZZ9.
+         03  O30-MSG.
+           05  FILLER                    PIC  X(30)
+                                       VALUE '付替情報ﾕﾆｰｸKEY採番ﾌｧｲﾙ'.
+           05  FILLER                    PIC  X(20)
+                                       VALUE '出力レコード件数 = '.
+           05  O30-OUT                   PIC  ZZZ,ZZZ,ZZ9.
+013800******************************************************************
+013900**
+014000 01  CONTANT-AREA.
+014100*D プログラム名
+014200   03  PGMID                       PIC  X(08)  VALUE 'LBLI0420'.
+014300*D 改行コード
+014400   03  CN-NEWLINE                  PIC  X(01)  VALUE X'0A'.
+014500*D アベンドコード
+014600   03  ABEND-CODE                  PIC S9(04)  USAGE  COMP.
+014700*D ＥＯＦ
+014800   03  CN-EOF                      PIC  X(03)  VALUE 'EOF'.
+015200**
+015300******************************************************************
+015400*                                                                *
+015500*   ワーク  エリア                                               *
+015600*                                                                *
+015700******************************************************************
+015800 01  CNT-AREA.
+015900*D 件数カウント
+016000   03  I00-IN-CNT                  PIC  9(09)  VALUE ZERO.
+         03  I01-IN-CNT                  PIC  9(09)  VALUE ZERO.
+         03  I02-IN-CNT                  PIC  9(09)  VALUE ZERO.
+         03  D00-IN-CNT                  PIC  9(09)  VALUE ZERO.
+         03  D01-IN-CNT                  PIC  9(09)  VALUE ZERO.
+         03  D02-IN-CNT                  PIC  9(09)  VALUE ZERO.
+         03  D03-IN-CNT                  PIC  9(09)  VALUE ZERO.
+         03  D03-OUT-CNT                 PIC  9(09)  VALUE ZERO.
+016100   03  O30-OUT-CNT                 PIC  9(09)  VALUE ZERO.
+016200**
+016300 01  WORK-AREA.
+016400*D  エンドフラグ
+         03  I00-END-FLG                 PIC  X(03)  VALUE SPACE.
+         03  I01-END-FLG                 PIC  X(03)  VALUE SPACE.
+         03  I02-END-FLG                 PIC  X(03)  VALUE SPACE.
+         03  D00-END-FLG                 PIC  X(03)  VALUE SPACE.
+016500   03  D03-END-FLG                 PIC  X(03)  VALUE SPACE.
+      *D  計算ワーク
+         03  WK-KEISU                    PIC  9(05)  VALUE ZERO.
+         03  WK-TANKA                    PIC  S9(9)  VALUE ZERO.
+         03  WK-KINGAKU                  PIC  S9(9)  VALUE ZERO.
+016600**
+016700*D  データベースアクセスSQLCAエリア
+016800     COPY  sqlca2.
+016900**
+017000*D  データベースアクセスパラメタエリア
+017100     COPY  rlbedd00  PREFIXING XDATBAS-.
+017200**
+017300*D  データベースアクセス定数エリア
+017400     COPY  rlbedc01.
+017500**
+017600*D  データベースユーザテーブルエリア
+      **   新日付ﾏｽﾀ
+           COPY  rlbedd07  PREFIXING D00-.
+      **   一般諸元ﾏｽﾀ
+           COPY  rlbedd01  PREFIXING D01-.
+      **   新取引先ﾏｽﾀ
+           COPY  rlbedd04  PREFIXING D02-.
+017700**   会計ＤＰ用ＩＦﾃｰﾌﾞﾙ（入力用）
+017800     COPY  rlbldd1c  PREFIXING D03-.
+      **   会計ＤＰ用ＩＦﾃｰﾌﾞﾙ（出力用）
+           COPY  rlbldd1c  PREFIXING W03-.
+017900**
+018000*D   ＤＢアクセスキーワーク
+       01  K00-KEY-BU.
+         03  K00-YYYY                    PIC  X(4).
+         03  K00-MM                      PIC  X(2).
+         03  K00-DD                      PIC  X(2).
+       01  K01-KEY-BU.
+         03  K01-P-NO                    PIC  X(15).
+       01  K02-KEY-BU.
+         03  K02-TAIBETSU                PIC  X(1).
+         03  K02-TOKUYAKU                PIC  X(4).
+         03  K02-EIGYO-CD                PIC  X(3).
+       01  K03-KEY-BU.
+         03  K03-SHORI-YYMD              PIC  X(8).
+         03  K03-SHORI-SEQ               PIC  X(5).
+         03  K03-KEIJYO-YYM              PIC  X(6).
+         03  K03-DATA-NO                 PIC  X(4).
+018300**
+018400 PROCEDURE                          DIVISION.
+018500******************************************************************
+018600*                                                                *
+018700*    メイン処理                                                  *
+018800*                                                                *
+018900******************************************************************
+019000 MAIN-PROC                          SECTION.
+019100*G   メイン処理
+019200     MOVE  'MAIN-PROC'          TO  ABN-SEC
+019300**
+019400     PERFORM  START-PROC
+      **   納品請求日のみ処理
+           IF ( D00-END-FLG  NOT =  CN-EOF ) 
+             THEN
+019500         PERFORM  D03-FETCH-PROC
+019600         PERFORM  UNTIL D03-END-FLG = CN-EOF
+019700             PERFORM  HANTEI-PROC
+019800             PERFORM  D03-FETCH-PROC
+019900         END-PERFORM
+               PERFORM  D03-CLOSE-PROC
+           END-IF
+020000     PERFORM  END-PROC
+020100**
+020200     MOVE  ZERO  TO  RETURN-CODE
+020300     STOP RUN.
+020400**
+020500     CONTINUE.
+020600******************************************************************
+020700*                                                                *
+020800*    準備処理                                                    *
+020900*                                                                *
+021000******************************************************************
+021100 START-PROC                         SECTION.
+021200*G   準備処理
+021300     MOVE  'START-PROC'         TO  ABN-SEC
+021400**
+021500     MOVE  PGMID                TO  START-PGMID
+021600                                    END-PGMID
+021700                                    ABN-PGMID
+021800**
+021900     DISPLAY  MSG-START       UPON  SYSOUT
+022000**
+022100**   日付設定
+022200     MOVE  FUNCTION  CURRENT-DATE  TO  W-HIZUKE
+022300**
+022400**   ＤＢ接続
+022500     PERFORM  DB-SINON-PROC
+022600**
+           OPEN     INPUT     I00
+           OPEN     INPUT     I01
+           OPEN     INPUT     I02
+023100     OPEN     OUTPUT    O30
+      **   付替情報ﾕﾆｰｸKEY取得
+           PERFORM  I00-READ-PROC
+      **   業務日付取得
+           PERFORM  I01-READ-PROC
+      **   請求処理日付取得
+           PERFORM  I02-READ-PROC
+      **   納品請求処理日判定
+           PERFORM  D00-CHECK-PROC
+           IF ( D00-END-FLG  =  CN-EOF )
+             THEN
+      **       請求日ではない＝処理しない
+               CONTINUE
+             ELSE
+      **       会計ＤＰ用ＩＦﾃｰﾌﾞﾙｵｰﾌﾟﾝ
+               PERFORM  D03-OPEN-PROC
+           END-IF
+023400**
+023500     CONTINUE.
+023600******************************************************************
+023700*                                                                *
+023800*    ＤＢ接続処理                                                *
+023900*                                                                *
+024000******************************************************************
+024100 DB-SINON-PROC                      SECTION.
+024200*G   ＤＢ接続処理
+024300     MOVE  'DB-SINON-PROC'      TO  ABN-SEC
+024400**
+024500     MOVE  SPACE                TO  XDATBAS-DIA
+024600     CALL  'LBED0000'        USING  SINON
+024700                                　　XDATBAS-DIA
+024800                                    SQLCA
+024900**
+025000     IF ( XDATBAS-STAT  = CN-XDATBAS-OK )
+025100       THEN
+025200           CONTINUE
+025300       ELSE
+                 MOVE  'ＤＢ接続エラー'  TO  ABN-CMT1
+025400           PERFORM  DB-ERR-PROC
+025500     END-IF
+025600**
+025700     CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    I00 付替情報ﾕﾆｰｸKEY取得                                     *
+      *                                                                *
+      ******************************************************************
+      **
+       I00-READ-PROC                      SECTION.
+           MOVE  'I00-READ-PROC'      TO  ABN-SEC
+           READ  I00
+             AT END
+                MOVE  CN-EOF          TO  I00-END-FLG
+           END-READ
+           IF ( I00-END-FLG  =  SPACE )
+             THEN
+      D        DISPLAY ' UNIQE-KEY  = ' I00-RLBLIW06-AREA
+               ADD   1                TO  I00-IN-CNT
+             ELSE
+               MOVE  255              TO  ABEND-CODE
+               MOVE  '付替情報採番ファイルデータなし'  TO  ABN-CMT1
+               PERFORM  ABEND-PROC
+           END-IF
+           IF  ( I00-SHO-YMD IS NOT NUMERIC )  OR
+               ( I00-SHO-MM     <   01      )  OR
+               ( I00-SHO-MM     >   12      )  OR
+               ( I00-SHO-DD     <   01      )  OR
+               ( I00-SHO-DD     >   31      )  OR
+               ( I00-SHO-SEQ IS NOT NUMERIC )
+            THEN
+              MOVE  255               TO  ABEND-CODE
+              MOVE  '付替情報採番ファイルデータ不正'  TO  ABN-CMT1
+              PERFORM  ABEND-PROC
+            ELSE
+              MOVE  I00-RLBLIW06-AREA TO  O30-RLBLIW06-AREA
+           END-IF
+           CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    I01 業務日付取得                                            *
+      *                                                                *
+      ******************************************************************
+      **
+       I01-READ-PROC                      SECTION.
+           MOVE  'I01-READ-PROC'      TO  ABN-SEC
+           READ  I01
+             AT END
+                MOVE  CN-EOF          TO  I01-END-FLG
+           END-READ
+           IF ( I01-END-FLG  =  SPACE )
+             THEN
+               DISPLAY ' GYOMU-YMD  = ' I01-SHORI-YYMD1
+               ADD   1                TO  I01-IN-CNT
+             ELSE
+               MOVE  255              TO  ABEND-CODE
+               MOVE  '業務日付ファイルデータなし'  TO  ABN-CMT1
+               PERFORM  ABEND-PROC
+           END-IF
+           IF  ( I01-SHORI-YYMD1 IS NOT NUMERIC )  OR
+               ( I01-SHORI-MM1      <   01      )  OR
+               ( I01-SHORI-MM1      >   12      )
+            THEN
+              MOVE  255                   TO  ABEND-CODE
+              MOVE  '業務日付ファイルデータ不正'  TO  ABN-CMT1
+              PERFORM  ABEND-PROC
+            ELSE
+              MOVE  I01-SHORIBI-YYMD  TO  GYOMU-YYMD
+           END-IF
+           CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    I02 請求処理日付取得                                        *
+      *                                                                *
+      ******************************************************************
+      **
+       I02-READ-PROC                      SECTION.
+           MOVE  'I02-READ-PROC'      TO  ABN-SEC
+           READ  I02
+             AT END
+                MOVE  CN-EOF          TO  I02-END-FLG
+           END-READ
+           IF ( I02-END-FLG  =  SPACE )
+             THEN
+               DISPLAY ' SEIKYU-YMD = ' I02-SHORI-YYMD1
+               ADD   1                TO  I02-IN-CNT
+             ELSE
+               MOVE  255              TO  ABEND-CODE
+               MOVE  '請求処理日付ファイルデータなし'  TO  ABN-CMT1
+               PERFORM  ABEND-PROC
+           END-IF
+           IF  ( I02-SHORI-YYMD1 IS NOT NUMERIC )  OR
+               ( I02-SHORI-MM1      <   01      )  OR
+               ( I02-SHORI-MM1      >   12      )
+            THEN
+              MOVE  255                   TO  ABEND-CODE
+              MOVE  '請求処理日付ファイルデータ不正'  TO  ABN-CMT1
+              PERFORM  ABEND-PROC
+            ELSE
+              MOVE  I02-SHORIBI-YYMD  TO  SEIKYU-YYMD
+           END-IF
+           CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    D00 納品請求処理日判定                                      *
+      *                                                                *
+      ******************************************************************
+       D00-CHECK-PROC                     SECTION.
+           MOVE  'D00-CHECK-PROC'     TO  ABN-SEC
+           MOVE  SPACE                TO  K00-KEY-BU
+           MOVE  GYOMU-YYMD           TO  K00-KEY-BU
+           MOVE  '00'                 TO  K00-DD
+      *G   業務年月＋日(00)で新日付マスタを昇順にオープン
+           CALL  'LBLI042A'        USING  OPN-M
+                                          XDATBAS-DIA
+                                          D00-RLBEDD07-AREA
+                                          K00-KEY-BU
+                                          SQLCA
+           EVALUATE  XDATBAS-STAT
+             WHEN    CN-XDATBAS-OK
+                 CONTINUE
+             WHEN    OTHER
+                 MOVE  K00-KEY-BU                    TO  ABN-KEY
+                 MOVE  '新日付マスタオープンエラー'  TO  ABN-CMT1
+                 MOVE  XDATBAS-STAT                  TO  ABN-CMT2
+                 PERFORM  DB-ERR-PROC
+           END-EVALUATE
+      **
+      *G   処理月の最初の稼動日を取得
+           PERFORM  UNTIL  D00-KADOU-KBN  =  '1'
+               CALL  'LBLI042A'    USING  FET-M
+                                          XDATBAS-DIA
+                                          D00-RLBEDD07-AREA
+                                          K00-KEY-BU
+                                          SQLCA
+               EVALUATE  XDATBAS-STAT
+                 WHEN    CN-XDATBAS-OK
+                   ADD   1            TO  D00-IN-CNT
+                 WHEN    OTHER
+                   MOVE  K00-KEY-BU                    TO  ABN-KEY
+                   MOVE  '新日付マスタＲＥＡＤエラー'  TO  ABN-CMT1
+                   MOVE  XDATBAS-STAT                  TO  ABN-CMT2
+                   PERFORM  DB-ERR-PROC
+               END-EVALUATE
+           END-PERFORM
+      **
+      *G   納品請求処理日判定
+           DISPLAY ' D00-HIZUKE = ' D00-HIZUKE8
+           IF ( D00-HIZUKE8  =  GYOMU-YYMD )
+             THEN
+               DISPLAY  '月頭稼動日であるので補正処理を行う。'
+             ELSE
+               MOVE  CN-EOF           TO  D00-END-FLG
+               DISPLAY  '月頭稼動日でないので補正処理しない。'
+           END-IF
+      **
+      *G   新日付マスタクローズ
+           CALL  'LBLI042A'        USING  CLS-M
+                                          XDATBAS-DIA
+                                          D00-RLBEDD07-AREA
+                                          K00-KEY-BU
+                                          SQLCA
+           EVALUATE  XDATBAS-STAT
+             WHEN    CN-XDATBAS-OK
+                 CONTINUE
+             WHEN    OTHER
+                 MOVE  K00-KEY-BU                    TO  ABN-KEY
+                 MOVE  '新日付マスタクローズエラー'  TO  ABN-CMT1
+                 MOVE  XDATBAS-STAT                  TO  ABN-CMT2
+                 PERFORM  DB-ERR-PROC
+           END-EVALUATE
+           CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    D03 会計ＤＰ用ＩＦテーブルオープン                          *
+      *                                                                *
+      ******************************************************************
+       D03-OPEN-PROC                      SECTION.
+           MOVE  'D03-OPEN-PROC'      TO  ABN-SEC
+           MOVE  SPACE                TO  K03-KEY-BU
+           MOVE  SEIKYU-YYM           TO  K03-KEIJYO-YYM
+           MOVE  'BB21'               TO  K03-DATA-NO
+      *G   計上年月のＢＢ２１データでＩＦテーブルオープン
+           CALL  'LBLI042B'        USING  OPN-W
+                                          XDATBAS-DIA
+                                          D03-RLBLDD1C-AREA
+                                          K03-KEY-BU
+                                          SQLCA
+           EVALUATE  XDATBAS-STAT
+             WHEN    CN-XDATBAS-OK
+                 CONTINUE
+             WHEN    OTHER
+                 MOVE  K03-KEY-BU                        TO  ABN-KEY
+                 MOVE  '会計ＤＰテーブルオープンエラー'  TO  ABN-CMT1
+                 MOVE  XDATBAS-STAT                      TO  ABN-CMT2
+                 PERFORM  DB-ERR-PROC
+           END-EVALUATE
+           CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    D03 会計ＤＰ用ＩＦテーブルアクセス                          *
+      *                                                                *
+      ******************************************************************
+       D03-FETCH-PROC                     SECTION.
+           MOVE  'D03-FETCH-PROC'     TO  ABN-SEC
+           CALL  'LBLI042B'        USING  FET-W
+                                          XDATBAS-DIA
+                                          D03-RLBLDD1C-AREA
+                                          K03-KEY-BU
+                                          SQLCA
+           EVALUATE  XDATBAS-STAT
+             WHEN    CN-XDATBAS-OK
+               ADD   1                TO  D03-IN-CNT
+             WHEN    CN-XDATBAS-NODATA
+               MOVE  CN-EOF           TO  D03-END-FLG
+             WHEN    OTHER
+                 MOVE  K03-KEY-BU                        TO  ABN-KEY
+                 MOVE  '会計ＤＰテーブルアクセスエラー'  TO  ABN-CMT1
+                 MOVE  XDATBAS-STAT                      TO  ABN-CMT2
+                 PERFORM  DB-ERR-PROC
+           END-EVALUATE
+           CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    D03 会計ＤＰ用ＩＦテーブルクローズ                          *
+      *                                                                *
+      ******************************************************************
+       D03-CLOSE-PROC                     SECTION.
+           MOVE  'D03-CLOSE-PROC'     TO  ABN-SEC
+      **
+           CALL  'LBLI042B'        USING  CLS-W
+                                          XDATBAS-DIA
+                                          D03-RLBLDD1C-AREA
+                                          K03-KEY-BU
+                                          SQLCA
+           EVALUATE  XDATBAS-STAT
+             WHEN    CN-XDATBAS-OK
+                 CONTINUE
+             WHEN    OTHER
+                 MOVE  K03-KEY-BU                      TO  ABN-KEY
+                 MOVE  '会計ＤＰ用ＩＦクローズエラー'  TO  ABN-CMT1
+                 MOVE  XDATBAS-STAT                    TO  ABN-CMT2
+                 PERFORM  DB-ERR-PROC
+           END-EVALUATE
+      **
+           CONTINUE.
+029800******************************************************************
+029900*                                                                *
+030000*    差異判定                                                    *
+030100*                                                                *
+030200******************************************************************
+030300 HANTEI-PROC                        SECTION.
+030400*G   差異判定処理
+030500     MOVE  'HANTEI-PROC'        TO  ABN-SEC
+030600**
+      *G   一般諸元マスタ検索
+           PERFORM  D01-READ-PROC
+      **
+      *G   新取引先マスタ検索
+           PERFORM  D02-READ-PROC
+      **
+      *G   移管単価＆金額再計算
+           PERFORM  IKAN-KEISAN-PROC
+      D    DISPLAY ' ＜－－－－再計算結果－－－－＞' 
+      D    DISPLAY ' データキー = ' D03-RLBLDD1C-KEY 
+      D    DISPLAY ' 部品番号   = ' D03-P-NO         
+      D    DISPLAY ' 振替部署   = ' D03-FURI-B-CD    
+      D    DISPLAY ' 価格層別   = ' D01-K-S-TANK     
+      D    DISPLAY ' 価格係数   = ' WK-KEISU         
+      D    DISPLAY ' 製品区分   = ' D01-SEIHIN-K     
+      D    DISPLAY ' 直販送単価 = ' D01-CHOK-TAN     
+      D    DISPLAY ' 再計算単価 = ' WK-TANKA         
+      D    DISPLAY ' 再計算金額 = ' WK-KINGAKU       
+      D    DISPLAY ' 移管単価   = ' D03-IKAN-TAN     
+      D    DISPLAY ' 移管金額   = ' D03-IKAN-KIN     
+      D    DISPLAY ' 赤黒区分   = ' D03-AKAKURO-KBN  
+      **
+      *G   差異判定
+           IF ( D03-IKAN-TAN  =  WK-TANKA )
+             THEN
+      D    DISPLAY ' ＜－－－－差異なし－－－－＞'   
+               CONTINUE
+             ELSE
+      D    DISPLAY ' ＜－－－－差異あり－－－－＞'   
+      *G       赤伝（取消）編集
+               PERFORM  EDIT-AKA-PROC
+      *G       会計ＤＰ用ＩＦテーブル出力
+               PERFORM  D03-OUTPUT-PROC
+      *G       黒伝（差異計上）編集
+               PERFORM  EDIT-KURO-PROC
+      *G       会計ＤＰ用ＩＦテーブル出力
+               PERFORM  D03-OUTPUT-PROC
+           END-IF
+031000**
+031100     CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    D01 一般諸元マスタ検索                                      *
+      *                                                                *
+      ******************************************************************
+       D01-READ-PROC                      SECTION.
+           MOVE  'D01-READ-PROC'      TO  ABN-SEC
+           MOVE  SPACE                TO  K01-KEY-BU
+           MOVE  D03-P-NO             TO  K01-P-NO
+      *G   会計ＤＰテーブルの引当部品番号で一般諸元マスタを検索
+           CALL  'LBED0100'        USING  READM
+                                          XDATBAS-DIA
+                                          D01-RLBEDD01-AREA
+                                          K01-KEY-BU
+                                          SQLCA
+           EVALUATE  XDATBAS-STAT
+             WHEN    CN-XDATBAS-OK
+                 ADD   1              TO  D01-IN-CNT
+             WHEN    CN-XDATBAS-NODATA
+                 MOVE  K01-KEY-BU                      TO  ABN-KEY
+                 MOVE  '一般諸元マスタなし'            TO  ABN-CMT1
+                 MOVE  XDATBAS-STAT                    TO  ABN-CMT2
+                 PERFORM  DB-ERR-PROC
+             WHEN    OTHER
+                 MOVE  K01-KEY-BU                      TO  ABN-KEY
+                 MOVE  '一般諸元マスタアクセスエラー'  TO  ABN-CMT1
+                 MOVE  XDATBAS-STAT                    TO  ABN-CMT2
+                 PERFORM  DB-ERR-PROC
+           END-EVALUATE
+      **
+           CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    D02 新取引先マスタ検索                                      *
+      *                                                                *
+      ******************************************************************
+       D02-READ-PROC                      SECTION.
+           MOVE  'D02-READ-PROC'      TO  ABN-SEC
+           MOVE  SPACE                TO  K02-KEY-BU
+           MOVE  D03-FURI-B-CD        TO  K02-KEY-BU
+      *G   会計ＤＰテーブルの振替部署コードで新取引先マスタを検索
+           CALL  'LBED0400'        USING  READM
+                                          XDATBAS-DIA
+                                          D02-RLBEDD04-AREA
+                                          K02-KEY-BU
+                                          SQLCA
+           EVALUATE  XDATBAS-STAT
+             WHEN    CN-XDATBAS-OK
+                 ADD   1              TO  D02-IN-CNT
+             WHEN    CN-XDATBAS-NODATA
+                 MOVE  K02-KEY-BU                      TO  ABN-KEY
+                 MOVE  '新取引先マスタなし'            TO  ABN-CMT1
+                 MOVE  XDATBAS-STAT                    TO  ABN-CMT2
+                 PERFORM  DB-ERR-PROC
+             WHEN    OTHER
+                 MOVE  K02-KEY-BU                      TO  ABN-KEY
+                 MOVE  '新取引先マスタアクセスエラー'  TO  ABN-CMT1
+                 MOVE  XDATBAS-STAT                    TO  ABN-CMT2
+                 PERFORM  DB-ERR-PROC
+           END-EVALUATE
+      **
+           CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    移管単価＆金額差異計算                                      *
+      *                                                                *
+      ******************************************************************
+       IKAN-KEISAN-PROC                   SECTION.
+           MOVE  'IKAN-KEISAN-PROC'   TO  ABN-SEC
+      *G   一般諸元の国内価格層別ランクで新取引先マスタから使用係数判定
+           EVALUATE  D01-K-S-TANK
+             WHEN  'S'
+               MOVE  D02-S-KEISU      TO  WK-KEISU
+             WHEN  'A'
+               MOVE  D02-A-KEISU      TO  WK-KEISU
+             WHEN  'B'
+               MOVE  D02-B-KEISU      TO  WK-KEISU
+             WHEN  'C'
+               MOVE  D02-C-KEISU      TO  WK-KEISU
+             WHEN  'D'
+               MOVE  D02-D-KEISU      TO  WK-KEISU
+             WHEN  'E'
+               MOVE  D02-E-KEISU      TO  WK-KEISU
+             WHEN  'F'
+               MOVE  D02-F-KEISU      TO  WK-KEISU
+             WHEN  'G'
+               MOVE  D02-G-KEISU      TO  WK-KEISU
+             WHEN  'H'
+               MOVE  D02-H-KEISU      TO  WK-KEISU
+             WHEN  OTHER
+               MOVE  D02-OTHER-KEISU  TO  WK-KEISU
+           END-EVALUATE
+      **
+      *G   再計算
+      *G   中古部品については再計算しない
+           IF ( D01-SEIHIN-K  =  '073100' OR '073110' OR '073120' )
+             THEN
+               MOVE  D03-IKAN-TAN     TO  WK-TANKA
+             ELSE
+               COMPUTE  WK-TANKA  ROUNDED
+                  =     D01-CHOK-TAN      *  WK-KEISU  /  1000
+           END-IF
+           COMPUTE  WK-KINGAKU  =  WK-TANKA  *  D03-SU
+      **
+           CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    赤伝（取消）データ編集                                      *
+      *                                                                *
+      ******************************************************************
+       EDIT-AKA-PROC                      SECTION.
+           MOVE  'EDIT-AKA-PROC'      TO  ABN-SEC
+      *G   赤伝（取消）データ編集処理
+           MOVE  D03-RLBLDD1C-AREA    TO  W03-RLBLDD1C-AREA
+           MOVE  GYOMU-YYMD           TO  W03-SHO-YMD
+           ADD   1                    TO  O30-SHO-SEQ-9
+           MOVE  O30-SHO-SEQ          TO  W03-SHO-SEQ
+           IF ( D03-AKAKURO-KBN  =  '+' )
+             THEN
+               MOVE  '-'              TO  W03-AKAKURO-KBN
+             ELSE
+               MOVE  '+'              TO  W03-AKAKURO-KBN
+           END-IF
+           MOVE  '0'                  TO  W03-SELE-FLG
+           MOVE  '0'                  TO  W03-SYORI-FLG
+           MOVE  PGMID                TO  W03-KOSIN-PGM
+           MOVE  SPACE                TO  W03-TERM-ID
+           MOVE  W-HIZUKE             TO  W03-KOSIN-NTJ
+           CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    黒伝（再計上）データ編集                                    *
+      *                                                                *
+      ******************************************************************
+       EDIT-KURO-PROC                     SECTION.
+           MOVE  'EDIT-KURO-PROC'     TO  ABN-SEC
+      *G   黒伝（再計上）データ編集処理
+           MOVE  D03-RLBLDD1C-AREA    TO  W03-RLBLDD1C-AREA
+           MOVE  GYOMU-YYMD           TO  W03-SHO-YMD
+           ADD   1                    TO  O30-SHO-SEQ-9
+           MOVE  O30-SHO-SEQ          TO  W03-SHO-SEQ
+           MOVE  WK-TANKA             TO  W03-IKAN-TAN
+           MOVE  WK-KINGAKU           TO  W03-IKAN-KIN
+           MOVE  '0'                  TO  W03-SELE-FLG
+           MOVE  '0'                  TO  W03-SYORI-FLG
+           MOVE  PGMID                TO  W03-KOSIN-PGM
+           MOVE  SPACE                TO  W03-TERM-ID
+           MOVE  W-HIZUKE             TO  W03-KOSIN-NTJ
+           CONTINUE.
+      ******************************************************************
+      *                                                                *
+      *    D03 会計ＤＰ用ＩＦテーブル追加                              *
+      *                                                                *
+      ******************************************************************
+       D03-OUTPUT-PROC                    SECTION.
+           MOVE  'D03-OUTPUT-PROC'    TO  ABN-SEC
+      *G   会計ＤＰ用ＩＦテーブル追加処理
+           CALL  'LBLI042B'        USING  ADDVC
+                                          XDATBAS-DIA
+                                          W03-RLBLDD1C-AREA
+                                          W03-RLBLDD1C-KEY
+                                          SQLCA
+           EVALUATE  XDATBAS-STAT
+             WHEN    CN-XDATBAS-OK
+                 ADD   1              TO  D03-OUT-CNT
+             WHEN    OTHER
+                 MOVE  W03-RLBLDD1C-KEY                    TO  ABN-KEY
+                 MOVE  '会計ＤＰ用ＩＦテーブル追加エラー'  TO  ABN-CMT1
+                 MOVE  XDATBAS-STAT                        TO  ABN-CMT2
+                 PERFORM  DB-ERR-PROC
+           END-EVALUATE
+           CONTINUE.
+038200******************************************************************
+038300*                                                                *
+038400*    終了処理                                                    *
+038500*                                                                *
+038600******************************************************************
+038700 END-PROC                           SECTION.
+038800*G   終了処理
+038900     MOVE  'END-PROC'           TO  ABN-SEC
+      **
+      *    付替情報ﾕﾆｰｸKEY採番ﾌｧｲﾙ出力
+           MOVE  CN-NEWLINE           TO  O30-NEWLINE
+           WRITE  O30-RLBLIW06-AREA
+           ADD   1                    TO  O30-OUT-CNT 
+039000**
+039100*    ＴＥＸＴファイルクローズ
+           CLOSE  I00
+           CLOSE  I01
+           CLOSE  I02
+039200     CLOSE  O30
+039300**
+039400**   DBｶｰｿﾙｸﾛｰｽﾞ
+039600**
+039700**   DB切断処理
+039800     PERFORM  DB-SINOF-PROC
+039900**
+040000**   終了メッセージの表示
+040100     MOVE  I00-IN-CNT           TO  I00-IN
+           MOVE  I01-IN-CNT           TO  I01-IN
+           MOVE  I02-IN-CNT           TO  I02-IN
+           MOVE  D00-IN-CNT           TO  D00-IN
+           MOVE  D01-IN-CNT           TO  D01-IN
+           MOVE  D02-IN-CNT           TO  D02-IN
+           MOVE  D03-IN-CNT           TO  D03-IN
+           MOVE  D03-OUT-CNT          TO  D03-OUT
+040200     MOVE  O30-OUT-CNT          TO  O30-OUT
+040300     DISPLAY  I00-MSG         UPON  SYSOUT
+           DISPLAY  I01-MSG         UPON  SYSOUT
+           DISPLAY  I02-MSG         UPON  SYSOUT
+           DISPLAY  D00-MSG         UPON  SYSOUT
+           DISPLAY  D01-MSG         UPON  SYSOUT
+           DISPLAY  D02-MSG         UPON  SYSOUT
+           DISPLAY  D03-MSG-IN      UPON  SYSOUT
+           DISPLAY  D03-MSG-OUT     UPON  SYSOUT
+040400     DISPLAY  O30-MSG         UPON  SYSOUT
+040500     DISPLAY  MSG-END         UPON  SYSOUT
+040600**
+040700     CONTINUE.
+042500******************************************************************
+042600*                                                                *
+042700*    ＤＢ切断処理                                                *
+042800*                                                                *
+042900******************************************************************
+043000 DB-SINOF-PROC                      SECTION.
+043100*G   ＤＢ切断処理
+043200     MOVE  'DB-SINOF-PROC'      TO  ABN-SEC
+043300**
+043400*G   COMMITの発行
+043500     CALL  'LBED0000'        USING  COMIT
+043600                                    XDATBAS-DIA
+043700                                    SQLCA
+043800**
+043900    IF ( XDATBAS-STAT  = CN-XDATBAS-OK )
+044000      THEN
+044100          CONTINUE
+044200      ELSE
+044300          PERFORM  DB-ERR-PROC
+044400    END-IF
+044500**
+044600*G  DBの切断
+044700    CALL  'LBED0000'         USING  SINOF
+044800                                    XDATBAS-DIA
+044900                                    SQLCA
+045000**
+045100    IF ( XDATBAS-STAT  = CN-XDATBAS-OK )
+045200      THEN
+045300          CONTINUE
+045400      ELSE
+045500          PERFORM  DB-ERR-PROC
+045600    END-IF
+045700**
+045800    CONTINUE.
+045900******************************************************************
+046000*                                                                *
+046100*    ＤＢエラー処理                                              *
+046200*                                                                *
+046300******************************************************************
+046400 DB-ERR-PROC                        SECTION.
+046500*G   ＤＢのエラー処理
+046600     MOVE  'DB-ERR-PROC'        TO  ABN-SEC
+046700**
+046800     MOVE  SQLCODE              TO  ABEND-CODE
+046900     CALL  'LBED0000'        USING  RBACK
+047000                                    XDATBAS-DIA
+047100                                    SQLCA
+047200**
+047300*G   ｱﾍﾞﾝﾄﾞﾒｯｾｰｼﾞ表示とｱﾍﾞﾝﾄﾞ処理
+047400     PERFORM   ABEND-PROC
+047500**
+047600     CONTINUE.
+047700******************************************************************
+047800*                                                                *
+047900*    アベンドメッセージ表示 と アベンド処理                      *
+048000*                                                                *
+048100******************************************************************
+048200 ABEND-PROC                         SECTION.
+048300*G   アベンドメッセージ表示 と アベンド処理
+048400     MOVE     W-DATE            TO  MSG-ABN1(20:8)
+048500     MOVE     W-TIME(1:6)       TO  MSG-ABN1(30:6)
+048600     MOVE     ABEND-CODE        TO  ABN-CD
+048700     DISPLAY  MSG-ABN0        UPON  SYSOUT
+048800     DISPLAY  MSG-ABN1        UPON  SYSOUT
+048900     DISPLAY  MSG-ABN2        UPON  SYSOUT
+049000     DISPLAY  MSG-ABN3        UPON  SYSOUT
+049100     DISPLAY  MSG-ABN4        UPON  SYSOUT
+049200**
+049300     IF  ABN-CMT1       =     SPACE
+049400       THEN
+049500         CONTINUE
+049600       ELSE
+049700         DISPLAY  MSG-ABN5    UPON  SYSOUT
+049800     END-IF
+049900     IF  ABN-CMT2       =     SPACE
+050000       THEN
+050100         CONTINUE
+050200       ELSE
+050300         DISPLAY  MSG-ABN6    UPON  SYSOUT
+050400     END-IF
+050500     IF  ABN-CMT3       =     SPACE
+050600       THEN
+050700         CONTINUE
+050800       ELSE
+050900         DISPLAY  MSG-ABN7    UPON  SYSOUT
+051000     END-IF
+051100**
+051200     DISPLAY  MSG-ABN8        UPON  SYSOUT
+051300     MOVE  255                  TO  RETURN-CODE
+051400     STOP RUN.
+051500  END PROGRAM LBLI0420.

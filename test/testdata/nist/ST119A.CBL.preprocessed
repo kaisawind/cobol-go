@@ -1,0 +1,995 @@
+      *> HEADER,COBOL,ST119A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           ST119A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+           SELECT SORTFILE-1A ASSIGN TO
+           XXXXX027.
+           SELECT SORTOUT-1A ASSIGN TO
+           XXXXP001.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       SD  SORTFILE-1A
+           DATA RECORD IS S-RECORD.
+       01  S-RECORD.
+           02  KEYS-GROUP.
+               03  KEY-1 PICTURE 9.
+               03  KEY-2 PICTURE 99.
+               03  KEY-3 PICTURE 999.
+               03  KEY-4 PICTURE 9999.
+               03  KEY-5 PICTURE 9(5).
+           02  RDF-KEYS REDEFINES KEYS-GROUP PICTURE 9(15).
+           02  FILLER PICTURE X(105).
+       FD  SORTOUT-1A
+           BLOCK CONTAINS 10 RECORDS
+           LABEL RECORDS ARE STANDARD
+           VALUE OF
+           XXXXX074
+           IS
+           XXXXX075
+      *>     XXXXX069
+           DATA RECORD IS SORTED.
+       01  SORTED PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  COMMENT-SENTENCE PIC X(120) VALUE " THE FILE BUILT IN ST119A IS SORTED IN ST120A.  ST120A DOES NOT PRODUCE A REPORT - THE RESULTS ARE CHECKED IN ST121A.".
+       77  WRK-XN-00001-1  PIC X.
+       77  WRK-XN-00001-2  PIC X.
+       77  WRK-XN-00001-3  PIC X.
+       77  C0 PICTURE 9 VALUE 0.
+       77  C1 PICTURE 9 VALUE 1.
+       77  C2 PICTURE 9 VALUE 2.
+       77  C6 PICTURE 9 VALUE 6.
+       77  C3 PICTURE 9 VALUE 3.
+       01  WKEYS-GROUP.
+           02  WKEY-1 PICTURE 9.
+           02  WKEY-2 PICTURE 99.
+           02  WKEY-3 PICTURE 999.
+           02  WKEY-4 PICTURE 9999.
+           02  WKEY-5 PICTURE 9(5).
+       01  WKEYS-RDF REDEFINES WKEYS-GROUP PICTURE 9(15).
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "ST119A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO   FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       
+       SORT-INIT SECTION.
+       MAIN-SORT-PARAGRAPH.
+           SORT SORTFILE-1A
+           ON ASCENDING KEY KEY-1
+           ON DESCENDING KEY KEY-2
+           ON ASCENDING KEY KEY-3
+           DESCENDING KEY-4 KEY-5
+           INPUT PROCEDURE IS IN-1 THROUGH IN-EXIT
+           OUTPUT PROCEDURE IS OUT-PROC-1 THRU SORT-END.
+       
+       INTERNAL-OUTPUT-PROC-CODE SECTION.
+      *> =================================
+       INT-INIT-1.
+      *>     ===--> ACCESSING OF CODE WITHIN THE OUTPUT PROCEDURE <--===
+           MOVE   "XI-19 4.4.4 GR(10)" TO ANSI-REFERENCE.
+           MOVE   "INT-TEST-1"       TO PAR-NAME.
+           MOVE   "INTNL CODE PERFORMED" TO FEATURE.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           PERFORM INTERNAL-CODE-1.
+           GO TO   INT-TEST-1.
+       INT-DELETE-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   INT-INIT-2.
+       INT-TEST-1.
+           IF      WRK-XN-00001-1 = "C"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "INTERNAL OUTPUT PROC CODE NOT PERFORMED"
+                        TO RE-MARK
+                   MOVE   "C" TO CORRECT-X
+                   MOVE    WRK-XN-00001-1 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+       
+       INT-INIT-2.
+      *>     ===--> ACCESSING OF CODE WITHIN THE OUTPUT PROCEDURE <--===
+           MOVE   "XI-19 4.4.4 GR(10)"  TO ANSI-REFERENCE.
+           MOVE   "INT-TEST-2-1"      TO PAR-NAME.
+           MOVE   "GO TO INTERNAL CODE" TO FEATURE.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           MOVE   "Y"    TO WRK-XN-00001-2.
+           MOVE    1 TO REC-CT.
+           GO TO   INTERNAL-CODE-2.
+       INT-FAIL-2-1.
+           MOVE   "X"    TO WRK-XN-00001-2.
+           GO TO   INT-TEST-2-2.
+       INT-DELETE-2-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   INT-INIT-3.
+       INT-TEST-2-1.
+           IF      WRK-XN-00001-2 = "Y"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+                   GO TO   INT-TEST-2-2.
+           MOVE   "GO TO INTERNAL CODE ERROR OR RETURN FROM CODE ERROR"
+                TO RE-MARK.
+           MOVE   "Y" TO CORRECT-X.
+           MOVE    WRK-XN-00001-2 TO COMPUTED-X.
+           PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+       INT-TEST-2-2.
+           MOVE   "INT-TEST-2-1"      TO PAR-NAME.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-1 = "D"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "GO TO INTERNAL OUTPUT PROC. CODE ERROR"
+                        TO RE-MARK
+                   MOVE   "D" TO CORRECT-X
+                   MOVE    WRK-XN-00001-1 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+       
+       INTERNAL-INPUT-PROC-CODE SECTION.
+      *> ================================
+       INT-INIT-3.
+      *>     ===--> ACCESSING OF CODE WITHIN THE INPUT PROCEDURE <--===
+           MOVE   "XI-19 4.4.4 GR(7)" TO ANSI-REFERENCE.
+           MOVE   "INT-TEST-3"       TO PAR-NAME.
+           MOVE   "INTNL CODE PERFORMED" TO FEATURE.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           PERFORM INTERNAL-CODE-3.
+           GO TO   INT-TEST-3.
+       INT-DELETE-3.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   INT-INIT-4.
+       INT-TEST-3.
+           IF      WRK-XN-00001-1 = "L"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "INTERNAL INPUT PROC CODE NOT PERFORMED"
+                        TO RE-MARK
+                   MOVE   "L" TO CORRECT-X
+                   MOVE    WRK-XN-00001-1 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+       
+       INT-INIT-4.
+      *>     ===--> ACCESSING OF CODE WITHIN THE OUTPUT PROCEDURE <--===
+           MOVE   "XI-19 4.4.4 GR(7)"  TO ANSI-REFERENCE.
+           MOVE   "INT-TEST-4-1"      TO PAR-NAME.
+           MOVE   "GO TO INTERNAL CODE" TO FEATURE.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           MOVE   "N"    TO WRK-XN-00001-2.
+           MOVE    1 TO REC-CT.
+           GO TO   INTERNAL-CODE-4.
+       INT-FAIL-4-1.
+           MOVE   "O"    TO WRK-XN-00001-2.
+           GO TO   INT-TEST-4-1.
+       INT-DELETE-4.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   I-2.
+       INT-TEST-4-1.
+           IF      WRK-XN-00001-2 = "N"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+                   GO TO   INT-TEST-4-2.
+           MOVE   "GO TO INTERNAL CODE ERROR OR RETURN FROM CODE ERROR"
+                TO RE-MARK.
+           MOVE   "N" TO CORRECT-X.
+           MOVE    WRK-XN-00001-2 TO COMPUTED-X.
+           PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+       INT-TEST-4-2.
+           MOVE   "INT-TEST-4-2"      TO PAR-NAME.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-1 = "M"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "GO TO INTERNAL OUTPUT PROC. CODE ERROR"
+                        TO RE-MARK
+                   MOVE   "M" TO CORRECT-X
+                   MOVE    WRK-XN-00001-1 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+       
+       I-2.
+           GO TO   CCVS-EXIT.
+       
+       IN-1.
+       INPT-INIT-1.
+      *>     ===--> ACCESSING OF CODE OUTSIDE THE INPUT PROCEDURE <--===
+           MOVE   "XI-19 4.4.4 GR(7)" TO ANSI-REFERENCE.
+           MOVE   "INPT-TEST-1"       TO PAR-NAME.
+           MOVE   "PERFORM EXTNL CODE" TO FEATURE.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           PERFORM EXTERNAL-CODE-3.
+           GO TO   INPT-TEST-1.
+       INPT-DELETE-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   INPT-INIT-2.
+       INPT-TEST-1.
+           IF      WRK-XN-00001-1 = "J"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "EXTERNAL CODE NOT PERFORMED FROM INPUT PROC"
+                        TO RE-MARK
+                   MOVE   "J" TO CORRECT-X
+                   MOVE    WRK-XN-00001-1 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+       
+       INPT-INIT-2.
+           MOVE   "XI-19 4.4.4 GR(7)"  TO ANSI-REFERENCE.
+           MOVE   "INPT-TEST-2-1"      TO PAR-NAME.
+           MOVE   "GO TO EXTERNAL CODE" TO FEATURE.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           MOVE   "S"    TO WRK-XN-00001-2.
+           MOVE    1 TO REC-CT.
+           GO TO   EXTERNAL-CODE-4.
+       INPT-FAIL-2-1.
+           MOVE   "W"    TO WRK-XN-00001-1.
+           GO TO   INPT-TEST-2-1.
+       INPT-DELETE-2.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   IN-2.
+       INPT-TEST-2-1.
+           IF      WRK-XN-00001-2 = "S"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+                   GO TO   INPT-TEST-2-2.
+           MOVE   "GO TO EXTERNAL CODE ERROR OR RETURN FROM CODE ERROR"
+                TO RE-MARK.
+           MOVE   "S" TO CORRECT-X.
+           MOVE    WRK-XN-00001-2 TO COMPUTED-X.
+           PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+       INPT-TEST-2-2.
+           MOVE   "INPT-TEST-2-1"      TO PAR-NAME.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-1 = "K"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "GO TO EXTERNAL CODE ERROR"
+                        TO RE-MARK
+                   MOVE   "K" TO CORRECT-X
+                   MOVE    WRK-XN-00001-1 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           GO TO   IN-2.
+      *> 
+      *>     THE FOLLOWING CODE IS ACCESSED FROM OUTSIDE THE INPUT
+      *>     PROCEEDURE:
+      *> 
+       INTERNAL-CODE-3.
+           MOVE   "L" TO WRK-XN-00001-1.
+       INTERNAL-CODE-4.
+           MOVE   "M" TO WRK-XN-00001-1.
+           GO TO   INT-TEST-4-1.
+      *> 
+      *>     NOTE.
+      *>        KEYS 1 AND 3 THRU 5 WILL VARY IN VALUE BETWEEN 1 AND 2.
+      *>        KEY 2 VARIES FROM 1 THRU 6. THUS 96 RECORDS ARE CREATED
+      *>        IN REVERSE SEQUENCE OF SORTING ORDER. TWO RECORDS ARE
+      *>        ADDED TO EACH END OF THE SORTED STRING FOR HI-LOW CONTROL.
+      *>        THE SORT STATEMENT TESTS THE SERIES AND THRU OPTIONS WITH
+      *>        INCLUSION AND OMISSION OF OPTIONAL WORDS. THE SORT
+      *>        STATEMENT REPRESENTS BASIC SORTING PERMITTED BY LEVEL 1 OF
+      *>        THE SORT MODULE.
+       IN-2.
+           MOVE 900009000000000 TO RDF-KEYS.
+           RELEASE S-RECORD.
+           MOVE 009000000900009 TO RDF-KEYS.
+           RELEASE S-RECORD.
+           MOVE 900008000000000 TO RDF-KEYS.
+           RELEASE S-RECORD.
+           MOVE 009000000900008 TO RDF-KEYS.
+           RELEASE S-RECORD.
+      *>     NOTE HI-LOW CONTROL RECORDS DONE.
+           MOVE 300003000000000 TO WKEYS-RDF.
+       IN-3.
+           PERFORM IN-4 2 TIMES.
+           GO TO IN-EXIT.
+       IN-4.
+           SUBTRACT C1 FROM WKEY-1.
+           PERFORM IN-5 6 TIMES.
+       IN-5.
+           IF WKEY-2 IS EQUAL TO C6
+               MOVE C0 TO WKEY-2.
+           ADD C1 TO WKEY-2.
+           PERFORM IN-6 2 TIMES.
+       IN-6.
+           IF WKEY-3 IS EQUAL TO C1
+               MOVE C3 TO WKEY-3.
+           SUBTRACT C1 FROM WKEY-3.
+           PERFORM IN-7 2 TIMES.
+       IN-7.
+           IF WKEY-4 IS EQUAL TO C2
+               MOVE C0 TO WKEY-4.
+           ADD C1 TO WKEY-4.
+           PERFORM IN-8 2 TIMES.
+       IN-8.
+           IF WKEY-5 IS EQUAL TO C2
+               MOVE C0 TO WKEY-5.
+           ADD C1 TO WKEY-5.
+           MOVE WKEYS-RDF TO RDF-KEYS.
+           RELEASE S-RECORD.
+       IN-EXIT.
+           EXIT.
+       
+       OUT-PROC-1.
+           MOVE    SPACES TO PAR-NAME.
+           MOVE    SPACES TO FEATURE.
+           MOVE    ZERO TO REC-CT.
+           MOVE   "XI-19 4.4.4 GR(7)" TO ANSI-REFERENCE.
+           MOVE   "ST119 GENERATES OUTPUT" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WHICH AFFECTS PROGRAMS" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "ST120 AND ST121."       TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "SORT --- FIVE KEYS" TO FEATURE.
+           OPEN    OUTPUT SORTOUT-1A.
+       SORT-TEST-1.
+           PERFORM  RET-1.
+           IF       RDF-KEYS EQUAL TO 009000000900009
+                    PERFORM PASS GO TO SORT-WRITE-1.
+           GO       TO SORT-FAIL-1.
+       SORT-DELETE-1.
+           PERFORM  DE-LETE.
+           GO       TO SORT-WRITE-1.
+       SORT-FAIL-1.
+           MOVE     RDF-KEYS TO COMPUTED-18V0.
+           MOVE     009000000900009 TO CORRECT-18V0.
+           PERFORM  FAIL.
+       SORT-WRITE-1.
+           MOVE     "SORT-TEST-1 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SORT-TEST-2.
+           PERFORM  RET-1.
+           IF       RDF-KEYS EQUAL TO 009000000900008
+                    PERFORM PASS GO TO SORT-WRITE-2.
+           GO       TO SORT-FAIL-2.
+       SORT-DELETE-2.
+           PERFORM  DE-LETE.
+           GO       TO SORT-WRITE-2.
+       SORT-FAIL-2.
+           MOVE     RDF-KEYS TO COMPUTED-18V0.
+           MOVE     009000000900009 TO CORRECT-18V0.
+           PERFORM  FAIL.
+       SORT-WRITE-2.
+           MOVE     "SORT-TEST-2 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SORT-TEST-3.
+           PERFORM  RET-1.
+           IF       RDF-KEYS EQUAL TO 106001000200002
+                    PERFORM PASS GO TO SORT-WRITE-3.
+           GO       TO SORT-FAIL-3.
+       SORT-DELETE-3.
+           PERFORM  DE-LETE.
+           GO       TO SORT-WRITE-3.
+       SORT-FAIL-3.
+           MOVE     RDF-KEYS TO COMPUTED-18V0.
+           MOVE     106001000200002  TO CORRECT-18V0.
+           PERFORM  FAIL.
+       SORT-WRITE-3.
+           MOVE     "SORT-TEST-3 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       
+       SORT-TEST-4.
+           PERFORM  RET-2 48 TIMES.
+           IF       RDF-KEYS EQUAL TO 206001000200002
+                    PERFORM PASS GO TO SORT-WRITE-4.
+           GO       TO SORT-FAIL-4.
+       SORT-DELETE-4.
+           PERFORM  DE-LETE.
+           GO       TO SORT-WRITE-4.
+       SORT-FAIL-4.
+           MOVE     RDF-KEYS TO COMPUTED-18V0.
+           MOVE    206001000200002 TO CORRECT-18V0.
+           PERFORM  FAIL.
+       SORT-WRITE-4.
+           MOVE     "SORT-TEST-4 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SORT-TEST-5.
+           PERFORM  RET-2 40 TIMES.
+           IF       RDF-KEYS EQUAL TO 201001000200002
+                    PERFORM PASS GO TO SORT-WRITE-5.
+           GO       TO SORT-FAIL-5.
+       SORT-DELETE-5.
+           PERFORM  DE-LETE.
+           GO       TO SORT-WRITE-5.
+       SORT-FAIL-5.
+           MOVE     RDF-KEYS TO COMPUTED-18V0.
+           MOVE     201001000200002 TO CORRECT-18V0.
+           PERFORM  FAIL.
+       SORT-WRITE-5.
+           MOVE     "SORT-TEST-5 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SORT-TEST-6.
+           PERFORM  RET-2.
+           PERFORM  RET-3 THRU RET-3-EXIT.
+           PERFORM  RET-4 THRU RET-4-EXIT.
+           PERFORM  RET-5 THRU RET-5-EXIT.
+           PERFORM  RET-6 THRU RET-6-EXIT.
+           PERFORM  RET-7 THRU RET-7-EXIT.
+           PERFORM  RET-8 THRU RET-8-EXIT.
+           IF       RDF-KEYS EQUAL TO 201002000100001
+                    PERFORM PASS GO TO SORT-WRITE-6.
+           GO       TO SORT-FAIL-6.
+       SORT-DELETE-6.
+           PERFORM  DE-LETE.
+           GO       TO SORT-WRITE-6.
+       SORT-FAIL-6.
+           MOVE     RDF-KEYS TO COMPUTED-18V0.
+           MOVE     201002000100001 TO CORRECT-18V0.
+           PERFORM  FAIL.
+       SORT-WRITE-6.
+           MOVE     "SORT-TEST-6 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SORT-TEST-7.
+           PERFORM  RET-2.
+           IF       RDF-KEYS EQUAL TO 900008000000000
+                    PERFORM PASS GO TO SORT-WRITE-7.
+           GO       TO SORT-FAIL-7.
+       SORT-DELETE-7.
+           PERFORM  DE-LETE.
+           GO       TO SORT-WRITE-7.
+       SORT-FAIL-7.
+           MOVE     RDF-KEYS TO COMPUTED-18V0.
+           MOVE     900008000000000 TO CORRECT-18V0.
+           PERFORM  FAIL.
+       SORT-WRITE-7.
+           MOVE     "SORT-TEST-7 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SORT-TEST-8.
+           PERFORM  RET-2.
+           IF       RDF-KEYS EQUAL TO 900009000000000
+                    PERFORM PASS GO TO SORT-WRITE-8.
+           GO       TO SORT-FAIL-8.
+       SORT-DELETE-8.
+           PERFORM  DE-LETE.
+           GO       TO SORT-WRITE-8.
+       SORT-FAIL-8.
+           MOVE     RDF-KEYS TO COMPUTED-18V0.
+           MOVE     900009000000000 TO CORRECT-18V0.
+           PERFORM  FAIL.
+       SORT-WRITE-8.
+           MOVE     "SORT-TEST-8 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SORT-TEST-9.
+           RETURN   SORTFILE-1A AT END
+                    PERFORM PASS GO TO SORT-WRITE-9.
+           GO       TO SORT-FAIL-9.
+       SORT-DELETE-9.
+           PERFORM  DE-LETE.
+           GO       TO SORT-WRITE-9.
+       SORT-FAIL-9.
+           MOVE     RDF-KEYS TO COMPUTED-18V0.
+           MOVE     "END OF FILE NOT FOUND" TO RE-MARK.
+           PERFORM  FAIL.
+       SORT-WRITE-9.
+           MOVE     "SORT-TEST-9 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SORT-INIT-10.
+           MOVE   "XI-19 4.4.4 GR(10)" TO ANSI-REFERENCE.
+           MOVE   "SORT-TEST-10"       TO PAR-NAME.
+           MOVE   "PERFORM EXTNL CODE" TO FEATURE.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           PERFORM EXTERNAL-CODE-1.
+           GO TO   SORT-TEST-10.
+       SORT-DELETE-10.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SORT-INIT-11.
+       SORT-TEST-10.
+           IF      WRK-XN-00001-1 = "A"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "EXTERNAL CODE NOT PERFORMED FROM OUTPUT PROC"
+                        TO RE-MARK
+                   MOVE   "A" TO CORRECT-X
+                   MOVE    WRK-XN-00001-1 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+       
+       SORT-INIT-11.
+           MOVE   "XI-19 4.4.4 GR(10)"  TO ANSI-REFERENCE.
+           MOVE   "SORT-TEST-11-1"      TO PAR-NAME.
+           MOVE   "GO TO EXTERNAL CODE" TO FEATURE.
+           MOVE    SPACE TO WRK-XN-00001-1.
+           MOVE   "D"    TO WRK-XN-00001-2.
+           MOVE    1 TO REC-CT.
+           GO TO   EXTERNAL-CODE-2.
+       SORT-FAIL-11-1.
+           MOVE   "Z"    TO WRK-XN-00001-2.
+           GO TO   SORT-TEST-11-1.
+       SORT-DELETE-11.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SORT-INIT-11.
+       SORT-TEST-11-1.
+           IF      WRK-XN-00001-2 = "D"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+                   GO TO   SORT-TEST-11-2.
+           MOVE   "GO TO EXTERNAL CODE ERROR OR RETURN FROM CODE ERROR"
+                TO RE-MARK.
+           MOVE   "D" TO CORRECT-X.
+           MOVE    WRK-XN-00001-2 TO COMPUTED-X.
+           PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+       SORT-TEST-11-2.
+           MOVE   "SORT-TEST-11-2"      TO PAR-NAME.
+           ADD     1 TO REC-CT.
+           IF      WRK-XN-00001-1 = "B"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "GO TO EXTERNAL CODE ERROR"
+                        TO RE-MARK
+                   MOVE   "B" TO CORRECT-X
+                   MOVE    WRK-XN-00001-1 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           GO TO   SORT-END.
+      *> 
+      *>     THE FOLLOWING CODE IS ACCESSED FROM OUTSIDE THE OUTPUT
+      *>     PROCEEDURE:
+      *> 
+       INTERNAL-CODE-1.
+           MOVE  "C" TO WRK-XN-00001-1.
+       INTERNAL-CODE-2.
+           MOVE  "D" TO WRK-XN-00001-1.
+           GO TO  INT-TEST-2-1.
+       
+       SORT-END.
+           CLOSE  SORTOUT-1A.
+       
+       BAD-FILE.
+           MOVE   "BAD-FILE" TO PAR-NAME.
+           PERFORM FAIL.
+           MOVE   "END OF FILE PREMATURELY" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "REACHED, PREVIOUS TEST WAS" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "THE LAST SUCCESSFUL TEST." TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE    SPACE TO FEATURE.
+           GO TO   CCVS-EXIT.
+       RET-1.
+           RETURN  SORTFILE-1A RECORD AT END GO TO BAD-FILE.
+           MOVE     S-RECORD TO SORTED.
+           WRITE    SORTED.
+      *>     NOTE     THE RETURN VERB WITH ALL OPTIONAL WORDS.
+       RET-2.
+           RETURN  SORTFILE-1A           END GO TO BAD-FILE.
+           MOVE    S-RECORD TO SORTED.
+           WRITE   SORTED.
+      *>     NOTE    THE RETURN VERB WITHOUT OPTIONAL WORDS.
+       RET-3.
+           MOVE   "XI-14 4.3.4 GR(2) & (4)" TO ANSI-REFERENCE.
+           MOVE   "RET-3" TO PAR-NAME.
+           RETURN  SORTFILE-1A
+                   AT END  GO TO BAD-FILE
+               NOT AT END
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+                   MOVE    S-RECORD TO SORTED
+                   WRITE   SORTED
+                   GO TO RET-3-EXIT.
+       RET-3-EXIT.
+           EXIT.
+       RET-4.
+           MOVE   "XI-14 4.3.4 GR(2) & (4)" TO ANSI-REFERENCE.
+           MOVE   "RET-4" TO PAR-NAME.
+           MOVE   "A"     TO WRK-XN-00001-3.
+           RETURN  SORTFILE-1A
+                   AT END  GO TO BAD-FILE
+           END-RETURN
+           MOVE   "S" TO WRK-XN-00001-3.
+           MOVE    S-RECORD TO SORTED.
+           WRITE   SORTED.
+           IF      WRK-XN-00001-3 = "S"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "SCOPE DELIMITER IGNORED" TO RE-MARK
+                   MOVE   "S" TO CORRECT-X
+                   MOVE    WRK-XN-00001-3 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+       RET-4-EXIT.
+           EXIT.
+       RET-5.
+           MOVE   "XI-14 4.3.4 GR(2) & (4)" TO ANSI-REFERENCE.
+           MOVE   "RET-5" TO PAR-NAME.
+           RETURN  SORTFILE-1A
+                   AT END
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL
+                   GO TO   BAD-FILE
+               NOT AT END
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+                   MOVE    S-RECORD TO SORTED
+                   WRITE   SORTED.
+       RET-5-EXIT.
+           EXIT.
+       RET-6.
+           MOVE   "XI-14 4.3.4 GR(2) & (4)" TO ANSI-REFERENCE.
+           MOVE   "RET-6" TO PAR-NAME.
+           MOVE   "V" TO WRK-XN-00001-3.
+           RETURN  SORTFILE-1A
+                   AT END
+                   GO TO BAD-FILE
+           END-RETURN
+           MOVE   "W"     TO WRK-XN-00001-3.
+           MOVE    S-RECORD TO SORTED.
+           WRITE   SORTED.
+           IF      WRK-XN-00001-3 = "W"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "SCOPE DELIMITER IGNORED" TO RE-MARK
+                   MOVE   "W" TO CORRECT-X
+                   MOVE    WRK-XN-00001-3 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+       RET-6-EXIT.
+           EXIT.
+       RET-7.
+           MOVE   "XI-14 4.3.4 GR(2) & (4)" TO ANSI-REFERENCE.
+           MOVE   "RET-7" TO PAR-NAME.
+           MOVE   "G" TO WRK-XN-00001-3.
+           RETURN  SORTFILE-1A
+                   AT END  GO TO BAD-FILE
+                   NOT AT END
+                   MOVE    S-RECORD TO SORTED
+                   WRITE   SORTED
+           END-RETURN
+           MOVE   "K"     TO WRK-XN-00001-3.
+           IF      WRK-XN-00001-3 = "K"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "SCOPE DELIMITER IGNORED" TO RE-MARK
+                   MOVE   "K" TO CORRECT-X
+                   MOVE    WRK-XN-00001-3 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+       RET-7-EXIT.
+           EXIT.
+       RET-8.
+           MOVE   "XI-14 4.3.4 GR(2) & (4)" TO ANSI-REFERENCE.
+           MOVE   "RET-8" TO PAR-NAME.
+           MOVE   "X" TO WRK-XN-00001-3.
+           RETURN  SORTFILE-1A
+                   AT END
+                   GO TO BAD-FILE
+               NOT AT END
+                   MOVE    S-RECORD TO SORTED
+                   WRITE   SORTED
+           END-RETURN
+           MOVE   "T"     TO WRK-XN-00001-3.
+           IF      WRK-XN-00001-3 = "T"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "SCOPE DELIMITER IGNORED" TO RE-MARK
+                   MOVE   "T" TO CORRECT-X
+                   MOVE    WRK-XN-00001-3 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           MOVE SPACES TO TEST-RESULTS.
+           MOVE COMMENT-SENTENCE TO TEST-RESULTS.
+           PERFORM PRINT-DETAIL.
+           MOVE SPACES TO TEST-RESULTS.
+       RET-8-EXIT.
+           EXIT.
+       
+       EXTERNAL-CODE-1.
+           MOVE   "A" TO WRK-XN-00001-1.
+       EXTERNAL-CODE-2.
+           MOVE   "B" TO WRK-XN-00001-1.
+           GO TO   SORT-TEST-11-1.
+       EXTERNAL-CODE-3.
+           MOVE   "J" TO WRK-XN-00001-1.
+       EXTERNAL-CODE-4.
+           MOVE   "K" TO WRK-XN-00001-1.
+           GO TO   INPT-TEST-2-1.
+       
+       CCVS-EXIT SECTION.
+       CCVS-9999.
+           GO TO   CLOSE-FILES.
+      *> END-OF,ST119A

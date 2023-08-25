@@ -1,0 +1,2137 @@
+      *> HEADER,COBOL,NC103A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC103A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC103A TESTS THE GENERAL FORMAT OF THE "IF"
+      *>     STATEMENT AND  "NEXT SENTENCE".
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC103A".
+       01  IF-D1                              PICTURE IS S9(4)V9(2)
+           VALUE IS 0.
+       01  IF-D2                              PICTURE IS S9(4)V9(2)
+           VALUE IS ZERO.
+       01  IF-D3                              PICTURE IS X(10)
+           VALUE IS "0000000000".
+       01  IF-D4                              PICTURE IS X(15)
+           VALUE IS "               ".
+       01  IF-D6                              PICTURE IS A(10)
+           VALUE IS "BABABABABA".
+       01  IF-D7                              PICTURE IS S9(6)V9(4)
+           VALUE IS +123.45.
+       01  IF-D8                              PICTURE IS 9(6)V9(4)
+           VALUE IS 12300.
+       01  IF-D9                              PICTURE IS X(3)
+           VALUE IS "123".
+       01  IF-D11                             PICTURE IS X(6)
+           VALUE IS "ABCDEF".
+       01  IF-D13                             PICTURE IS 9(6)V9(4)
+           VALUE IS 12300.
+       01  IF-D14                             PICTURE IS S9(4)V9(2)
+           VALUE IS +123.45.
+       01  IF-D15                             PICTURE IS S999PP
+           VALUE IS 12300.
+       01  IF-D16                             PICTURE IS PP99
+           VALUE IS .0012.
+       01  IF-D17                             PICTURE IS SV9(4)
+           VALUE IS .0012.
+       01  IF-D18                             PICTURE IS X(10)
+           VALUE IS "BABABABABA".
+       01  IF-D19                             PICTURE IS X(10)
+           VALUE IS "ABCDEF    ".
+       01  IF-D23                             PICTURE IS $9,9B9.90+.
+       01  IF-D24                             PICTURE IS X(10)
+           VALUE IS "$1,2 3.40+".
+       01  IF-D25                             PICTURE IS ABABX0A.
+       01  IF-D26  PIC X(7)
+           VALUE IS "A C D0E".
+       01  IF-D27             PICTURE 9(6)V9(4)  VALUE 2137.45
+           USAGE IS COMPUTATIONAL.
+       01  IF-D28                             PICTURE IS 999999V9999
+           VALUE IS 2137.45.
+       01  IF-D32                             PICTURE IS 9 VALUE IS 0.
+       01  IF-D33 PICTURE S9 VALUE -0.
+       01  IF-D34 PICTURE S9 VALUE +0.
+       01  IF-D37             PICTURE 9(5)  VALUE 0001234.
+       01  IF-D38             PICTURE X(20) VALUE " BABBAGE".
+       01  ALPHA-UPPER        PIC X(20)     VALUE " UPPERCASE CHARS".
+       01  ALPHA-LOWER        PIC X(20)     VALUE " lowercase chars".
+       01  NON-COBOL-CHARACTERS  PICTURE X(8) VALUE
+           XXXXX081.
+       01  AZERO-DS-05V05              PICTURE S9(5)V9(5) VALUE ZERO.
+       01  A18ONES-DS-18V00            PICTURE S9(18)
+                                       VALUE 111111111111111111.
+       01  ONES-XN-00018               PICTURE X(18)
+           VALUE "111111111111111111".
+       01  A99-DS-02V00                PICTURE S99  VALUE 99.
+       01  WRK-DU-02V00                PICTURE 99.
+       01  TWOS-XN-00002               PICTURE XX   VALUE "22".
+       01  A18ONES-DS-09V09            PICTURE S9(9)V9(9)
+                                       VALUE 111111111.111111111.
+       01  ONES-XN-00002               PICTURE XX   VALUE "11".
+       01  A02TWOS-DU-02V00            PICTURE 99   VALUE 22.
+       01  A01ONE-DS-P0801             PICTURE SP(8)9 VALUE .000000001.
+       01  A990-DS-0201P               PICTURE S99P  VALUE +990.
+       01  XDATA-XN-00018              PICTURE X(18)
+                                       VALUE "00ABCDEFGHI  4321 ".
+       01  XDATA-DS-18V00-S REDEFINES XDATA-XN-00018 PICTURE S9(18).
+       01  YADATA-XN-00010             PICTURE X(10) VALUE "ABCDEFGHIJ".
+       01  YADATA-XN-00010-U-AND-L     PICTURE X(10) VALUE "AbCdEfGhIj".
+       01  DUMMY-DS-00001     PICTURE S9 VALUE -1.
+       01  A02TWOS-DS-03V02            PICTURE S999V99  VALUE +022.00.
+       01  WRK-DS-18V0-1               PIC S9(18)     VALUE
+                  -123456789012345678.
+       01  WRK-XN-18-2                 PIC  X(18)     VALUE
+                  "123456789012345678".
+       
+       01  IF-D10.
+           02 FILLER          PICTURE XX VALUE "01".
+           02 FILLER          PICTURE XX VALUE "23".
+           02 IF-D10A.
+             03 FILLER        PICTURE XXXX VALUE "4567".
+             03 FILLER        PICTURE XXXX VALUE "8912".
+       01  IF-D12.
+           02 FILLER          PICTURE XXX VALUE "ABC".
+           02 IF-D12A.
+             03 IF-D12B.
+               04 FILLER      PICTURE XX VALUE "DE".
+               04 FILLER      PICTURE X  VALUE "F".
+       01  IF-D20.
+           02 FILLER          PICTURE 9(5) VALUE ZERO.
+           02 FILLER          PICTURE 99   VALUE 12.
+           02 FILLER          PICTURE 9    VALUE 3.
+           02 FILLER          PICTURE 99   VALUE 45.
+       01  IF-D21.
+           02 FILLER          PICTURE 9(5) VALUE ZERO.
+           02 FILLER          PICTURE 9(5) VALUE 12345.
+       01  IF-D22.
+           02 FILLER          PICTURE AA   VALUE "AB".
+           02 FILLER          PICTURE AAAA VALUE "CDEF".
+       01  IF-D35.
+           02 IF-D35A                             VALUE "*ASTERISK".
+             03 FILLER        PICTURE A(6).
+             03 FILLER        PICTURE AAA.
+           02 IF-D35B                            VALUE "/SLASH".
+             03 FILLER        PICTURE 9(6).
+       01  IF-D36 REDEFINES IF-D35.
+           02 IF-D36A         PICTURE X(6).
+           02 IF-D36B         PICTURE XXX.
+           02 IF-D36C         PICTURE X(6).
+       01  IF-D39.
+           02  FILLER   PICTURE A(6) VALUE "ABCDEF".
+           02  FILLER  PICTURE A(4) VALUE SPACE.
+       01  LEVEL-01.
+           02 LEVEL-02.
+           03 LEVEL-03.
+           04 LEVEL-04.
+           05 LEVEL-05.
+           06 LEVEL-06.
+           07 LEVEL-07.
+           08 LEVEL-08.
+           09 LEVEL-09.
+           10 LEVEL-10                        PICTURE IS X VALUE IS "R".
+       01  LEVEL-RECEIVER                     PICTURE IS X VALUE IS
+           SPACE.
+       01  LEVEL-SENDER PICTURE X VALUE "S".
+       01  VAL                                PICTURE IS 9 VALUE IS 0.
+       01  A-2                                PICTURE IS A VALUE IS "A".
+       01  N-27                               PICTURE IS 9999V9
+           VALUE IS 9999.9.
+       01  N-30                               PICTURE IS 9V9
+           VALUE IS 2.
+       01  N-31                               PICTURE IS 9(6).
+       01  X-32 REDEFINES N-31                PICTURE IS X(6).
+       01  N-33                               PICTURE IS 9(5)
+           VALUE IS 29.
+       01  A-37                               PICTURE IS A VALUE IS "X".
+       01  X-38 REDEFINES A-37                PICTURE IS X.
+       01  X-43 PIC X(10) VALUE "    l75.63".
+       01  N-84                               PICTURE IS 9999999999.
+       01  NUMERIC-GRP-TEST.
+           02  NUMERIC-1                PICTURE 9 VALUE 0.
+           02  NUMERIC-2.
+               03  NUMERIC-3            PICTURE 9(1)V9(1) VALUE ZERO.
+               03  NUMERIC-4.
+                   04  NUMERIC-5       PICTURE 9(18) VALUE 1.
+           02  NUMERIC-6.
+               03  NUMERIC-7            PICTURE X VALUE "7".
+               03  NUMERIC-8            PICTURE 9  VALUE 8.
+       01  NUM-GRP.
+           02  NUM-SUB-GRP  PIC 9.
+       01  GROUP-1000.
+           02  FILLER  PIC X.
+           02  GROUP-X1000.
+               03  GROUP-1000-1 PIC X(500) VALUE ZERO.
+               03  XNAME        PICTURE X(100) VALUE QUOTE.
+               03  GROUP-1000-2 PICTURE X(399) VALUE SPACE.
+               03  GROUP-1000-3 PICTURE X VALUE ".".
+           02  GROUP-X500-2.
+               03  GROUP-X500-A        PICTURE X(500) VALUE ZERO.
+               03  GROUP-X500-1.
+                   04  GROUP-X500-1-1  PICTURE X(50) VALUE QUOTE.
+                   04  GROUP-X500-1-2  PICTURE X(50) VALUE QUOTE.
+                   04  GROUP-X500-1-3  PICTURE X(398) VALUE SPACE.
+                   04  GROUP-X500-1-4  PICTURE XX VALUE " .".
+       01  HI-LO-VALUES.
+           02  LOW-VAL  PIC X VALUE LOW-VALUE.
+           02 ZERO-01  PICTURE 9(18) VALUE 1.
+           02  ABC      PICTURE XXX VALUE "ABC".
+           02  NINE-17-8 PICTURE 9(18) VALUE 999999999999999998.
+           02  ZERO-NULL PIC 9(9) VALUE 0.
+           02  ZERO-ZERO PICTURE 9(9)V9(9) VALUE 0.0.
+       01  COMP-DATA.
+           02  COMP-DATA1 PICTURE 9(18) COMPUTATIONAL VALUE 300.
+           02  COMP-DATA2  PICTURE 9(10) COMPUTATIONAL VALUE  100000.
+           02  COMP-DATA3  PICTURE 9     COMPUTATIONAL VALUE 9.
+           02  COMP-DATA4  PICTURE 9(9)V9(7) COMPUTATIONAL VALUE 3.3.
+           02  COMP-DATA5  PICTURE 9(5)V9(2) COMPUTATIONAL VALUE 52.25.
+           02  COMP-DATA6  PICTURE 9V9       COMPUTATIONAL VALUE 8.8.
+           02  COMP-DATA7  PICTURE 9(3)V9(2) COMPUTATIONAL VALUE 300.00.
+           02  COMP-DATA8  PICTURE 9V9(9) COMPUTATIONAL VALUE 3.3000000.
+           02  COMP-DATA9  PICTURE 9(8)  COMPUTATIONAL VALUE 100000.
+       01  DISP-DATA.
+           02  DISP-DATA1  PICTURE 9(18) VALUE 300.
+           02  DISP-DATA2  PICTURE 9(8)  VALUE 100000.
+           02  DISP-DATA3  PICTURE 9     VALUE 9.
+           02  DISP-DATA4  PICTURE 9(7)V9(9) VALUE 3.3.
+           02  DISP-DATA5  PICTURE 9(2)V9(2) VALUE 52.25.
+           02  DISP-DATA6  PICTURE 9V9   VALUE 8.8.
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC103A-001 SECTION.
+       NC-03-001.
+           MOVE "THE FOLLOWING TESTS        " TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+           MOVE "COMPARE NUMERIC, ALPHA-    " TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+           MOVE "NUMERIC, ALPHABETIC, AND   " TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+           MOVE  "GROUP ITEMS IN VARYING     " TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE  "COMBINATIONS.              " TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE    SPACE TO TEST-RESULTS.
+       IF--INIT-GF-1.
+           MOVE  "COMPARE--EQUAL" TO FEATURE.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   0 TO IF-D1.
+       IF--TEST-GF-1.
+           IF      ZERO IS EQUAL TO IF-D1
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   IF--WRITE-GF-1.
+       IF--DELETE-GF-1.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-1.
+           MOVE  "IF--TEST-GF-1 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-2.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   ZERO TO IF-D2.
+       IF--TEST-GF-2.
+           IF      ZERO IS EQUAL TO IF-D2
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   IF--WRITE-GF-2.
+       IF--DELETE-GF-2.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-2.
+           MOVE "IF--TEST-GF-2 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-3.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "123" TO IF-D9.
+       IF--TEST-GF-3.
+           IF      IF-D9 EQUAL TO 123
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   IF--WRITE-GF-3.
+       IF--DELETE-GF-3.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-3.
+           MOVE  "IF--TEST-GF-3 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-4.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "012345678912" TO IF-D10.
+       IF--TEST-GF-4.
+           IF      IF-D10 EQUAL TO 012345678912
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   IF--WRITE-GF-4.
+       IF--DELETE-GF-4.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-4.
+           MOVE  "IF--TEST-GF-4 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-5.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "ABCDEF" TO IF-D11.
+       IF--TEST-GF-5.
+           IF      IF-D11 EQUAL TO "ABCDEF"
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO    IF--WRITE-GF-5.
+       IF--DELETE-GF-5.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-5.
+           MOVE "IF--TEST-GF-5 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-6.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "ABCDEF" TO IF-D12.
+       IF--TEST-GF-6.
+           IF       IF-D12 EQUAL TO "ABCDEF"
+                    PERFORM PASS
+           ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-6.
+       IF--DELETE-GF-6.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-6.
+           MOVE "IF--TEST-GF-6 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-7.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   +123.45 TO IF-D7.
+       IF--TEST-GF-7.
+           IF       IF-D7 EQUAL TO +123.45
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-7.
+       IF--DELETE-GF-7.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-7.
+           MOVE "IF--TEST-GF-7 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-8.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    12300 TO IF-D8.
+       IF--TEST-GF-8.
+           IF       IF-D8 EQUAL TO 12300
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-8.
+       IF--DELETE-GF-8.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-8.
+           MOVE "IF--TEST-GF-8 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-9.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    12300 TO IF-D8.
+           MOVE    12300 TO IF-D13.
+       IF--TEST-GF-9.
+           IF       IF-D13 EQUAL TO IF-D8
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-9.
+       IF--DELETE-GF-9.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-9.
+           MOVE "IF--TEST-GF-9 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-10.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    .0012 TO IF-D16.
+           MOVE    .0012 TO IF-D17.
+       IF--TEST-GF-10.
+           IF       IF-D16 EQUAL TO IF-D17
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-10.
+       IF--DELETE-GF-10.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-10.
+           MOVE "IF--TEST-GF-10" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-11.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    2137.45 TO IF-D27.
+           MOVE    2137.45 TO IF-D28.
+       IF--TEST-GF-11.
+           IF       IF-D27 EQUAL TO IF-D28
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF-WRITE-GF-11.
+       IF-DELETE-GF-11.
+           PERFORM  DE-LETE.
+       IF-WRITE-GF-11.
+           MOVE "IF--TEST-GF-11" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-12.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   +123.45 TO IF-D14.
+           MOVE   +123.45 TO IF-D7.
+       IF--TEST-GF-12.
+           IF       IF-D14 EQUAL TO IF-D7
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-12.
+       IF--DELETE-GF-12.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-12.
+           MOVE "IF--TEST-GF-12" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-13.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    12300  TO IF-D15.
+           MOVE    12300  TO IF-D8.
+       IF--TEST-GF-13.
+           IF       IF-D15 EQUAL TO IF-D8
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-13.
+       IF--DELETE-GF-13.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-13.
+           MOVE "IF--TEST-GF-13" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-14.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    0000012345  TO IF-D20.
+           MOVE    0000012345  TO IF-D21.
+       IF--TEST-GF-14.
+           IF       IF-D20 EQUAL TO IF-D21
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-14.
+       IF--DELETE-GF-14.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-14.
+           MOVE "IF--TEST-GF-14" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-15.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "$1,2 3.40+" TO IF-D24.
+           MOVE     +123.4 TO IF-D23.
+       IF--TEST-GF-15.
+           IF       IF-D23 EQUAL TO IF-D24
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-15.
+       IF--DELETE-GF-15.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-15.
+           MOVE "IF--TEST-GF-15" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-16.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "A C D0E" TO IF-D26.
+           MOVE    "ACDE" TO IF-D25.
+       IF--TEST-GF-16.
+           IF       IF-D25 EQUAL TO IF-D26
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-16.
+       IF--DELETE-GF-16.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-16.
+           MOVE "IF--TEST-GF-16" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-17.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "BABABABABA" TO IF-D6.
+           MOVE    "BABABABABA" TO IF-D18.
+       IF--TEST-GF-17.
+           IF       IF-D6 EQUAL TO IF-D18
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-17.
+       IF--DELETE-GF-17.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-17.
+           MOVE "IF--TEST-GF-17" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-18.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "ABCDEF" TO IF-D22.
+           MOVE    "ABCDEF" TO IF-D12.
+       IF--TEST-GF-18.
+           IF       IF-D22 EQUAL TO IF-D12
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-18.
+       IF--DELETE-GF-18.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-18.
+           MOVE "IF--TEST-GF-18" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-19.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "ABCDEF    " TO IF-D39.
+           MOVE    "ABCDEF    " TO IF-D19.
+       IF--TEST-GF-19.
+           IF IF-D39 EQUAL TO IF-D19
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-19.
+       IF--DELETE-GF-19.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-19.
+           MOVE "IF--TEST-GF-19" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-20.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE "COMPARE--GREATER" TO FEATURE.
+           MOVE     0 TO IF-D1.
+       IF--TEST-GF-20.
+           IF       IF-D1 IS GREATER THAN ZERO
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-20.
+       IF--DELETE-GF-20.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-20.
+           MOVE "IF--TEST-GF-20" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-21.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "123" TO IF-D9.
+       IF--TEST-GF-21.
+           IF       IF-D9 GREATER THAN 123
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-21.
+       IF--DELETE-GF-21.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-21.
+           MOVE "IF--TEST-GF-21" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-22.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "012345678912" TO IF-D10.
+       IF--TEST-GF-22.
+           IF       IF-D10 GREATER THAN 012345678912
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-22.
+       IF--DELETE-GF-22.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-22.
+           MOVE "IF--TEST-GF-22" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-23.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "ABCDEF" TO IF-D10.
+       IF--TEST-GF-23.
+           IF       IF-D11 GREATER THAN "ABCDEF"
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-23.
+       IF--DELETE-GF-23.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-23.
+           MOVE "IF--TEST-GF-23" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-24.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "ABCDEF" TO IF-D12.
+       IF--TEST-GF-24.
+           IF       IF-D12 GREATER THAN "ABCDEF"
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-24.
+       IF--DELETE-GF-24.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-24.
+           MOVE "IF--TEST-GF-24" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-25.
+           MOVE    +123.45 TO IF-D7.
+       IF--TEST-GF-25.
+           IF       IF-D7 GREATER THAN +123.45
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-25.
+       IF--DELETE-GF-25.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-25.
+           MOVE "IF--TEST-GF-25" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-26.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE     12300 TO IF-D8.
+       IF--TEST-GF-26.
+           IF       IF-D8 GREATER THAN 12300
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-26.
+       IF--DELETE-GF-26.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-26.
+           MOVE "IF--TEST-GF-26" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-27.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE     12300 TO IF-D8.
+           MOVE     12300 TO IF-D13.
+       IF--TEST-GF-27.
+           IF       IF-D13 GREATER THAN IF-D8
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-27.
+       IF--DELETE-GF-27.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-27.
+           MOVE "IF--TEST-GF-27" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-28.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE     .0012 TO IF-D16.
+           MOVE     .0012 TO IF-D17.
+       IF--TEST-GF-28.
+           IF       IF-D16 GREATER THAN IF-D17
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-28.
+       IF--DELETE-GF-28.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-28.
+           MOVE "IF--TEST-GF-28" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-29.
+           MOVE    2137.45 TO IF-D27.
+           MOVE    2137.45 TO IF-D28.
+       IF--TEST-GF-29.
+           IF       IF-D27 GREATER THAN IF-D28
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO       TO IF-WRITE-GF-29.
+       IF-DELETE-GF-29.
+           PERFORM  DE-LETE.
+       IF-WRITE-GF-29.
+           MOVE "IF--TEST-GF-29" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-30.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    +123.45 TO IF-D7.
+           MOVE    +123.45 TO IF-D14.
+       IF--TEST-GF-30.
+           IF       IF-D14 GREATER THAN IF-D7
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-30.
+       IF--DELETE-GF-30.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-30.
+           MOVE "IF--TEST-GF-30" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-31.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE     12300  TO IF-D8.
+           MOVE     12300  TO IF-D15.
+       IF--TEST-GF-31.
+           IF       IF-D15 GREATER THAN IF-D8
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-31.
+       IF--DELETE-GF-31.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-31.
+           MOVE "IF--TEST-GF-31" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-32.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE     0000012345  TO IF-D20.
+           MOVE     0000012345  TO IF-D21.
+       IF--TEST-GF-32.
+           IF       IF-D20 GREATER THAN IF-D21
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-32.
+       IF--DELETE-GF-32.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-32.
+           MOVE "IF--TEST-GF-32" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-33.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "A C D0E"    TO IF-D26.
+           MOVE    "ABCD" TO IF-D25.
+       IF--TEST-GF-33.
+           IF       IF-D26 GREATER THAN IF-D25
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-33.
+       IF--DELETE-GF-33.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-33.
+           MOVE "IF--TEST-GF-33" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-34.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "A C D0E"    TO IF-D26.
+           MOVE    "ABCD" TO IF-D25.
+       IF--TEST-GF-34.
+           IF       IF-D25 GREATER THAN IF-D26
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-34.
+       IF--DELETE-GF-34.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-34.
+           MOVE "IF--TEST-GF-34" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-35.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "BABABABABA" TO IF-D6.
+           MOVE    "BABABABABA" TO IF-D18.
+       IF--TEST-GF-35.
+           IF       IF-D6 GREATER THAN IF-D18
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-35.
+       IF--DELETE-GF-35.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-35.
+           MOVE "IF--TEST-GF-35" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-36.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "ABCDEF" TO IF-D12.
+           MOVE    "ABCDEF" TO IF-D22.
+       IF--TEST-GF-36.
+           IF       IF-D22 GREATER THAN IF-D12
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-36.
+       IF--DELETE-GF-36.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-36.
+           MOVE "IF--TEST-GF-36" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-37.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "COMPARE--LESS THAN" TO FEATURE.
+           MOVE     +123.45 TO IF-D7.
+       IF--TEST-GF-37.
+           IF       IF-D7 IS LESS THAN 123.45
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-37.
+       IF--DELETE-GF-37.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-37.
+           MOVE "IF--TEST-GF-37" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-38.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "ABCDEF" TO IF-D11.
+       IF--TEST-GF-38.
+           IF       IF-D11 LESS THAN "ABCDEF"
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-38.
+       IF--DELETE-GF-38.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-38.
+           MOVE "IF--TEST-GF-38" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-39.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "BABABABABA" TO IF-D6.
+           MOVE    "BABABABABA" TO IF-D18.
+       IF--TEST-GF-39.
+           IF       IF-D6 LESS THAN IF-D18
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-39.
+       IF--DELETE-GF-39.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-39.
+           MOVE "IF--TEST-GF-39" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-40.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    0000012345   TO IF-D20.
+           MOVE    0000012345   TO IF-D21.
+       IF--TEST-GF-40.
+           IF       IF-D20 LESS THAN IF-D21
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-40.
+       IF--DELETE-GF-40.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-40.
+           MOVE "IF--TEST-GF-40" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-D.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE "COMPARE--NOT EQUAL" TO FEATURE.
+           MOVE  +123.45 TO IF-D7.
+       IF--TEST-GF-41.
+           IF       IF-D7 IS NOT EQUAL TO 23.45
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-41.
+       IF--DELETE-GF-41.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-41.
+           MOVE "IF--TEST-GF-41" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-42.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "ABCDEF"   TO IF-D11.
+       IF--TEST-GF-42.
+           IF       IF-D11 NOT EQUAL TO "ABCDE "
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-42.
+       IF--DELETE-GF-42.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-42.
+           MOVE "IF--TEST-GF-42" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-43.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "BABABABABA" TO IF-D6.
+           MOVE    "BABABABABA" TO IF-D18.
+       IF--TEST-GF-43.
+           IF       IF-D6 NOT EQUAL TO IF-D18
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-43.
+       IF--DELETE-GF-43.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-43.
+           MOVE "IF--TEST-GF-43" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-44.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    0000012345   TO IF-D20.
+           MOVE    0000012345   TO IF-D21.
+       IF--TEST-GF-44.
+           IF       IF-D20 NOT EQUAL TO IF-D21
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-44.
+       IF--DELETE-GF-44.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-44.
+           MOVE "IF--TEST-GF-44" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-45.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE "COMPARE--NOT LESS" TO FEATURE.
+           MOVE  +123.45 TO IF-D7.
+       IF--TEST-GF-45.
+           IF       IF-D7 IS NOT LESS THAN 123.45
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-45.
+       IF--DELETE-GF-45.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-45.
+           MOVE "IF--TEST-GF-45" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-46.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "ABCDEF"     TO IF-D11.
+       IF--TEST-GF-46.
+           IF       IF-D11 IS NOT LESS THAN "ABCDEF"
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-46.
+       IF--DELETE-GF-46.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-46.
+           MOVE "IF--TEST-GF-46" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-47.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "BABABABABA" TO IF-D6.
+           MOVE    "BABABABABA" TO IF-D18.
+       IF--TEST-GF-47.
+           IF       IF-D6 IS NOT LESS THAN IF-D18
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-47.
+       IF--DELETE-GF-47.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-47.
+           MOVE "IF--TEST-GF-47" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-48.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    0000012345   TO IF-D20.
+           MOVE    0000012345   TO IF-D21.
+       IF--TEST-GF-48.
+           IF       IF-D20 NOT LESS THAN IF-D21
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-48.
+       IF--DELETE-GF-48.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-48.
+           MOVE "IF--TEST-GF-48" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-49.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE "COMPARE--NOT GREATER" TO FEATURE.
+           MOVE   +123.45 TO IF-D7.
+       IF--TEST-GF-49.
+           IF       IF-D7 NOT GREATER THAN 123.45
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-49.
+       IF--DELETE-GF-49.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-49.
+           MOVE "IF--TEST-GF-49" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-50.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "ABCDEF"     TO IF-D11.
+       IF--TEST-GF-50.
+           IF IF-D11 IS NOT GREATER THAN "ABCD  "
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+      *>         THIS TEST ASSUMES THAT BLANK PRECEDES THE LETTERS OF
+      *>     THE ALPHABET IN THE COLLATING SEQUENCE.
+           GO TO    IF--WRITE-GF-50.
+       IF--DELETE-GF-50.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-50.
+           MOVE "IF--TEST-GF-50" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-51.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "BABABABABA" TO IF-D6.
+           MOVE    "BABABABABA" TO IF-D18.
+       IF--TEST-GF-51.
+           IF       IF-D6 NOT GREATER THAN IF-D18
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-51.
+       IF--DELETE-GF-51.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-51.
+           MOVE "IF--TEST-GF-51" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-52.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "ABCDEF"     TO IF-D11.
+           MOVE    "ABCDEF"     TO IF-D12.
+       IF--TEST-GF-52.
+           IF       IF-D12 NOT GREATER THAN IF-D11
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-52.
+       IF--DELETE-GF-52.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-52.
+           MOVE "IF--TEST-GF-52" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-53.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE "COMPARE--HIGH LOW " TO FEATURE.
+           MOVE   LOW-VALUE TO LOW-VAL.
+       IF--TEST-GF-53.
+           IF HIGH-VALUE NOT GREATER THAN LOW-VAL
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-53.
+       IF--DELETE-GF-53.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-53.
+           MOVE "IF--TEST-GF-53" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-54.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   LOW-VALUE TO LOW-VAL.
+       IF--TEST-GF-54.
+           IF LOW-VAL LESS THAN HIGH-VALUE
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-54.
+       IF--DELETE-GF-54.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-54.
+           MOVE "IF--TEST-GF-54" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-55.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   LOW-VALUE TO LOW-VAL.
+           MOVE   1 TO ZERO-01.
+       IF--TEST-GF-55.
+           IF ZERO-01 GREATER THAN LOW-VALUE
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-55.
+       IF--DELETE-GF-55.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-55.
+           MOVE "IF--TEST-GF-55" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-56.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE    "ABC"   TO ABC.
+       IF--TEST-GF-56.
+           IF ABC GREATER THAN HIGH-VALUE
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    IF--WRITE-GF-56.
+       IF--DELETE-GF-56.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-56.
+           MOVE "IF--TEST-GF-56" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-57.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE     999999999999999998 TO NINE-17-8.
+       IF--TEST-GF-57.
+           IF NINE-17-8 LESS THAN HIGH-VALUE
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-57.
+       IF--DELETE-GF-57.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-57.
+           MOVE "IF--TEST-GF-57" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-58.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE     0 TO ZERO-NULL.
+       IF--TEST-GF-58.
+           IF       ZERO-NULL NOT EQUAL TO HIGH-VALUE
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-58.
+       IF--DELETE-GF-58.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-58.
+           MOVE "IF--TEST-GF-58" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-59.
+           MOVE "ABC" TO ABC.
+       IF--TEST-GF-59.
+           IF  ABC LESS THAN LOW-VALUE
+               PERFORM FAIL
+               GO TO IF--WRITE-GF-59.
+           PERFORM PASS.
+           GO TO  IF--WRITE-GF-59.
+       IF--DELETE-GF-59.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-59.
+           MOVE  "IF--TEST-GF-59" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-60.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE  "COMPARE--EQUAL" TO FEATURE.
+           MOVE   0 TO IF-D32.
+           MOVE  -0 TO IF-D33.
+       IF--TEST-GF-60.
+           IF      IF-D32 EQUAL TO IF-D33
+                   PERFORM PASS
+                   ELSE
+                   PERFORM FAIL.
+           GO TO   IF--WRITE-GF-60.
+       IF--DELETE-GF-60.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-60.
+           MOVE "IF--TEST-GF-60" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-61.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   0 TO IF-D32.
+           MOVE  +0 TO IF-D34.
+       IF--TEST-GF-61.
+           IF       IF-D32 EQUAL TO IF-D34
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-61.
+       IF--DELETE-GF-61.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-61.
+           MOVE "IF--TEST-GF-61" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-62.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE  -0 TO IF-D33.
+           MOVE  +0 TO IF-D34.
+       IF--TEST-GF-62.
+           IF       IF-D33 EQUAL TO IF-D34
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    IF--WRITE-GF-62.
+       IF--DELETE-GF-62.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-62.
+           MOVE "IF--TEST-GF-62" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-63.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   ZERO TO AZERO-DS-05V05.
+       IF--TEST-GF-63.
+           IF AZERO-DS-05V05 EQUAL TO ZERO
+               PERFORM PASS
+               GO TO IF-WRITE-GF-63.
+           GO TO IF-FAIL-GF-63.
+       IF-DELETE-GF-63.
+           PERFORM DE-LETE.
+           GO TO IF-WRITE-GF-63.
+       IF-FAIL-GF-63.
+           MOVE 00000.00000 TO CORRECT-N.
+           MOVE AZERO-DS-05V05 TO COMPUTED-N.
+           PERFORM FAIL.
+       IF-WRITE-GF-63.
+           MOVE "IF--TEST-GF-63         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-64.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE SPACE TO CORRECT-A.
+       IF--TEST-GF-64.
+           IF SPACE EQUAL TO CORRECT-A
+               PERFORM PASS
+               GO TO IF-WRITE-GF-64.
+           GO TO IF-FAIL-GF-64.
+       IF-DELETE-GF-64.
+           PERFORM DE-LETE.
+           GO TO IF-WRITE-GF-64.
+       IF-FAIL-GF-64.
+           MOVE CORRECT-A TO COMPUTED-A.
+           MOVE SPACE TO CORRECT-A.
+           PERFORM FAIL.
+       IF-WRITE-GF-64.
+           MOVE "IF--TEST-GF-64         " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-65.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE 111111111111111111 TO A18ONES-DS-18V00.
+           MOVE "111111111111111111" TO ONES-XN-00018.
+       IF--TEST-GF-65.
+           IF A18ONES-DS-18V00 EQUAL TO ONES-XN-00018
+               PERFORM PASS
+               GO TO IF-WRITE-GF-65.
+           GO TO IF-FAIL-GF-65.
+       IF-DELETE-GF-65.
+           PERFORM DE-LETE.
+           GO TO IF-WRITE-GF-65.
+       IF-FAIL-GF-65.
+           MOVE ONES-XN-00018 TO CORRECT-A.
+           MOVE A18ONES-DS-18V00 TO COMPUTED-A.
+           MOVE "FIELDS DIDNT COMPARE EQUAL" TO RE-MARK
+           PERFORM FAIL.
+       IF-WRITE-GF-65.
+           MOVE "IF--TEST-GF-65 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-66.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE 22 TO TWOS-XN-00002.
+           MOVE 99 TO A99-DS-02V00.
+       IF--TEST-GF-66.
+           IF TWOS-XN-00002 IS EQUAL TO A99-DS-02V00
+               MOVE TWOS-XN-00002 TO COMPUTED-A
+               MOVE A99-DS-02V00 TO CORRECT-A
+               PERFORM FAIL
+               GO TO IF-WRITE-GF-66.
+           PERFORM PASS.
+           GO TO IF-WRITE-GF-66.
+       IF-DELETE-GF-66.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-66.
+           MOVE "IF--TEST-GF-66 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-67.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE     "COMPARE--LESS THAN  " TO FEATURE.
+           MOVE 111111111.111111111 TO A18ONES-DS-09V09.
+           MOVE 99 TO A99-DS-02V00.
+       IF--TEST-GF-67.
+           IF A99-DS-02V00 LESS THAN A18ONES-DS-09V09
+               PERFORM PASS
+               GO TO IF-WRITE-GF-67 ELSE
+           GO TO IF-FAIL-GF-67.
+       IF-DELETE-GF-67.
+           PERFORM DE-LETE.
+           GO TO IF-WRITE-GF-67.
+       IF-FAIL-GF-67.
+           MOVE A99-DS-02V00 TO CORRECT-A.
+           MOVE A18ONES-DS-09V09 TO COMPUTED-N.
+           PERFORM FAIL.
+       IF-WRITE-GF-67.
+           MOVE "IF--TEST-GF-67 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-68.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "11" TO ONES-XN-00002.
+       IF--TEST-GF-68.
+           IF "11" LESS THAN ONES-XN-00002
+               MOVE "11" TO CORRECT-A
+               MOVE ONES-XN-00002 TO COMPUTED-A
+               PERFORM FAIL
+               GO TO IF-WRITE-GF-68 ELSE
+           PERFORM PASS
+           GO TO IF-WRITE-GF-68.
+       IF-DELETE-GF-68.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-68.
+           MOVE "IF--TEST-GF-68 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-69.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "11" TO ONES-XN-00002.
+           MOVE    22  TO A02TWOS-DU-02V00.
+       IF--TEST-GF-69.
+           IF  A02TWOS-DU-02V00 LESS THAN ONES-XN-00002
+               MOVE ONES-XN-00002 TO CORRECT-A
+               MOVE A02TWOS-DU-02V00 TO COMPUTED-A
+               PERFORM FAIL
+               GO TO IF-WRITE-GF-69 ELSE
+           PERFORM PASS
+           GO TO IF-WRITE-GF-69.
+       IF-DELETE-GF-69.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-69.
+           MOVE "IF--TEST-GF-69 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-70.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "22" TO TWOS-XN-00002.
+           MOVE    22  TO A02TWOS-DU-02V00.
+       IF--TEST-GF-70.
+           IF TWOS-XN-00002 LESS THAN A02TWOS-DU-02V00
+               MOVE TWOS-XN-00002 TO CORRECT-A
+               MOVE A02TWOS-DU-02V00 TO COMPUTED-A
+               PERFORM FAIL
+               GO TO IF-WRITE-GF-70  ELSE
+           PERFORM PASS
+           GO TO IF-WRITE-GF-70.
+       IF-DELETE-GF-70.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-70.
+           MOVE "IF--TEST-70 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-71.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "COMPARE--GREATER    " TO FEATURE.
+           MOVE    99  TO A99-DS-02V00.
+       IF--TEST-GF-71.
+           IF A99-DS-02V00 GREATER THAN 88.9 NEXT SENTENCE  ELSE
+               MOVE A99-DS-02V00 TO CORRECT-A
+               MOVE "88.9" TO COMPUTED-A
+               PERFORM FAIL
+               GO TO IF-WRITE-GF-71.
+           PERFORM PASS.
+           GO TO IF-WRITE-GF-71.
+       IF-DELETE-GF-71.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-71.
+           MOVE "IF--TEST-GF-71 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-72.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "11" TO ONES-XN-00002.
+           MOVE   "22" TO TWOS-XN-00002.
+       IF--TEST-GF-72.
+           IF ONES-XN-00002 GREATER THAN TWOS-XN-00002 NEXT SENTENCE
+               ELSE PERFORM PASS
+               GO TO IF-WRITE-GF-72.
+           MOVE ONES-XN-00002 TO COMPUTED-A.
+           MOVE TWOS-XN-00002 TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO IF-WRITE-GF-72.
+       IF-DELETE-GF-72.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-72.
+           MOVE "IF--TEST-GF-72 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-73.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "11" TO ONES-XN-00002.
+           MOVE    22  TO A02TWOS-DU-02V00.
+       IF--TEST-GF-73.
+           IF A02TWOS-DU-02V00 GREATER THAN ONES-XN-00002
+               NEXT SENTENCE  ELSE
+               MOVE A02TWOS-DU-02V00 TO CORRECT-A
+               MOVE ONES-XN-00002 TO COMPUTED-A
+               PERFORM FAIL
+               GO TO IF-WRITE-GF-73.
+           PERFORM PASS.
+           GO TO IF-WRITE-GF-73.
+       IF-DELETE-GF-73.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-73.
+           MOVE "IF--TEST-GF-73 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-74.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "22" TO TWOS-XN-00002.
+           MOVE    22  TO A02TWOS-DU-02V00.
+       IF--TEST-GF-74.
+           IF TWOS-XN-00002 GREATER THAN A02TWOS-DU-02V00
+               NEXT SENTENCE  ELSE
+               PERFORM PASS
+               GO TO IF-WRITE-GF-74.
+           MOVE TWOS-XN-00002 TO CORRECT-A.
+           MOVE A02TWOS-DU-02V00 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO IF-WRITE-GF-74.
+       IF-DELETE-GF-74.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-74.
+           MOVE "IF--TEST-GF-74 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-75.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE     "COMPARE--NOT EQUAL  " TO FEATURE.
+           MOVE SPACE TO CORRECT-A.
+       IF--TEST-GF-75.
+           IF ZERO IS NOT EQUAL TO CORRECT-A
+               PERFORM PASS
+               GO TO IF-WRITE-GF-75.
+           MOVE ZERO TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO IF-WRITE-GF-75.
+       IF-DELETE-GF-75.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-75.
+           MOVE "IF--TEST-75 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-76.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   +022.00 TO A02TWOS-DS-03V02.
+           MOVE    22  TO A02TWOS-DU-02V00.
+       IF--TEST-GF-76.
+           IF A02TWOS-DU-02V00 NOT EQUAL TO A02TWOS-DS-03V02
+               MOVE A02TWOS-DU-02V00 TO CORRECT-N
+               MOVE A02TWOS-DS-03V02 TO COMPUTED-N
+               PERFORM FAIL
+               GO TO IF-WRITE-GF-76  ELSE  NEXT SENTENCE.
+           PERFORM PASS
+           GO TO IF-WRITE-GF-76.
+       IF-DELETE-GF-76.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-76.
+           MOVE "IF--TEST-GF-76 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-77.
+           MOVE     "COMPARE--NOT LESS   " TO FEATURE.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "22" TO TWOS-XN-00002.
+           MOVE   "11" TO ONES-XN-00002.
+       IF--TEST-GF-77.
+           IF TWOS-XN-00002 NOT LESS THAN ONES-XN-00002
+               PERFORM PASS
+               GO TO IF-WRITE-GF-77 ELSE   NEXT SENTENCE.
+           MOVE TWOS-XN-00002 TO CORRECT-A.
+           MOVE ONES-XN-00002 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO IF-WRITE-GF-77.
+       IF-DELETE-GF-77.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-77.
+           MOVE "IF--TEST-GF-77 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-78.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   .000000001 TO A01ONE-DS-P0801.
+       IF--TEST-GF-78.
+           IF 0.0000000001 IS NOT LESS THAN A01ONE-DS-P0801
+               MOVE "0.0000000001" TO CORRECT-A
+               MOVE A01ONE-DS-P0801 TO COMPUTED-N
+               PERFORM FAIL
+               GO TO IF-WRITE-GF-78  ELSE
+           PERFORM PASS
+           GO TO IF-WRITE-GF-78.
+       IF-DELETE-GF-78.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-78.
+           MOVE "IF--TEST-GF-78 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-79.
+           MOVE     "COMPARE--NOT GREATER" TO FEATURE.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE  "11" TO ONES-XN-00002.
+           MOVE  "22" TO TWOS-XN-00002.
+       IF--TEST-GF-79.
+           IF ONES-XN-00002 NOT GREATER THAN TWOS-XN-00002
+               PERFORM PASS
+               GO TO IF-WRITE-GF-79.
+           MOVE ONES-XN-00002 TO CORRECT-A.
+           MOVE TWOS-XN-00002 TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO IF-WRITE-GF-79.
+       IF-DELETE-GF-79.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-79.
+           MOVE "IF--TEST-GF-79 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-80.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   +990 TO A990-DS-0201P.
+           MOVE   99  TO A99-DS-02V00.
+       IF--TEST-GF-80.
+           IF A990-DS-0201P NOT GREATER THAN A99-DS-02V00
+               MOVE A990-DS-0201P TO COMPUTED-N
+               MOVE A99-DS-02V00 TO CORRECT-N
+               PERFORM FAIL
+               GO TO IF-WRITE-GF-80.
+           PERFORM PASS.
+           GO TO IF-WRITE-GF-80.
+       IF-DELETE-GF-80.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-80.
+           MOVE "IF--TEST-GF-80 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-81.
+           MOVE     "COMPARE--GROUP VALUE" TO FEATURE.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE  "*ASTERISK/SLASH" TO IF-D35.
+       IF--TEST-GF-81.
+           IF       IF-D36A EQUAL TO "*ASTER"
+                    PERFORM PASS GO TO IF--WRITE-GF-81.
+           GO       TO IF--FAIL-GF-81.
+       IF--DELETE-GF-81.
+           PERFORM  DE-LETE.
+           GO       TO IF--WRITE-GF-81.
+       IF--FAIL-GF-81.
+           PERFORM  FAIL.
+           MOVE     IF-D36A TO COMPUTED-A.
+           MOVE     "*ASTER" TO CORRECT-A.
+       IF--WRITE-GF-81.
+           MOVE     "IF--TEST-GF-81" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-82.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE  "*ASTERISK/SLASH" TO IF-D35.
+       IF--TEST-GF-82.
+           IF       IF-D36B EQUAL TO "ISK"
+                    PERFORM PASS GO TO IF--WRITE-GF-82.
+           GO       TO IF--FAIL-GF-82.
+       IF--DELETE-GF-82.
+           PERFORM  DE-LETE.
+           GO       TO IF--WRITE-GF-82.
+       IF--FAIL-GF-82.
+           PERFORM  FAIL.
+           MOVE     IF-D36B TO COMPUTED-A.
+           MOVE     "ISK" TO CORRECT-A.
+       IF--WRITE-GF-82.
+           MOVE     "IF--TEST-GF-82" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-83.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE  "*ASTERISK/SLASH" TO IF-D35.
+       IF--TEST-GF-83.
+           IF       IF-D36C EQUAL TO "/SLASH"
+                    PERFORM PASS GO TO IF--WRITE-GF-83.
+           GO       TO IF--FAIL-GF-83.
+       IF--DELETE-GF-83.
+           PERFORM  DE-LETE.
+           GO       TO IF--WRITE-GF-83.
+       IF--FAIL-GF-83.
+           PERFORM  FAIL.
+           MOVE     IF-D36C TO COMPUTED-A.
+           MOVE     "/SLASH" TO CORRECT-A.
+       IF--WRITE-GF-83.
+           MOVE     "IF--TEST-GF-83" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-84.
+           MOVE     "COMPARE--EQUAL" TO FEATURE.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   0001234 TO IF-D37.
+       IF--TEST-GF-84.
+           IF       IF-D37  EQUAL TO 01234
+                    PERFORM PASS GO TO IF--WRITE-GF-84.
+           GO       TO IF--FAIL-GF-84.
+       IF--DELETE-GF-84.
+           PERFORM  DE-LETE.
+           GO       TO IF--WRITE-GF-84.
+       IF--FAIL-GF-84.
+           PERFORM  FAIL.
+           MOVE     IF-D37  TO COMPUTED-N.
+           MOVE     01234 TO CORRECT-N.
+       IF--WRITE-GF-84.
+           MOVE     "IF--TEST-GF-84" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-85.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE  " BABBAGE" TO IF-D38.
+       IF--TEST-GF-85.
+           IF       IF-D38  EQUAL TO " BABBAGE            "
+                    PERFORM PASS GO TO IF--WRITE-GF-85.
+           GO       TO IF--FAIL-GF-85.
+       IF--DELETE-GF-85.
+           PERFORM  DE-LETE.
+           GO       TO IF--WRITE-GF-85.
+       IF--FAIL-GF-85.
+           PERFORM  FAIL.
+           MOVE     IF-D38  TO COMPUTED-A.
+           MOVE     " BABBAGE            " TO CORRECT-A.
+       IF--WRITE-GF-85.
+           MOVE     "IF--TEST-GF-85" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-86.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE
+           XXXXX081
+           TO NON-COBOL-CHARACTERS.
+       IF--TEST-GF-86.
+           IF       NON-COBOL-CHARACTERS EQUAL TO
+           XXXXX081
+                    PERFORM PASS GO TO IF--WRITE-GF-86.
+           GO       TO IF--FAIL-GF-86.
+       IF--DELETE-GF-86.
+           PERFORM DE-LETE.
+           GO       TO IF--WRITE-GF-86.
+       IF--FAIL-GF-86.
+           PERFORM  FAIL.
+           MOVE     NON-COBOL-CHARACTERS TO COMPUTED-A.
+           MOVE
+           XXXXX081
+           TO CORRECT-A.
+       IF--WRITE-GF-86.
+           MOVE     "IF--TEST-GF-86" TO PAR-NAME.
+           MOVE     "NON COBOL CHARACTERS" TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-GF-87.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   100000 TO COMP-DATA2.
+           MOVE   100000 TO COMP-DATA9.
+       IF--TEST-GF-87.
+           IF COMP-DATA2  EQUAL TO COMP-DATA9
+               PERFORM PASS
+               GO TO IF--WRITE-GF-87.
+           MOVE COMP-DATA2 TO COMPUTED-18V0.
+           MOVE COMP-DATA9 TO CORRECT-18V0.
+           MOVE "ENTRIES DIDNT COMPARE EQUAL" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO IF--WRITE-GF-87.
+       IF--DELETE-GF-87.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-87.
+           MOVE "IF--TEST-GF-87" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-88.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   300    TO COMP-DATA1.
+           MOVE   300.00 TO COMP-DATA7.
+       IF--TEST-GF-88.
+           IF COMP-DATA1 EQUAL TO COMP-DATA7
+               PERFORM PASS
+               GO TO IF--WRITE-GF-88.
+           MOVE COMP-DATA1 TO COMPUTED-18V0.
+           MOVE COMP-DATA7 TO CORRECT-N.
+           MOVE "ENTRIES DIDNT COMPARE EQUAL" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO IF--WRITE-GF-88.
+       IF--DELETE-GF-88.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-88.
+           MOVE "IF--TEST-GF-88" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-89.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   300 TO COMP-DATA1.
+           MOVE   300 TO DISP-DATA1.
+       IF--TEST-GF-89.
+           IF COMP-DATA1 EQUAL TO DISP-DATA1
+               PERFORM PASS
+               GO TO IF--WRITE-GF-89.
+           MOVE COMP-DATA1 TO COMPUTED-18V0.
+           MOVE DISP-DATA1 TO CORRECT-18V0.
+           MOVE "ENTRIES DIDNT COMPARE EQUAL" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO IF--WRITE-GF-89.
+       IF--DELETE-GF-89.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-89.
+           MOVE "IF--TEST-GF-89" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-90.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   100000 TO COMP-DATA1.
+           MOVE   100000 TO DISP-DATA1.
+       IF--TEST-GF-90.
+           IF COMP-DATA2 EQUAL TO DISP-DATA2
+               PERFORM PASS
+               GO TO IF--WRITE-GF-90.
+           MOVE COMP-DATA2 TO COMPUTED-N.
+           MOVE DISP-DATA2 TO CORRECT-N.
+           MOVE "ENTRIES DIDNT COMPARE EQUAL" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO IF--WRITE-GF-90.
+       IF--DELETE-GF-90.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-90.
+           MOVE "IF--TEST-GF-90" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-91.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   9 TO COMP-DATA3.
+           MOVE   9 TO DISP-DATA3.
+       IF--TEST-GF-91.
+           IF COMP-DATA3  EQUAL TO DISP-DATA3
+               PERFORM PASS
+               GO TO IF--WRITE-GF-91.
+           MOVE COMP-DATA3 TO COMPUTED-N.
+           MOVE DISP-DATA3 TO CORRECT-N.
+           MOVE "ENTRIES DIDNT COMPARE EQUAL" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO IF--WRITE-GF-91.
+       IF--DELETE-GF-91.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-91.
+           MOVE "IF--TEST-GF-91" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-92.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   300.00 TO COMP-DATA7.
+           MOVE   300    TO DISP-DATA1.
+       IF--TEST-GF-92.
+           IF COMP-DATA7 EQUAL TO DISP-DATA1
+               PERFORM PASS
+               GO TO IF--WRITE-GF-92.
+           MOVE COMP-DATA7 TO COMPUTED-N.
+           MOVE DISP-DATA1 TO CORRECT-N.
+           MOVE "ENTRIES DIDNT COMPARE EQUAL" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO IF--WRITE-GF-92.
+       IF--DELETE-GF-92.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-92.
+           MOVE "IF--TEST-GF-92" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-93.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   3.3    TO COMP-DATA4.
+           MOVE   3.3000000 TO COMP-DATA8.
+       IF--TEST-GF-93.
+           IF COMP-DATA4 EQUAL TO COMP-DATA8
+               PERFORM PASS
+               GO TO IF--WRITE-GF-93.
+           MOVE COMP-DATA4 TO COMPUTED-N.
+           MOVE COMP-DATA8 TO CORRECT-N.
+           MOVE "ENTRIES DIDNT COMPARE EQUAL" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO IF--WRITE-GF-93.
+       IF--DELETE-GF-93.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-93.
+           MOVE "IF--TEST-GF-93" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-94.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   300    TO COMP-DATA7.
+           MOVE   300    TO DISP-DATA1.
+       IF--TEST-GF-94.
+           IF COMP-DATA7 EQUAL TO DISP-DATA1
+               PERFORM PASS
+               GO TO IF--WRITE-GF-94.
+           MOVE COMP-DATA7 TO COMPUTED-N.
+           MOVE DISP-DATA1 TO CORRECT-N.
+           MOVE "ENTRIES DIDNT COMPARE EQUAL" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO IF--WRITE-GF-94.
+       IF--DELETE-GF-94.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-94.
+           MOVE "IF--TEST-GF-94" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-95.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   3.3000000 TO COMP-DATA8.
+           MOVE   3.3       TO DISP-DATA4.
+       IF--TEST-GF-95.
+           IF DISP-DATA4 EQUAL TO COMP-DATA8
+               PERFORM PASS
+               GO TO IF--WRITE-GF-95.
+           MOVE DISP-DATA4 TO COMPUTED-N.
+           MOVE COMP-DATA8 TO CORRECT-N.
+           MOVE "ENTRIES DIDNT COMPARE EQUAL" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO IF--WRITE-GF-95.
+       IF--DELETE-GF-95.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-95.
+           MOVE "IF--TEST-GF-95" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE "COMPARE GROUP-LEVEL " TO FEATURE.
+       IF--INIT-GF-96.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   ZEROS     TO GROUP-1000-1.
+           MOVE   QUOTES    TO XNAME.
+           MOVE   SPACES    TO GROUP-1000-2.
+           MOVE   "."       TO GROUP-1000-3.
+           MOVE   ZEROS     TO GROUP-X500-A.
+           MOVE   QUOTES    TO GROUP-X500-1-1.
+           MOVE   QUOTES    TO GROUP-X500-1-2.
+           MOVE   SPACES    TO GROUP-X500-1-3.
+           MOVE   " ."      TO GROUP-X500-1-4.
+       IF--TEST-GF-96.
+           IF GROUP-X1000 EQUAL TO GROUP-X500-2
+               PERFORM PASS
+               GO TO IF--WRITE-GF-96.
+           MOVE "GROUP LEVEL X(1000) " TO COMPUTED-A.
+           MOVE "GROUP LEVEL X(1000) " TO CORRECT-A.
+           MOVE "FIELDS DIDNT COMPARE EQUAL" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO IF--WRITE-GF-96.
+       IF--DELETE-GF-96.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-96.
+           MOVE "IF--TEST-GF-96" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-GF-97.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE     22      TO A02TWOS-DU-02V00.
+           MOVE     ZERO TO VAL.
+       IF--TEST-GF-97.
+           IF       A02TWOS-DU-02V00 LESS THAN "AA"
+                    ADD 1 TO VAL.
+           IF       A02TWOS-DU-02V00 GREATER THAN "AA"
+                    ADD 1 TO VAL.
+           IF       VAL EQUAL TO 1
+                    PERFORM PASS
+                    GO TO IF--WRITE-GF-97.
+           PERFORM  FAIL.
+           MOVE     VAL TO COMPUTED-N.
+           MOVE     1 TO CORRECT-N.
+           GO       TO IF--WRITE-GF-97.
+       IF--DELETE-GF-97.
+           PERFORM  DE-LETE.
+       IF--WRITE-GF-97.
+           MOVE     "COMPARE NUM VS ALPH" TO FEATURE.
+           MOVE     "IF--TEST-GF-97" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+      *> 
+       IF--INIT-GF-98.
+           MOVE  "V1-89 6.15.4 GR2" TO ANSI-REFERENCE.
+           MOVE   -123456789012345678  TO WRK-DS-18V0-1.
+           MOVE   "123456789012345678" TO WRK-XN-18-2.
+       IF-TEST-GF-98.
+           IF WRK-DS-18V0-1 EQUAL WRK-XN-18-2 PERFORM PASS
+               ELSE PERFORM FAIL.
+           GO TO IF-WRITE-GF-98.
+       IF-DELETE-GF-98.
+           PERFORM DE-LETE.
+       IF-WRITE-GF-98.
+           MOVE "IF-TEST-GF-98" TO PAR-NAME.
+           MOVE "EQUAL - NO TO" TO FEATURE.
+           MOVE "PSEUDO-MOVE TO STRIP MINUS SIGN" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       IF--INIT-GF-99.
+      *>     ==--> OPTIONAL WORD "THEN" <--==
+           MOVE  "COMPARE--EQUAL" TO FEATURE.
+           MOVE  "V1-89 6.15.2  " TO ANSI-REFERENCE.
+           MOVE   0 TO IF-D1.
+       IF--TEST-GF-99.
+           IF      ZERO IS EQUAL TO IF-D1
+              THEN PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   IF--WRITE-GF-99.
+       IF--DELETE-GF-99.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-99.
+           MOVE  "IF--TEST-GF-99" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       IF--INIT-GF-100.
+      *>     ==-->  EXPLICIT SCOPE TERMINATOR  <--==
+           MOVE   "V1-89 6.4.3  " TO ANSI-REFERENCE.
+           MOVE    ZERO TO WRK-DU-02V00.
+           MOVE    ZERO TO IF-D2.
+       IF--TEST-GF-100-1.
+           IF      ZERO IS EQUAL TO IF-D2
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL
+           END-IF
+           MOVE    99 TO WRK-DU-02V00.
+           GO TO   IF--WRITE-GF-100-1.
+       IF--DELETE-GF-100-1.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-100-1.
+           MOVE   "IF--TEST-GF-100-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-GF-100-2.
+           IF      WRK-DU-02V00 = 99
+                   PERFORM PASS
+           ELSE
+                   MOVE    99           TO CORRECT-N
+                   MOVE    WRK-DU-02V00 TO COMPUTED-N
+                   PERFORM FAIL.
+           GO TO   IF--WRITE-GF-100-2.
+       IF--DELETE-GF-100-2.
+           PERFORM DE-LETE.
+       IF--WRITE-GF-100-2.
+           MOVE "IF--TEST-GF-100-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       IF--INIT-GF-101.
+           MOVE    " BABBAGE" TO IF-D38.
+       IF--TEST-GF-101.
+      *>     ==-->  EXPLICIT SCOPE TERMINATOR  <--==
+           MOVE   "V1-89 6.4.3  " TO ANSI-REFERENCE.
+           IF       IF-D38  EQUAL TO " BABBAGE            "
+                    PERFORM PASS
+                    GO TO   IF--WRITE-GF-101
+           END-IF
+           GO       TO IF--FAIL-GF-101.
+       IF--DELETE-GF-101.
+           PERFORM  DE-LETE.
+           GO       TO IF--WRITE-GF-101.
+       IF--FAIL-GF-101.
+           PERFORM  FAIL.
+           MOVE     IF-D38  TO COMPUTED-A.
+           MOVE     " BABBAGE            " TO CORRECT-A.
+       IF--WRITE-GF-101.
+           MOVE     "IF--TEST-GF-101" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+      *> 
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC103A

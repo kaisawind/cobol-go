@@ -1,0 +1,955 @@
+      *> HEADER,COBOL,NC109M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC109M.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>       PROGRAM NC109M TESTS FORMAT 1 OF THE ACCEPT STATEMENT
+      *>       AND THE GENERAL FORMAT OF THE DISPLAY STATEMENT.
+      *> 
+      *> 
+       
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  CHARACTER-BREAKDOWN-R.
+           02  FIRST-20R               PICTURE X(20).
+           02  SECOND-20R              PICTURE X(20).
+           02  THIRD-20R               PICTURE X(20).
+           02  FOURTH-20R              PICTURE X(20).
+       01  CHARACTER-BREAKDOWN-S.
+           02  FIRST-20S               PICTURE X(20).
+           02  SECOND-20S              PICTURE X(20).
+           02  THIRD-20S               PICTURE X(20).
+           02  FOURTH-20S              PICTURE X(20).
+       01  X80-CHARACTER-FIELD.
+           02  FILLER                  PICTURE X(80).
+       01  ACCEPT-RESULTS.
+           02  FILLER                  PICTURE X(80)  VALUE
+           "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z  0123456789                 ".
+       01  DISPLAY-DATA.
+           02 DISPLAY-A.
+             03 DISPLAY-03               PICTURE A     VALUE "A".
+             03 DISPLAY-03A.
+               04 DISPLAY-04             PICTURE A     VALUE "L".
+               04 DISPLAY-04A.
+                 05 DISPLAY-05           PICTURE A     VALUE "P".
+                 05 DISPLAY-05A.
+                   06 DISPLAY-06         PICTURE A     VALUE "H".
+                   06 DISPLAY-06A.
+                     07 DISPLAY-07       PICTURE A     VALUE "A".
+                     07 DISPLAY-07A.
+                       08 DISPLAY-08     PICTURE A     VALUE "B".
+                       08 DISPLAY-08A.
+                         09 DISPLAY-09   PICTURE A     VALUE "E".
+                         09 DISPLAY-09A.
+                           10 DISPLAY-10 PICTURE AAA   VALUE "TIC".
+           02 DISPLAY-N       PICTURE 9(10)       VALUE 0123456789.
+           02 DISPLAY-X       PICTURE X(10)       VALUE "A1B2C3D4E5".
+           02 DISPLAY-B       PICTURE X(13).
+           02 DISPLAY-C REDEFINES DISPLAY-B.
+             03 DISPLAY-D     PICTURE X(8).
+             03 DISPLAY-E     PICTURE X(5).
+           02 DISPLAY-F.
+             03 DISPLAY-G     PICTURE X(100)      VALUE "*001*002*003*004*005*006*007*008*009*010*011*012*013*014*015*016*017*018*019*020*021*022*023*024*025".
+             03 DISPLAY-H     PICTURE X(100)      VALUE "*026*027*028*029*030*031*032*033*034*035*036*037*038*039*040*041*042*043*044*045*046*047*048*049*050".
+           02 SEE-ABOVE       PICTURE X(9) VALUE "SEE ABOVE".
+           02 SEE-BELOW       PICTURE X(9) VALUE "SEE BELOW".
+           02 CORRECT-FOLLOWS PICTURE X(20) VALUE
+                                            "CORRECT DATA FOLLOWS".
+           02 END-CORRECT     PICTURE X(16) VALUE
+                                            "END CORRECT DATA".
+           02 DISPLAY-WRITER.
+             03 DIS-PLAYER.
+               04 FILLER      PICTURE X(6).
+               04 QUOTE-SLOT  PICTURE X.
+               04 FILLER      PICTURE X(112).
+           02 DISPLAY-SWITCH  PICTURE 9 VALUE ZERO.
+           02 ZERO-SPACE-QUOTE.
+             03 FILLER        PICTURE X VALUE ZERO.
+             03 FILLER        PICTURE X VALUE SPACE.
+             03 FILLER        PICTURE X VALUE QUOTE.
+       01  LONG-LITERAL.
+           02 LONG20                          PICTURE IS X(20)
+           VALUE IS "STANDARD COMPILERS M".
+           02 LONG40                          PICTURE IS X(20)
+           VALUE IS "UST ALLOW NON-NUMERI".
+           02 LONG60                          PICTURE IS X(20)
+           VALUE IS "C LITERALS OF AT LEA".
+           02 LONG80                          PICTURE IS X(20)
+           VALUE IS "ST 120 CHARACTERS AN".
+           02 LONG100                         PICTURE IS X(20)
+           VALUE IS "D NUMERIC LITERALS O".
+           02 LONG120                         PICTURE IS X(20)
+           VALUE IS "F AT LEAST 18 DIGITS".
+       01  ACCEPT-DATA.
+           02 ACCEPT-D1.
+             03 ACCEPT-D1-A PICTURE X(20).
+             03 ACCEPT-D1-B PICTURE X(7).
+           02 ACCEPT-D2       PICTURE X(27)
+                              VALUE "ABCDEFGHIJKLMNOPQRSTUVWXY Z".
+           02 ACCEPT-D3  PICTURE 9(10) USAGE DISPLAY.
+           02 ACCEPT-D4  PICTURE 9(10) USAGE DISPLAY VALUE 0123456789.
+           02 ACCEPT-D5  PICTURE X(11).
+           02  ACCEPT-D6 PICTURE X(11) VALUE "().+-*/$, =".
+           02 ACCEPT-D7  PICTURE X.
+           02 ACCEPT-D8 PICTURE X VALUE "9".
+           02 ACCEPT-D9  PICTURE X.
+           02 ACCEPT-D10 PICTURE X VALUE "0".
+           02 ACCEPT-D11 PICTURE A(20).
+           02 ACCEPT-D12 PICTURE A(20)
+                    VALUE " ABC            XYZ ".
+           02 ACCEPT-D13 PICTURE 9(9).
+           02 ACCEPT-D14 PICTURE 9(9) VALUE 012345678.
+           02 ACCEPT-D15 PICTURE X.
+           02 ACCEPT-D16 PICTURE X VALUE SPACE.
+           02 ACCEPT-D17 PICTURE X.
+           02 ACCEPT-D18 PICTURE X VALUE QUOTE.
+           02 ACCEPT-D21.
+               03 TAB-ACCEPT PICTURE XXXX OCCURS 3 TIMES.
+           02 ACCEPT-D22 PICTURE X(12) VALUE "....ABCD....".
+       01  TAB-VALUE                    PICTURE X(21)
+                                        VALUE "ABCDEFGHIJKLMNOPQRSTU".
+       01  NO-TAB-RECORD REDEFINES TAB-VALUE.
+           02 X1    PICTURE X.
+           02 X2    PICTURE X.
+           02 X3    PICTURE X.
+           02 X4    PICTURE X.
+           02 X5    PICTURE X.
+           02 X6    PICTURE X.
+           02 X7    PICTURE X.
+           02 X8    PICTURE X.
+           02 X9    PICTURE X.
+           02 X10   PICTURE X.
+           02 X11   PICTURE X.
+           02 X12   PICTURE X.
+           02 X13   PICTURE X.
+           02 X14   PICTURE X.
+           02 X15   PICTURE X.
+           02 X16   PICTURE X.
+           02 X17   PICTURE X.
+           02 X18   PICTURE X.
+           02 X19   PICTURE X.
+           02 X20   PICTURE X.
+           02 X21   PICTURE X.
+       01  TAB-RECORD REDEFINES TAB-VALUE.
+           02 XTAB                      PICTURE X OCCURS 21 TIMES.
+       01  DISPLAY-MIXTURE.
+           02 I-DATA                    PICTURE X(17)
+                                        VALUE " IDENTIFIER DATA ".
+           02 TA-VALUE                  PICTURE X(20)
+                    VALUE "A B C D E 0102030405".
+           02 TA-BLE REDEFINES TA-VALUE.
+                   04 PIECE-A           PICTURE XX OCCURS 5 TIMES.
+                   04 PIECE-N           PICTURE 99 OCCURS 5 TIMES.
+           02 TRUE-PAIR.
+               03 A1                    PICTURE X(21)
+                                        VALUE " (TOTAL 21 OPERANDS) ".
+               03 A2                    PICTURE X(11)
+                                        VALUE "END OF DATA".
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC109M".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC109M-001 SECTION.
+       ACC-INIT-GF-1.
+           MOVE   "ACCEPT" TO FEATURE.
+           MOVE   "V1-71 6.5.4 GR1-5" TO ANSI-REFERENCE.
+           MOVE    SPACES TO ACCEPT-D1.
+       ACC-TEST-GF-1.
+           MOVE    "ACC-TEST-GF-1" TO PAR-NAME.
+           ACCEPT   ACCEPT-D1.
+           IF       ACCEPT-D1 EQUAL TO ACCEPT-D2
+                    PERFORM PASS GO TO ACC-WRITE-GF-1.
+      *>         NOTE ACCEPT ALPHABETIC LITERAL TO ALPHANUMERIC FIELD.
+           GO TO   ACC-FAIL-GF-1.
+       ACC-DELETE-GF-1.
+           MOVE     "ACC-TEST-GF-1" TO PAR-NAME.
+           PERFORM  DE-LETE.
+           GO       TO ACC-WRITE-GF-1.
+       ACC-FAIL-GF-1.
+           PERFORM  FAIL.
+           MOVE     ACCEPT-D1-A TO COMPUTED-A.
+           MOVE     "ABCDEFGHIJKLMNOPQRST" TO CORRECT-A.
+           PERFORM  PRINT-DETAIL.
+           MOVE     ACCEPT-D1-B TO COMPUTED-A.
+           MOVE     "UVWXY Z" TO CORRECT-A.
+           MOVE     "LAST 7 OF 27-CHAR FIELD" TO RE-MARK.
+       ACC-WRITE-GF-1.
+           PERFORM  PRINT-DETAIL.
+       ACC-INIT-GF-2.
+           MOVE   "V1-71 6.5.4 GR1-5" TO ANSI-REFERENCE.
+           MOVE     ZEROES TO ACCEPT-D3.
+       ACC-TEST-GF-2.
+           ACCEPT   ACCEPT-D3.
+           IF       ACCEPT-D3  EQUAL TO ACCEPT-D4
+                    PERFORM PASS GO TO ACC-WRITE-GF-2.
+      *>         NOTE ACCEPT NUMERIC LITERAL TO NUMERIC FIELD SAME LENGTH.
+           GO       TO ACC-FAIL-GF-2.
+       ACC-DELETE-GF-2.
+           PERFORM  DE-LETE.
+           GO       TO ACC-WRITE-GF-2.
+       ACC-FAIL-GF-2.
+           MOVE     ACCEPT-D3  TO COMPUTED-18V0.
+           MOVE     ACCEPT-D4  TO CORRECT-18V0.
+           PERFORM  FAIL.
+       ACC-WRITE-GF-2.
+           MOVE     "ACC-TEST-GF-2 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ACC-INIT-GF-3.
+           MOVE   "V1-71 6.5.4 GR1-5" TO ANSI-REFERENCE.
+           MOVE     SPACES TO ACCEPT-D5.
+       ACC-TEST-GF-3.
+           ACCEPT   ACCEPT-D5.
+           IF       ACCEPT-D5  EQUAL TO ACCEPT-D6
+                    PERFORM PASS GO TO ACC-WRITE-GF-3.
+      *>         NOTE ACCEPT SPECIAL CHARACTERS.
+           GO       TO ACC-FAIL-GF-3.
+       ACC-DELETE-GF-3.
+           PERFORM  DE-LETE.
+           GO       TO ACC-WRITE-GF-3.
+       ACC-FAIL-GF-3.
+           MOVE     ACCEPT-D5  TO COMPUTED-A.
+           MOVE     ACCEPT-D6  TO CORRECT-A.
+           PERFORM  FAIL.
+       ACC-WRITE-GF-3.
+           MOVE     "ACC-TEST-GF-3 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ACC-INIT-GF-4.
+           MOVE   "V1-71 6.5.4 GR1-5" TO ANSI-REFERENCE.
+           MOVE     SPACES TO ACCEPT-D7.
+       ACC-TEST-GF-4.
+           ACCEPT   ACCEPT-D7.
+           IF       ACCEPT-D7  EQUAL TO ACCEPT-D8
+                    PERFORM PASS GO TO ACC-WRITE-GF-4.
+      *>         NOTE ACCEPT HIGH-VALUE.
+      *>         NOTE CHANGED TO ACCEPT AN ALPHANUMERIC 9.
+           GO       TO ACC-FAIL-GF-4.
+       ACC-DELETE-GF-4.
+           PERFORM  DE-LETE.
+           GO       TO ACC-WRITE-GF-4.
+       ACC-FAIL-GF-4.
+           MOVE     ACCEPT-D7  TO COMPUTED-A.
+           MOVE     ACCEPT-D8  TO CORRECT-A.
+           PERFORM  FAIL.
+       ACC-WRITE-GF-4.
+           MOVE     "ACC-TEST-GF-4 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ACC-INIT-GF-5.
+           MOVE   "V1-71 6.5.4 GR1-5" TO ANSI-REFERENCE.
+           MOVE     SPACES TO ACCEPT-D9.
+       ACC-TEST-GF-5.
+           ACCEPT   ACCEPT-D9.
+           IF       ACCEPT-D9  EQUAL TO ACCEPT-D10
+                    PERFORM PASS GO TO ACC-WRITE-GF-5.
+      *>         NOTE CHANGED TO ACCEPT AN ALPHANUMERIC 0.
+      *>         NOTE ACCEPT LOW-VALUE.
+           GO       TO ACC-FAIL-GF-5.
+       ACC-DELETE-GF-5.
+           PERFORM  DE-LETE.
+           GO       TO ACC-WRITE-GF-5.
+       ACC-FAIL-GF-5.
+           MOVE     ACCEPT-D9  TO COMPUTED-A.
+           MOVE     ACCEPT-D10 TO CORRECT-A.
+           PERFORM  FAIL.
+       ACC-WRITE-GF-5.
+           MOVE     "ACC-TEST-GF-5 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ACC-INIT-GF-6.
+           MOVE   "V1-71 6.5.4 GR1-5" TO ANSI-REFERENCE.
+           MOVE     SPACES TO ACCEPT-D11.
+       ACC-TEST-GF-6.
+           ACCEPT   ACCEPT-D11.
+           IF       ACCEPT-D11 EQUAL TO ACCEPT-D12
+                    PERFORM PASS GO TO ACC-WRITE-GF-6.
+      *>         NOTE ACCEPT ALPHABETIC LITERAL TO ALPHABETIC FIELD.
+           GO       TO ACC-FAIL-GF-6.
+       ACC-DELETE-GF-6.
+           PERFORM  DE-LETE.
+           GO       TO ACC-WRITE-GF-6.
+       ACC-FAIL-GF-6.
+           MOVE     ACCEPT-D11 TO COMPUTED-A.
+           MOVE     ACCEPT-D12 TO CORRECT-A.
+           PERFORM  FAIL.
+       ACC-WRITE-GF-6.
+           MOVE     "ACC-TEST-GF-6 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ACC-INIT-GF-7.
+           MOVE   "V1-71 6.5.4 GR1-5" TO ANSI-REFERENCE.
+           MOVE     ZEROES TO ACCEPT-D13.
+       ACC-TEST-GF-7.
+           ACCEPT   ACCEPT-D13.
+           IF       ACCEPT-D13 EQUAL TO ACCEPT-D14
+                    PERFORM PASS GO TO ACC-WRITE-GF-7.
+      *>         NOTE ACCEPT NUMERIC LITERAL TO NUMERIC FIELD OF DIFFERENT
+      *>              LENGTH.
+           GO       TO ACC-FAIL-GF-7.
+       ACC-DELETE-GF-7.
+           PERFORM  DE-LETE.
+           GO       TO ACC-WRITE-GF-7.
+       ACC-FAIL-GF-7.
+           MOVE     ACCEPT-D13 TO COMPUTED-A.
+           MOVE     ACCEPT-D14 TO CORRECT-A.
+           PERFORM  FAIL.
+       ACC-WRITE-GF-7.
+           MOVE     "ACC-TEST-GF-7 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ACC-INIT-GF-8.
+           MOVE   "V1-71 6.5.4 GR1-5" TO ANSI-REFERENCE.
+           MOVE     ZEROES TO ACCEPT-D15.
+       ACC-TEST-GF-8.
+           ACCEPT   ACCEPT-D15.
+           IF       ACCEPT-D15 EQUAL TO ACCEPT-D16
+                    PERFORM PASS GO TO ACC-WRITE-GF-8.
+      *>         NOTE ACCEPT SINGLE SPACE.
+           GO       TO ACC-FAIL-GF-8.
+       ACC-DELETE-GF-8.
+           PERFORM  DE-LETE.
+           GO       TO ACC-WRITE-GF-8.
+       ACC-FAIL-GF-8.
+           PERFORM  FAIL.
+           MOVE     ACCEPT-D15 TO COMPUTED-A.
+           MOVE     "      (SPACES)" TO CORRECT-A.
+       ACC-WRITE-GF-8.
+           MOVE     "ACC-TEST-GF-8" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ACC-INIT-GF-9.
+           MOVE   "V1-71 6.5.4 GR1-5" TO ANSI-REFERENCE.
+           MOVE     ZEROES TO ACCEPT-D17.
+       ACC-TEST-GF-9.
+           ACCEPT   ACCEPT-D17.
+           IF       ACCEPT-D17 EQUAL TO ACCEPT-D18
+                    PERFORM PASS GO TO ACC-WRITE-GF-9.
+      *>         NOTE ACCEPT A QUOTE.
+           GO       TO ACC-FAIL-GF-9.
+       ACC-DELETE-GF-9.
+           PERFORM  DE-LETE.
+           GO       TO ACC-WRITE-GF-9.
+       ACC-FAIL-GF-9.
+           PERFORM  FAIL.
+           MOVE     ACCEPT-D17 TO COMPUTED-A.
+           MOVE     ACCEPT-D18 TO CORRECT-A.
+       ACC-WRITE-GF-9.
+           MOVE     "ACC-TEST-GF-9" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ACC-INIT-GF-10.
+           MOVE   "V1-71 6.5.4 GR1-5" TO ANSI-REFERENCE.
+           MOVE     "............" TO ACCEPT-D21.
+       ACC-TEST-GF-10.
+           ACCEPT   TAB-ACCEPT (2).
+           IF       ACCEPT-D21 EQUAL TO ACCEPT-D22
+                    PERFORM PASS GO TO ACC-WRITE-GF-10.
+      *>         NOTE ACCEPT TO SUBSCRIPTED AREA.
+           GO       TO ACC-FAIL-GF-10.
+       ACC-DELETE-GF-10.
+           PERFORM  DE-LETE.
+           GO       TO ACC-WRITE-GF-10.
+       ACC-FAIL-GF-10.
+           PERFORM  FAIL.
+           MOVE     ACCEPT-D21 TO COMPUTED-A.
+           MOVE     ACCEPT-D22 TO CORRECT-A.
+       ACC-WRITE-GF-10.
+           MOVE     "ACC-TEST-GF-10" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ACC-INIT-GF-11.
+           MOVE   "V1-71 6.5.4 GR1-5" TO ANSI-REFERENCE.
+           MOVE    SPACES TO X80-CHARACTER-FIELD.
+       ACC-TEST-GF-11.
+           ACCEPT X80-CHARACTER-FIELD.
+           MOVE     "ACC-TEST-GF-11" TO PAR-NAME.
+           IF       X80-CHARACTER-FIELD EQUAL TO ACCEPT-RESULTS
+                    PERFORM PASS GO TO ACC-WRITE-GF-11.
+      *>         NOTE ACCEPT 80-CHARACTER LITERAL.
+           GO       TO ACC-FAIL-GF-11.
+       ACC-DELETE-GF-11.
+           PERFORM  DE-LETE.
+           MOVE     "ACC-TEST-GF-11" TO PAR-NAME.
+           GO       TO ACC-WRITE-GF-11.
+       ACC-FAIL-GF-11.
+           MOVE     X80-CHARACTER-FIELD TO CHARACTER-BREAKDOWN-R.
+           PERFORM  FAIL.
+           MOVE     ACCEPT-RESULTS TO CHARACTER-BREAKDOWN-S.
+           MOVE      FIRST-20R TO COMPUTED-A.
+           MOVE      FIRST-20S TO CORRECT-A.
+           PERFORM  PRINT-DETAIL.
+           MOVE     SECOND-20R TO COMPUTED-A.
+           MOVE     SECOND-20S TO CORRECT-A.
+           PERFORM  PRINT-DETAIL.
+           MOVE      THIRD-20R TO COMPUTED-A.
+           MOVE      THIRD-20S TO CORRECT-A.
+           PERFORM  PRINT-DETAIL.
+           MOVE     FOURTH-20R TO COMPUTED-A.
+           MOVE     FOURTH-20S TO CORRECT-A.
+           MOVE     "LAST 20 OF 80-CHAR FIELD" TO RE-MARK.
+       ACC-WRITE-GF-11.
+           PERFORM PRINT-DETAIL.
+       DISP-INIT-GF-1.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           PERFORM BLANK-LINE-PRINT.
+           MOVE   "DISPLAY TESTS" TO FEATURE.
+           MOVE   "SEE NOTE IN DISP-INIT-GF-1" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           PERFORM BLANK-LINE-PRINT 4 TIMES.
+           MOVE     "DISPLAY" TO FEATURE.
+      *>         NOTE FOR THE SAKE OF CONVENIENCE IN READING THE OUTPUT, 
+      *>              THE DISPLAY TESTS ARE CONSTRUCTED ON THE ASSUMPTION
+      *>              THAT THE DISPLAYED OUTPUT WILL BE PRINTED ALONG
+      *>              WITH THE OUTPUT FROM THE WRITE STATEMENTS ---
+      *>              HOWEVER IT IS NOT CONSIDERED NONSTANDARD IF THE
+      *>              DISPLAYED DATA APPEARS ELSEWHERE IN THE LISTING, OR
+      *>              FOR THAT MATTER, ON SOME OTHER DEVICE.
+       DISP-TEST-GF-1.
+           MOVE     "DISP-TEST-GF-1 " TO PAR-NAME.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  DISPLAY-A.
+      *>         NOTE GROUP OF ALPHABETIC DATA ITEMS.
+           MOVE     DISPLAY-A TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-1.
+       DISP-DELETE-GF-1.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-1.
+           MOVE     "DISP-TEST-GF-1 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-2.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE     "DISP-TEST-GF-2 " TO PAR-NAME.
+       DISP-TEST-GF-2.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  "ALPHABETIC LITERAL".
+      *>         NOTE ALPHABETIC LITERAL.
+           MOVE     "ALPHABETIC LITERAL" TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-2.
+       DISP-DELETE-GF-2.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-2.
+           MOVE     "DISP-TEST-GF-2 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-3.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE     "DISP-TEST-GF-3" TO PAR-NAME.
+           MOVE     0123456789 TO DISPLAY-N.
+       DISP-TEST-GF-3.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  DISPLAY-N.
+      *>         NOTE NUMERIC DATA ITEM.
+           MOVE     DISPLAY-N TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-3.
+       DISP-DELETE-GF-3.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-3.
+           MOVE     "DISP-TEST-GF-3 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-4.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE     "DISP-TEST-GF-4" TO PAR-NAME.
+       DISP-TEST-GF-4.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  9876543210.
+      *>         NOTE NUMERIC LITERAL.
+           MOVE     9876543210 TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-4.
+       DISP-DELETE-GF-4.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-4.
+           MOVE     "DISP-TEST-GF-4 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-5.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE   "DISP-TEST-GF-5" TO PAR-NAME.
+           MOVE   "A1B2C3D4E5" TO DISPLAY-X.
+       DISP-TEST-GF-5.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  DISPLAY-X.
+      *>         NOTE ALPHANUMERIC DATA ITEM.
+           MOVE     DISPLAY-X TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-5.
+       DISP-DELETE-GF-5.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-5.
+           MOVE     "DISP-TEST-GF-5 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-6.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE   "DISP-TEST-GF-6" TO PAR-NAME.
+       DISP-TEST-GF-6.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  "12345 ///// ALPHANUMERIC LITERAL".
+      *>         NOTE ALPHANUMERIC LITERAL.
+           MOVE     "12345 ///// ALPHANUMERIC LITERAL" TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-6.
+       DISP-DELETE-GF-6.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-6.
+           MOVE     "DISP-TEST-GF-6 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-7.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE   "DISP-TEST-GF-7" TO PAR-NAME.
+           MOVE   "ALPHABETIC" TO DISPLAY-A.
+           MOVE    0123456789  TO DISPLAY-N.
+           MOVE   "A1B2C3D4E5" TO DISPLAY-X.
+       DISP-TEST-GF-7.
+           MOVE     "DISP-TEST-GF-7 " TO PAR-NAME.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  DISPLAY-A DISPLAY-N DISPLAY-X " SERIES".
+      *>         NOTE SERIES OF THREE DATA ITEMS AND A LITERAL.
+           MOVE     "ALPHABETIC0123456789A1B2C3D4E5 SERIES"
+                    TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-7.
+       DISP-DELETE-GF-7.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-7.
+           MOVE     "DISP-TEST-GF-7 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-8.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE     "DISP-TEST-GF-8 " TO PAR-NAME.
+       DISP-TEST-GF-8.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  ZERO SPACE QUOTE.
+      *>         NOTE SERIES OF FIGURATIVE CONSTANTS --- ONLY ONE OCCUR-
+      *>              RANCE OF EACH CHARACTER SHOULD APPEAR.
+           MOVE     ZERO-SPACE-QUOTE TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-8.
+       DISP-DELETE-GF-8.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-8.
+           MOVE     "DISP-TEST-GF-8 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-9.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE     "DISP-TEST-GF-9 " TO PAR-NAME.
+           MOVE     "REDEFINE-INFO" TO DISPLAY-B.
+       DISP-TEST-GF-9.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  DISPLAY-C.
+      *>         NOTE DISPLAY DATA ITEM WHICH CONTAINS A REDEFINES CLAUSE.
+           MOVE     "REDEFINE-INFO" TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-9.
+       DISP-DELETE-GF-9.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-9.
+           MOVE     "DISP-TEST-GF-9 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-10.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE     "DISP-TEST-GF-10 " TO PAR-NAME.
+       DISP-TEST-GF-10.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  DISPLAY-F.
+      *>         NOTE 200-CHARACTER GROUP ITEM --- ACTUAL NUMBER OF
+      *>              CHARACTERS DISPLAYED DEPENDS UPON THE SYSTEM.
+           MOVE     DISPLAY-G TO DIS-PLAYER.
+           MOVE     1 TO DISPLAY-SWITCH.
+      *>         NOTE THE "CORRECT" RESULT IS WRITTEN AS TWO 100-CHARACTER
+      *>              LINES, BUT THE DIVISION OF THE DISPLAYED "COMPUTED"
+      *>              DATA DEPENDS UPON THE SYSTEM.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-10.
+       DISP-DELETE-GF-10.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-10.
+           MOVE     "DISP-TEST-GF-10 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-11.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE     "DISP-TEST-GF-11 " TO PAR-NAME.
+           MOVE   "ABCDEFGHIJKLMNOPQRSTU" TO TAB-VALUE.
+       DISP-TEST-GF-11.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  X21 X20 X19 X18 X17 X16 X15 X14 X13 X12 X11 X10 X9
+                    X8  X7  X6  X5  X4  X3  X2  X1.
+      *>         NOTE 21 ELEMENTARY ALPHABETIC DATA ITEMS.
+           MOVE     "UTSRQPONMLKJIHGFEDCBA" TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-11.
+       DISP-DELETE-GF-11.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-11.
+           MOVE     "DISP-TEST-GF-11 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-12.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE     "DISP-TEST-GF-12 " TO PAR-NAME.
+           MOVE   "ABCDEFGHIJKLMNOPQRSTU" TO TAB-VALUE.
+       DISP-TEST-GF-12.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  XTAB (1)  XTAB (2)  XTAB (3)  XTAB (4)
+                    XTAB (5)  XTAB (6)  XTAB (7)  XTAB (8)
+                    XTAB (9)  XTAB (10)  XTAB (11)  XTAB (12)
+                    XTAB (13)  XTAB (14)  XTAB (15)  XTAB (16)
+                    XTAB (17)  XTAB (18)  XTAB (19)  XTAB (20)
+                    XTAB (21).
+      *>         NOTE 21 SUBSCRIPTED DATA ITEMS.
+           MOVE     "ABCDEFGHIJKLMNOPQRSTU" TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-12.
+       DISP-DELETE-GF-12.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-12.
+           MOVE     "DISP-TEST-GF-12 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       DISP-INIT-GF-13.
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE     "DISP-TEST-GF-13 " TO PAR-NAME.
+       DISP-TEST-GF-13.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  "QUOTE " QUOTE " ASTERISK " "*" " NUMERIC LITERALS "
+                    21 SPACE  35  I-DATA PIECE-A (1) PIECE-A (2) PIECE-A
+                    (3) PIECE-A (4) PIECE-A (5) PIECE-N (1) PIECE-N (2)
+                    PIECE-N (3) PIECE-N (4) PIECE-N (5) A1 A2.
+           MOVE       "QUOTE   ASTERISK * NUMERIC LITERALS 21 35 IDENTIFIER DATA A B C D E 0102030405 (TOTAL 21 OPERANDS) END OF DATA" TO DIS-PLAYER.
+      *>         NOTE 21 MIXED IDENTIFIERS AND LITERALS.
+           MOVE    QUOTE TO QUOTE-SLOT.
+           PERFORM DISPLAY-SUPPORT-2.
+           GO      TO DISP-WRITE-GF-13.
+       DISP-DELETE-GF-13.
+           PERFORM DE-LETE.
+       DISP-WRITE-GF-13.
+           MOVE   "DISP-TEST-GF-13 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       DISP-INIT-GF-14.
+      *>     ===---> "ALL" LITERAL  <--===
+           MOVE   "V1-78 6.10.4" TO ANSI-REFERENCE.
+           MOVE     "DISP-TEST-GF-14 GR3 " TO PAR-NAME.
+       DISP-TEST-GF-14.
+           PERFORM  DISPLAY-SUPPORT-1.
+           DISPLAY  ALL "ABCD"
+      *>         NOTE "ALL" LITERAL.
+           MOVE     "ABCD" TO DIS-PLAYER.
+           PERFORM  DISPLAY-SUPPORT-2.
+           GO       TO DISP-WRITE-GF-14.
+       DISP-DELETE-GF-14.
+           PERFORM  DE-LETE.
+       DISP-WRITE-GF-14.
+           MOVE     "DISP-TEST-GF-14 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+           GO TO   CCVS-EXIT.
+       DISPLAY-SUPPORT-1.
+           PERFORM  BLANK-LINE-PRINT.
+           MOVE     SPACE TO P-OR-F.
+           MOVE     SEE-BELOW TO COMPUTED-A.
+           MOVE     SEE-BELOW TO CORRECT-A.
+           PERFORM  PRINT-DETAIL.
+           MOVE     SPACE TO FEATURE.
+           DISPLAY  TEST-RESULTS.
+       DISPLAY-SUPPORT-2.
+           MOVE     SPACE TO TEST-RESULTS.
+           DISPLAY  TEST-RESULTS.
+           MOVE     SPACE TO TEST-RESULTS.
+           PERFORM  PRINT-DETAIL.
+           MOVE     CORRECT-FOLLOWS TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+           PERFORM  BLANK-LINE-PRINT.
+           MOVE     DISPLAY-WRITER TO TEST-RESULTS.
+           PERFORM  PRINT-DETAIL.
+           IF       DISPLAY-SWITCH EQUAL TO 1
+                    MOVE ZERO TO DISPLAY-SWITCH
+                    MOVE DISPLAY-H TO DIS-PLAYER
+                    MOVE DISPLAY-WRITER TO TEST-RESULTS
+                    PERFORM PRINT-DETAIL.
+           MOVE     SPACE TO TEST-RESULTS.
+           PERFORM  BLANK-LINE-PRINT.
+           IF       DISPLAY-SWITCH EQUAL TO 1
+                    MOVE "SEE NOTE IN DISP-TEST-GF-10" TO RE-MARK.
+                    PERFORM PRINT-DETAIL.
+           MOVE     "DISPLAY" TO FEATURE.
+           MOVE     SEE-ABOVE TO COMPUTED-A.
+           MOVE     SEE-ABOVE TO CORRECT-A.
+           MOVE     END-CORRECT TO RE-MARK.
+           MOVE    "ERRORS ENCOUNTERED" TO ENDER-DESC.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC109M

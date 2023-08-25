@@ -1,0 +1,3344 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "github.com/kaisawind/cobol/pb;pb";
+
+
+message Program {
+    repeated CompilationUnit compilation_units = 1;
+}
+
+message CompilationUnit {
+    string name = 1;
+    repeated ProgramUnit program_units = 2;
+}
+
+message ProgramUnit {
+    IdentificationDivision identification_division = 1;
+    EnvironmentDivision environment_division = 2;
+    DataDivision data_division = 3;
+    ProcedureDivision procedure_division = 4;
+}
+
+message IdentificationDivision {
+    ProgramIdParagraph program_id_paragraph = 1;
+    AuthorParagraph author_paragraph = 2;
+    DateCompiledParagraph date_compiled_paragraph = 3;
+    DateWrittenParagraph date_written_paragraph = 4;
+    InstallationParagraph installation_paragraph = 5;
+    RemarksParagraph remarks_paragraph = 6;
+    SecurityParagraph security_paragraph = 7;
+}
+
+message ProgramIdParagraph {
+    enum Attribute {
+        COMMON = 0;
+        DEFINITION = 1;
+        INITIAL = 2;
+        LIBRARY = 3;
+        RECURSIVE = 4;
+    }
+    ProgramName program_name = 1;
+    Attribute attribute = 2;
+}
+
+message AuthorParagraph {
+    string author = 1;
+}
+
+message DateCompiledParagraph {
+    string date_compiled = 1;
+}
+
+message DateWrittenParagraph {
+    string date_written = 1;
+}
+
+message InstallationParagraph {
+    string installation = 1;
+}
+
+message RemarksParagraph {
+    string remarks = 1;
+}
+
+message SecurityParagraph {
+    string security = 1;
+}
+
+message EnvironmentDivision {
+    ConfigurationSection configuration_section = 1;
+    InputOutputSection input_output_section = 2;
+    SpecialNamesParagraph special_names_paragraph = 3;
+}
+
+message ConfigurationSection {
+    ObjectComputerParagraph object_computer_paragraph = 1;
+    SourceComputerParagraph source_computer_paragraph = 2;
+    SpecialNamesParagraph special_names_paragraph = 3;
+}
+
+message SourceComputerParagraph {
+    ComputerName computer_name = 1;
+    bool debugging_mode = 2;
+}
+
+message ObjectComputerParagraph {
+    ComputerName computer_name = 1;
+    MemorySizeClause memory_size_clause = 2;
+    DiskSizeClause disk_size_clause = 3;
+    CollatingSequenceClause collating_sequence_clause = 4;
+    SegmentLimitClause segment_limit_clause = 5;
+    CharacterSetClause character_set_clause = 6;
+}
+
+message MemorySizeClause {
+    enum Unit {
+        CHARACTERS = 0;
+        MODULES = 1; 
+        WORDS = 2;
+    }
+    Unit unit = 1;
+    oneof memory_size {
+        IntegerLiteral integer_literal = 2;
+        CobolWord cobol_word = 3;
+    };
+}
+
+message DiskSizeClause {
+    enum Unit {
+        MODULES = 0;
+        WORDS = 1;
+    }
+    Unit unit = 1;
+    oneof disk_size {
+        IntegerLiteral integer_literal = 2;
+        CobolWord cobol_word = 3;
+    };
+}
+
+message CollatingSequenceClause {
+    AlphabetName national = 1;
+    AlphabetName alphanumeric = 2;
+    repeated AlphabetName alphabet_names = 3;
+}
+
+message SegmentLimitClause {
+    IntegerLiteral segment_limit = 1;
+}
+
+message CharacterSetClause {
+
+}
+
+message SpecialNamesParagraph {
+    repeated AlphabetClause alphabet_clauses = 1;
+    ChannelClause channel_clause = 2;
+    ClassClause class_clause = 3;
+    CurrencySignClause currency_sign_clause = 4;
+    DecimalPointClause decimal_point_clause = 5;
+    DefaultDisplaySignClause default_display_sign_clause = 6;
+    OdtClause odt_clause = 7;
+    ReserveNetworkClause reserve_network_clause = 8;
+    SymbolicCharactersClause symbolic_characters_clause = 9;
+}
+
+message AlphabetClause {
+    message Also {
+        repeated Literal alsos = 3;
+    }
+    message AlphabetLiteral {
+        Literal literal = 1;
+        Literal through = 2;
+        repeated Also alsos = 3;
+    }
+    message AlphabetLiterals {
+        repeated AlphabetLiteral values = 1;
+    }
+    message Alphanumeric {
+        enum Type {
+            EBCDIC = 0;
+            ASCII = 1;
+            STANDARD_1 = 2;
+            STANDARD_2 = 3;
+            NATIVE = 4;
+        }
+        oneof one_of {
+            Type type = 1;
+            CobolWord cobol_word = 3;
+            AlphabetLiterals values = 2;
+        }
+    }
+    message National {
+        enum Type {
+            NATIVE = 0;
+            CCSVERSION = 1;
+        }
+        Type type = 1;
+        Literal ccs_version = 2;
+    }
+    AlphabetName alphabet_name = 1;
+    oneof one_of {
+        Alphanumeric alphanumeric = 2;
+        National national = 3;
+    }
+}
+
+message ChannelClause {
+    IntegerLiteral Channel = 1;
+    MnemonicName mnemonic_name = 2;
+}
+
+message ClassClause {
+    enum Type {
+        ALPHANUMERIC = 0;
+        NATIONAL = 1;
+    }
+    ClassName class_name = 1;
+    Type type = 2;
+    repeated ClassClauseThrough class_throughs = 3;
+}
+
+message ClassClauseThrough {
+    oneof from {
+        Identifier identifier_from = 1;
+        Literal literal_from = 2;
+    };
+    oneof to {
+        Identifier identifier_to = 3;
+        Literal literal_to = 4;
+    };
+}
+
+message CurrencySignClause {
+    Literal currency_literal = 1;
+    Literal picture_symbol_literal = 2;
+}
+
+message DecimalPointClause {
+
+}
+
+message DefaultDisplaySignClause {
+    enum Type {
+        LEADING = 0;
+        TRAILING = 1;
+    }
+    Type type = 1;
+}
+
+message OdtClause {
+    MnemonicName mnemonic_name = 1;
+}
+
+message ReserveNetworkClause {
+
+}
+
+message SymbolicCharactersClause {
+    enum Type {
+        ALPHANUMERIC = 0;
+        NATIONAL = 1;
+    }
+    Type type = 1;
+}
+
+message InputOutputSection {
+    FileControlParagraph file_control_paragraph = 1;
+    IoControlParagraph io_control_paragraph = 2;
+}
+
+message FileControlParagraph {
+    repeated FileControlEntry file_control_entries = 1;
+}
+
+message FileControlEntry {
+    FileName file_name = 1;
+    SelectClause select_clause = 2;
+    AlternateRecordKeyClause alternate_record_key_clause = 3;
+    AssignClause assign_clause = 4;
+    FileStatusClause file_status_clause = 6;
+    OrganizationClause organization_clause = 7;
+    PaddingCharacterClause padding_character_clause = 8;
+    PasswordClause password_clause = 9;
+    RecordDelimiterClause record_delimiter_clause = 10;
+    RecordKeyClause record_key_clause = 11;
+    RelativeKeyClause relative_key_clause = 12;
+    ReserveClause reserve_clause = 13;
+    AccessModeClause access_mode_clause = 14;
+}
+
+message SelectClause {
+    FileName file_name = 1;
+    bool optional = 2;
+}
+
+message AssignClause {
+    enum Type {
+        DISK =  0;
+        DISPLAY = 1;
+        KEYBOARD = 2;
+        PORT = 3;
+        PRINTER = 4;
+        READER = 5;
+        REMOTE = 6;
+        TAPE = 7;
+        VIRTUAL = 8;
+    }
+    oneof to_value {
+        Type type = 1;
+        AssignmentName assignment_name = 2;
+        Literal literal = 3;
+    };
+}
+
+message ReserveClause {
+    IntegerLiteral value = 1;
+}
+
+message OrganizationClause {
+    enum Mode {
+        INDEXED = 0;
+        RELATIVE = 1;
+        SEQUENTIAL = 2;
+    }
+
+    enum Type {
+        BINARY = 0;
+        LINE = 1;
+        RECORD = 2;
+        RECORD_BINARY = 3;
+    }
+
+    Mode mode = 1;
+    Type type = 2;
+}
+
+message PaddingCharacterClause {
+    oneof padding_character {
+        QualifiedDataName qualified_data_name = 1;
+        Literal literal = 2;
+    };
+}
+
+message RecordDelimiterClause {
+    enum Type {
+        ASSIGNMENT = 0;
+        IMPLICIT = 1;
+        STANDARD_1 = 2;
+    }
+    Type type = 1;
+    AssignmentName assignment_name = 2;
+}
+
+message AccessModeClause {
+    enum Mode {
+        DYNAMIC = 0;
+        EXCLUSIVE = 1;
+        RANDOM = 2;
+        SEQUENTIAL = 3;
+    }
+    Mode mode = 1;
+}
+
+message RecordKeyClause {
+    PasswordClause password_clause = 1;
+    QualifiedDataName qualified_data_name = 2;
+}
+
+message AlternateRecordKeyClause {
+    PasswordClause password_clause = 1;
+    QualifiedDataName qualified_data_name = 2;
+}
+
+message PasswordClause {
+    DataName data_name = 1;
+}
+
+message FileStatusClause {
+    QualifiedDataName qualified_data_name_1 = 1;
+    QualifiedDataName qualified_data_name_2 = 2;
+}
+
+message RelativeKeyClause {
+    QualifiedDataName qualified_data_name = 2;
+}
+
+
+message IoControlParagraph {
+    FileName file_name = 1;
+    CommitmentControlClause commitment_control_clause = 2;
+    MultipleFileClause multiple_file_clause = 3;
+    RerunClause rerun_clause = 4;
+    repeated SameClause same_clauses = 5;
+}
+
+message RerunClause {
+    oneof on_value {
+        AssignmentName assignment_name = 1;
+        FileName file_name = 2;
+    };
+    oneof one_of {
+        RerunEveryClock rerun_every_clock = 3;
+        RerunEveryOf rerun_every_of = 4;
+        RerunEveryRecords rerun_every_records = 5;
+    }
+}
+
+message RerunEveryRecords {
+    IntegerLiteral records = 1;
+}
+
+message RerunEveryOf {
+    enum Type {
+        REEL = 0;
+        UNIT = 1;
+    }
+    Type type = 1;
+    FileName file_name = 2;
+}
+
+message RerunEveryClock {
+    IntegerLiteral clock_units = 1;
+}
+
+message SameClause {
+    enum Form {
+        RECORD = 0;
+        SORT = 1;
+        SORT_MERGE = 2;
+    }
+    repeated FileName file_names = 1;
+    Form form = 2;
+}
+
+message MultipleFileClause {
+    repeated MultipleFilePosition multiple_file_positions = 1;
+}
+
+message MultipleFilePosition {
+    IntegerLiteral position = 1;
+    FileName file_name = 2;
+}
+
+message CommitmentControlClause {
+    FileName file_name = 1;
+}
+
+message DataDivision {
+    CommunicationSection communication_section = 1;
+    DataBaseSection data_base_section = 2;
+    FileSection file_section = 3;
+    LinkageSection linkage_section = 4;
+    LocalStorageSection local_storage_section = 5;
+    ProgramLibrarySection program_library_section = 6;
+    ReportSection report_section = 7;
+    ScreenSection ScreenSection = 8;
+    WorkingStorageSection working_storage_section = 9;
+}
+
+message FileSection {
+    repeated FileDescriptionEntry file_description_entries = 1;
+}
+
+message FileDescriptionEntry {
+    FileName file_name = 1;
+    ExternalClause external_clause = 2;
+    GlobalClause global_clause = 3;
+    BlockContainsClause block_contains_clause = 4;
+    RecordContainsClause record_contains_clause = 5;
+    LabelRecordsClause label_records_clause = 6;
+    ValueOfClause value_of_clause = 7;
+    DataRecordsClause data_records_clause = 8;
+    LinageClause linage_clause = 9;
+    CodeSetClause code_set_clause = 10;
+    ReportClause report_clause = 11;
+    repeated DataDescriptionEntry data_description_entries = 12;
+    RecordingModeClause recording_mode_clause = 13;
+}
+
+message ModeStatement {
+    CobolWord cobol_word = 1;
+}
+
+message RecordingModeClause {
+    ModeStatement mode_statement = 1;
+}
+
+message ExternalClause {
+}
+
+message GlobalClause {
+}
+
+message BlockContainsClause {
+    enum Unit {
+        CHARACTERS = 0;
+        RECORDS = 1;
+    }
+    IntegerLiteral from = 1;
+    IntegerLiteral to = 2;
+    Unit unit = 3;
+}
+
+message RecordContainsClause {
+    IntegerLiteral from = 1;
+    IntegerLiteral to = 2;
+    bool varying = 3;
+    QualifiedDataName qualified_data_name = 4;
+}
+
+message LabelRecordsClause {
+    message DataNames {
+        repeated DataName data_names = 1;
+    }
+    enum Type {
+        OMITTED = 0;
+        STANDARD = 1;
+    }
+    oneof one_of {
+        Type type = 1;
+        DataNames data_names = 2;
+    }
+}
+
+message ValueOfClause {
+    repeated ValuePair value_pairs = 2;
+}
+
+message ValuePair {
+    SystemName system_name = 1;
+    oneof value {
+        QualifiedDataName qualified_data_name = 2;
+        Literal literal = 3;
+    };
+}
+
+message DataRecordsClause {
+    repeated DataName data_names = 1;
+}
+
+message DataNameOrIntegerLiteral {
+    oneof one_of {
+        DataName data_name = 1;
+        IntegerLiteral integer_literal = 2;
+    }
+}
+
+message LinageClause {
+    DataNameOrIntegerLiteral footing_at = 1;
+    DataNameOrIntegerLiteral lines_at_bottom = 2;
+    DataNameOrIntegerLiteral lines_at_top = 3;
+    DataNameOrIntegerLiteral number_of_lines = 4;
+}
+
+message CodeSetClause {
+    AlphabetName alphabet_name = 1;
+}
+
+message ReportClause {
+    repeated ReportName report_names = 1;
+}
+
+message WorkingStorageSection {
+    repeated DataDescriptionEntry data_description_entries = 1;
+}
+
+message DataDescriptionEntry {
+    message Format1 {
+        DataName data_name = 1;
+        DataRedefinesClause data_redefines_clause = 2;
+        DataIntegerStringClause data_integer_string_clause = 3;
+        DataExternalClause data_external_clause = 4;
+        DataGlobalClause data_global_clause = 5;
+        DataTypeDefClause data_type_def_clause = 6;
+        DataThreadLocalClause data_thread_local_clause = 7;
+        DataPictureClause data_picture_clause = 8;
+        DataCommonOwnLocalClause data_common_own_local_clause = 9;
+        DataTypeClause data_type_clause = 10;
+        DataUsingClause data_using_clause = 11;
+        DataUsageClause data_usage_clause = 12;
+        DataValueClause data_value_clause = 13;
+        DataReceivedByClause data_received_by_clause = 14;
+        DataOccursClause data_occurs_clause = 15;
+        DataSignClause data_sign_clause = 16;
+        DataSynchronizedClause data_synchronized_clause = 17;
+        DataJustifiedClause data_justified_clause = 18;
+        DataBlankWhenZeroClause data_blank_when_zero_clause = 19;
+        DataWithLowerBoundsClause data_with_lower_bounds_clause = 20;
+        DataAlignedClause data_aligned_clause = 21;
+        DataRecordAreaClause data_record_area_clause = 22;
+    }
+    message Format2 {
+        DataName data_name = 1;
+        DataRenamesClause data_renames_clause = 2;
+    }
+    message Format3 {
+        ConditionName condition_name = 1;
+        DataValueClause data_value_clause = 2;
+    }
+    message ExecSql {
+        
+    }
+    oneof one_of {
+        Format1 f1 = 1; 
+        Format2 f2 = 2; 
+        Format3 f3 = 3; 
+        ExecSql exec_sql = 4; 
+    }
+}
+
+message DataRenamesClause {
+    QualifiedDataName from = 1;
+    QualifiedDataName to = 2;
+}
+
+message DataRedefinesClause {
+    DataName data_name = 1;
+}
+
+message DataIntegerStringClause {
+
+}
+
+message DataExternalClause {
+    Literal literal = 1;
+}
+
+message DataGlobalClause {
+
+}
+
+message DataTypeDefClause {
+
+}
+
+message DataThreadLocalClause {
+
+}
+
+message DataPictureClause {
+    PictureString picture_string = 1;
+}
+
+message PictureString {
+    repeated PictureChars chars = 1;
+}
+
+message PictureChars {
+    enum Type {
+        DOLLARCHAR = 0;
+        IDENTIFIER = 1;
+        NUMERICLITERAL = 2;
+        SLASHCHAR = 3;
+        COMMACHAR = 4;
+        DOT = 5;
+        COLONCHAR = 6;
+        ASTERISKCHAR = 7;
+        DOUBLEASTERISKCHAR = 8;
+        LPARENCHAR = 9;
+        RPARENCHAR = 10;
+        PLUSCHAR = 11;
+        MINUSCHAR = 12;
+        LESSTHANCHAR = 13;
+        MORETHANCHAR = 14;
+    }
+    oneof one_of {
+        Type type = 1;
+        IntegerLiteral integer_literal = 2;
+    }
+}
+
+message PictureCardinality {
+    IntegerLiteral integer_literal = 1;
+}
+
+message DataCommonOwnLocalClause {
+    enum Type {
+        COMMON = 0;
+        OWN = 1;
+        LOCAL = 2;
+    }
+    Type type = 1;
+}
+
+message DataTypeClause {
+    enum Type {
+        SHORT_DATE = 0;
+        LONG_DATE = 1;
+        NUMERIC_DATE = 2;
+        NUMERIC_TIME = 3;
+        LONG_TIME = 4;
+    }
+    enum Mode {
+        CLOB = 0;
+        BLOB = 1;
+        DBCLOB = 2;
+    }
+    message Lob {
+        Mode mode = 1;
+        IntegerLiteral integer_literal = 2;
+    }
+    oneof one_of {
+        Type type = 1;
+        Lob lob = 2;
+    }
+}
+
+message DataUsingClause {
+    enum Type {
+        LANGUAGE = 0;
+        CONVENTION = 1;
+    }
+    Type type = 1;
+    oneof one_of {
+        CobolWord cobol_word = 2;
+        DataName data_name = 3;
+    }
+}
+
+message DataUsageClause {
+    enum Type {
+        BINARY = 0;
+        BINARY_TRUNCATED = 1;
+        BINARY_EXTENDED = 2;
+        BIT = 3;
+        COMP = 4;
+        COMP_1 = 5;
+        COMP_2 = 6;
+        COMP_3 = 7;
+        COMP_4 = 8;
+        COMP_5 = 9;
+        COMPUTATIONAL = 10;
+        COMPUTATIONAL_1 = 11;
+        COMPUTATIONAL_2 = 12;
+        COMPUTATIONAL_3 = 13;
+        COMPUTATIONAL_4 = 14;
+        COMPUTATIONAL_5 = 15;
+        CONTROL_POINT = 16;
+        DATE = 17;
+        DISPLAY = 18;
+        DISPLAY_1 = 19;
+        DOUBLE = 20;
+        EVENT = 21;
+        FUNCTION_POINTER = 22;
+        INDEX = 23;
+        KANJI = 24;
+        LOCK = 25;
+        NATIONAL = 26;
+        PACKED_DECIMAL = 27;
+        POINTER = 28;
+        PROCEDURE_POINTER = 29;
+        REAL = 30;
+        SQL = 31;
+        TASK = 32;
+    }
+    Type type = 1;
+}
+
+message DataValueInterval {
+    oneof from {
+        Literal literal_from = 1;
+        CobolWord cobol_word_from = 2;
+    }
+    oneof to {
+        Literal literal_to = 3;
+    }
+}
+
+message DataValueClause {
+    repeated DataValueInterval data_value_interval = 1;
+}
+
+message DataReceivedByClause {
+    enum Type {
+        CONTENT = 0;
+        REFERENCE = 1;
+        REF = 2;
+    }
+    Type type = 1;
+}
+
+message DataOccursClause {
+    oneof occurs {
+        Identifier identifier = 1;
+        IntegerLiteral integer_literal = 2;
+    }
+    message Sort {
+        repeated QualifiedDataName qualified_data_names = 1;
+    }
+    message Indexed {
+        repeated IndexName index_names = 1;
+    }
+    IntegerLiteral to = 3;
+    QualifiedDataName depending_on = 4;
+    repeated Sort sorts = 5;
+    repeated Indexed indexes = 6;
+}
+
+message DataSignClause {
+    enum Type {
+        LEADING = 0;
+        TRAILING = 1;
+    }
+    Type type = 1;
+}
+
+message DataSynchronizedClause {
+    enum Type {
+        LEFT = 0;
+        RIGHT = 1;
+    }
+    Type type = 1;
+}
+
+message DataJustifiedClause {
+    bool right = 1;
+}
+
+message DataBlankWhenZeroClause {
+
+}
+
+message DataWithLowerBoundsClause {
+
+}
+
+message DataAlignedClause {
+
+}
+
+message DataRecordAreaClause {
+
+}
+
+message ScreenSection {
+    repeated ScreenDescriptionEntry screen_description_entries = 1;
+}
+
+message ScreenDescriptionEntry {
+    oneof integer_literal {
+        bool filler = 1;
+        ScreenName screen_name = 2;
+    }
+    BlankClause blank_clause = 3;
+    BellClause bell_clause = 4;
+    BlinkClause blink_clause = 5;
+    EraseClause erase_clause = 6;
+    LightClause light_clause = 7;
+    GridClause grid_clause = 8;
+    ReverseVideoClause reverse_video_clause = 9;
+    UnderlineClause underline_clause = 10;
+    SizeClause size_clause = 11;
+    LineClause line_clause = 12;
+    ColumnClause column_clause = 13;
+    ForegroundColorClause foreground_color_clause = 14;
+    BackgroundColorClause background_color_clause = 15;
+    ControlClause control_clause = 16;
+    ValueClause value_clause = 17;
+    PictureClause picture_clause = 18;
+    FromClause from_clause = 19;
+    UsingClause using_clause = 20;
+    UsageClause usage_clause = 21;
+    SignClause sign_clause = 22;
+    BlankWhenZeroClause blank_when_zero_clause = 23;
+    JustifiedClause justified_clause = 24;
+    AutoClause auto_clause = 25;
+    SecureClause secure_clause = 26;
+    RequiredClause required_clause = 27;
+    PromptClause prompt_clause = 28;
+    FullClause full_clause = 29;
+    ZeroFillClause zero_fill_clause = 30;
+}
+
+message ZeroFillClause {
+
+}
+
+message FullClause {
+    enum Type {
+        FULL = 0;
+        LENGTH_CHECK = 1;
+    }
+    Type type = 1;
+}
+
+message PromptClause {
+    oneof prompt {
+        Identifier identifier = 1;
+        Literal literal = 2;
+    }
+    IntegerLiteral times = 3;
+}
+
+message RequiredClause {
+    enum Type {
+        REQUIRED = 0;
+        EMPTY_CHECK = 1;
+    }
+    Type type = 1;
+}
+
+message SecureClause {
+    enum Type {
+        SECURE = 0;
+        NO_ECHO = 1;
+    }
+    Type type = 1;
+}
+
+message AutoClause {
+    enum Type {
+        AUTO = 0;
+        AUTO_SKIP = 1;
+    }
+    Type type = 1;
+}
+
+message UsingClause {
+    Identifier using = 1;
+}
+message FromClause {
+    oneof from {
+        Identifier identifier = 1;
+        Literal literal = 2;
+    }
+    Identifier to = 3;
+}
+
+message BlankClause {
+    enum Type {
+        SCREEN = 0;
+        LINE = 1;
+    }
+    Type type = 1;
+}
+
+message BellClause {
+    enum Type {
+        BELL = 0;
+        BEEP = 1;
+    }
+    Type type = 1;
+}
+
+message BlinkClause {
+
+}
+
+message EraseClause {
+    enum Type {
+        EOL = 0;
+        EOS = 1;
+    }
+    Type type = 1;
+}
+
+message LightClause {
+    enum Type {
+        HIGHLIGHT = 0;
+        LOWLIGHT = 1;
+    }
+    Type type = 1;
+}
+
+message GridClause {
+    enum Type {
+        GRID = 0;
+        LEFTLINE = 1;
+        OVERLINE = 2;
+    }
+    Type type = 1;
+}
+
+message ReverseVideoClause {
+
+}
+
+message UnderlineClause {
+
+}
+
+message SizeClause {
+    oneof size {
+        Identifier identifier = 1;
+        IntegerLiteral integer_literal = 2;
+    }
+}
+
+message LineClause {
+    enum Type {
+        PLUS = 0;
+        MINUS = 1;
+    }
+    Type type = 1;
+    oneof line {
+        Identifier identifier = 2;
+        IntegerLiteral integer_literal = 3;
+    }
+}
+
+message ColumnClause {
+    enum Type {
+        PLUS = 0;
+        MINUS = 1;
+    }
+    Type type = 1;
+    oneof column {
+        Identifier identifier = 2;
+        IntegerLiteral integer_literal = 3;
+    }
+}
+
+message ForegroundColorClause {
+    oneof foreground_color {
+        Identifier identifier = 1;
+        IntegerLiteral integer_literal = 2;
+    }
+}
+
+message BackgroundColorClause {
+    oneof background_color {
+        Identifier identifier = 1;
+        IntegerLiteral integer_literal = 2;
+    }
+}
+
+message ControlClause {
+    Identifier control = 1;
+}
+
+message ReportSection {
+    repeated ReportDescription report_descriptions = 1;
+}
+
+message ReportDescription {
+    ReportDescriptionEntry report_description_entry = 1;
+    repeated ReportGroupDescriptionEntry report_group_description_entries = 2;
+}
+
+message ReportDescriptionEntry {
+    ReportName report_name = 1;
+    GlobalClause global_clause = 2;
+    PageLimitClause page_limit_clause = 3;
+    HeadingClause heading_clause = 4;
+    FirstDetailClause first_detail_clause = 5;
+    LastDetailClause last_detail_clause = 6;
+    FootingClause footing_clause = 7;
+}
+
+message PageLimitClause {
+    IntegerLiteral page = 1;
+}
+
+message HeadingClause {
+    IntegerLiteral heading = 1;
+}
+
+message FirstDetailClause {
+    IntegerLiteral first_detail = 1;
+}
+
+message LastDetailClause {
+    IntegerLiteral last_detail = 1;
+}
+
+message FootingClause {
+    IntegerLiteral footing = 1;
+}
+
+message ReportGroupDescriptionEntry {
+    message Vertical {
+        LineNumberClause line_number_clause = 3;
+        NextGroupClause next_group_clause = 4;
+        TypeClause type_clause = 5;
+        UsageClause usage_clause = 6;
+    }
+    message Single {
+        LineNumberClause line_number_clause = 3;
+        UsageClause usage_clause = 6;
+    }
+    message Printable {
+        PictureClause picture_clause = 3;
+        UsageClause usage_clause = 4;
+        SignClause sign_clause = 5;
+        JustifiedClause justified_clause = 6;
+        BlankWhenZeroClause blank_when_zero_clause = 7;
+        LineNumberClause line_number_clause = 8;
+        ColumnNumberClause column_number_clause = 9;
+        IndicateClause IndicateClause = 10;
+        SourceClause source_clause = 11;
+        ValueClause value_clause = 12;
+        SumClause SumClause = 13;
+        ResetClause reset_clause = 14;
+    }
+
+    IntegerLiteral integer_literal = 1;
+    DataName data_name = 2;
+    oneof one_of {
+        Vertical vertical = 3;
+        Single single = 4;
+        Printable printable = 5;
+    }
+}
+
+message ResetClause {
+    oneof one_of {
+        bool final = 1;
+        DataName data_name = 2;
+    }
+}
+
+message SumClause {
+    repeated Identifier sums = 1;
+    repeated DataName upons = 2;
+}
+
+message ValueClause {
+    Literal value = 1;
+}
+
+message SourceClause {
+    Identifier source = 1;
+}
+
+message IndicateClause {
+
+}
+
+message ColumnNumberClause {
+    IntegerLiteral column_number = 1;
+}
+
+message BlankWhenZeroClause {
+
+}
+
+message JustifiedClause {
+    bool right = 1;
+}
+
+message SignClause {
+    enum Type {
+        LEADING = 0;
+        TRAILING = 1;
+    }
+    Type type = 1;
+}
+
+message PictureClause {
+    PictureString picture_string = 1;
+}
+
+message LineNumberClause {
+    oneof one_of {
+        IntegerLiteral next_page = 1;
+        IntegerLiteral plus = 2;
+    }
+}
+
+message NextGroupClause {
+    oneof one_of {
+        IntegerLiteral next_group = 1;
+        bool next_page = 2;
+        IntegerLiteral plus = 3;
+    }
+}
+
+message TypeClause {
+    message ReportHeading {}
+    message PageHeading {}
+    message ControlHeading {
+        oneof one_of {
+            bool final = 1;
+            DataName data_name = 2;
+        }
+    }
+    message Detail {}
+    message ControlFooting {
+        oneof one_of {
+            bool final = 1;
+            DataName data_name = 2;
+        }
+    }
+    message PageFooting {}
+    message ReportFooting {}
+    oneof type {
+        ReportHeading report_heading = 1;
+        PageHeading page_heading = 2;
+        ControlHeading control_heading = 3;
+        Detail detail = 4;
+        ControlFooting control_footing = 5;
+        PageFooting page_footing = 6;
+        ReportFooting report_footing = 7;
+    }
+}
+
+message UsageClause {
+
+}
+
+message ProgramLibrarySection {
+    repeated LibraryDescriptionEntry library_description_entries = 1;
+}
+
+message LibraryDescriptionEntry {
+    message Import {
+        GlobalClause global_clause = 1;
+        IsCommonClause is_common_clause = 2;
+        AttributeClause2 attribute_clause = 3;
+        ProcedureClause2 procedure_clause = 4;
+    }
+    message Export {
+        AttributeClause1 attribute_clause = 1;
+        ProcedureClause1 procedure_clause = 2;
+    }
+    LibraryName library_name = 1;
+    oneof one_of {
+        Import import = 2;
+        Export export = 3;
+    }
+}
+
+message IsCommonClause {
+}
+
+message AttributeClause1 {
+    enum Sharing {
+        DONTCARE = 0;
+        PRIVATE = 1;
+        SHAREDBYRUNUNIT = 2;
+        SHAREDBYALL = 3;
+    }
+    Sharing sharing = 1;
+}
+
+message AttributeClause2 {
+    enum LibAccess {
+        BYFUNCTION = 0;
+        BYTITLE = 1;
+    }
+    Literal function_name = 1;
+    LibAccess lib_access = 2;
+    Literal lib_parameter = 3;
+    Literal title = 4;
+}
+
+message ProcedureClause1 {
+    ProgramName program_name = 1;
+    Literal for = 2;
+}
+
+message ProcedureClause2 {
+    ProgramName program_name = 1;
+    Literal for = 2;
+    message WithName {
+        oneof one_of {
+            LocalName local_name = 1;
+            FileName file_name = 2;
+        } 
+    }
+    repeated WithName with_names = 3;
+    message UsingName {
+        oneof one_of {
+            DataName data_name = 1;
+            FileName file_name = 2;
+        }
+    }
+    repeated UsingName using_names = 5;
+    DataName giving = 7;
+}
+
+message LocalStorageSection {
+    repeated DataDescriptionEntry data_description_entries = 1;
+    LocalName local_name = 2;
+}
+
+message LinkageSection {
+    repeated DataDescriptionEntry data_description_entries = 1;
+}
+
+message CommunicationSection {
+    repeated CommunicationDescriptionEntry communication_description_entries = 1;
+    repeated DataDescriptionEntry data_description_entries = 2;
+}
+
+message CommunicationDescriptionEntry {
+    message Input {  
+        SymbolicQueueClause symbolic_queue_clause = 2;
+        SymbolicSubQueueClause symbolic_sub_queue_clause = 3;
+        MessageDateClause message_date_clause = 4;
+        MessageTimeClause message_time_clause = 5;
+        SymbolicSourceClause symbolic_source_clause = 6;
+        TextLengthClause text_length_clause = 7;
+        EndKeyClause end_key_clause = 8;
+        StatusKeyClause status_key_clause = 9;
+        MessageCountClause message_count_clause = 10;
+        DataDescName data_desc_name = 11;
+    }
+    message Output {
+        DestinationCountClause destination_count_clause = 1;
+        TextLengthClause text_length_clause = 2;
+        StatusKeyClause status_key_clause = 3;
+        DestinationTableClause destination_table_clause = 4;
+        ErrorKeyClause errorKeyClause = 5;
+        SymbolicDestinationClause symbolic_destination_clause = 6;
+    }
+    message Io {
+        MessageDateClause message_date_clause = 4;
+        MessageTimeClause message_time_clause = 5;
+        SymbolicTerminalClause symbolic_terminal_clause = 3;
+        TextLengthClause text_length_clause = 2;
+        EndKeyClause end_key_clause = 8;
+        StatusKeyClause status_key_clause = 9;
+    }
+    CdName cd_name = 1;
+    oneof one_of {
+        Input input = 2;
+        Output output = 3;
+        Io io = 4;
+    }
+}
+
+message SymbolicTerminalClause {
+    DataDescName data_desc_name = 1;
+}
+
+message SymbolicDestinationClause {
+    DataDescName data_desc_name = 1;
+}
+
+message ErrorKeyClause {
+    DataDescName data_desc_name = 1;
+}
+
+message DestinationTableClause {
+    IntegerLiteral times = 1;
+    repeated IndexName indexes = 2;
+}
+
+message DestinationCountClause {
+    DataDescName data_desc_name = 1;
+}
+
+message SymbolicQueueClause {
+    DataDescName data_desc_name = 1;
+}
+
+message SymbolicSubQueueClause {
+    DataDescName data_desc_name = 1;
+}
+
+message MessageDateClause {
+    DataDescName data_desc_name = 1;
+}
+
+message MessageTimeClause {
+    DataDescName data_desc_name = 1;
+}
+
+message SymbolicSourceClause {
+    DataDescName data_desc_name = 1;
+}
+
+message TextLengthClause {
+    DataDescName data_desc_name = 1;
+}
+
+message EndKeyClause {
+    DataDescName data_desc_name = 1;
+}
+
+message StatusKeyClause {
+    DataDescName data_desc_name = 1;
+}
+
+message MessageCountClause {
+    DataDescName data_desc_name = 1;
+}
+
+message DataBaseSection {
+    repeated DataBaseSectionEntry data_base_section_entries = 1;
+}
+
+message DataBaseSectionEntry {
+    IntegerLiteral integer_literal = 1;
+    Literal literal = 2;
+    Literal invoke = 3;
+}
+
+message ProcedureDivision {
+    message ByReference {
+        oneof one_of {
+            Identifier identifier = 1;
+            FileName file_name = 2;
+            bool any = 3;
+        }
+    }
+    message ByReferencePhrase {
+        repeated ByReference references = 1;
+    }
+    message ByValue {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+            bool any = 3;
+        }
+    }
+    message ByValuePhrase {
+        repeated ByValue values = 1;
+    }
+    message UsingParameter {
+        oneof one_of {
+            ByReferencePhrase by_reference_phrase = 1;
+            ByValuePhrase by_value_phrase = 2;
+        }
+    }
+    message GivingClause {
+        enum Type {
+            GIVING = 0;
+            RETURNING = 1;
+        }
+        Type type = 1;
+        DataName data_name = 2;
+    }
+    message UsingClause {
+        enum Type {
+            USING = 0;
+            CHAINING = 1;
+        }
+        Type type = 1;
+        repeated UsingParameter using_parameters = 2;
+    }
+    UsingClause using_clause = 1;
+    GivingClause giving_clause = 2;
+    repeated Declarative declaratives = 3;
+    Paragraphs paragraphs = 4;
+    repeated ProcedureSection procedure_sections = 5;
+}
+
+message ProcedureSection {
+    ProcedureSectionHeader procedure_section_header = 1;
+    Paragraphs paragraphs = 2;
+}
+
+message Declarative {
+    ProcedureSectionHeader procedure_section_header = 1;  
+    UseStatement use_statement = 2;
+    Paragraphs paragraphs = 3;
+}
+
+message ProcedureSectionHeader {
+    SectionName section_name = 1;
+    IntegerLiteral integer_literal = 2;
+}
+
+message Paragraphs {
+    Sentences sentences = 1;
+    repeated Paragraph paragraphs = 2;
+}
+
+message Paragraph {
+    ParagraphName paragraph_name = 1;
+    oneof one_of {
+        bool altered_go_to = 2;
+        Sentences sentences = 3;
+    }
+}
+
+message Sentences {
+    repeated Sentence sentences = 1;
+}
+
+message Sentence {
+    repeated Statement statements = 1;
+}
+
+message Statement {
+    oneof one_of {
+        AcceptStatement accept_statement = 1;
+        AddStatement AddStatement = 2;
+        AlterStatement alterStatement = 3;
+        CallStatement callStatement = 4;
+        CancelStatement cancelStatement = 5;
+        CloseStatement closeStatement = 6;
+        ComputeStatement computeStatement = 7;
+        ContinueStatement continueStatement = 8;
+        DeleteStatement deleteStatement = 9;
+        DisableStatement disableStatement = 10;
+        DisplayStatement displayStatement = 11;
+        DivideStatement divideStatement = 12;
+        EnableStatement enableStatement = 13;
+        EntryStatement entryStatement = 14;
+        EvaluateStatement evaluateStatement = 15;
+        ExhibitStatement exhibitStatement = 16;
+        ExecCicsStatement execCicsStatement = 17;
+        ExecSqlStatement execSqlStatement = 18;
+        ExecSqlImsStatement execSqlImsStatement = 19;
+        ExitStatement exitStatement = 20;
+        GenerateStatement generateStatement = 21;
+        GobackStatement gobackStatement = 22;
+        GoToStatement goToStatement = 23;
+        IfStatement ifStatement = 24;
+        InitializeStatement initializeStatement = 25;
+        InitiateStatement initiateStatement = 26;
+        InspectStatement inspectStatement = 27;
+        MergeStatement mergeStatement = 28;
+        MoveStatement moveStatement = 29;
+        MultiplyStatement multiplyStatement = 30;
+        NextSentenceStatement nextSentenceStatement = 31;
+        OpenStatement openStatement = 32;
+        PerformStatement performStatement = 33;
+        PurgeStatement purgeStatement = 34;
+        ReadStatement readStatement = 35;
+        ReceiveStatement receiveStatement = 36;
+        ReleaseStatement releaseStatement = 37;
+        ReturnStatement returnStatement = 38;
+        RewriteStatement rewriteStatement = 39;
+        SearchStatement searchStatement = 40;
+        SendStatement sendStatement = 41;
+        SetStatement setStatement = 42;
+        SortStatement sortStatement = 43;
+        StartStatement startStatement = 44;
+        StopStatement stopStatement = 45;
+        StringStatement stringStatement = 46;
+        SubtractStatement subtractStatement = 47;
+        TerminateStatement terminateStatement = 48;
+        UnstringStatement unstringStatement = 49;
+        WriteStatement writeStatement = 50;
+    }
+}
+
+message WriteStatement {
+    message FromPhrase {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message AdvancingPage {}
+    message AdvancingLines {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message AdvancingMnemonic {
+        MnemonicName mnemonicName = 1;
+    }
+    message AdvancingPhrase {
+        oneof one_of {
+            AdvancingPage advancing_page = 1;
+            AdvancingLines advancing_lines = 2;
+            AdvancingMnemonic advancing_mnemonic = 3;
+        }
+    }
+    RecordName record_name = 1;
+    FromPhrase from_phrase = 2;
+    AdvancingPhrase advancing_phrase = 3;
+    AtEndOfPagePhrase at_end_of_page_phrase = 96;
+    NotAtEndOfPagePhrase not_at_end_of_page_phrase = 97;
+    InvalidKeyPhrase invalid_key_phrase = 98;
+    NotInvalidKeyPhrase not_invalid_key_phrase = 99;
+}
+
+message UnstringStatement {
+    message DelimitedByPhrase {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message OrAllPhrase {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message DelimitedOr {
+        DelimitedByPhrase delimited_by_phrase  = 1;
+        repeated OrAllPhrase or_all_phrases = 2;
+    }
+    message Into {
+        Identifier identifier = 1;
+        DelimiterIn delimiter_in = 2;
+        CountIn count_in = 3;
+    }
+    message DelimiterIn {
+        Identifier identifier = 1;
+    }
+    message CountIn {
+        Identifier identifier = 1;
+    }
+    message SendingPhrase {
+        Identifier identifier = 1;
+        DelimitedByPhrase delimited_by_phrase = 2;
+    }
+    message IntoPhrase {
+        repeated Into into = 1;
+    }
+    message WithPointerPhrase {
+        QualifiedDataName qualified_data_name = 1;
+    }
+    message TallyingPhrase {
+        QualifiedDataName qualified_data_name = 1;
+    }
+    SendingPhrase sending_phrase = 1;
+    IntoPhrase into_phrase = 2;
+    WithPointerPhrase with_pointer_phrase = 3;
+    TallyingPhrase tallying_phrase = 4;
+    OnOverflowPhrase on_overflow_phrase = 98;
+    NotOnOverflowPhrase not_on_overflow_phrase = 99;
+}
+
+message TerminateStatement {
+    ReportName report_name = 1;
+}
+
+message SubtractStatement {
+    message Subtrahend {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message Minuend {
+        Identifier identifier = 1;
+    }
+    message MinuendGiving {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message Giving {
+        Identifier identifier = 1;
+    }
+    message MinuendCorresponding {
+        QualifiedDataName qualified_data_name = 1;
+    }
+    message FromStatement {
+        repeated Subtrahend subtrahends = 1;
+        repeated Minuend minuends = 2;
+    }
+    message FromGivingStatement {
+        repeated Subtrahend subtrahends = 1;
+        MinuendGiving minuend_giving = 2;
+        repeated Giving givings = 3;
+    }
+    message CorrespondingStatement {
+        QualifiedDataName qualified_data_name = 1;
+        MinuendCorresponding minuend_corresponding = 2;
+    }
+    oneof one_of {
+        FromStatement from_statement = 1;
+        FromGivingStatement from_giving_statement = 2;
+        CorrespondingStatement corresponding_statement = 3;
+    }
+    OnSizeErrorPhrase on_size_error_phrase = 98;
+    NotOnSizeErrorPhrase not_on_size_error_phrase = 99;
+}
+
+message StringStatement {
+    message Sending {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message DelimitedByPhrase {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message ForPhrase {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message SendingPhrase {
+        repeated Sending sendings = 1;
+        DelimitedByPhrase delimited_by_phrase = 2;
+        ForPhrase for_phrase = 3;
+    }
+    message IntoPhrase {
+        Identifier identifier = 1;
+    }
+    message WithPointerPhrase {
+        QualifiedDataName qualified_data_name = 1;
+    }
+    repeated SendingPhrase sending_phrases = 1;
+    IntoPhrase into_phrase = 2;
+    WithPointerPhrase with_pointer_phrase = 3;
+    OnOverflowPhrase on_overflow_phrase = 98;
+    NotOnOverflowPhrase not_on_overflow_phrase = 99;
+}
+
+message StopStatement {
+    message Giving {
+        oneof one_of {
+            Identifier identifier = 1;
+            IntegerLiteral integer_literal = 2;
+        }
+    }
+    oneof one_of {
+        bool RUN = 1;
+        Literal literal = 2;
+        Giving giving = 3;
+    }
+}
+
+message StartStatement {
+    enum Type {
+        EQUAL = 0;
+        GREATER = 1;
+        NOT_LESS = 2;
+        GREATER_OR_EQUAL = 3;
+    }
+    message Key {
+        Type type = 1;
+        QualifiedDataName qualified_data_name = 2;
+    }
+    FileName file_name = 1;
+    Key key = 2;
+    InvalidKeyPhrase invalid_key_phrase = 98;
+    NotInvalidKeyPhrase not_invalid_key_phrase = 99;
+}
+
+message SortStatement {
+    message OnKeyClause {
+        repeated QualifiedDataName keys = 1;
+    }
+    message DuplicatesPhrase {
+
+    }
+    message CollatingAlphanumeric {
+        AlphabetName alphabet_name = 1;
+    }
+    message CollatingNational {
+        AlphabetName alphabet_name = 1;
+    }
+    message CollatingSequencePhrase {
+        repeated AlphabetName alphabet_names = 1;
+        CollatingAlphanumeric collating_alphanumeric = 2;
+        CollatingNational collating_national = 3;
+    }
+    message InputThrough {
+        ProcedureName procedure_name = 1;
+    }
+    message InputProcedurePhrase {
+        ProcedureName procedure_name = 1;
+        InputThrough input_through = 2;
+    }
+    message Using {
+        repeated FileName file_names = 1;
+    }
+    message OutputThrough {
+        ProcedureName procedure_name = 1;
+    }
+    message OutputProcedurePhrase {
+        ProcedureName procedure_name = 1;
+        OutputThrough output_through = 2;
+    }
+    message Giving {
+        enum Type {
+            LOCK = 0;
+            SAVE = 1;
+            NO_REWIND = 2;
+            CRUNCH = 3;
+            RELEASE = 4;
+            WITH_REMOVE_CRUNCH = 5;
+        }
+        FileName file_name = 1;
+        Type type = 2;
+        
+    }
+    message GivingPhrase {
+        repeated Giving givings = 1;
+    }
+    FileName file_name = 1;
+    repeated OnKeyClause on_key_clauses = 2;
+    DuplicatesPhrase duplicates_phrase = 3;
+    CollatingSequencePhrase collating_sequence_phrase = 4;
+    InputProcedurePhrase input_procedure_phrase = 5;
+    repeated Using usings = 6;
+    OutputProcedurePhrase output_procedure_phrase = 7;
+    repeated GivingPhrase giving_phrases = 8;
+}
+
+message SetStatement {
+    message To {
+        Identifier identifier = 1;
+    }
+    message Entry {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message ToValue {
+        oneof one_of {
+            bool ON = 1;
+            bool OFF = 2;
+            Entry Entry = 3;
+            Identifier identifier = 4;
+            Literal literal = 5;
+        }
+    }
+    message ByValue {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message ToStatement {
+        repeated To tos = 1;
+        repeated ToValue to_values = 2;
+    }
+    message UpDownByStatement {
+        repeated To tos = 1;
+        ByValue by_value = 2;
+    }
+    repeated ToStatement to_statements = 1;
+    UpDownByStatement up_down_by_statement = 2;
+}
+
+message SendStatement {
+    message FromPhrase {
+        Identifier identifier = 1;
+    }
+    message WithPhrase {
+        Identifier identifier = 1;
+    }
+    message ReplacingPhrase {}
+    message AdvancingPage {}
+    message AdvancingLines {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message AdvancingMnemonic {
+        MnemonicName mnemonicName = 1;
+    }
+    message AdvancingPhrase {
+        oneof one_of {
+            AdvancingPage advancing_page = 1;
+            AdvancingLines advancing_lines = 2;
+            AdvancingMnemonic advancing_mnemonic = 3;
+        }
+    }
+    message SyncStatement {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+        FromPhrase from_phrase = 3;
+        WithPhrase with_phrase = 4;
+        ReplacingPhrase replacing_phrase = 5;
+        AdvancingPhrase advancing_phrase = 6;
+    }
+    message AsyncStatement {
+        Identifier identifier = 1;
+    }
+    oneof one_of {
+        SyncStatement sync_statement = 1;
+        AsyncStatement async_statement = 2;
+    }
+    OnExceptionClause on_exception_clause = 98;
+    NotOnExceptionClause not_on_exception_clause = 99;
+}
+
+message SearchStatement {
+    message Varying {
+        QualifiedDataName qualified_data_name = 1;
+    }
+    message When {
+        Condition condition = 1;
+        bool next_sentence = 2;
+        repeated Statement statements = 3;
+    }
+    QualifiedDataName qualified_data_name = 1;
+    Varying varying = 2;
+    repeated When when = 3;
+}
+
+message RewriteStatement {
+    message From {
+        Identifier identifier = 2;
+    }
+    RecordName record_name = 1;
+    From from = 2;
+    InvalidKeyPhrase invalid_key_phrase = 98;
+    NotInvalidKeyPhrase not_invalid_key_phrase = 99;
+}
+
+message ReturnStatement {
+    message Into {
+        QualifiedDataName qualified_data_name = 2;
+    }
+    FileName file_name = 1;
+    Into into = 2;
+    AtEndPhrase at_end_phrase = 96;
+    NotAtEndPhrase not_at_end_phrase = 97;
+}
+
+message ReleaseStatement {
+    message From {
+        QualifiedDataName qualified_data_name = 2;
+    }
+    RecordName record_name = 1;
+    From from = 2;
+}
+
+message ReceiveStatement {
+    message From {
+        DataName data_name = 1;
+    }
+    message With{}
+    message Thread {
+        DataName data_name = 1;
+    }
+    message Size {
+        oneof one_of {
+            NumericLiteral numeric_literal = 1;
+            Identifier identifier = 2;
+        }
+    }
+    message Status {
+        Identifier identifier = 1;
+    }
+    message Before {
+        oneof one_of {
+            NumericLiteral numeric_literal = 1;
+            Identifier identifier = 2;
+        }
+    }
+    message FromStatement {
+        DataName data_name = 1;
+        From from = 2;
+        Before before = 3;
+        With with = 4;
+        Thread thread = 5;
+        Size size = 6;
+        Status status = 7;
+    }
+    message NoData {
+        repeated Statement statements = 1;
+    }
+    message WithData {
+        repeated Statement statements = 1;
+    }
+    message IntoStatement {
+        CdName cd_name = 1;
+        Identifier identifier = 2;
+        NoData no_data = 3;
+        WithData with_data = 4;
+    }
+    oneof one_of {
+        FromStatement from_statement = 1;
+        IntoStatement into_statement = 2;
+    }
+    OnExceptionClause on_exception_clause = 98;
+    NotOnExceptionClause not_on_exception_clause = 99;
+}
+
+message ReadStatement {
+    message Into {
+        Identifier identifier = 1;
+    }
+    message With {
+
+    }
+    message Key {
+        QualifiedDataName qualified_data_name = 1;
+    }
+    FileName file_name = 1;
+    Into into = 2;
+    With with = 3;
+    Key key = 4;
+
+    AtEndPhrase at_end_phrase = 96;
+    NotAtEndPhrase not_at_end_phrase = 97;
+    InvalidKeyPhrase invalid_key_phrase = 98;
+    NotInvalidKeyPhrase not_invalid_key_phrase = 99;
+}
+
+message PurgeStatement {
+    repeated CdName cd_names = 1;
+}
+
+message PerformStatement {
+    message TestClause {
+
+    }
+    message Times {
+        oneof one_of {
+            Identifier identifier = 1;
+            IntegerLiteral integer_literal = 2;
+        }
+    }
+    message Until {
+        TestClause test_clause = 1;
+        Condition condition = 2;
+    }
+    message From {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+            ArithmeticExpression arithmetic_expression = 3;
+        }
+    }
+    message By {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+            ArithmeticExpression arithmetic_expression = 3;
+        }
+    }
+    message VaryingPhrase {
+        oneof value {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+        From from = 3;
+        By by = 4;
+        Until until = 5;
+    }
+    message After {
+        VaryingPhrase varying_phrase = 1;
+    }
+    message VaryingClause {
+        VaryingPhrase varying_phrase = 1;
+        repeated After after = 2;
+    }
+    message Varying {
+        TestClause test_clause = 1;
+        VaryingClause varying_clause = 2;
+    }
+    message Type {
+        oneof one_of {
+            Times times = 1;
+            Until until = 2;
+            Varying varying = 3;
+        }
+    }
+    message InlineStatement {
+        Type type = 1;
+        repeated Statement statements = 2;
+    }
+    message ProcedureStatement {
+        ProcedureName procedure_name = 1;
+        ProcedureName through = 2;
+        Type type = 3;
+    }
+    oneof one_of {
+        InlineStatement inline_statement = 1;
+        ProcedureStatement procedure_statement = 2;
+    }
+}
+
+message OpenStatement {
+    message Input {
+        FileName file_name = 1;
+    }
+    message InputStatement {
+        repeated Input inputs = 1;
+    }
+    message Output {
+        FileName file_name = 1;
+    }
+    message OutputStatement {
+        repeated Output outputs = 1;
+    }
+    message IOStatement {
+        repeated FileName file_names = 1;
+    }
+    message ExtendStatement {
+        repeated FileName file_names = 1;
+    }
+    oneof one_of {
+        InputStatement input_statement = 1;
+        OutputStatement output_statement = 2;
+        IOStatement io_statement = 3;
+        ExtendStatement extend_statement = 4;
+    }
+}
+
+message NextSentenceStatement {
+}
+
+message MultiplyStatement {
+    message GivingOperand {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message GivingResult {
+        Identifier identifier = 1;
+    }
+    message Giving {
+        GivingOperand giving_operand = 1;
+        repeated GivingResult giving_result = 2;
+    }
+    
+    message Regular {
+        repeated Identifier regular_operands = 1;
+    }
+    oneof value {
+        Identifier identifier = 1;
+        Literal literal = 2;
+    }
+    oneof by {
+        Regular regular = 3;
+        Giving giving = 4;
+    }
+    OnSizeErrorPhrase on_size_error_phrase = 98;
+    NotOnSizeErrorPhrase not_on_size_error_phrase = 99;
+}
+
+message MoveStatement {
+    oneof one_of {
+        MoveToStatement move_to = 1;
+        MoveCorrespondingToStatement move_corresponding_to = 2;
+    }
+}
+
+message MoveToStatement {
+    oneof sending_area {
+        Identifier identifier = 1;
+        Literal literal = 2;
+    }
+    repeated Identifier to = 3;
+}
+
+message MoveCorrespondingToStatement {
+    Identifier sending_area = 1;
+    repeated Identifier to = 3;
+}
+
+message MergeStatement {
+    message OnKeyClause {
+        repeated QualifiedDataName keys = 1;
+    }
+    message CollatingSequencePhrase {
+        repeated AlphabetName alphabet_names = 1;
+        CollatingAlphanumeric collating_alphanumeric = 2;
+        CollatingNational collating_national = 3;
+    }
+    message CollatingAlphanumeric {
+        AlphabetName alphabet_name = 1;
+    }
+    message CollatingNational {
+        AlphabetName alphabet_name = 1;
+    }
+    message Using {
+        repeated FileName file_names = 1;
+    }
+    message OutputProcedurePhrase {
+        ProcedureName procedure_name = 1;
+        OutputThrough output_through = 2;
+    }
+    message OutputThrough {
+        ProcedureName procedure_name = 1;
+    }
+    message GivingPhrase {
+        repeated Giving givings = 1;
+    }
+    message Giving {
+        enum Type {
+            LOCK = 0;
+		    SAVE = 1;
+		    NO_REWIND = 2;
+		    CRUNCH = 3;
+		    RELEASE = 4;
+		    WITH_REMOVE_CRUNCH = 5;
+        }
+        FileName file_name = 1;
+        Type type = 2;
+    }
+    FileName file_name = 1;
+    repeated OnKeyClause on_key_clauses = 2;
+    CollatingSequencePhrase collating_sequence_phrase = 3;
+    repeated Using usings = 4;
+    OutputProcedurePhrase output_procedure_phrase = 5;
+    repeated GivingPhrase giving_phrases = 6;
+}
+
+message InspectStatement {
+    message By {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message To {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message BeforeAfter {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message ReplacingAllLeading {
+        oneof value {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+        By by = 3;
+        repeated BeforeAfter before_afters = 4;
+    }
+    message ReplacingAllLeadings {
+        repeated ReplacingAllLeading replacing_all_leadings = 1;
+    }
+    message AllLeading {
+        oneof value {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+        repeated BeforeAfter before_afters = 3;
+    }
+    message AllLeadings {
+        repeated AllLeading all_leadings = 1;
+    }
+    message ReplacingCharacters {
+        By by = 1;
+        repeated BeforeAfter before_afters = 2;
+    }
+    message Characters {
+        repeated BeforeAfter before_afters = 1;
+    }
+    message CharactersLeadings {
+        Characters characters = 1;
+        AllLeadings all_leadings = 2;
+    }
+    message For {
+        Identifier identifier = 1;
+        repeated CharactersLeadings characters_leadings = 2;
+    }
+    message ConvertingPhrase {
+        oneof value {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+        To to = 3;
+        repeated BeforeAfter before_afters = 4;
+    }
+    message ReplacingCharactersLeadings {
+        ReplacingCharacters replacing_characters = 1;
+        ReplacingAllLeadings replacing_all_leadings = 2;
+    }
+    message ReplacingPhrase {
+        repeated ReplacingCharactersLeadings replacing_characters_leadings = 1;
+    }
+    message TallyingReplacingPhrase {
+        repeated For fors = 1;
+        repeated ReplacingPhrase replacing_phrases = 2;
+    }
+    message TallyingPhrase {
+        repeated For fors = 1;
+    }
+    Identifier identifier = 1;
+    oneof phrase {
+        TallyingPhrase tallying_phrase = 2;
+        TallyingReplacingPhrase tallying_replacing_phrase = 3;
+        ReplacingPhrase replacing_phrase = 4;
+        ConvertingPhrase converting_phrase = 5;
+    }
+}
+
+message InitiateStatement {
+    repeated ReportName report_names = 1;
+}
+
+message InitializeStatement {
+    message ReplacingBy {
+        enum Type {
+            ALPHABETIC = 0;
+		    ALPHANUMERIC = 1;
+		    ALPHANUMERIC_EDITED = 2;
+		    NATIONAL = 3;
+		    NATIONAL_EDITED = 4;
+		    NUMERIC = 5;
+		    NUMERIC_EDITED = 6;
+		    DBCS = 7;
+		    EGCS = 8;
+        }
+        Type type = 1;
+        oneof by {
+            Identifier identifier = 2;
+            Literal literal = 3;
+        }
+    }
+    message ReplacingPhrase {
+        repeated ReplacingBy bys = 1;
+    }
+    repeated Identifier identifiers = 1;
+    ReplacingPhrase replacing_phrase = 2;
+}
+
+message IfStatement {
+    message Then {
+        bool next_sentence = 1;
+        repeated Statement statements = 2;
+    }
+    message Else {
+        bool next_sentence = 1;
+        repeated Statement statements = 2;
+    }
+    Condition condition = 1;
+    Then then = 2;
+    Else else = 3;
+}
+
+message GoToStatement {
+    message SimpleStatement {
+        ProcedureName procedure_name = 1;
+    }
+    message DependingOn {
+        repeated ProcedureName procedure_names = 1;
+        Identifier depending_on = 2;
+    }
+    message DependingOnStatement {
+        oneof one_of {
+            bool more_labels = 1;
+            DependingOn depending_on = 2;
+        }
+    }
+    oneof statement {
+        SimpleStatement simple = 1;
+        DependingOnStatement depending_on = 2;
+    }
+}
+
+message GobackStatement {
+}
+
+message GenerateStatement {
+    ReportName report_name = 1;
+}
+
+message ExitStatement {
+}
+
+message ExecSqlImsStatement {
+}
+
+message ExecSqlStatement {
+}
+
+message ExecCicsStatement {
+}
+
+message ExhibitStatement {
+    message Operand {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    repeated Operand operands = 1;
+}
+
+message EvaluateStatement {
+    message Select {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+            ArithmeticExpression arithmetic_expression = 3;
+            pb.Condition condition = 4;
+        }
+    }
+    message AlsoSelect {
+        Select select = 1;
+    }
+
+    message ValueThrough {
+        Value value = 1;
+        Through through = 2;
+    }
+
+    message Through {
+        Value value = 1;
+    }
+
+    message Value {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+            ArithmeticExpression arithmetic_expression = 3;
+        }
+    }
+
+    message Condition {
+        oneof one_of {
+            bool any = 1;
+            ValueThrough value_through = 2;
+            pb.Condition condition = 3;
+            BooleanLiteral boolean_literal = 4;
+        }
+    }
+
+    message AlsoCondition {
+        Condition condition = 1;
+    }
+
+    message WhenOther {
+        repeated Statement statements = 1;
+    }
+
+    message When {
+        Condition condition = 1;
+        repeated AlsoCondition alsos = 2;
+    }
+
+    message WhenPhrase {
+        repeated When whens = 1;
+        repeated Statement statements = 2;
+    }
+
+    Select select = 1;
+    repeated AlsoSelect also_selects = 2;
+    repeated WhenPhrase when_phrases = 3;
+    WhenOther when_other = 4;
+}
+
+message EntryStatement {
+    Literal entry = 1;
+    repeated Identifier usings = 2;
+}
+
+message EnableStatement {
+    CdName cd_name = 1;
+    oneof key {
+        Identifier identifier = 2;
+        Literal literal = 3;
+    }
+}
+
+message DivideStatement {
+    message Giving {
+        Identifier identifier = 1;
+    }
+    message GivingPhrase {
+        repeated Giving givings = 1;
+    }
+    message Into {
+        Identifier identifier = 1;
+    }
+    message IntoStatement {
+        repeated Into intos = 1;
+    }
+    message IntoGivingStatement {
+        oneof into {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+        GivingPhrase giving_phrase = 3;
+    }
+    message ByGivingStatement {
+        oneof by {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+        GivingPhrase giving_phrase = 3;
+    }
+    message Remainder {
+        Identifier identifier = 1;
+    }
+
+    oneof divide {
+        Identifier identifier = 1;
+        Literal literal = 2;
+    }
+    oneof statement {
+        IntoStatement into_statement = 3;
+        IntoGivingStatement into_giving_statement = 4;
+        ByGivingStatement by_giving_statement = 5;
+    }
+    Remainder remainder = 6;
+    OnSizeErrorPhrase on_size_error_phrase = 98;
+    NotOnSizeErrorPhrase not_on_size_error_phrase = 99;
+}
+
+message DisplayOperand {
+    oneof one_of {
+        Identifier Identifier = 1;
+        Literal Literal = 2;
+    }
+}
+
+message DisplayAt {
+    oneof one_of {
+        Identifier Identifier = 1;
+        Literal Literal = 2;
+    }
+}
+
+message DisplayUpon {
+    oneof one_of {
+        MnemonicName mnemonic_name = 1;
+        EnvironmentName environment_name = 2;
+    }
+}
+
+message DisplayWith {
+
+}
+
+message DisplayStatement {
+    repeated DisplayOperand operands = 1;
+    DisplayAt at = 2;
+    DisplayUpon upon = 3;
+    DisplayWith with = 4;
+    OnExceptionClause on_exception_clause = 98;
+    NotOnExceptionClause not_on_exception_clause = 99;
+}
+
+message DisableStatement {
+    CdName cd_name = 1;
+    oneof key {
+        Identifier identifier = 2;
+        Literal literal = 3;
+    }
+}
+
+message DeleteStatement {
+    FileName file_name = 1;
+    InvalidKeyPhrase invalid_key_phrase = 98;
+    NotInvalidKeyPhrase not_invalid_key_phrase = 99;
+}
+
+message ContinueStatement {
+}
+
+message ComputeStore {
+    Identifier identifier = 1;
+}
+
+message ComputeStatement {
+    repeated ComputeStore stores = 1;
+    ArithmeticExpression arithmetic_expression = 2;
+    OnSizeErrorPhrase on_size_error_phrase = 98;
+    NotOnSizeErrorPhrase not_on_size_error_phrase = 99;
+}
+
+message CloseReelUnitStatement {
+
+}
+
+message CloseRelativeStatement {
+
+}
+
+message ClosePortFileIOUsing {
+    message CloseDisposition {
+
+    }
+    message AssociatedData {
+        oneof one_of {
+            Identifier identifier = 1;
+            IntegerLiteral integer_literal = 2;
+        }
+    }
+    message AssociatedDataLength {
+        oneof one_of {
+            Identifier identifier = 1;
+            IntegerLiteral integer_literal = 2;
+        }
+    }
+    oneof one_of {
+        CloseDisposition close_disposition = 1;
+        AssociatedData associated_data = 2;
+        AssociatedDataLength associated_data_length = 3;
+    }
+}
+
+message ClosePortFileIOStatement {
+    repeated ClosePortFileIOUsing usings = 1;
+    bool wait = 2;
+}
+
+message CloseFile {
+    FileName file_name = 1;
+    oneof statement {
+        CloseReelUnitStatement close_reel_unit_statement = 2;
+        CloseRelativeStatement close_relative_statement = 3;
+        ClosePortFileIOStatement close_port_file_io_statement = 4;
+    }
+}
+
+message CloseStatement {
+    repeated CloseFile close_files = 1;
+}
+
+message CancelCall {
+    oneof one_of {
+        LibraryName library_name = 1;
+        Identifier identifier = 2;
+        Literal literal = 3;
+    }
+}
+
+message CancelStatement {
+    repeated CancelCall calls = 1;
+}
+
+message CallStatement {
+    message ByContent {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+            bool omitted = 3;
+        }
+    }
+    message ByValue {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message ByReference {
+        oneof one_of {
+            Identifier identifier = 1;
+            Literal literal = 2;
+            FileName file_name = 3;
+            bool omitted = 4;
+        }
+    }
+    message ByReferencePhrase {
+        repeated ByReference refs = 1;
+    }
+    message ByValuePhrase {
+        repeated ByValue values = 1;
+    }
+    message ByContentPhrase {
+        repeated ByContent contents = 1;
+    }
+    message UsingParameter {
+        oneof one_of {
+            ByReferencePhrase by_reference_phrase = 1;
+            ByValuePhrase by_value_phrase = 2;
+            ByContentPhrase by_content_phrase = 3;
+        }
+    }
+    message UsingPhrase {
+        repeated UsingParameter parameters = 1;
+    }
+    message GivingPhrase {
+        Identifier identifier = 1;
+    }
+    UsingPhrase using_phrase = 1;
+    GivingPhrase giving_phrase = 2;
+    OnOverflowPhrase on_overflow_phrase = 97;
+    OnExceptionClause on_exception_clause = 98;
+    NotOnExceptionClause not_on_exception_clause = 99;
+}
+
+message AlterStatement {
+    message ProceedTo {
+        ProcedureName from = 1;
+        ProcedureName to = 2;
+    }
+    repeated ProceedTo proceed_tos = 1;
+}
+
+message AddStatement {
+    message AddFrom {
+        oneof one_of {
+            Identifier Identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message AddToGiving {
+        oneof one_of {
+            Identifier Identifier = 1;
+            Literal literal = 2;
+        }
+    }
+    message To {
+        repeated AddFrom froms = 1;
+        repeated Identifier tos = 2;
+    }
+    message ToGiving {
+        repeated AddFrom froms = 1;
+        repeated AddToGiving tos = 2;
+        repeated Identifier givings = 3;
+    }
+    message Corresponding {
+        Identifier corresponding = 1;
+        Identifier to = 2;
+    }
+    oneof one_of {
+        To to = 1;
+        ToGiving to_giving = 2;
+        Corresponding corresponding = 3;
+    }
+    OnSizeErrorPhrase on_size_error_phrase = 98;
+    NotOnSizeErrorPhrase not_on_size_error_phrase = 99;
+}
+
+message AcceptStatement {
+    message FromDate {
+        enum Type {
+            DATE = 0;
+            DAY = 1;
+            DAY_OF_WEEK = 2;
+            TIME = 3;
+            TIMER = 4;
+            TODAYS_DATE = 5;
+            TODAYS_NAME = 6;
+            YEAR = 7;
+            YYYYMMDD = 8;
+            YYYYDDD = 9;
+        }
+        Type type = 1;
+    }
+    message FromEscapeKey {
+
+    }
+    message FromMnemonic {
+        MnemonicName mnemonic_name = 1;
+    }
+    message MessageCount {
+
+    }
+    Identifier identifier = 1;
+    oneof one_of {
+        FromDate from_date = 2;
+        FromEscapeKey from_escape_key = 3;
+        FromMnemonic from_mnemonic = 4;
+        MessageCount message_count = 5;
+    }
+    OnExceptionClause on_exception_clause = 98;
+    NotOnExceptionClause not_on_exception_clause = 99;
+}
+
+// statement phrases ----------------------------------
+
+message AtEndOfPagePhrase {
+    repeated Statement statements = 1;
+}
+message NotAtEndOfPagePhrase {
+    repeated Statement statements = 1;
+}
+
+message OnSizeErrorPhrase {
+    repeated Statement statements = 1;
+}
+
+message NotOnSizeErrorPhrase {
+    repeated Statement statements = 1;
+}
+
+message OnOverflowPhrase {
+    repeated Statement statements = 1;
+}
+
+message NotOnOverflowPhrase {
+    repeated Statement statements = 1;
+}
+
+message InvalidKeyPhrase {
+    repeated Statement statements = 1;
+}
+
+message NotInvalidKeyPhrase {
+    repeated Statement statements = 1;
+}
+
+message AtEndPhrase {
+    repeated Statement statements = 1;
+}
+
+message NotAtEndPhrase {
+    repeated Statement statements = 1;
+}
+
+// statement clauses ----------------------------------
+
+message OnExceptionClause {
+    repeated Statement statements = 1;
+}
+
+message NotOnExceptionClause {
+    repeated Statement statements = 1;
+}
+
+
+// use statement ----------------------------------
+
+message UseStatement {
+    oneof use {
+        UseAfterClause use_after_clause = 1; 
+        UseDebugClause use_debug_clause = 2;
+    }
+}
+
+message UseDebugOn {
+    oneof on {
+        bool all_procedures = 1;
+        Identifier Identifier = 2;
+        ProcedureName procedureName = 3;
+        FileName fileName = 4;
+    }
+}
+
+message UseDebugClause {
+    repeated UseDebugOn ons = 1;
+}
+
+message UseAfterClause {
+    enum Type {
+        INPUT = 0;
+        OUTPUT = 1;
+        I_O = 2;
+        EXTEND = 3;
+    }
+    message FileNames {
+        repeated FileName file_names = 1;
+    }
+    oneof on {
+        Type type = 1;
+        FileNames file_names = 2;
+    }
+}
+
+// arithmetic expression ----------------------------------
+
+message ArithmeticExpression {
+    MultDivs mult_divs = 1;
+    repeated PlusMinus plus_minus = 2;
+}
+
+message PlusMinus {
+    MultDivs mult_divs = 1;
+}
+
+message MultDivs {
+    Powers powers = 1;
+    repeated MultDiv mult_div = 2;
+}
+
+message MultDiv {
+    Powers powers = 1;
+}
+
+message Powers {
+    Basis basis = 1;
+    repeated Power powers = 2;
+}
+
+message Power {
+    Basis basis = 1;
+}
+
+message Basis {
+    oneof one_of {
+        ArithmeticExpression arithmetic_expression = 1;
+        Identifier identifier = 2;
+        Literal literal = 3;
+    }
+}
+
+// condition ----------------------------------
+
+message Condition {
+    CombinableCondition combinable_condition = 1;
+    repeated AndOrCondition and_or_condition = 2;
+}
+
+message AndOrCondition {
+    enum AndOr {
+        AND = 0;
+        OR = 1;
+    }
+    AndOr and_or = 1;
+    CombinableCondition combinable_condition = 2;
+    repeated Abbreviation abbreviations = 3;
+}
+
+message CombinableCondition {
+    bool not = 1;
+    SimpleCondition simple_condition = 2;
+}
+
+message SimpleCondition {
+    oneof one_of {
+        Condition condition = 1;
+        RelationCondition relation_condition = 2;
+        ClassCondition class_condition = 3;
+        ConditionNameReference condition_name_reference = 4;
+    }
+}
+
+message ClassCondition {
+    enum Type {
+        NUMERIC = 0;
+        ALPHABETIC = 1;
+        ALPHABETIC_LOWER = 2;
+        ALPHABETIC_UPPER = 3;
+        DBCS = 4;
+        KANJI = 5;
+    }
+    Identifier identifier = 1;
+    oneof type {
+        Type value = 2;
+        ClassName class_name = 3;
+    }
+}
+
+message ConditionNameReference {
+    message SubscriptReference {
+        repeated Subscript subscripts = 2;
+    }
+    message InSubscript {
+        repeated InData in_datas = 1;
+        InFile in_file = 2;
+        repeated SubscriptReference refs = 3;
+    }
+    ConditionName condition_name = 1;
+    oneof in {
+        InSubscript in_subscript = 2;
+        InMnemonic in_mnemonic = 3;
+    }
+}
+
+// relation ----------------------------------
+
+message RelationCondition {
+    oneof condition {
+        RelationSignCondition relation_sign_condition = 1;
+        RelationArithmeticComparison relation_arithmetic_comparison = 2;
+        RelationCombinedComparison relation_combined_comparison = 3;
+    }
+}
+
+message RelationSignCondition {
+    enum Type {
+        POSITIVE = 0;
+        NEGATIVE = 1;
+        ZERO = 2;
+    }
+    ArithmeticExpression arithmetic_expression = 1;
+    Type type = 2;
+}
+
+message RelationArithmeticComparison {
+    ArithmeticExpression left_expression = 1;
+    RelationalOperator relational_operator = 2;
+    ArithmeticExpression right_expression = 3;
+}
+
+message RelationCombinedComparison {
+    ArithmeticExpression arithmetic_expression = 1;
+    RelationalOperator relational_operator = 2;
+    RelationCombinedCondition relation_combined_condition = 3;
+}
+
+message RelationCombinedCondition {
+    enum AndOr {
+        AND = 0;
+        OR = 1;
+    }
+    ArithmeticExpression left_expression = 1;
+    AndOr and_or = 2;
+    repeated ArithmeticExpression right_expressions = 3;
+}
+
+enum RelationalOperator {
+    EQUAL = 0;                  // =
+    NOT_EQUAL = 1;              // !=
+    GREATER_OR_EQUAL = 2;       // >=
+    LESS_OR_EQUAL = 3;          // <=
+    GREATER = 4;                // >
+    NOT_GREATER = 5;            // !>
+    LESS = 6;                   // <
+    NOT_LESS = 7;               // !<
+}
+
+message Abbreviation {
+    RelationalOperator relational_operator = 1;
+    ArithmeticExpression arithmetic_expression = 2;
+    Abbreviation abbreviation = 3;
+}
+
+// identifier ----------------------------------
+
+message Identifier {
+    oneof one_of {
+        QualifiedDataName qualified_data_name = 1;
+        TableCall table_call = 2;
+        FunctionCall function_call = 3;
+        SpecialRegister special_register = 4;
+    }
+}
+
+message TableCall {
+    QualifiedDataName qualified_data_name = 1;
+    repeated Subscript subscripts = 2;
+    ReferenceModifier reference_modifier = 3;
+}
+
+message FunctionCall {
+    FunctionName function_name = 1;
+    repeated Argument arguments = 2;
+    ReferenceModifier reference_modifier = 3;
+}
+
+message ReferenceModifier {
+    CharacterPosition character_position = 1;
+    Length length = 2;
+}
+
+message CharacterPosition {
+    ArithmeticExpression arithmetic_expression = 1;
+}
+
+message Length {
+    ArithmeticExpression arithmetic_expression = 1;
+}
+
+message Subscript {
+    oneof one_of {
+        bool all = 1;
+        IntegerLiteral integer_literal = 2;
+        QualifiedDataNameIntegerLiteral qualified_data_name = 3;
+        IndexNameIntegerLiteral index_name = 4;
+        ArithmeticExpression arithmetic_expression = 5;
+    }
+}
+
+message Argument {
+    oneof one_of {
+        Literal literal = 1;
+        Identifier identifier = 2;
+        QualifiedDataNameIntegerLiteral qualified_data_name = 3;
+        IndexNameIntegerLiteral index_name = 4;
+        ArithmeticExpression arithmetic_expression = 5;
+    }
+}
+
+message QualifiedDataNameIntegerLiteral {
+    QualifiedDataName qualified_data_name = 1;
+    IntegerLiteral integer_literal = 2;
+}
+
+message IndexNameIntegerLiteral {
+    IndexName index_name = 1;
+    IntegerLiteral integer_literal = 2;
+}
+
+// qualified data name ----------------------------------
+
+message QualifiedDataName {
+    oneof one_of {
+        QualifiedDataNameFormat1 f1 = 1;
+        QualifiedDataNameFormat2 f2 = 2;
+        QualifiedDataNameFormat3 f3 = 3;
+        QualifiedDataNameFormat4 f4 = 4;
+    }
+}
+
+message QualifiedDataNameFormat1 {
+    oneof one_of {
+        DataName data_name = 1;
+        ConditionName condition_name = 2;
+    }
+    repeated InData in_datas = 3;
+    repeated InTable in_tables = 4;
+    InFile in_file = 5;
+}
+
+message QualifiedDataNameFormat2 {
+    ParagraphName paragraph_name = 1;
+    InSection in_section = 2;
+}
+
+message QualifiedDataNameFormat3 {
+    TextName text_name = 1;
+    InLibrary in_library = 2;
+}
+
+message QualifiedDataNameFormat4 {
+    InFile in_file = 1;
+}
+
+// in ----------------------------------
+
+message InData {
+    DataName data_name = 2;
+}
+
+message InFile {
+    FileName file_name = 2;
+}
+
+message InMnemonic {
+    MnemonicName mnemonic_name = 2;
+}
+
+message InSection {
+    SectionName section_name = 2;
+}
+
+message InLibrary {
+    LibraryName library_name = 2;
+}
+
+message InTable {
+    TableCall table_call = 1;
+}
+
+// names ----------------------------------
+
+message AlphabetName {
+    CobolWord cobol_word = 1;
+}
+
+message AssignmentName {
+    SystemName system_name = 1;
+}
+
+message BasisName {
+    ProgramName program_name = 1;
+}
+
+message CdName {
+    CobolWord cobol_word = 1;
+}
+
+message ClassName {
+    CobolWord cobol_word = 1;
+}
+
+message ComputerName {
+    SystemName system_name = 1;
+}
+
+message ConditionName {
+    CobolWord cobol_word = 1;
+}
+
+message DataName {
+    CobolWord cobol_word = 1;
+}
+
+message DataDescName {
+    string value = 1;
+}
+
+message EnvironmentName {
+    SystemName system_name = 1;
+}
+
+message FileName {
+    CobolWord cobol_word = 1;
+}
+
+message FunctionName {
+    string value = 1;
+}
+
+message IndexName {
+    CobolWord cobol_word = 1;
+}
+
+message LanguageName {
+    SystemName system_name = 1;
+}
+
+message LibraryName {
+    CobolWord cobol_word = 1;
+}
+
+message LocalName {
+    CobolWord cobol_word = 1;
+}
+
+message MnemonicName {
+    CobolWord cobol_word = 1;
+}
+
+message ParagraphName {
+    oneof one_of {
+         CobolWord cobol_word = 1;
+         IntegerLiteral integer_literal = 2;
+    }
+}
+
+message ProcedureName {
+    oneof one_of {
+        ParagraphName paragraph_name = 1; // TODO:
+        SectionName section_name = 2;
+   }
+}
+
+message ProgramName {
+    oneof one_of {
+        NonNumericLiteral non_numeric_literal = 1;
+        CobolWord cobol_word = 2;
+    }
+}
+
+message RecordName {
+    QualifiedDataName qualified_data_name = 1;
+}
+
+message ReportName {
+    QualifiedDataName qualified_data_name = 1;
+}
+
+message RoutingName {
+    CobolWord cobol_word = 1;
+}
+
+message ScreenName {
+    CobolWord cobol_word = 1;
+}
+
+message SectionName {
+    oneof one_of {
+         CobolWord cobol_word = 1;
+         IntegerLiteral integer_literal = 2;
+    }
+}
+
+message SystemName {
+    CobolWord cobol_word = 1;
+}
+
+message SymbolicCharacter {
+    CobolWord cobol_word = 1;
+}
+
+message TextName {
+    CobolWord cobol_word = 1;
+}
+
+// literal ----------------------------------
+
+message CobolWord {
+    string value = 1;
+}
+
+
+message Literal {
+    enum Type {
+        BOOLEAN = 0;
+        CICS_DFH_RESP = 1;
+        CICS_DFH_VALUE = 2;
+        FIGURATIVE_CONSTANT = 3;
+        NON_NUMERIC = 4;
+        NUMERIC = 5;
+    }
+    Type type = 1;
+    oneof one_of {
+        NumericLiteral numeric_literal = 2;
+        BooleanLiteral boolean_literal = 3;
+        NonNumericLiteral non_numeric_literal = 4;
+        FigurativeConstant figurative_constant = 5;
+        // cicsDfhRespLiteral
+        // cicsDfhValueLiteral
+    }
+}
+
+message BooleanLiteral {
+    bool value = 1;
+}
+
+message NumericLiteral {
+    enum Type {
+        FLOAT = 0;
+        INTEGER = 1;
+    }
+    Type type = 1;
+    string value = 2;
+}
+
+message IntegerLiteral {
+    string value = 1;
+}
+
+message FigurativeConstant {
+    enum Type {
+        ALL = 0;
+        HIGH_VALUE = 1;
+        HIGH_VALUES = 2;
+        LOW_VALUE = 3;
+        LOW_VALUES = 4;
+        NULL = 5;
+        NULLS = 6;
+        QUOTE = 7;
+        QUOTES = 8;
+        SPACE = 9;
+        SPACES = 10;
+        ZERO = 11;
+        ZEROES = 12;
+        ZEROS = 13;
+    }
+    Type type = 1;
+    Literal literal = 2;
+}
+
+message SpecialRegister {
+    enum Type {
+        ADDRESS_OF = 0;
+        DATE = 1;
+        DAY = 2;
+        DAY_OF_WEEK = 3;
+        DEBUG_CONTENTS = 4;
+        DEBUG_ITEM = 5;
+        DEBUG_LINE = 6;
+        DEBUG_NAME = 7;
+        DEBUG_SUB_1 = 8;
+        DEBUG_SUB_2 = 9;
+        DEBUG_SUB_3 = 10;
+        LENGTH_OF =	11;
+        LINAGE_COUNTER = 12;
+        LINE_COUNTER = 13;
+        PAGE_COUNTER = 14;
+        RETURN_CODE = 15;
+        SHIFT_IN = 16;
+        SHIFT_OUT = 17;
+        SORT_CONTROL = 18;
+        SORT_CORE_SIZE = 19;
+        SORT_FILE_SIZE = 20;
+        SORT_MESSAGE = 21;
+        SORT_MODE_SIZE = 22;
+        SORT_RETURN = 23;
+        TALLY = 24;
+        TIME = 25;
+        WHEN_COMPILED = 26;
+    }
+    Type type = 1;
+    Identifier identifier = 2;
+}
+
+message NonNumericLiteral {
+    string value = 1;
+}
+
+message StringLiteral {
+    string value = 1;
+}
+
+message DbcsLiteral {
+    string value = 1;
+}
+
+message HexNumber {
+    string value = 1;
+}
+
+message NullTerminated {
+    string value = 1;
+}

@@ -1,0 +1,1069 @@
+      *> HEADER,COBOL,IX109A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IX109A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     1.  THE  ROUTINE  CREATES  THE  MASS  STORAGE  FILE  IX-FS3
+      *>         CONTAINING  50  RECORDS. EACH BLOCK CONTAINS 2 RECORDS, 
+      *>         EACH  RECORD  CONTAINS  240 CHARACTERS, ORGANIZATION IS
+      *>         INDEXED,  ACCESS  IS SEQUENTIAL. THIS ROUTINE CHECKS AS
+      *>         MANY  FILE STATUS CODES AS POSSIBLE. HOWEVER, IT IS NOT
+      *>         POSSIBLE TO CHECK ALL CODES NEITHER IN THAT PROGRAM NOR
+      *>         IN THE FOLLOWING ONE.
+      *> 
+      *>     2. THE ROUTINE READS THE CREATED FILE,VERIFIES IT AND       *
+      *>        CHECKS THE FILE STATUS CODES:
+      *>            00  -  AFTER OPEN OUTPUT
+      *>            00  -  AFTER WRITE
+      *>            21  -  AFTER WRITE  (VIOLATE ASCENDING SEQUENCE)
+      *>            00  -  AFTER CLOSE OUTPUT
+      *>            00  -  AFTER OPEN INPUT
+      *>            00  -  AFTER READ    (WITHOUT AT END)
+      *>            10  -  AFTER READ    (SEE  IX-4, 1.3.4, (2) A)
+      *>            00  -  AFTER CLOSE INPUT
+      *>            00  -  AFTER OPEN INPUT
+      *>            00  -  AFTER READ ... END  ...
+      *>            10  -  AFTER READ ... END  ...
+      *>            46  -  AFTER READ ... END  ...
+      *> 
+      *>     4. X-CARDS USED IN THIS PROGRAM:
+      *> 
+      *>                  XXXXX024
+      *>                  XXXXX055.
+      *>          P       XXXXX062.
+      *>                  XXXXX082.
+      *>                  XXXXX083.
+      *>          C       XXXXX084
+      *> 
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+      *>     SELECT RAW-DATA   ASSIGN TO
+      *>     XXXXX062
+      *>            ORGANIZATION IS INDEXED
+      *>            ACCESS MODE IS RANDOM
+      *>            RECORD KEY IS RAW-DATA-KEY.
+      *> 
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+      *> 
+           SELECT IX-FS3 ASSIGN
+           XXXXX024
+           ORGANIZATION IS INDEXED
+           ACCESS MODE IS SEQUENTIAL
+           RECORD KEY IS IX-FS3-KEY
+           FILE STATUS IS IX-FS3-STATUS.
+       
+       DATA DIVISION.
+       
+       FILE SECTION.
+      *> 
+      *> FD  RAW-DATA.
+      *> 
+      *> 01  RAW-DATA-SATZ.
+      *>     05  RAW-DATA-KEY        PIC X(6).
+      *>     05  C-DATE              PIC 9(6).
+      *>     05  C-TIME              PIC 9(8).
+      *>     05  C-NO-OF-TESTS       PIC 99.
+      *>     05  C-OK                PIC 999.
+      *>     05  C-ALL               PIC 999.
+      *>     05  C-FAIL              PIC 999.
+      *>     05  C-DELETED           PIC 999.
+      *>     05  C-INSPECT           PIC 999.
+      *>     05  C-NOTE              PIC X(13).
+      *>     05  C-INDENT            PIC X.
+      *>     05  C-ABORT             PIC X(8).
+       
+       FD  PRINT-FILE.
+       
+       01  PRINT-REC               PIC X(120).
+       
+       01  DUMMY-RECORD            PIC X(120).
+       
+       FD  IX-FS3
+              DATA RECORDS IX-FS3R1-F-G-240
+              LABEL RECORD STANDARD
+              RECORD 240
+              BLOCK CONTAINS 2 RECORDS.
+       
+       01  IX-FS3R1-F-G-240.
+           05  IX-FS3-REC-120      PIC X(120).
+           05  IX-FS3-REC-120-240.
+               10  FILLER          PIC X(8).
+               10  IX-FS3-KEY      PIC X(29).
+               10  FILLER          PIC X(9).
+               10  IX-FS3-ALTER-KEY  PIC X(29).
+               10  FILLER            PIC X(45).
+       
+       
+       WORKING-STORAGE SECTION.
+       
+       01  GRP-0101.
+           05  FILLER              PIC X(10) VALUE "RECORD-KEY".
+           05  GRP-0101-KEY        PIC 9(9)  VALUE ZERO.
+           05  FILLER              PIC X(10) VALUE "END-OF-KEY".
+       
+       01  GRP-0102.
+           05  FILLER              PIC X(10) VALUE "ALTERN-KEY".
+           05  GRP-0102-KEY        PIC 9(9)  VALUE ZERO.
+           05  FILLER              PIC X(10) VALUE "END-AL-KEY".
+       
+       01  WRK-CS-09V00            PIC S9(9) COMP VALUE ZERO.
+       
+       01  EOF-FLAG                PIC 9 VALUE ZERO.
+       
+       01  RECORDS-IN-ERROR        PIC S9(5) COMP VALUE ZERO.
+       
+       01  ERROR-FLAG              PIC 9 VALUE ZERO.
+       
+       01  PERM-ERRORS             PIC S9(5) COMP VALUE ZERO.
+       
+       01  STATUS-TEST-00          PIC 9 VALUE ZERO.
+       
+       01  STATUS-TEST-10          PIC 9 VALUE ZERO.
+       01  STATUS-TEST-READ        PIC 9 VALUE ZERO.
+       
+       01  IX-FS3-STATUS.
+           05  IX-FS3-STAT1        PIC X.
+           05  IX-FS3-STAT2        PIC X.
+       
+       01  COUNT-OF-RECS           PIC 9(5).
+       
+       01  COUNT-OF-RECORDS REDEFINES COUNT-OF-RECS  PIC 9(5).
+       
+       01  FILE-RECORD-INFORMATION-REC.
+           05  FILE-RECORD-INFO-SKELETON.
+               10  FILLER          PIC X(48) VALUE
+                    "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+               10  FILLER          PIC X(46) VALUE
+                      ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+               10  FILLER          PIC X(26) VALUE
+                                          ",LFIL=000000,ORG=  ,LBLR= ".
+               10  FILLER          PIC X(37) VALUE
+                               ",RECKEY=                             ".
+               10  FILLER          PIC X(38) VALUE
+                              ",ALTKEY1=                             ".
+               10  FILLER          PIC X(38) VALUE
+                              ",ALTKEY2=                             ".
+               10  FILLER          PIC X(7) VALUE SPACE.
+           05  FILE-RECORD-INFO             OCCURS 10.
+               10  FILE-RECORD-INFO-P1-120.
+                   15  FILLER      PIC X(5).
+                   15  XFILE-NAME  PIC X(6).
+                   15  FILLER      PIC X(8).
+                   15  XRECORD-NAME  PIC X(6).
+                   15  FILLER        PIC X(1).
+                   15  REELUNIT-NUMBER  PIC 9(1).
+                   15  FILLER           PIC X(7).
+                   15  XRECORD-NUMBER   PIC 9(6).
+                   15  FILLER           PIC X(6).
+                   15  UPDATE-NUMBER    PIC 9(2).
+                   15  FILLER           PIC X(5).
+                   15  ODO-NUMBER       PIC 9(4).
+                   15  FILLER           PIC X(5).
+                   15  XPROGRAM-NAME    PIC X(5).
+                   15  FILLER           PIC X(7).
+                   15  XRECORD-LENGTH   PIC 9(6).
+                   15  FILLER           PIC X(7).
+                   15  CHARS-OR-RECORDS  PIC X(2).
+                   15  FILLER            PIC X(1).
+                   15  XBLOCK-SIZE       PIC 9(4).
+                   15  FILLER            PIC X(6).
+                   15  RECORDS-IN-FILE   PIC 9(6).
+                   15  FILLER            PIC X(5).
+                   15  XFILE-ORGANIZATION  PIC X(2).
+                   15  FILLER              PIC X(6).
+                   15  XLABEL-TYPE         PIC X(1).
+               10  FILE-RECORD-INFO-P121-240.
+                   15  FILLER              PIC X(8).
+                   15  XRECORD-KEY         PIC X(29).
+                   15  FILLER              PIC X(9).
+                   15  ALTERNATE-KEY1      PIC X(29).
+                   15  FILLER              PIC X(9).
+                   15  ALTERNATE-KEY2      PIC X(29).
+                   15  FILLER              PIC X(7).
+       
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  TEST-NO                         PIC 99.
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "IX109A".
+       PROCEDURE DIVISION.
+       DECLARATIVES.
+       
+       SECT-IX109-0002 SECTION.
+           USE AFTER EXCEPTION PROCEDURE ON IX-FS3.
+       INPUT-PROCESS.
+           IF TEST-NO = 13
+              GO TO D-R-TEST-F1-06-1.
+           IF STATUS-TEST-10 EQUAL TO 1
+              IF  IX-FS3-STAT1 EQUAL TO "1"
+                  MOVE 1 TO EOF-FLAG
+              ELSE
+                 IF  IX-FS3-STAT1 GREATER THAN "1"
+                 MOVE 1 TO PERM-ERRORS.
+           GO TO DECL-EXIT.
+       D-R-TEST-F1-06-1.
+           IF IX-FS3-STATUS EQUAL TO "46"
+               GO TO D-R-PASS-F1-06-0.
+       D-R-FAIL-F1-06-0.
+           MOVE IX-FS3-STATUS TO COMPUTED-A.
+           MOVE "46" TO CORRECT-X.
+           MOVE "IX-5, 1.3.4, (5) E 3)" TO RE-MARK.
+           PERFORM D-FAIL.
+           GO TO D-R-WRITE-F1-06-0.
+       D-R-PASS-F1-06-0.
+           PERFORM D-PASS.
+       D-R-WRITE-F1-06-0.
+           MOVE "READ.        46 EXP." TO FEATURE.
+           MOVE "REA-TEST-F1-06-0" TO PAR-NAME.
+           PERFORM D-PRINT-DETAIL.
+       D-CLOSE-FILES.
+           CLOSE IX-FS3.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO D-END-E-2.
+      *>     MOVE "OK.     " TO C-ABORT.
+      *>     MOVE PASS-COUNTER TO C-OK.
+      *>     MOVE ERROR-HOLD   TO C-ALL.
+      *>     MOVE ERROR-COUNTER TO C-FAIL.
+      *>     MOVE DELETE-COUNTER TO C-DELETED.
+      *>     MOVE INSPECT-COUNTER TO C-INSPECT.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO D-END-E-2.
+      *> D-END-E-2.
+      *>     CLOSE RAW-DATA.
+           PERFORM D-END-ROUTINE THRU D-END-ROUTINE-13.
+           CLOSE PRINT-FILE.
+       D-TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> D-TERMINATE-CALL.
+           STOP     RUN.
+       D-PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       D-FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       D-PRINT-DETAIL.
+           IF   REC-CT NOT EQUAL TO ZERO
+                MOVE "." TO PARDOT-X
+                MOVE REC-CT TO DOTVALUE.
+           MOVE TEST-RESULTS TO PRINT-REC.
+           PERFORM D-WRITE-LINE.
+           IF   P-OR-F EQUAL TO "FAIL*"
+                PERFORM D-WRITE-LINE
+                PERFORM D-FAIL-ROUTINE THRU D-FAIL-ROUTINE-EX
+           ELSE
+                PERFORM D-BAIL-OUT THRU D-BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF   REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE SPACE TO RE-MARK.
+       D-END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD.
+           PERFORM D-WRITE-LINE 5 TIMES.
+       D-END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD.
+           PERFORM D-WRITE-LINE 2 TIMES.
+       D-END-ROUTINE-1.
+           ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+           ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+           ADD PASS-COUNTER TO ERROR-HOLD.
+           MOVE PASS-COUNTER TO CCVS-E-4-1.
+           MOVE ERROR-HOLD TO CCVS-E-4-2.
+           MOVE CCVS-E-4 TO CCVS-E-2-2.
+           MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM D-WRITE-LINE.
+        D-END-ROUTINE-12.
+           MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF  ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+           ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE    CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM D-WRITE-LINE.
+       D-END-ROUTINE-13.
+           IF  DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM D-WRITE-LINE.
+           IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+           ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM D-WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM D-WRITE-LINE.
+       D-WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>        MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>        MOVE SPACE TO DUMMY-RECORD
+      *>        WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>        MOVE CCVS-H-1  TO DUMMY-RECORD PERFORM D-WRT-LN 2 TIMES
+      *>        MOVE CCVS-H-2A TO DUMMY-RECORD PERFORM D-WRT-LN 2 TIMES
+      *>        MOVE CCVS-H-2B TO DUMMY-RECORD PERFORM D-WRT-LN 3 TIMES
+      *>        MOVE CCVS-H-3  TO DUMMY-RECORD PERFORM D-WRT-LN 3 TIMES
+      *>        MOVE CCVS-C-1  TO DUMMY-RECORD PERFORM D-WRT-LN
+      *>        MOVE CCVS-C-2  TO DUMMY-RECORD PERFORM D-WRT-LN
+      *>        MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM D-WRT-LN
+      *>        MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>        MOVE ZERO TO RECORD-COUNT.
+           PERFORM D-WRT-LN.
+       D-WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       D-FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE
+                GO TO D-FAIL-ROUTINE-WRITE.
+           IF   CORRECT-X NOT EQUAL TO SPACE GO TO D-FAIL-ROUTINE-WRITE.
+           MOVE ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE XXINFO TO DUMMY-RECORD. PERFORM D-WRITE-LINE 2 TIMES.
+           MOVE SPACES TO INF-ANSI-REFERENCE.
+           GO TO D-FAIL-ROUTINE-EX.
+       D-FAIL-ROUTINE-WRITE.
+           MOVE TEST-COMPUTED TO PRINT-REC PERFORM D-WRITE-LINE
+           MOVE ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE TEST-CORRECT TO PRINT-REC PERFORM D-WRITE-LINE 2 TIMES.
+           MOVE SPACES TO COR-ANSI-REFERENCE.
+       D-FAIL-ROUTINE-EX. EXIT.
+       D-BAIL-OUT.
+           IF  COMPUTED-A NOT EQUAL TO SPACE GO TO D-BAIL-OUT-WRITE.
+           IF  CORRECT-A EQUAL TO SPACE GO TO D-BAIL-OUT-EX.
+       D-BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE XXINFO TO DUMMY-RECORD. PERFORM D-WRITE-LINE 2 TIMES.
+           MOVE SPACES TO INF-ANSI-REFERENCE.
+       D-BAIL-OUT-EX. EXIT.
+       DECL-EXIT.  EXIT.
+       END DECLARATIVES.
+       
+       
+       CCVS1 SECTION.
+       OPEN-FILES.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-1.
+      *>     MOVE "ABORTED " TO C-ABORT.
+      *>     ADD 1 TO C-NO-OF-TESTS.
+      *>     ACCEPT C-DATE  FROM DATE.
+      *>     ACCEPT C-TIME  FROM TIME.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-1.
+      *> END-E-1.
+      *>     CLOSE RAW-DATA.
+           OPEN    OUTPUT PRINT-FILE.
+           MOVE  CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE    ZERO TO REC-SKL-SUB.
+           PERFORM CCVS-INIT-FILE 9 TIMES.
+       CCVS-INIT-FILE.
+           ADD     1 TO REC-SKL-SUB.
+           MOVE    FILE-RECORD-INFO-SKELETON
+                TO FILE-RECORD-INFO (REC-SKL-SUB).
+       CCVS-INIT-EXIT.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-2.
+      *>     MOVE "OK.     " TO C-ABORT.
+      *>     MOVE PASS-COUNTER TO C-OK.
+      *>     MOVE ERROR-HOLD   TO C-ALL.
+      *>     MOVE ERROR-COUNTER TO C-FAIL.
+      *>     MOVE DELETE-COUNTER TO C-DELETED.
+      *>     MOVE INSPECT-COUNTER TO C-INSPECT.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-2.
+      *> END-E-2.
+      *>     CLOSE RAW-DATA.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO   FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       
+       SECT-IX109A-0003 SECTION.
+       SEQ-INIT-010.
+           MOVE ZERO TO TEST-NO.
+           MOVE "IX-FS3" TO XFILE-NAME (1).
+           MOVE "R1-F-G" TO XRECORD-NAME (1).
+           MOVE CCVS-PGM-ID TO XPROGRAM-NAME (1).
+           MOVE 000240 TO XRECORD-LENGTH (1).
+           MOVE "RC" TO CHARS-OR-RECORDS (1).
+           MOVE 0002 TO XBLOCK-SIZE (1).
+           MOVE 000050 TO RECORDS-IN-FILE (1).
+           MOVE "IX" TO XFILE-ORGANIZATION (1).
+           MOVE "S" TO XLABEL-TYPE (1).
+           MOVE 000001 TO XRECORD-NUMBER (1).
+           MOVE 0 TO COUNT-OF-RECS.
+       
+      *> *****************************************************************
+      *>    TEST  1                                                      *
+      *>          OPEN OUTPUT ...                 00 EXPECTED            *
+      *>          IX-3, 1.3.4 (1) A                                      *
+      *>     STATUS 00 CHECK ON OUTPUT FILE IX-FS3                       *
+      *>     THE OUTPUT STATEMENT IS SUCCESSFULLY EXECUTED               *
+      *> *****************************************************************
+       OPN-INIT-GF-01-0.
+           MOVE 1 TO STATUS-TEST-00.
+           MOVE SPACES TO IX-FS3-STATUS.
+           MOVE "OPEN OUTPUT: 00 EXP." TO FEATURE.
+           MOVE "OPN-TEST-GF-01-0" TO PAR-NAME.
+           OPEN
+              OUTPUT IX-FS3.
+           IF IX-FS3-STATUS EQUAL TO "00"
+               GO TO OPN-PASS-GF-01-0.
+       OPN-FAIL-GF-01-0.
+           MOVE "IX-3, 1.3.4, (1) A. " TO RE-MARK.
+           PERFORM FAIL.
+           MOVE IX-FS3-STATUS TO COMPUTED-A.
+           MOVE "00" TO CORRECT-X.
+           GO TO OPN-WRITE-GF-01-0.
+       OPN-PASS-GF-01-0.
+           PERFORM PASS.
+       OPN-WRITE-GF-01-0.
+           PERFORM PRINT-DETAIL.
+      *> *****************************************************************
+      *>    TEST  2                                                      *
+      *>          WRITE                           00 EXPECTED            *
+      *>          IX-3, 1.3.4 (1) A                                      *
+      *>     CREATING A INDEXED FILE WITH 50 RECORDS                     *
+      *>     KEY:  FROM  000000001 TO 000000050                          *
+      *> *****************************************************************
+       WRI-INIT-GF-01-0.
+           MOVE SPACES TO IX-FS3-STATUS.
+           MOVE 0 TO STATUS-TEST-00.
+           MOVE "WRITE: 00 EXPECTED" TO FEATURE.
+           MOVE "WRI-TEST-GF-01-0" TO PAR-NAME.
+       WRI-TEST-GF-01-0.
+           MOVE XRECORD-NUMBER (1) TO GRP-0101-KEY.
+           MOVE GRP-0101 TO XRECORD-KEY (1).
+           MOVE GRP-0102 TO ALTERNATE-KEY1 (1).
+      *>     THE VALUE OF THE ALTERNATE KEY IS 50 TIMES UNCHANGED        *
+           MOVE FILE-RECORD-INFO (1) TO IX-FS3R1-F-G-240.
+           WRITE IX-FS3R1-F-G-240.
+           IF IX-FS3-STATUS  NOT = "00"
+               ADD 1 TO RECORDS-IN-ERROR
+           ELSE
+               ADD 1 TO COUNT-OF-RECS.
+           IF XRECORD-NUMBER (1) EQUAL TO 50
+               GO TO WRI-TEST-GF-01-1.
+           ADD 1 TO XRECORD-NUMBER (1).
+           GO TO WRI-TEST-GF-01-0.
+       WRI-TEST-GF-01-1.
+           IF RECORDS-IN-ERROR EQUAL TO ZERO
+               GO TO WRI-PASS-GF-01-0.
+       WRI-FAIL-GF-01-0.
+           MOVE "IX-3, 1.3.4, (1) A. " TO RE-MARK.
+           PERFORM FAIL.
+           MOVE "RECORDS IN ERROR =" TO COMPUTED-A.
+           MOVE RECORDS-IN-ERROR TO CORRECT-18V0.
+           GO TO WRI-WRITE-GF-01-0.
+       WRI-PASS-GF-01-0.
+           PERFORM PASS.
+       WRI-WRITE-GF-01-0.
+           PERFORM PRINT-DETAIL.
+           MOVE "FILE CREATED, RECS =" TO COMPUTED-A.
+           MOVE "CREATE FILE IX-FS3" TO FEATURE.
+           MOVE "WRI-TEST-GF-01-1" TO PAR-NAME.
+           MOVE COUNT-OF-RECS TO CORRECT-18V0.
+           PERFORM PRINT-DETAIL.
+       
+      *> *****************************************************************
+      *>    TEST  3                                                      *
+      *>          WRITE  (WRONG SEQUENCE)         21 EXPECTED            *
+      *>          IX-4, 1.3.4 (3) A                                      *
+      *>     KEY:        000000049                                       *
+      *> *****************************************************************
+       WRI-INIT-GF-02-0.
+           MOVE SPACES TO IX-FS3-STATUS.
+           MOVE 0 TO STATUS-TEST-00.
+           MOVE "WRITE:       21 EXP." TO FEATURE.
+           MOVE "WRI-TEST-GF-02-0" TO PAR-NAME.
+           MOVE 49 TO XRECORD-NUMBER (1).
+       WRI-TEST-GF-02-0.
+           MOVE XRECORD-NUMBER (1) TO GRP-0101-KEY.
+           MOVE GRP-0101 TO XRECORD-KEY (1).
+           MOVE GRP-0102 TO ALTERNATE-KEY1 (1).
+           MOVE FILE-RECORD-INFO (1) TO IX-FS3R1-F-G-240.
+           WRITE IX-FS3R1-F-G-240 INVALID KEY GO TO WRI-TEST-GF-02-1.
+       WRI-TEST-GF-02-1.
+           IF IX-FS3-STATUS  = "21"
+               GO TO WRI-PASS-GF-02-0.
+       WRI-FAIL-GF-02-0.
+           MOVE "IX-4, 1.3.4, (3) A. " TO RE-MARK.
+           PERFORM FAIL.
+           MOVE  IX-FS3-STATUS      TO COMPUTED-A.
+           MOVE "21" TO CORRECT-X.
+           GO TO WRI-WRITE-GF-02-0.
+       WRI-PASS-GF-02-0.
+           PERFORM PASS.
+       WRI-WRITE-GF-02-0.
+           PERFORM PRINT-DETAIL.
+       
+      *> *****************************************************************
+      *>    TEST  4                                                      *
+      *>          CLOSE OUTPUT                    00 EXPECTED            *
+      *>          IX-3, 1.3.4 (1) A                                      *
+      *> *****************************************************************
+       CLO-INIT-GF-01-0.
+           MOVE SPACES TO IX-FS3-STATUS.
+           MOVE "CLOSE OUTPUT:00 EXP." TO FEATURE.
+           MOVE "CLO-TEST-GF-01-0" TO PAR-NAME.
+       CLO-TEST-GF-01-0.
+           CLOSE IX-FS3.
+           IF IX-FS3-STATUS = "00"
+               GO TO CLO-PASS-GF-01-0.
+       CLO-FAIL-GF-01-0.
+           MOVE "IX-3, 1.3.4, (1) A. " TO RE-MARK.
+           PERFORM FAIL.
+           MOVE IX-FS3-STATUS TO COMPUTED-A.
+           MOVE "00" TO CORRECT-X.
+           GO TO CLO-WRITE-GF-01-0.
+       CLO-PASS-GF-01-0.
+           PERFORM PASS.
+       CLO-WRITE-GF-01-0.
+           PERFORM PRINT-DETAIL.
+       
+      *> *****************************************************************
+      *>     A INDEXED FILE WITH 50 RECORDS HAS BEEN CREATED.            *
+      *> *****************************************************************
+       
+      *> *****************************************************************
+      *>    TEST  5                                                      *
+      *>          OPEN INPUT                      00 EXPECTED            *
+      *>          IX-3, 1.3.4 (1) A                                      *
+      *> *****************************************************************
+       OPN-INIT-GF-02-0.
+           MOVE SPACES TO IX-FS3-STATUS.
+           MOVE "OPEN INPUT:  00 EXP." TO FEATURE.
+           MOVE "OPN-TEST-GF-02-0" TO PAR-NAME.
+       OPN-TEST-GF-02-0.
+           OPEN
+              INPUT IX-FS3.
+           IF IX-FS3-STATUS EQUAL TO "00"
+               GO TO OPN-PASS-GF-02-0.
+       OPN-FAIL-GF-02-0.
+           MOVE "IX-3, 1.3.4, (1) A." TO RE-MARK.
+           PERFORM FAIL.
+           MOVE IX-FS3-STATUS TO COMPUTED-A.
+           MOVE "00" TO CORRECT-X.
+           GO TO OPN-WRITE-GF-02-0.
+       OPN-PASS-GF-02-0.
+           PERFORM PASS.
+       OPN-WRITE-GF-02-0.
+           PERFORM PRINT-DETAIL.
+      *> *****************************************************************
+      *>     STATUS 10 CHECK ON INPUT FILE IX-FS3.                       *
+      *>     THIS TEST READS AND VERIFIES THE RECORDS WRITTEN IN         *
+      *>     INX-TEST-004. THE USE ON INPUT PROCESSES THE AT END         *
+      *>     CONDITION. THERE IS NO AT END PHRASE IN THE READ STATEMENT. *
+      *> *****************************************************************
+       REA-INIT-F1-01-0.
+           MOVE 1 TO STATUS-TEST-10.
+           MOVE SPACES TO IX-FS3-STATUS.
+           MOVE ZERO TO COUNT-OF-RECS.
+           MOVE ZERO TO RECORDS-IN-ERROR.
+           MOVE ZERO TO PERM-ERRORS.
+           MOVE ZERO TO EOF-FLAG.
+       REA-TEST-F1-01-0.
+           READ IX-FS3.
+           IF EOF-FLAG EQUAL TO 1
+               GO TO REA-TEST-F1-01-1.
+           MOVE IX-FS3R1-F-G-240 TO FILE-RECORD-INFO (1).
+           ADD 1 TO COUNT-OF-RECS.
+           IF COUNT-OF-RECS GREATER THAN 50
+               MOVE "MORE THAN 50 RECORDS" TO RE-MARK
+               GO TO REA-FAIL-F1-01-0.
+           IF COUNT-OF-RECS LESS THAN 51
+              IF IX-FS3-STATUS NOT = "00"
+                  MOVE 1 TO STATUS-TEST-READ.
+           IF PERM-ERRORS EQUAL TO 1
+               ADD 1 TO RECORDS-IN-ERROR
+               GO TO REA-TEST-F1-01-1.
+           IF COUNT-OF-RECS NOT EQUAL TO XRECORD-NUMBER (1)
+               ADD 1 TO RECORDS-IN-ERROR
+               GO TO REA-TEST-F1-01-1.
+           IF XFILE-NAME (1) NOT EQUAL TO "IX-FS3"
+               ADD 1 TO RECORDS-IN-ERROR
+               GO TO REA-TEST-F1-01-1.
+           MOVE XRECORD-KEY (1) TO GRP-0101.
+           IF GRP-0101-KEY NOT EQUAL TO COUNT-OF-RECS
+               ADD 1 TO RECORDS-IN-ERROR.
+           GO TO REA-TEST-F1-01-0.
+       REA-TEST-F1-01-1.
+      *> *****************************************************************
+      *>    TEST  6                                                      *
+      *>          READ ... .   (WITHOUT   AT END) 00 EXPECTED            *
+      *>          IX-3, 1.3.4 (1) A                                      *
+      *> *****************************************************************
+           MOVE "REA-TEST-F1-01-0" TO PAR-NAME.
+           MOVE "READ (USE):  00 EXP."     TO FEATURE.
+           IF STATUS-TEST-READ = 0
+               GO TO REA-PASS-F1-01-0.
+       REA-FAIL-F1-01-0.
+           MOVE "IX-3, 1.3.4, (1) A. " TO RE-MARK.
+           MOVE "I-O STATUS IS NOT 00" TO COMPUTED-A.
+           MOVE "00" TO CORRECT-X.
+           PERFORM FAIL.
+           GO TO REA-WRITE-F1-01-0.
+       REA-PASS-F1-01-0.
+           PERFORM PASS.
+       REA-WRITE-F1-01-0.
+           PERFORM PRINT-DETAIL.
+      *> 
+       REA-INIT-GF-02-0.
+      *> *****************************************************************
+      *>    TEST  7                                                      *
+      *>          VERIFY FILE                                            *
+      *> *****************************************************************
+           IF RECORDS-IN-ERROR EQUAL TO ZERO
+               GO TO REA-TEST-F1-02-0.
+           MOVE "ERRORS IN READING IX-FS3" TO RE-MARK.
+       REA-FAIL-F1-02-0.
+           MOVE "RECORDS IN ERROR =" TO COMPUTED-A.
+           MOVE RECORDS-IN-ERROR TO CORRECT-18V0.
+           GO TO REA-FAIL-F1-02-1.
+       REA-TEST-F1-02-0.
+           IF COUNT-OF-RECORDS EQUAL TO 50
+               GO TO REA-PASS-F1-02-0.
+           MOVE "UNEXPECTED EOF" TO RE-MARK.
+           MOVE "RECORDS READ =" TO COMPUTED-A.
+           MOVE COUNT-OF-RECORDS TO CORRECT-18V0.
+       REA-FAIL-F1-02-1.
+           PERFORM FAIL.
+           GO TO REA-WRITE-F1-02-0.
+       REA-PASS-F1-02-0.
+           PERFORM PASS.
+           MOVE "FILE VERIFIED RECS =" TO COMPUTED-A.
+           MOVE COUNT-OF-RECORDS TO CORRECT-18V0.
+       REA-WRITE-F1-02-0.
+           MOVE "REA-TEST-F1-02-0" TO PAR-NAME.
+           MOVE "VERIFY FILE IX-FS3" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *> *****************************************************************
+      *>    TEST  8                                                      *
+      *>          READ.   (WITHOUT   AT END)      10 EXPECTED            *
+      *>          IX-4, 1.3.4 (2) A                                      *
+      *> *****************************************************************
+       REA-INIT-F1-03-0.
+           IF IX-FS3-STATUS EQUAL TO "10"
+               GO TO REA-PASS-F1-03-0.
+       REA-FAIL-F1-03-0.
+           MOVE IX-FS3-STATUS TO COMPUTED-A.
+           MOVE "10" TO CORRECT-X.
+           MOVE "IX-4, 1.3.4, (2) A." TO RE-MARK.
+           PERFORM FAIL.
+           GO TO REA-WRITE-F1-03-0.
+       REA-PASS-F1-03-0.
+           PERFORM PASS.
+       REA-WRITE-F1-03-0.
+           MOVE "READ :       10 EXP." TO FEATURE.
+           MOVE "REA-TEST-F1-03-0" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> *****************************************************************
+      *>    TEST  9                                                      *
+      *>          CLOSE INPUT                     00 EXPECTED            *
+      *>          IX-3, 1.3.4 (1) A                                      *
+      *> *****************************************************************
+       CLO-TEST-GF-02-0.
+           MOVE SPACES TO IX-FS3-STATUS.
+           MOVE "CLOSE INPUT: 00 EXP."  TO FEATURE.
+           MOVE "CLO-TEST-GF-02-0" TO PAR-NAME.
+           CLOSE IX-FS3.
+           IF IX-FS3-STATUS = "00"
+               GO TO CLO-PASS-GF-02-0.
+       CLO-FAIL-GF-02-0.
+           MOVE "IX-3, 1.3.4, (1) A    " TO RE-MARK.
+           MOVE IX-FS3-STATUS TO COMPUTED-A.
+           MOVE "00" TO CORRECT-X.
+           PERFORM FAIL.
+           GO TO CLO-WRITE-GF-02-0.
+       CLO-PASS-GF-02-0.
+           PERFORM PASS.
+       CLO-WRITE-GF-02-0.
+           PERFORM PRINT-DETAIL.
+       
+      *> *****************************************************************
+      *>    TEST  10                                                     *
+      *>          OPEN INPUT   (FOR READ ...  AT END) 00 EXPECTED        *
+      *>          IX-3, 1.3.4 (1) A                                      *
+      *> *****************************************************************
+       OPN-INIT-GF-03-0.
+           MOVE SPACES TO IX-FS3-STATUS.
+           MOVE "OPEN  INPUT: 00 EXP." TO FEATURE.
+           MOVE "OPN-TEST-GF-03-0" TO PAR-NAME.
+       OPN-TEST-GF-03-0.
+           OPEN
+              INPUT IX-FS3.
+           IF IX-FS3-STATUS EQUAL TO "00"
+               GO TO OPN-PASS-GF-03-0.
+       OPN-FAIL-GF-03-0.
+           MOVE "IX-3, 1.3.4, (1) A." TO RE-MARK.
+           PERFORM FAIL.
+           MOVE IX-FS3-STATUS TO COMPUTED-A.
+           MOVE "00" TO CORRECT-X.
+           GO TO OPN-WRITE-GF-03-0.
+       OPN-PASS-GF-03-0.
+           PERFORM PASS.
+       OPN-WRITE-GF-03-0.
+           PERFORM PRINT-DETAIL.
+      *> *****************************************************************
+      *>     STATUS IO CHECK ON INPUT FILE IX-FS3.                       *
+      *>     THIS TEST READS AND VERIFIES THE RECORDS WRITTEN IN         *
+      *>     TEST 2.       THE USE ON INPUT PROCESSES THE AT END         *
+      *>     CONDITION.
+      *> *****************************************************************
+       REA-INIT-F1-04-0.
+           MOVE 1 TO STATUS-TEST-10.
+           MOVE ZERO TO STATUS-TEST-READ.
+           MOVE SPACES TO IX-FS3-STATUS.
+           MOVE ZERO TO COUNT-OF-RECS.
+           MOVE ZERO TO PERM-ERRORS.
+           MOVE ZERO TO EOF-FLAG.
+       REA-TEST-F1-04-0.
+           READ IX-FS3  AT END MOVE 1 TO EOF-FLAG.
+           IF EOF-FLAG EQUAL TO 1
+               GO TO REA-TEST-F1-04-1.
+           MOVE IX-FS3R1-F-G-240 TO FILE-RECORD-INFO (1).
+           ADD 1 TO COUNT-OF-RECS.
+           IF COUNT-OF-RECS LESS THAN 51
+              IF IX-FS3-STATUS NOT = "00"
+                  MOVE 1 TO STATUS-TEST-READ.
+           IF PERM-ERRORS EQUAL TO 1
+               ADD 1 TO RECORDS-IN-ERROR
+               GO TO REA-TEST-F1-04-1.
+           IF COUNT-OF-RECS NOT EQUAL TO XRECORD-NUMBER (1)
+               ADD 1 TO RECORDS-IN-ERROR
+               GO TO REA-TEST-F1-04-1.
+           IF XFILE-NAME (1) NOT EQUAL TO "IX-FS3"
+               ADD 1 TO RECORDS-IN-ERROR
+               GO TO REA-TEST-F1-04-1.
+           MOVE XRECORD-KEY (1) TO GRP-0101.
+           IF GRP-0101-KEY NOT EQUAL TO COUNT-OF-RECS
+               ADD 1 TO RECORDS-IN-ERROR.
+           GO TO REA-TEST-F1-04-0.
+       REA-TEST-F1-04-1.
+      *> *****************************************************************
+      *>    TEST  11                                                     *
+      *>          READ ...  AT END                00 EXPECTED            *
+      *>          IX-3, 1.3.4 (1) A                                      *
+      *> *****************************************************************
+           MOVE "REA-TEST-F1-04-0" TO PAR-NAME.
+           MOVE "READ...END:  00 EXP."     TO FEATURE.
+           IF STATUS-TEST-READ = 0
+               GO TO REA-PASS-F1-04-0.
+       REA-FAIL-F1-04-0.
+           MOVE "I-O STATUS IS NOT 00" TO COMPUTED-A.
+           MOVE "00" TO CORRECT-X.
+           MOVE "IX-3, 1.3.4, (1) A. " TO RE-MARK.
+           PERFORM FAIL.
+           GO TO REA-WRITE-F1-04-0.
+       REA-PASS-F1-04-0.
+           PERFORM PASS.
+       REA-WRITE-F1-04-0.
+           PERFORM PRINT-DETAIL.
+      *> 
+       REA-TEST-F1-05-0.
+      *> *****************************************************************
+      *>    TEST  12                                                     *
+      *>          READ ... AT END    10 EXPECTED                         *
+      *>          IX-4, 1.3.4 (2) A 1)                                   *
+      *> *****************************************************************
+           IF IX-FS3-STATUS EQUAL TO "10"
+               GO TO REA-PASS-F1-05-0.
+       REA-FAIL-F1-05-0.
+           MOVE IX-FS3-STATUS TO COMPUTED-A.
+           MOVE "10" TO CORRECT-X.
+           MOVE "IX-4, 1.3.4, (2) A 1)" TO RE-MARK.
+           PERFORM FAIL.
+           GO TO REA-WRITE-F1-05-0.
+       REA-PASS-F1-05-0.
+           PERFORM PASS.
+       REA-WRITE-F1-05-0.
+           MOVE "READ...END:  10 EXP." TO FEATURE.
+           MOVE "REA-TEST-F1-05-0" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> *****************************************************************
+      *>    TEST  13                                                     *
+      *>          READ ... (AFTER AT END)      46 EXPECTED               *
+      *>          IX-5, 1.3.4 (5) E 3)                                   *
+      *> *****************************************************************
+       REA-TEST-F1-06-0.
+           MOVE 13 TO TEST-NO.
+           READ IX-FS3 AT END GO TO REA-TEST-F1-06-1.
+       REA-TEST-F1-06-1.
+           IF IX-FS3-STATUS EQUAL TO "46"
+              MOVE "SHOULD HAVE EXECUTED DECLARATIVES IX-3,1.3.4(4)"
+                TO RE-MARK
+              GO TO REA-WRITE-F1-06-0.
+       REA-FAIL-F1-06-0.
+           MOVE "IX-5, 1.3.4, (5) E 3)" TO RE-MARK.
+       REA-WRITE-F1-06-0.
+           MOVE IX-FS3-STATUS TO COMPUTED-A.
+           MOVE "46" TO CORRECT-X.
+           PERFORM FAIL.
+           MOVE "READ.        46 EXP." TO FEATURE.
+           MOVE "REA-TEST-F1-06-0" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           CLOSE IX-FS3.
+       
+       TERMINATE-ROUTINE.
+           EXIT.
+       
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,IX109A

@@ -1,0 +1,39 @@
+      *> HEADER,COBOL,SG303M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SG303M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF
+      *> OBSOLETE FEATURES THAT ARE USED IN SEGMENTATION LEVEL 2.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083
+           SEGMENT-LIMIT IS 20.
+      *> Message expected for above statement: OBSOLETE
+       DATA DIVISION.
+       PROCEDURE DIVISION.
+       
+       NUMBER1 SECTION 18.
+      *> Message expected for above statement: OBSOLETE
+       
+       SG303M-CONTROL.
+           EXIT.
+       
+       NUMBER2 SECTION 19.
+      *> Message expected for above statement: OBSOLETE
+       
+       SG303M-DUMMY1.
+           DISPLAY "THIS IS A DUMMY PARAGRAPH".
+       
+       NUMBER3 SECTION 18.
+      *> Message expected for above statement: OBSOLETE
+       
+       SG303M-DUMMY2.
+           DISPLAY "THIS IS A DUMMY PARAGRAPH TOO!".
+       
+       
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 4.
+      *> END-OF,SG303M

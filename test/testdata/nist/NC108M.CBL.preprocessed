@@ -1,0 +1,773 @@
+      *> HEADER,COBOL,NC108M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC108M.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC108M TESTS THE FOLLOWING FEATURES:
+      *> 
+      *>     COMPACT IDENTIFICATION DIVISION
+      *>     COMBINED DATA DESCRIPTION CLAUSES
+      *>     ABBREVIATIONS
+      *>     COBOL CHARACTER SET
+      *>     ALPHABET CLAUSE
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       SPECIAL-NAMES.
+           XXXXX051
+           IS ABBREV-SWITCH
+               ON  ON-SWITCH
+               OFF IS  OFF-SWITCH
+      *>     ALPHABET THE-WILD-ONE IS
+      *>      "A" THRU "H" "I" ALSO "J", ALSO "K", ALSO
+      *>     "L" ALSO "M" ALSO "N" "O" THROUGH "Z" "0" THRU "9", 
+      *> 
+      *> 
+      *> ALPHABET-TEST-10     *****     THE WHOLE ALPHABET IS ONE LITERAL
+      *>     WITH ALL 51 CHARACTERS IN THE COBOL CHARACTER SET.  TEST-10
+      *>     IS ONLY A SYNTAX CHECK ON
+      *>             ALPHABET-NAME IS LITERAL.
+      *> 
+      *> 
+      *>     THE-BIG-OL-LITERAL-ALPHABET IS "A+0B-1C*2D/3E=4FL5G,6H;7I.8J"
+      *>     ""9K(L)M>N<O PQRSTUVWXYZ"
+           ALPHABET TEST-ALPHABET IS NATIVE
+           CURRENCY  "<".
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  ONE      PICTURE 9 VALUE 1.
+       77  TWO      PICTURE 9 VALUE 2.
+       01  XCHAR-SET PICTURE X(51) VALUE     "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 +-*/=$,.;()><".
+       01  CHARACTER-QUOTE  PIC X VALUE QUOTE.
+       01  CHARACTER-LOW PIC X(26) VALUE "abcdefghijklmnopqrstuvwxyz".
+       01  COMPLETE-01.
+           02 COMPLETE-F.
+             03 FILLER PICTURE X(90) VALUE SPACE.
+             03 FL-LESS PICTURE <(3),<<<.99 VALUE " <1,111.11".
+           02 COMPLETE-FORMAT
+               REDEFINES COMPLETE-F
+               JUSTIFIED RIGHT
+               PICTURE X(5)
+               OCCURS 20 TIMES
+               USAGE IS DISPLAY.
+           02 MORE-COMPLETE-FORMAT
+               BLANK WHEN ZERO
+               PICTURE IS 9
+               SYNCHRONIZED RIGHT
+               DISPLAY
+                    VALUE IS "5".
+       01  PIC-GROUP.
+           02 FILLER          PICTURE X(4) VALUE "AAAA".
+           02 FILLER          PIC     X(4) VALUE "BBBB".
+           02 FILLER          PIC IS  X(4) VALUE "CCCC".
+           02                 PICTURE X(4) VALUE "DDDD".
+       01  PICTURE-ITEM       PICTURE X(16) VALUE "AAAABBBBCCCCDDDD".
+       01  SEND-JUST          PICTURE X(5) VALUE "RIGHT".
+       01  RECEIVE-JUST       PICTURE X(10)               JUST.
+       01  RECEIVE-JUSTRIGHT  PICTURE X(10)               JUST RIGHT.
+       01  SEND-BLANK         PICTURE 9(5) VALUE ZERO.
+       01  RECEIVE-BLANK      PICTURE 9(9)                BLANK ZERO.
+       01  COMP-GROUP.
+           02 FILLER          PICTURE X(5) VALUE SPACE.
+           02 FILLER          PICTURE 9(5) VALUE 77777 USAGE IS COMP.
+           02 FILLER          PICTURE X(5) VALUE SPACE.
+       01  COMPUTATIONAL-GROUP.
+           02 FILLER          PICTURE X(5) VALUE SPACE.
+           02 FILLER          PICTURE 9(5) VALUE 77777 COMPUTATIONAL.
+           02 FILLER          PICTURE X(5) VALUE SPACE.
+       01  SYNC-GROUP.
+           02                 PICTURE X(5) VALUE SPACE.
+           02                 PICTURE 9(5) VALUE 55555 SYNC.
+           02                 PICTURE X(5) VALUE SPACE.
+       01  SYNCHRONIZED-GROUP.
+           02 FILLER          PICTURE X(5) VALUE SPACE.
+           02 FILLER          PICTURE 9(5) VALUE 55555 SYNCHRONIZED.
+           02 FILLER          PICTURE X(5) VALUE SPACE.
+       01  SYNC-RIGHT-GROUP.
+           02 FILLER PICTURE X(5) VALUE SPACE.
+           02 FILLER PICTURE 9(5) VALUE 33333 SYNC RIGHT.
+           02 FILLER PICTURE X(5) VALUE SPACE.
+       01  SYNCHRONIZED-RIGHT-GROUP.
+           02 FILLER PICTURE X(5) VALUE SPACE.
+           02 FILLER PICTURE 9(5) VALUE 33333 SYNCHRONIZED RIGHT.
+           02 FILLER PICTURE X(5) VALUE SPACE.
+       01  SYNC-LEFT-GROUP.
+           02 FILLER PICTURE X(5) VALUE SPACE.
+           02 FILLER PICTURE 9(5) VALUE 11111 SYNC LEFT.
+           02 FILLER PICTURE X(5) VALUE SPACE.
+       01  SYNCHRONIZED-LEFT-GROUP.
+           02 FILLER PICTURE X(5) VALUE SPACE.
+           02 FILLER PICTURE 9(5) VALUE 11111 SYNCHRONIZED LEFT.
+           02 FILLER PICTURE X(5) VALUE SPACE.
+       01  TEST-FIELD            PIC X(10).
+       01                        REDEFINES TEST-FIELD
+                                 PIC 9(9).
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC108M".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+      *> IDENTIFICATION DIVISION.
+      *>     NOTE THE ENTIRE IDENTIFICATION DIVISION IS OPTIONAL, WITH THE
+      *>     EXCEPTION OF THE IDENTIFICATION DIVISION AND PROGRAM-ID
+      *>     CLAUSES. AS A TEST, ALL THE OPTIONAL CLAUSES HAVE BEEN
+      *>     REMOVED. INFORMATION NORMALLY GIVEN THERE IS LISTED BELOW
+      *>     AS A COMMENT.  ADDITIONALLY, KEY WORDS ARE USED IN COMMENT
+      *>     LINES TO ASCERTAIN WHETHER COMMENTS ARE BEING SYNTAX CHECKED.
+      *> ***************************************************************
+      *>                                                               *
+      *>     THIS PROGRAM FORMS PART OF THE COBOL COMPILER VALIDATION  *
+      *>     SYSTEM (CCVS) USED TO TEST COBOL COMPILERS FOR            *
+      *>     COMFORMANCE WITH THE AMERICAN NATIONAL STANDARD           *
+      *>     (ANSI DOCUMENT REFERENCE: X3.23-1985) AND THE STANDARD OF *
+      *>     THE INTERNATIONAL ORGANIZATION FOR STANDARDISATION        *
+      *>     (ISO DOCUMENT REFERENCE: ISO            ).                *
+      *>                                                               *
+      *>     THIS CCVS INCORPORATES ENHANCEMENTS TO THE CCVS FOR THE   *
+      *>     1974 STANDARD (ANSI DOCUMENT REFERENCE: X3.23-1974; ISO   *
+      *>     DOCUMENT REFERENCE:           ).                          *
+      *>                                                               *
+      *>     THESE ENHANCEMENTS WERE SPECIFIED BY A PROJECT TEAM WHICH *
+      *>     WAS FUNDED BY THE COMMISSION FOR EUROPEAN COMMUNITIES AND *
+      *>     WHICH WAS RESPONSIBLE FOR TECHNICAL ISSUES TO:            *
+      *>                                                               *
+      *>           THE FEDERAL SOFTWARE TESTING CENTRE                 *
+      *>           OFFICE OF SOFTWARE DEVELOPMENT                      *
+      *>                 & INFORMATION TECHNOLOGY                      *
+      *>           TWO SKYLINE PLACE                                   *
+      *>           SUITE 1100                                          *
+      *>           5203 LEESBURG PIKE                                  *
+      *>           FALLS CHURCH                                        *
+      *>           VA 22041                                            *
+      *>           U.S.A.                                              *
+      *>                                                               *
+      *>     THE PROJECT TEAM MEMBERS WERE:                            *
+      *>                                                               *
+      *>           BIADI (BUREAU INTER ADMINISTRATION                  *
+      *>                  DE DOCUMENTATION INFORMATIQUE)               *
+      *>           21 RUE BARA                                         *
+      *>           F-92132 ISSY                                        *
+      *>           FRANCE                                              *
+      *>                                                               *
+      *>                                                               *
+      *>           GMD (GESELLSCHAFT FUR MATHEMATIK                    *
+      *>                UND DATENVERARBEITUNG MBH)                     *
+      *>           SCHLOSS BIRLINGHOVEN                                *
+      *>           POSTFACH 12 40                                      *
+      *>           D-5205 ST. AUGUSTIN 1                               *
+      *>           GERMANY FR                                          *
+      *>                                                               *
+      *>                                                               *
+      *>           NCC (THE NATIONAL COMPUTING CENTRE LTD)             *
+      *>           OXFORD ROAD                                         *
+      *>           MANCHESTER                                          *
+      *>           M1 7ED                                              *
+      *>           UNITED KINGDOM                                      *
+      *>                                                               *
+      *>                                                               *
+      *>     THIS TEST SUITE WAS PRODUCED BY THE NATIONAL COMPUTING    *
+      *>     CENTRE IN ENGLAND AND IS THE OFFICIAL CCVS TEST SUITE     *
+      *>     USED THROUGHOUT EUROPE AND THE UNITED STATES OF AMERICA.  *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>     " HIGH       ".
+      *>     USING CCVS85 VERSION 1.0 ISSUED IN JANUARY 1986.          *
+      *>                                                               *
+      *>     CREATION DATE     /     VALIDATION DATE                   *
+      *>     "4.2 ".
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC108M TESTS THE FOLLOWING FEATURES:
+      *> 
+      *>             COMPACT "IDENTIFICATION DIVISION"
+      *>             COMBINED DATA DESCRIPTION CLAUSES
+      *>             ABBREVIATIONS
+      *>             COBOL CHARACTER SET
+      *>             ALPHABET CLAUSE
+      *> 
+      *> 
+      *> 
+      *>       THE SOURCE LINES IN THE ENVIRONMENT AND DATA DIVISION
+      *>       SHOULD BE REPLACED AS FOLLOWS
+      *>         XXXXX36   REPLACE WITH SYSTEM OUTPUT DEVICE (PRINTER)
+      *>                     FILE-NAME IS PRINT-FILE.
+      *>         XXXXX38   REPLACE WITH SYSTEM NAME FOR A SWITCH
+      *>                     SWITCH-NAME IS ABBREV-SEITCH.
+      *>         XXXXX49   REPLACE WITH SOURCE COMPUTER NAME
+      *>         XXXXX50   REPLACE WITH OBJECT COMPUTER NAME
+      *> 
+      *>     THE DOD COBOL TEST ROUTINES HAVE BEEN CREATED TO BE
+      *>     USED TO VALIDATE THAT
+      *> 
+      *>            1  A COBOL COMPILER CONTAINS THE ELEMENTS OF THE
+      *>               ANSI COBOL.
+      *> 
+      *>            2  TO PROVIDE EXAMPLES OF THE USES OF THE DIFFERENT
+      *>                ELEMENTS OF THE COBOL LANGUAGE.
+      *> 
+      *>            3  TO BE USED AS TEST DATA FOR PRE-PROCESSORS
+      *>               FLOWCHARTERS  ETC.
+      *> 
+      *>            4  IT IS HOPED THAT EVALUATIONS  CORRECTIONS
+      *>                SUGGESTIONS AND COMMENTS WILL BE FORWARDED TO
+      *>                   NAVY PROGRAMMING LANGUAGES DIVISION
+      *>                     ROOM 2C319 THE PENTAGON
+      *>                     WASHINGTON D C      20350.
+      *>     *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  * *.
+      *> 
+      *>     PHONE    (202) 695-4750.
+      *> 
+      *>     *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  * *.
+       FMT-INIT-GF-1.
+           MOVE   "COMPLETE DATA FORMAT" TO FEATURE.
+           MOVE   "V1-6 3.2.1.1" TO ANSI-REFERENCE.
+       FMT-TEST-GF-1.
+           MOVE COMPLETE-FORMAT (19) TO COMPUTED-A.
+           MOVE " <1,1" TO CORRECT-A.
+           IF   COMPLETE-FORMAT (19) EQUAL TO " <1,1"
+                MOVE "FAILURE IF DOLLAR APPEARS" TO RE-MARK
+                GO TO FMT-WRITE-GF-1.
+           PERFORM FAIL.
+           MOVE "LESS THAN SHOULD APPEAR" TO RE-MARK.
+           GO       TO FMT-WRITE-GF-1.
+       FMT-DELETE-GF-1.
+           PERFORM  DE-LETE.
+       FMT-WRITE-GF-1.
+           MOVE     "FMT-TEST-GF-1" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       FMT-INIT-GF-2.
+           MOVE   "V1-20 5.3" TO ANSI-REFERENCE.
+       FMT-TEST-GF-2.
+           IF       MORE-COMPLETE-FORMAT NOT EQUAL TO "5"
+                    PERFORM FAIL
+               ELSE PERFORM PASS
+                    GO TO FMT-WRITE-GF-2.
+           MOVE     MORE-COMPLETE-FORMAT TO COMPUTED-A.
+           MOVE     "5" TO CORRECT-A.
+           GO       TO FMT-WRITE-GF-2.
+       FMT-DELETE-GF-2.
+           PERFORM  DE-LETE.
+       FMT-WRITE-GF-2.
+           MOVE     "FMT-TEST-GF-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       FMT-TEST-GF-3.
+           MOVE     ZERO TO MORE-COMPLETE-FORMAT.
+           IF       MORE-COMPLETE-FORMAT EQUAL TO SPACE
+                    PERFORM PASS
+                    GO TO FMT-WRITE-GF-3.
+           PERFORM  FAIL.
+           MOVE     MORE-COMPLETE-FORMAT TO COMPUTED-A.
+           MOVE     "      (SPACES)" TO CORRECT-A.
+           GO       TO FMT-WRITE-GF-3.
+       FMT-DELETE-GF-3.
+           PERFORM  DE-LETE.
+       FMT-WRITE-GF-3.
+           MOVE     "FMT-TEST-GF-3" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ABR-INIT-GF-1.
+           MOVE   "DATA DESCR ABBREVS -" TO FEATURE.
+           MOVE   "VI-20 5.3" TO ANSI-REFERENCE.
+           PERFORM  PRINT-DETAIL.
+       ABR-TEST-GF-1.
+           IF       PIC-GROUP IS EQUAL TO PICTURE-ITEM
+                    PERFORM PASS GO TO ABR-WRITE-GF-1.
+           GO       TO ABR-FAIL-GF-1.
+       ABR-DELETE-GF-1.
+           PERFORM  DE-LETE.
+           GO       TO ABR-WRITE-GF-1.
+       ABR-FAIL-GF-1.
+           MOVE     PIC-GROUP TO COMPUTED-A.
+           MOVE     PICTURE-ITEM TO CORRECT-A.
+           PERFORM  FAIL.
+       ABR-WRITE-GF-1.
+           MOVE     "  PIC" TO FEATURE.
+           MOVE     "ABR-TEST-GF-1 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ABR-INIT-GF-2.
+           MOVE   "VI-20 5.3" TO ANSI-REFERENCE.
+           MOVE     SEND-JUST TO RECEIVE-JUSTRIGHT.
+       ABR-TEST-GF-2.
+           IF       RECEIVE-JUSTRIGHT EQUAL TO "     RIGHT"
+                    PERFORM PASS GO TO ABR-WRITE-GF-2.
+           GO       TO ABR-FAIL-GF-2.
+       ABR-DELETE-GF-2.
+           PERFORM  DE-LETE.
+           GO       TO ABR-WRITE-GF-2.
+       ABR-FAIL-GF-2.
+           PERFORM  FAIL.
+           MOVE     RECEIVE-JUSTRIGHT TO COMPUTED-A.
+           MOVE     "     RIGHT" TO CORRECT-A.
+       ABR-WRITE-GF-2.
+           MOVE     "  JUST" TO FEATURE
+           MOVE     "ABR-TEST-GF-2 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ABR-INIT-GF-3.
+           MOVE   "VI-20 5.3" TO ANSI-REFERENCE.
+           MOVE     SEND-JUST TO RECEIVE-JUST.
+       ABR-TEST-GF-3.
+           IF       RECEIVE-JUST EQUAL TO "     RIGHT"
+                    PERFORM PASS GO TO ABR-WRITE-GF-3.
+           GO       TO ABR-FAIL-GF-3.
+       ABR-DELETE-GF-3.
+           PERFORM  DE-LETE.
+           GO       TO ABR-WRITE-GF-3.
+       ABR-FAIL-GF-3.
+           PERFORM  FAIL.
+           MOVE     RECEIVE-JUST TO COMPUTED-A.
+           MOVE     "     RIGHT" TO CORRECT-A.
+       ABR-WRITE-GF-3.
+           MOVE     "ABR-TEST-GF-3 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ABR-INIT-GF-4.
+           MOVE   "VI-20 5.3" TO ANSI-REFERENCE.
+           MOVE     SEND-BLANK TO RECEIVE-BLANK.
+       ABR-TEST-GF-4.
+           IF       RECEIVE-BLANK EQUAL TO "         "
+                    PERFORM PASS GO TO ABR-WRITE-GF-4.
+           GO       TO ABR-FAIL-GF-4.
+       ABR-DELETE-GF-4.
+           PERFORM  DE-LETE.
+           GO       TO ABR-WRITE-GF-4.
+       ABR-FAIL-GF-4.
+           PERFORM  FAIL.
+           MOVE     RECEIVE-BLANK TO COMPUTED-A.
+           MOVE     "      (SPACES)" TO CORRECT-A.
+       ABR-WRITE-GF-4.
+           MOVE     "  BLANK ZERO" TO FEATURE
+           MOVE     "ABR-TEST-GF-4 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ABR-INIT-GF-5.
+           MOVE   "VI-20 5.3" TO ANSI-REFERENCE.
+       ABR-TEST-GF-5.
+           IF       COMP-GROUP EQUAL TO COMPUTATIONAL-GROUP
+                    PERFORM PASS GO TO ABR-WRITE-GF-5.
+           GO       TO ABR-FAIL-GF-5.
+       ABR-DELETE-GF-5.
+           PERFORM  DE-LETE.
+           GO       TO ABR-WRITE-GF-5.
+       ABR-FAIL-GF-5.
+           PERFORM  FAIL.
+           MOVE     COMP-GROUP TO COMPUTED-A.
+           MOVE     COMPUTATIONAL-GROUP TO CORRECT-A.
+       ABR-WRITE-GF-5.
+           MOVE     "  COMP" TO FEATURE.
+           MOVE     "ABR-TEST-GF-5 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ABR-INIT-GF-6.
+           MOVE   "VI-20 5.3" TO ANSI-REFERENCE.
+       ABR-TEST-GF-6.
+           IF       SYNC-GROUP EQUAL TO SYNCHRONIZED-GROUP
+                    PERFORM PASS GO TO ABR-WRITE-GF-6.
+           GO       TO ABR-FAIL-GF-6.
+       ABR-DELETE-GF-6.
+           PERFORM  DE-LETE.
+           GO       TO ABR-WRITE-GF-6.
+       ABR-FAIL-GF-6.
+           PERFORM  FAIL.
+           MOVE     SYNC-GROUP TO COMPUTED-A.
+           MOVE     SYNCHRONIZED-GROUP TO CORRECT-A.
+       ABR-WRITE-GF-6.
+           MOVE     "  SYNC" TO FEATURE
+           MOVE     "ABR-TEST-GF-6 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ABR-INIT-GF-7.
+           MOVE   "VI-20 5.3" TO ANSI-REFERENCE.
+       ABR-TEST-GF-7.
+           IF       SYNC-RIGHT-GROUP EQUAL TO SYNCHRONIZED-RIGHT-GROUP
+                    PERFORM PASS GO TO ABR-WRITE-GF-7.
+           GO       TO ABR-FAIL-GF-7.
+       ABR-DELETE-GF-7.
+           PERFORM  DE-LETE.
+           GO       TO ABR-WRITE-GF-7.
+       ABR-FAIL-GF-7.
+           PERFORM  FAIL.
+           MOVE     SYNC-RIGHT-GROUP TO COMPUTED-A.
+           MOVE     SYNCHRONIZED-RIGHT-GROUP TO CORRECT-A.
+       ABR-WRITE-GF-7.
+           MOVE     "ABR-TEST-GF-7 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ABR-INIT-GF-8.
+           MOVE   "VI-20 5.3" TO ANSI-REFERENCE.
+       ABR-TEST-GF-8.
+           IF       SYNC-LEFT-GROUP EQUAL TO SYNCHRONIZED-LEFT-GROUP
+                    PERFORM PASS GO TO ABR-WRITE-GF-8.
+           GO       TO ABR-FAIL-GF-8.
+       ABR-DELETE-GF-8.
+           PERFORM  DE-LETE.
+           GO       TO ABR-WRITE-GF-8.
+       ABR-FAIL-GF-8.
+           PERFORM  FAIL.
+           MOVE     SYNC-LEFT-GROUP TO COMPUTED-A.
+           MOVE     SYNCHRONIZED-LEFT-GROUP TO CORRECT-A.
+       ABR-WRITE-GF-8.
+           MOVE     "ABR-TEST-GF-8 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ABR-INIT-GF-9.
+           MOVE   "VI-20 5.3" TO ANSI-REFERENCE.
+       ABR-TEST-GF-9.
+           MOVE ZERO TO ONE
+           IF ON-SWITCH ADD 1 TO ONE.
+           IF OFF-SWITCH ADD 1 TO ONE.
+           IF ONE EQUAL TO 1 PERFORM PASS GO TO ABR-WRITE-GF-9
+                    ELSE MOVE 1 TO ONE GO TO ABR-FAIL-GF-9.
+       ABR-DELETE-GF-9.
+           PERFORM  DE-LETE.
+           GO       TO ABR-WRITE-GF-9.
+       ABR-FAIL-GF-9.
+           PERFORM  FAIL.
+           MOVE "NOT BOOLEAN COMPLEMENTS" TO RE-MARK.
+       ABR-WRITE-GF-9.
+           MOVE "SPECIAL-NAMES SWITCH" TO FEATURE.
+           MOVE     "ABR-TEST-GF-9 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ABR-INIT-GF-10.
+           MOVE   "VI-20 5.3" TO ANSI-REFERENCE.
+           MOVE     ZERO TO FL-LESS.
+           MOVE FL-LESS  TO COMPUTED-A.
+           MOVE "      <.00" TO CORRECT-A.
+       ABR-TEST-GF-10.
+           IF   FL-LESS EQUAL TO "      <.00"
+                MOVE "FAILURE IF DOLLAR APPEARS" TO RE-MARK
+                GO TO ABR-WRITE-GF-10.
+           GO       TO ABR-FAIL-GF-10.
+       ABR-DELETE-GF-10.
+           PERFORM  DE-LETE.
+           GO       TO ABR-WRITE-GF-10.
+       ABR-FAIL-GF-10.
+           PERFORM  FAIL.
+           MOVE "LESS THAN SHOULD APPEAR" TO RE-MARK.
+       ABR-WRITE-GF-10.
+           MOVE     "ABR-TEST-GF-10" TO PAR-NAME.
+           MOVE "SPECIAL-NAMES CURNCY" TO FEATURE.
+           PERFORM  PRINT-DETAIL.
+       CHA-INIT-1.
+           MOVE   "III-3" TO ANSI-REFERENCE.
+       CHA-GF-1-1.
+           IF       XCHAR-SET EQUAL TO
+           "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 +-*/=$,.;()><"
+                    PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE 51 CHARACTER LITERAL INCLUDES TWO SPACES BUT NO
+      *>              QUOTE.
+           GO       TO CHA-WRITE-GF-1-1.
+       CHA-DELETE-GF-1-1.
+           PERFORM  DE-LETE.
+       CHA-WRITE-GF-1-1.
+           MOVE     "CHARACTER-SET" TO FEATURE.
+           MOVE     "CHA-GF-1-1" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       CHA-GF-1-2.
+           IF       CHARACTER-QUOTE = QUOTE
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO CHA-WRITE-GF-1-2.
+       CHA-DELETE-GF-1-2.
+           PERFORM  DE-LETE.
+       CHA-WRITE-GF-1-2.
+           MOVE     "CHARACTER-SET" TO FEATURE.
+           MOVE     "CHA-GF-1-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       CHA-GF-1-3.
+           IF       CHARACTER-LOW = "abcdefghijklmnopqrstuvwxyz"
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO CHA-WRITE-GF-1-3.
+       CHA-DELETE-GF-1-3.
+           PERFORM  DE-LETE.
+       CHA-WRITE-GF-1-3.
+           MOVE     "CHARACTER-SET" TO FEATURE.
+           MOVE     "CHA-GF-1-3" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+       ALPHABET-INIT-10.
+           MOVE   "VI-15 4.5.4 GR4" TO ANSI-REFERENCE.
+       ALPHABET-TEST-10.
+           PERFORM END-ROUTINE.
+           MOVE    " ALPHABET-NAME     *****     CHECK THE ALPHABET-NAME IN THE SPECIAL-NAMES PARAGRAPH" TO TEST-RESULTS.
+           PERFORM PRINT-DETAIL.
+      *> 
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC108M

@@ -1,0 +1,43 @@
+      *> HEADER,COBOL,DB304M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           DB304M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF OBSOLETE
+      *> LEVEL 2 COMMUNICATION FEATURES THAT ARE USED IN DEBUGGING.
+      *> THIS TEST NEED NOT BE RUN IF COMMUNICATIONS NOT IMPLEMTENTED.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082
+           WITH DEBUGGING MODE.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       COMMUNICATION SECTION.
+       
+       CD COMMNAME FOR INPUT.
+       01 CREC.
+           03 CNAME1 PIC 9(8).
+           03 FILLER PIC X(79).
+       
+       PROCEDURE DIVISION.
+       
+       DECLARATIVES.
+       
+       BUGGING SECTION.
+       
+           USE FOR DEBUGGING ON COMMNAME.
+      *> Message expected for above statement: OBSOLETE
+       
+       
+       
+       END DECLARATIVES.
+       
+       DB304M-FLAGS SECTION.
+       
+       DB304M-CONTROL.
+           DISPLAY "THIS IS A DUMMY PROCEDURE".
+           STOP RUN.
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 1.
+      *> END-OF,DB304M

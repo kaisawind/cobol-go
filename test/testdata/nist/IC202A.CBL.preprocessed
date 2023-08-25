@@ -1,0 +1,60 @@
+      *> HEADER,COBOL,IC201A,SUBRTN,IC202A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC202A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>         THE SUBPROGRAM IC202 IS CALLED BY THE PROGRAM IC201.  *
+      *>     THE SUBPROGRAM HAS FOUR OPERANDS IN THE USING PHRASE      *
+      *>     OF THE PROCEDURE DIVISION HEADER.                         *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  WS1 PICTURE S999.
+       77  WS2 PICTURE S999
+               USAGE COMPUTATIONAL, VALUE ZERO.
+       LINKAGE SECTION.
+       77  DN1 PICTURE S99.
+       77  DN2 PICTURE S99 USAGE COMPUTATIONAL.
+       77  DN3 PICTURE S99.
+       77  DN4 PICTURE S99 USAGE COMPUTATIONAL.
+       PROCEDURE DIVISION USING DN1, DN2, DN3, DN4.
+       SECT-IC202-0001 SECTION.
+       CALL-TEST-001.
+           MOVE DN1 TO WS1.
+           ADD 1 TO WS1.
+           ADD 1 TO WS2.
+           MOVE WS1 TO DN3.
+           MOVE WS2 TO DN4.
+       CALL-EXIT-001.
+           EXIT PROGRAM.
+      *> END-OF,IC202A

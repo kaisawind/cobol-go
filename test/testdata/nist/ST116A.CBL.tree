@@ -1,0 +1,454 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n            
+					(programName 
+						(cobolWord ST116A)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       )))) 
+				(environmentDivisionBody 
+					(inputOutputSection INPUT-OUTPUT SECTION .\n        
+						(inputOutputSectionParagraph 
+							(fileControlParagraph FILE-CONTROL .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord SQ-FS1))) 
+									(fileControlClause 
+										(assignClause ASSIGN TO 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXD001))))) 
+									(fileControlClause 
+										(organizationClause ORGANIZATION IS SEQUENTIAL)) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS SEQUENTIAL))) .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord SQ-FS2))) 
+									(fileControlClause 
+										(assignClause ASSIGN TO 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXP002))))) 
+									(fileControlClause 
+										(organizationClause ORGANIZATION IS SEQUENTIAL)) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS SEQUENTIAL))) .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord ST-FS1))) 
+									(fileControlClause 
+										(assignClause ASSIGN TO 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX027)))))) .\n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(fileSection FILE SECTION .\n        
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord SQ-FS1)) 
+							(fileDescriptionEntryClause 
+								(labelRecordsClause LABEL RECORDS STANDARD)) 
+							(fileDescriptionEntryClause 
+								(valueOfClause VALUE OF 
+									(valuePair 
+										(systemName 
+											(cobolWord XXXXX074)) IS 
+										(qualifiedDataName 
+											(qualifiedDataNameFormat1 
+												(dataName 
+													(cobolWord XXXXX075))))))) 
+							(fileDescriptionEntryClause 
+								(blockContainsClause BLOCK CONTAINS 
+									(integerLiteral 1) RECORDS)) 
+							(fileDescriptionEntryClause 
+								(recordContainsClause RECORD 
+									(recordContainsClauseFormat1 CONTAINS 
+										(integerLiteral 507) CHARACTERS))) 
+							(fileDescriptionEntryClause 
+								(dataRecordsClause DATA RECORD IS 
+									(dataName 
+										(cobolWord SQ-FS1R1-F-G-507)))) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord SQ-FS1R1-F-G-507)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 10 
+									(dataName 
+										(cobolWord REC-PREAMBLE)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 120)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 10 
+									(dataName 
+										(cobolWord LENGTH-1)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 10 
+									(dataName 
+										(cobolWord THE-THREE-KEYS)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 20 
+									(dataName 
+										(cobolWord KEY-1)) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord ALPHAN-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord NUM-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 20 
+									(dataName 
+										(cobolWord KEY-2)) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord ALPHAN-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord NUM-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 20 
+									(dataName 
+										(cobolWord KEY-3)) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord ALPHAN-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord NUM-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 10 
+									(dataName 
+										(cobolWord STUFF-1)) 
+									(dataOccursClause OCCURS 
+										(integerLiteral 31) TIMES) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord FILL-ME-UPS)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 12)) 
+											(pictureChars )))) .\n       ))) 
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord SQ-FS2)) 
+							(fileDescriptionEntryClause 
+								(labelRecordsClause LABEL RECORDS STANDARD)) 
+							(fileDescriptionEntryClause 
+								(valueOfClause VALUE OF 
+									(valuePair 
+										(systemName 
+											(cobolWord XXXXX074)) IS 
+										(qualifiedDataName 
+											(qualifiedDataNameFormat1 
+												(dataName 
+													(cobolWord XXXXX076))))))) 
+							(fileDescriptionEntryClause 
+								(blockContainsClause BLOCK CONTAINS 
+									(integerLiteral 2) RECORDS)) 
+							(fileDescriptionEntryClause 
+								(recordContainsClause RECORD 
+									(recordContainsClauseFormat1 CONTAINS 
+										(integerLiteral 507) CHARACTERS))) 
+							(fileDescriptionEntryClause 
+								(dataRecordsClause DATA RECORD IS 
+									(dataName 
+										(cobolWord SQ-FS2R1-F-G-507)))) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord SQ-FS2R1-F-G-507)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 10 
+									(dataName 
+										(cobolWord REC-PRE-2)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 120)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 10 
+									(dataName 
+										(cobolWord LENGTH-2)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 10 
+									(dataName 
+										(cobolWord THE-NEW-KEYS)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 20 
+									(dataName 
+										(cobolWord KEY-4)) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord ALPHAN-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord NUM-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 20 
+									(dataName 
+										(cobolWord KEY-5)) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord ALPHAN-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord NUM-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 20 
+									(dataName 
+										(cobolWord KEY-6)) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord ALPHAN-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 
+									(dataName 
+										(cobolWord NUM-KEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 10 
+									(dataName 
+										(cobolWord STUFF-2)) 
+									(dataOccursClause OCCURS 
+										(integerLiteral 31) TIMES) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 30 FILLER 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 12)) 
+											(pictureChars )))) .\n       ))) 
+						(fileDescriptionEntry SD 
+							(fileName 
+								(cobolWord ST-FS1)) 
+							(fileDescriptionEntryClause 
+								(recordContainsClause RECORD 
+									(recordContainsClauseFormat1 CONTAINS 
+										(integerLiteral 507) CHARACTERS))) 
+							(fileDescriptionEntryClause 
+								(dataRecordsClause DATA RECORD IS 
+									(dataName 
+										(cobolWord ST-FS1R1-F-G-507)))) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord ST-FS1R1-F-G-507)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 FILLER 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 120)) 
+											(pictureChars )))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord LENGTH-3)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord NON-KEY-1)) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord A-KEY-NK1)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord N-KEY-NK1)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord SORT-KEY)) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord A-KEY-SK)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord N-KEY-SK)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord NON-KEY-2)) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord A-KEY-NK2)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X))) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord N-KEY-NK2)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 999)))) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 02 
+									(dataName 
+										(cobolWord STUFF-3)) 
+									(dataOccursClause OCCURS 
+										(integerLiteral 31) TIMES) .\n               )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 FILLER 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars X) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 12)) 
+											(pictureChars )))) .\n       )))))) 
+			(procedureDivision PROCEDURE DIVISION .\n        
+				(procedureDivisionBody paragraphs 
+					(procedureSection 
+						(procedureSectionHeader 
+							(sectionName 
+								(cobolWord SECT-ST116-0001)) SECTION) .\n        
+						(paragraphs 
+							(paragraph 
+								(paragraphName 
+									(cobolWord SRT-INIT-001)) .\n            
+								(sentence 
+									(statement 
+										(sortStatement SORT 
+											(fileName 
+												(cobolWord ST-FS1)) 
+											(sortOnKeyClause ON ASCENDING KEY 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord A-KEY-SK))))) 
+											(sortOnKeyClause ASCENDING 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord N-KEY-NK2))))) 
+											(sortUsing USING 
+												(fileName 
+													(cobolWord SQ-FS1))) 
+											(sortGivingPhrase GIVING 
+												(sortGiving 
+													(fileName 
+														(cobolWord SQ-FS2)))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord STOP-THE-RUN)) .\n            
+								(sentence 
+									(statement 
+										(stopStatement STOP RUN)) .\n      )))))))) <EOF>)

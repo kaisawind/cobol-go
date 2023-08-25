@@ -1,0 +1,58 @@
+      *> HEADER,COBOL,IC203A,SUBRTN,IC206A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC206A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>         THE SUBPROGRAM IC206 IS CALLED BY THE SUBPROGRAM
+      *>     IC205.  THE SUBPROGRAM IS THEN CANCELED AND CALLED
+      *>     AGAIN.  THE PROGRAM IC205 CHECKS IF IC206 WAS IN ITS
+      *>     INITIAL STATE ON THE FIRST CALL AFTER THE PROGRAM WAS
+      *>     CANCELED.
+      *>         THE LINKAGE PARAMETER DN1 CONTAINS THE NUMBER OF
+      *>     TIMES IC206 HAS BEEN CALLED SINCE INITIALIZATION WHEN
+      *>     CONTROL IS RETURNED TO THE CALLING PROGRAM.
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  WS1 PICTURE S9(8) USAGE COMPUTATIONAL
+               VALUE ZERO.
+       LINKAGE SECTION.
+       01  DN1 PICTURE S9(8)  USAGE COMPUTATIONAL.
+       PROCEDURE DIVISION USING DN1.
+       SECT-IC206-0001 SECTION.
+       TEST-PARAGRAPH.
+           ADD 1 TO WS1.
+           MOVE WS1 TO DN1.
+       EXIT-IC206.
+           EXIT PROGRAM.
+      *> END-OF,IC206A

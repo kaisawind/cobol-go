@@ -1,0 +1,186 @@
+      *> HEADER,COBOL,ST115A,SUBPRG,ST116A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           ST116A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>         X-XXXD01  -  SQ-FS1             *
+      *>         X-XXXP02  -  SQ-FS2             *
+      *>         X-XXX027  -  SORT FILE ST-FS1   *
+      *>                                                               *
+      *> ***************************************************************
+      *> *****************************************************************
+      *> 
+      *> 
+      *>     ST116
+      *> 
+      *> 
+      *>     OBJECTIVE -
+      *>         ROUTINE ST116 IS A TEST OF THE SORT STATEMENT USING
+      *>     FIXED LENGTH RECORDS ( 507 CHARACTERS PER RECORD ).
+      *> 
+      *> 
+      *>     FEATURES TESTED -
+      *>     *   COLLATING SEQUENCE IS NATIVE.  NO COLLATING SEQUENCE
+      *>             STATEMENT IS USED IN THE ACTUAL SORT STATEMENT.
+      *>     *   FIXED LENGTH RECORDS
+      *>     *   OCCURS CLAUSES
+      *>     *   QUALIFIED ALPHANUMERIC AND NUMERIC SORT KEYS
+      *> 
+      *>     *   SORT  SORT-FILE-NAME
+      *>         ON ASCENDING KEY KEY-1 OF DATA-NAME-1
+      *>         ASCENDING KEY-2 OF DATA-NAME-2
+      *>         USING FILE-NAME-1
+      *>         GIVING FILE-NAME-2.
+      *> 
+      *> 
+      *>     ANSI X3.23-1974 REFERENCES -
+      *>     *   SECTION 4.4  THE SORT STATEMENT  PAGE VII-14
+      *> 
+      *> 
+      *>     FILES USED -
+      *>     *   FILES SQ-FS1 AND SQ-FS2 ON MAGNETIC TAPE OR MASS-STORAGE
+      *> 
+      *>     FILE SQ-FS1 IS CREATED IN ST115 AND PASSED TO ST116.  THE
+      *>     FILE SQ-FS2 IS PASSED TO ROUTINE ST117 FOR CHECKING.
+      *> 
+      *>         SQ-FS1 -
+      *>     NUMBER OF RECORDS IS SET BY THE INTEGER X-65.
+      *>     FIXED LENGTH ( 507 CHARACTERS PER RECORD )
+      *>     BLOCKED 1
+      *>     RESERVE 2 AREAS
+      *> 
+      *>     SQ-FS1 IS SORTED GIVING SQ-FS2.
+      *> 
+      *>         SQ-FS2 -
+      *>     SAME NUMBER OF RECORDS AS IN SQ-FS1  ( SET BY X-65 )
+      *>     FIXED LENGTH ( 507 CHARACTERS PER RECORD )
+      *>     BLOCKED 2
+      *>     RESERVE 4 AREAS
+      *> 
+      *> 
+      *> 
+      *> 
+      *>     OPTIONS RECOMMENDED -
+      *>         NOT APPLICABLE.
+      *> 
+      *> 
+      *>     TEST DESCRIPTIONS -
+      *>         NOT APPLICABLE.  ROUTINE ST116 ONLY CONTAINS THE SORT.
+      *> 
+      *> 
+      *>     ************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT SQ-FS1 ASSIGN TO
+           XXXXD001
+           ORGANIZATION IS SEQUENTIAL
+           ACCESS MODE IS SEQUENTIAL.
+           SELECT SQ-FS2 ASSIGN TO
+           XXXXP002
+           ORGANIZATION IS SEQUENTIAL
+           ACCESS MODE IS SEQUENTIAL.
+           SELECT ST-FS1 ASSIGN TO
+           XXXXX027.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  SQ-FS1
+           LABEL RECORDS STANDARD
+           VALUE OF
+           XXXXX074
+           IS
+           XXXXX075
+      *>     XXXXX069
+           BLOCK CONTAINS 1 RECORDS
+           RECORD CONTAINS 507 CHARACTERS
+           DATA RECORD IS SQ-FS1R1-F-G-507.
+       01  SQ-FS1R1-F-G-507.
+           10 REC-PREAMBLE PIC X(120).
+           10  LENGTH-1  PIC 999.
+           10  THE-THREE-KEYS.
+           20 KEY-1.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+           20 KEY-2.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+           20 KEY-3.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+           10  STUFF-1 OCCURS
+                   31 TIMES.
+               30  FILL-ME-UPS  PIC  X(12).
+       FD  SQ-FS2
+           LABEL RECORDS STANDARD
+           VALUE OF
+           XXXXX074
+           IS
+           XXXXX076
+      *>     XXXXX069
+           BLOCK CONTAINS 2 RECORDS
+           RECORD CONTAINS 507 CHARACTERS
+           DATA RECORD IS SQ-FS2R1-F-G-507.
+       01  SQ-FS2R1-F-G-507.
+           10 REC-PRE-2 PIC X(120).
+           10  LENGTH-2  PIC 999.
+           10  THE-NEW-KEYS.
+           20 KEY-4.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+           20 KEY-5.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+           20 KEY-6.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+           10  STUFF-2 OCCURS
+                   31 TIMES.
+               30  FILLER PIC X(12).
+       SD  ST-FS1
+           RECORD CONTAINS 507 CHARACTERS
+           DATA RECORD IS ST-FS1R1-F-G-507.
+       01  ST-FS1R1-F-G-507.
+           02 FILLER PIC X(120).
+           02 LENGTH-3 PIC 999.
+           02 NON-KEY-1.
+               03 A-KEY-NK1 PIC X.
+               03 N-KEY-NK1 PIC 999.
+           02 SORT-KEY.
+               03 A-KEY-SK PIC X.
+               03 N-KEY-SK PIC 999.
+           02 NON-KEY-2.
+               03 A-KEY-NK2 PIC X.
+               03 N-KEY-NK2 PIC 999.
+           02  STUFF-3 OCCURS
+                   31 TIMES.
+               03  FILLER PIC X(12).
+       PROCEDURE DIVISION.
+       SECT-ST116-0001 SECTION.
+       SRT-INIT-001.
+           SORT ST-FS1
+               ON ASCENDING KEY A-KEY-SK
+               ASCENDING N-KEY-NK2
+               USING SQ-FS1
+               GIVING SQ-FS2.
+       STOP-THE-RUN.
+           STOP RUN.
+      *> END-OF,ST116A

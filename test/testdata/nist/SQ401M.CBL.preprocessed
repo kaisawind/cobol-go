@@ -1,0 +1,139 @@
+      *> HEADER,COBOL,SQ401M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SQ401M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF HIGH
+      *> SUBSET FEATURES THAT ARE USED IN SEQUENTIAL
+      *> INPUT-OUTPUT.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT OPTIONAL TFIL ASSIGN
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+           XXXXX002
+               RESERVE 2 AREAS
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+               ORGANIZATION IS SEQUENTIAL
+               PADDING CHARACTER IS "P"
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+               RECORD DELIMITER IS STANDARD-1
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+               ACCESS MODE IS SEQUENTIAL.
+       
+           SELECT TFIL2 ASSIGN
+           XXXXX008
+               ORGANIZATION IS SEQUENTIAL
+               ACCESS MODE IS SEQUENTIAL.
+       
+       
+           SELECT TFIL3 ASSIGN
+           XXXXX003.
+       
+       I-O-CONTROL.
+           SAME RECORD AREA FOR TFIL2, TFIL
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+           MULTIPLE FILE TAPE CONTAINS TFIL2.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       DATA DIVISION.
+       FILE SECTION.
+       FD TFIL
+           BLOCK CONTAINS 1 TO 8 RECORDS
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+           RECORD VARYING IN SIZE FROM 1 TO 8 CHARACTERS
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+           LINAGE IS 20 LINES
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+           LABEL RECORDS ARE STANDARD
+           VALUE OF
+           XXXXX074
+           IS VKEY.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       01 FREC.
+           03 RKEY PIC 9(8).
+       
+       FD TFIL2.
+       01 FREC2.
+           03 RKEY2 PIC 9(8).
+       
+       
+       FD TFIL3.
+       01 FREC3.
+          02  RKEY3     PIC 9(8).
+       
+       WORKING-STORAGE SECTION.
+       
+       01 VARIABLES.
+       
+           03 VKEY
+           XXXXX086.
+       
+       
+       PROCEDURE DIVISION.
+       
+       SQ401M-CONTROL.
+           OPEN INPUT TFIL.
+           PERFORM SQ401M-CLOSEREMOV THRU SQ401M-WRITEEOP.
+           CLOSE TFIL.
+           CLOSE TFIL2.
+           STOP RUN.
+       
+       SQ401M-CLOSEREMOV.
+           CLOSE TFIL REEL FOR REMOVAL.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       SQ401M-CLOSENRW.
+           OPEN INPUT TFIL.
+           CLOSE TFIL WITH NO REWIND.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       SQ401M-CLOSELOCK.
+           OPEN INPUT TFIL.
+           CLOSE TFIL WITH LOCK.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       SQ401M-OPENREV.
+           OPEN INPUT TFIL REVERSED.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       SQ401M-OPENNOREW.
+           CLOSE TFIL.
+           OPEN INPUT TFIL WITH NO REWIND.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       SQ401M-EXTEND.
+           CLOSE TFIL.
+           OPEN EXTEND TFIL3.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       SQ401M-READNEXT.
+           OPEN INPUT TFIL.
+           READ TFIL NEXT RECORD
+               AT END DISPLAY "AT END".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+           CLOSE TFIL.
+       
+       SQ401M-WRITEEOP.
+           OPEN OUTPUT TFIL.
+           WRITE FREC AT END-OF-PAGE DISPLAY "HELLO".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 18.
+      *> END-OF,SQ401M

@@ -1,0 +1,91 @@
+      *> HEADER,COBOL,NC110M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC110M.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     THE PROCEDURE DIVISION OF NC110M CONSISTS ENTIRELY OF
+      *>     PARAGRAPH NAMES AND "DISPLAY" LITERAL STATEMENTS.
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       PROCEDURE    DIVISION.
+       HEADER-PRINT.
+           DISPLAY " ".
+           DISPLAY
+           " FOR OFFICIAL USE ONLY                                    ".
+           DISPLAY
+           "     OFFICIAL COBOL COMPILER TEST SYSTEM.     ".
+           DISPLAY
+           "                TEST RESULTS SET- NC110M                  ".
+           DISPLAY
+           "                                                          ".
+           DISPLAY
+           " FOR OFFICIAL USE ONLY "
+           "                                                         ".
+           DISPLAY
+           "COPYRIGHT  1985".
+           DISPLAY
+           "                                                          ".
+           DISPLAY
+           " FEATURE     RESULTS AND                                  ".
+           DISPLAY
+           " TESTED      REMARKS                                      ".
+           DISPLAY
+           "                                                          ".
+           DISPLAY
+           " ---------------------------------------------------------".
+       GO-TEST.
+           DISPLAY
+           " GO TO       THIS TEST PASSES UNLESS FAIL APPEARS BELOW.  ".
+           GO       TO PERFORM-TEST.
+       GO-FAIL.
+           DISPLAY
+           "             FAIL".
+       PERFORM-TEST.
+           DISPLAY
+           " PERFORM     THIS TEST FAILS UNLESS PASS APPEARS BELOW.   ".
+           PERFORM  PASS.
+       ENDER-PRINT.
+           DISPLAY
+           " ---------------------------------------------------------".
+           DISPLAY
+           SPACE.
+           DISPLAY
+           "                  END OF TEST - NC110M                    ".
+           DISPLAY
+           "                  CHECK FOR ERRORS                        ".
+           DISPLAY
+           "                                                          ".
+           DISPLAY
+           " FOR OFFICIAL USE ONLY "
+           DISPLAY
+           "COPYRIGHT  1985".
+           DISPLAY
+           "       NTIS DISTRIBUTION COBOL 1985               ".
+           STOP RUN.
+       PASS.
+           DISPLAY
+           "             PASS".
+      *> END-OF,NC110M

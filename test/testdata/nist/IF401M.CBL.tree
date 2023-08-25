@@ -1,0 +1,549 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n             
+					(programName 
+						(cobolWord IF401M)) .\n       \n       \n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       \n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(fileSection FILE SECTION .\n       )) 
+				(dataDivisionSection 
+					(workingStorageSection WORKING-STORAGE SECTION .\n        
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord TEMP1)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 21)) 
+										(pictureChars )))) .\n       )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord WS-ANUM)) 
+								(dataPictureClause PICTURE 
+									(pictureString 
+										(pictureChars X))) .\n       \n       ))))) 
+			(procedureDivision PROCEDURE DIVISION .\n        
+				(procedureDivisionBody 
+					(paragraphs 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-ACOS)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord ACOS)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 1.0))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord ACOS)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 1.0))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-ANNUITY)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord ANNUITY)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 0)))) 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 4)))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord ANNUITY)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 0)))) 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 4)))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-ASIN)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord ASIN)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 1.0))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord ASIN)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 1.0))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-ATAN)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord ATAN)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 1.0))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord ATAN)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 1.0))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-CHAR)) .\n            
+							(sentence 
+								(statement 
+									(moveStatement MOVE 
+										(moveToStatement 
+											(moveToSendingArea 
+												(identifier 
+													(functionCall FUNCTION 
+														(functionName 
+															(cobolWord CHAR)) ( 
+														(argument 
+															(literal 
+																(numericLiteral 
+																	(integerLiteral 37)))) )))) TO 
+											(identifier 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord WS-ANUM)))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-COS)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord COS)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 1.0))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord COS)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 1.0))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-CURRENT-DATE)) .\n            
+							(sentence 
+								(statement 
+									(moveStatement MOVE 
+										(moveToStatement 
+											(moveToSendingArea 
+												(identifier 
+													(functionCall FUNCTION 
+														(functionName 
+															(cobolWord CURRENT-DATE))))) TO 
+											(identifier 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord TEMP1)))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-DATE-OF-INTEGER)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord DATE-OF-INTEGER)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 1)))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord DATE-OF-INTEGER)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 1)))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-DAY-OF-INTEGER)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord DAY-OF-INTEGER)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 1)))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord DAY-OF-INTEGER)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 1)))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-FACTORIAL)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord FACTORIAL)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 1)))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord FACTORIAL)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 1)))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-INTEGER)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName INTEGER) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 1.0))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName INTEGER) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 1.0))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-INTEGER-OF-DATE)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord INTEGER-OF-DATE)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 16010101)))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord INTEGER-OF-DATE)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 16010101)))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-INTEGER-OF-DAY)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord INTEGER-OF-DAY)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 1601001)))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord INTEGER-OF-DAY)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 
+																								(integerLiteral 1601001)))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-INTEGER-PART)) .\n            
+							(sentence 
+								(statement 
+									(ifStatement IF 
+										(condition 
+											(combinableCondition 
+												(simpleCondition 
+													(relationCondition 
+														(relationArithmeticComparison 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord INTEGER-PART)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 4.578))) ))))))) 
+															(relationalOperator =) 
+															(arithmeticExpression 
+																(multDivs 
+																	(powers 
+																		(basis 
+																			(identifier 
+																				(functionCall FUNCTION 
+																					(functionName 
+																						(cobolWord INTEGER-PART)) ( 
+																					(argument 
+																						(literal 
+																							(numericLiteral 4.578))) )))))))))))) 
+										(ifThen 
+											(statement 
+												(continueStatement CONTINUE))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord IF401M-END)) .\n       \n      )))))) <EOF>)

@@ -1,0 +1,595 @@
+      *> T   仕入先マスタ更新
+       IDENTIFICATION                    DIVISION.
+       PROGRAM-ID.                       LBEA0000.
+      *>  PATTERN-ID.                      CONVT001.
+       AUTHOR. *>CE                           HITACHI.
+      *>CE * 入出力ファイル：                                               P
+      *>CE * USER-S:
+      *>CE *     I01  :         仕入先ファイル
+      *>CE * USER-E:
+      *>CE * 使用ソース部品：                                               P
+      *>CE    +-------------------------------------------------+
+      *>CE    | 使用したソース部品を記述する 。                 |           P
+      *>CE    +-------------------------------------------------+
+      *>CE * USER-S:
+      *>CE * USER-E:
+      *>CE * 使用サブルーチン部品：                                         P
+      *>CE    +-------------------------------------------------+
+      *>CE    |  使用したサブルーチン部品を記述する。           |           P
+      *>CE    +-------------------------------------------------+
+      *>CE * USER-S:
+      *>CE       LBEDC000       仕入先マスタ
+      *>CE * USER-E:
+       ENVIRONMENT                       DIVISION.
+       CONFIGURATION                     SECTION.
+       SOURCE-COMPUTER.                  3500.
+       OBJECT-COMPUTER.                  3500.
+       SPECIAL-NAMES.
+                                         C01       IS   PCHANGE.
+       INPUT-OUTPUT                      SECTION.
+       FILE-CONTROL.
+      *> C 入力ファイル（I01)                                             P
+      *>    +-------------------------------------------------+
+      *>    | 入力ファイルの数だけ指定する。                  |           P
+      *>    +-------------------------------------------------+
+      *> L  (仕入先ファイル）                                             P
+      *> * USER-S:
+        SELECT I01
+            ASSIGN    TO       UT-SYS100
+            ORGANIZATION LINE SEQUENTIAL.
+      *> * USER-E:
+      *> * 出力ファイル（O01)                                             P
+      *>    +-------------------------------------------------+
+      *>    | 出力ファイルの数だけ指定する。                  |           P
+      *>    +-------------------------------------------------+
+      *> L  (ファイル名を記述。ＤＢの場合はコメントで対応を記述。）       P
+      *> * USER-S:
+      *>  SELECT O01
+      *>      ASSIGN    TO       UT-SYS100.
+      *> * USER-E:
+       DATA                              DIVISION.
+       FILE                              SECTION.
+      *> *
+      *>    +-------------------------------------------------+
+      *>    |  入力ファイル (I01):（仕入先ファイル）          |           P
+      *>    +-------------------------------------------------+
+      *> USER-S:
+       FD   I01.
+      *>     COPY rlbebh0i
+      *>                                PREFIXING I01-.
+         02  I01-NEWLINE              PIC  X(001).
+      *> *USER-E:
+       WORKING-STORAGE                   SECTION.
+      *> D   日付                                                         P
+       01  W-HIZUKE.
+         03  W-DATE.
+           05  W-D-YYYY.
+             07  W-D-YY-U2               PIC  X(02).
+             07  W-D-YY-L2               PIC  X(02).
+           05  W-D-MM                    PIC  X(02).
+           05  W-D-DD                    PIC  X(02).
+         03  W-TIME.
+           05  W-T-HH                    PIC  X(02).
+           05  W-T-MM                    PIC  X(02).
+           05  W-T-SS                    PIC  X(02).
+           05  W-T-SS100                 PIC  X(02).
+         03  FILLER                      PIC  X(05).
+      *> 
+      *> *****************************************************************
+      *> D   表示用時刻                                                   P
+       01  DISP-HIZUKE-AREA.
+         03  DISP-DATE.
+           05  DISP-D-YYYY               PIC  X(04).
+           05  FILLER                    PIC  X(01) VALUE '/'.
+           05  DISP-D-MM                 PIC  X(02).
+           05  FILLER                    PIC  X(01) VALUE '/'.
+           05  DISP-D-DD                 PIC  X(02).
+           05  FILLER                    PIC  X(01) VALUE SPACE.
+         03  DISP-TIME.
+           05  DISP-T-HH                 PIC  X(02).
+           05  FILLER                    PIC  X(01) VALUE ':'.
+           05  DISP-T-MM                 PIC  X(02).
+           05  FILLER                    PIC  X(01) VALUE ':'.
+           05  DISP-T-SS                 PIC  X(02).
+           05  FILLER                    PIC  X(01) VALUE '.'.
+           05  DISP-T-SS100              PIC  X(02).
+      *> *****************************************************************
+      *> D   ABEND メッセージ                                             P
+       01  MSG-ABN-AREA.
+         03  MSG-ABN0.
+           05  FILLER                    PIC  X(15)  VALUE ALL '*'.
+           05  FILLER                    PIC  X(19)
+                                        VALUE  'ABEND ﾒｯｾｰｼﾞ  START'.
+           05  FILLER                    PIC  X(16)  VALUE ALL '*'.
+      *> L プログラムＩＤ                                                 P
+         03  MSG-ABN1.
+           05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+           05  ABN-PGMID                 PIC  X(08)  VALUE SPACE.
+           05  FILLER                    PIC  X(37)  VALUE ALL '*'.
+      *> L セクション名                                                   P
+         03  MSG-ABN2.
+           05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+           05  ABN-SEC                   PIC  X(30)  VALUE SPACE.
+           05  FILLER                    PIC  X(15)  VALUE ALL '*'.
+      *> L アベンドコード                                                 P
+         03  MSG-ABN3.
+           05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+           05  FILLER                    PIC  X(13)
+                                                VALUE 'ｱﾍﾞﾝﾄﾞｺｰﾄﾞ = '.
+           05  ABN-CD                    PIC  ----9.
+           05  FILLER                    PIC  X(27)  VALUE ALL '*'.
+      *> L アクセスＫＥＹ                                                 P
+         03  MSG-ABN4.
+           05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+           05  ABN-KEY                   PIC  X(20)  VALUE SPACE.
+           05  FILLER                    PIC  X(25)  VALUE ALL '*'.
+      *> L コメント１                                                     P
+         03  MSG-ABN5.
+           05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+           05  ABN-CMT1                  PIC  X(40)  VALUE SPACE.
+           05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+      *> L コメント２                                                     P
+         03  MSG-ABN6.
+           05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+           05  ABN-CMT2                  PIC  X(40)  VALUE SPACE.
+           05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+      *> L コメント３                                                     P
+         03  MSG-ABN7.
+           05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+           05  ABN-CMT3                  PIC  X(40)  VALUE SPACE.
+           05  FILLER                    PIC  X(05)  VALUE ALL '*'.
+      *> L アベンドメッセージ終了                                         P
+         03  MSG-ABN8.
+           05  FILLER                    PIC  X(10)  VALUE ALL '*'.
+           05  FILLER                    PIC  X(17)
+                                        VALUE  'ｱﾍﾞﾝﾄﾞﾒｯｾｰｼﾞ  END'.
+           05  FILLER                    PIC  X(23)  VALUE ALL '*'.
+       
+      *> D   開始メッセージ                                               P
+       01  MSG-START.
+         03  FILLER                      PIC  X(10)  VALUE '       ***'.
+         03  START-PGMID                 PIC  X(10)  VALUE SPACE.
+         03  FILLER                      PIC  X(10)  VALUE ' START ***'.
+      *> 
+      *> D   終了メッセージ                                               P
+       01  MSG-END.
+         03  FILLER                      PIC  X(10)  VALUE '       ***'.
+         03  END-PGMID                   PIC  X(10)  VALUE SPACE.
+         03  FILLER                      PIC  X(10)  VALUE '  END  ***'.
+      *> 
+      *> *USER-S:
+      *> D   入力件数メッセージ                                           P
+       01  MSG-CNT-I01.
+         03  FILLER                      PIC  X(30)
+                         VALUE 'I01                           '.
+         03  FILLER                      PIC  X(10)  VALUE '   レコー '.P
+         03  FILLER                      PIC  X(10)  VALUE 'ド件数 =  '.P
+      *> 
+      *> D   出力件数メッセージ                                           P
+       01  MSG-CNT-DO01.
+         03  FILLER                      PIC  X(30)
+                         VALUE '仕入先マスタ                  '.        P
+         03  FILLER                      PIC  X(10)  VALUE '        追'.P
+         03  FILLER                      PIC  X(10)  VALUE '加件数 =  '.P
+       01  MSG-CNT-DU01.
+         03  FILLER                      PIC  X(30)
+                         VALUE '仕入先マスタ                  '.        P
+         03  FILLER                      PIC  X(10)  VALUE '        更'.P
+         03  FILLER                      PIC  X(10)  VALUE '新件数 =  '.P
+      *> D   入力カウント                                                 P
+       01  CNT-I01-AREA.
+         03  CNT-I01                     PIC  S9(09).
+      *> D   出力カウント                                                 P
+       01  CNT-DO01-AREA.
+         03  CNT-DO01                    PIC  9(09).
+         03  CNT-DU01                    PIC  9(09).
+      *> D   新日付マスタ 管理情報 更新用ホスト変数
+       01  HOST-PGMID                    PIC X(08).
+       01  HOST-BLANK                    PIC X(08)  VALUE SPACE.
+       01  HOST-HIZUKE.
+         03  HOST-HI.
+           05  HOST-D-YYYY               PIC  X(04).
+           05  HOST-D-MM                 PIC  X(02).
+           05  HOST-D-DD                 PIC  X(02).
+         03  HOST-TIME.
+           05  HOST-T-HH                 PIC  X(02).
+           05  HOST-T-MM                 PIC  X(02).
+           05  HOST-T-SS                 PIC  X(02).
+           05  HOST-T-SS100              PIC  X(02).
+       01  HOST-HIZUKE-R                 PIC  X(16).
+      *> 
+      *> *****************************************************************
+      *> D   レコード終了フラグ
+       01  SW-CUR-END                   PIC  X(001)  VALUE SPACE.
+      *> *USER-E:
+      *> D  予約定数                                                      P
+       01  CONTANT-AREA.
+      *>       エンドフラグの定数                                         P
+         03  CN-TRUE                    PIC  X(001) VALUE '1'.
+      *>       改行コード                                                 P
+         03  CN-NEWLINE                 PIC  X(001) VALUE X'0A'.
+      *> D  プログラム名                                                  P
+         03  PGMID                      PIC  X(008) VALUE 'LBEA0000'.
+      *> D  テーブル名称                                                  P
+      *>   03  TABLE-NAME                 PIC  X(40).
+      *> *
+      *> D  ＳＱＬ使用領域の宣言                                          P
+      *> D  CBNABNの引数として使用する領域                                P
+       01  ABEND-CODE                   PIC S9(004) USAGE  COMP.
+      *> *USER-S:
+      *> ****************************************************************
+      *> D  ＳＱＬ使用領域の宣言                                          P
+      *> 
+      *> D  SQLCAの展開                                                   P
+      *>    +-------------------------------------------------+
+      *>    | 一般の場合はこちらが有効                        |           P
+      *>    +-------------------------------------------------+
+      *>     COPY  SQLCA.
+      *>    +-------------------------------------------------+
+      *>    | 直接ＳＱＬ記述の場合はこちらが有効              |           P
+      *>    +-------------------------------------------------+
+      *>      EXEC SQL
+      *>        INCLUDE SQLCA
+      *>      END-EXEC
+      *>      EXEC SQL
+      *>        BEGIN   DECLARE SECTION
+      *>      END-EXEC
+      *> *USER-E:
+      *>    +-------------------------------------------------+
+      *>    | ＳＱＬ使用領域の追加作業領域                    |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+      *> *USER-E:
+      *>    +-----------------------------------------------------+
+      *>    |ＤＢを直接使用する際は次の行以降のコメントを除去する |       P
+      *>    +-----------------------------------------------------+
+      *> *USER-S:
+      *>     EXEC SQL
+      *>       END DECLARE SECTION
+      *>     END-EXEC.
+      *> *USER-E:
+      *>    +-----------------------------------------------------+
+      *>    |ＤＢを直接使用する際は前の行までのコメントを除去する |       P
+      *>    +-----------------------------------------------------+
+      *> *
+      *> D   ユーザ追加領域(SQL使用領域以外)                              P
+      *>    +-------------------------------------------------+
+      *>    |ＳＱＬ使用領域の以外のユーザ追加作業領域         |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+      *> *USER-E:
+      *> *****************************************************************
+      *> D  コピー文展開                                                  P
+      *> *****************************************************************
+      *> C XDATBAS（全体）アクセス領域                                    P
+      *>    +-------------------------------------------------+
+      *>    |ＤＢを使用する際は次の行以降のコメントを除去する |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+      *> **   ここから ***************************************************P
+       01  XDATBAS-MODE                 PIC     X(05).
+      *> *C データベースアクセス定数                                      P
+      *>     COPY  rlbedc01.
+      *> *C SQLCODE定数                                                   P
+      *>     COPY  rlbedc02.
+      *> *C ＤＩＡエリア定義
+      *>     COPY  rlbedd00               PREFIXING  XDATBAS-.
+      *> *C データベース  データエリア定義
+      *>     COPY  rlbedd0c               PREFIXING  D01-.
+      *> *C データベース  キーエリア定義
+      *>     COPY  rlbedd0c               PREFIXING  K01-.
+      *> **   ここまで ***************************************************P
+      *> *USER-E:
+       LINKAGE                           SECTION.
+      *> *USER-S:
+      *> *USER-E:
+       PROCEDURE                         DIVISION.
+      *> *****************************************************************
+      *>                                                                 *
+      *>     メイン処理                                                  *P
+      *>                                                                 *
+      *> *****************************************************************
+       MAIN-PROC                         SECTION.
+      *> G   メイン処理                                                   P
+           PERFORM  JUNBI-PROC
+           PERFORM  SIIRE-PROC
+           PERFORM  SYURYO-PROC
+           MOVE  ZERO                   TO  RETURN-CODE
+           STOP RUN.
+      *> *****************************************************************
+      *>                                                                 *
+      *>     準備処理                                                    *P
+      *>                                                                 *
+      *> *****************************************************************
+       JUNBI-PROC                        SECTION.
+      *> G   準備処理                                                     P
+      *> G   領域の初期化                                                 P
+           MOVE  PGMID                  TO  START-PGMID
+           MOVE  PGMID                  TO  END-PGMID
+           MOVE  PGMID                  TO  ABN-PGMID
+           DISPLAY                   MSG-START  UPON  SYSOUT
+      *> G   日付設定                                                     P
+           PERFORM  GET-CURRENT-DATE-PROC
+      *> *USER-S:
+           MOVE     ZERO                TO  CNT-I01
+           MOVE     ZERO                TO  CNT-DO01
+                                            CNT-DU01
+           MOVE  SPACE                  TO  SW-CUR-END
+           INITIALIZE                   XDATBAS-DIA
+                                        SQLCA
+                                        D01-RLBEDD0C-AREA
+                                        K01-RLBEDD0C-AREA
+      *> *USER-E:
+      *> G   ファイルのオープン                                           P
+      *>    +-------------------------------------------------+
+      *>    |ファイル数にあわせ変更する。                     |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+            MOVE  'JUNBI-PROC'          TO  ABN-SEC
+            OPEN
+                     INPUT   I01
+      *> *USER-E:
+      *> *
+      *> G   ＤＢの接続                                                   P
+      *>    +-------------------------------------------------+
+      *>    | ＤＢを使用する際は次の行のコメントを除去する    |           P
+      *>    | 使用しない時は削除する。                        |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+            MOVE  SPACE                 TO  XDATBAS-DIA
+            CALL  'LBED0000'         USING  SINON
+                                            XDATBAS-DIA
+                                            SQLCA
+             IF ( XDATBAS-STAT  NOT = CN-XDATBAS-OK )
+               THEN
+      *>           MOVE  'SINON ERR'      TO  ABN-CMT1
+                 PERFORM  DB-ERR-PROC
+               ELSE
+                 CONTINUE
+             END-IF
+      *> *USER-E:
+      *> *
+      *> G   ＤＢテーブル・ビューの宣言（DECLARE CURSOR)                  P
+      *>    +-------------------------------------------------+
+      *>    |ＤＢテーブル・ビューの宣言を記述する。           |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+      *> *USER-E:
+      *>    +-------------------------------------------------+
+      *>    | ＤＢテーブル・ビューのオープン（OPEN CURSOR)    |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+      *> *USER-E:
+           CONTINUE.
+      *> *****************************************************************
+      *>                                                                 *
+      *>     仕入先マスタ  出力処理                                      *P
+      *>                                                                 *
+      *> *****************************************************************
+       SIIRE-PROC                        SECTION.
+      *> G   仕入先マスタ  出力処理
+      *> *USER-S:
+           MOVE  'SIIRE-PROC'           TO  ABN-SEC
+           PERFORM  I01-INPUT-PROC
+           PERFORM  WITH TEST BEFORE
+                    UNTIL  SW-CUR-END = '1'
+             MOVE  I01-SHIIRE-REC       TO  D01-RLBEDD0C-AREA
+             MOVE  I01-SHIIRE-REC       TO  K01-RLBEDD0C-AREA
+             MOVE  'LBEA0000'           TO  D01-KOSIN-PGM
+             MOVE  SPACE                TO  D01-TERM-ID
+             MOVE  W-DATE               TO  HOST-HI
+             MOVE  W-TIME               TO  HOST-TIME
+             MOVE  HOST-HIZUKE          TO  D01-KOSIN-NTJ
+           PERFORM  SIIRE-HANTEI-PROC
+           PERFORM  I01-INPUT-PROC
+           END-PERFORM
+      *> *USER-E:
+             CONTINUE.
+      *> *****************************************************************
+      *>                                                                 *
+      *>       仕入先マスタ  アクセスルーチン                            *P
+      *>                                                                 *
+      *> *****************************************************************
+       SIIRE-HANTEI-PROC                 SECTION.
+      *> G   仕入先マスタ  アクセスルーチン
+      *> *USER-S:
+      *> *   仕入先マスタ更新
+           MOVE  'SIIRE-HANTEI-PROC'    TO  ABN-SEC
+           CALL  'LBED0C00'          USING  WRITV
+                                            XDATBAS-DIA
+                                            D01-RLBEDD0C-AREA
+                                            K01-RLBEDD0C-AREA
+                                            SQLCA
+           EVALUATE  XDATBAS-STAT
+             WHEN     CN-XDATBAS-OK
+               COMPUTE  CNT-DU01  =  CNT-DU01 +  1
+             WHEN     CN-XDATBAS-NODATA
+      *> *       対象データが存在しない場合、追加する。
+               CALL  'LBED0C00'      USING  ADD-M
+                                            XDATBAS-DIA
+                                            D01-RLBEDD0C-AREA
+                                            K01-RLBEDD0C-AREA
+                                            SQLCA
+               EVALUATE  XDATBAS-STAT
+                 WHEN     CN-XDATBAS-OK
+                   COMPUTE  CNT-DO01  =  CNT-DO01 +  1
+                 WHEN OTHER
+                   PERFORM  DB-ERR-PROC
+               END-EVALUATE
+             WHEN OTHER
+               PERFORM  DB-ERR-PROC
+           END-EVALUATE
+      *> *USER-E:
+             CONTINUE.
+      *> *****************************************************************
+      *>                                                                 *
+      *>     終了処理                                                    *P
+      *>                                                                 *
+      *> *****************************************************************
+       SYURYO-PROC                       SECTION.
+      *> G   終了処理                                                     P
+      *> G   ファイルのクローズ                                           P
+      *>    +-------------------------------------------------+
+      *>    | ファイル数にあわせ変更する。                    |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+           MOVE  'SYURYO-PROC'         TO  ABN-SEC
+           CLOSE
+                        I01
+      *> *USER-E:
+      *> *
+      *>    +-------------------------------------------------+
+      *>    |ＤＢテーブル・ビューのクローズ（CLOSE CURSOR)    |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+      *> *USER-E:
+      *>    +-------------------------------------------------+
+      *>    |ＤＢ実更新(COMIT)                                |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+           CALL  'LBED0000'    USING  COMIT
+                                      XDATBAS-DIA
+                                      SQLCA
+           IF ( XDATBAS-STAT  NOT = CN-XDATBAS-OK )
+             THEN
+      *>         MOVE  'COMIT ERR'       TO  ABN-CMT2
+               PERFORM  DB-ERR-PROC
+             ELSE
+               CONTINUE
+           END-IF
+      *> *USER-E:
+      *> *
+      *> G   ＤＢの切断                                                   P
+      *>    +-------------------------------------------------+
+      *>    |ＤＢを使用する際は次の行のコメントを除去する     |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+      *> 
+           CALL  'LBED0000'    USING  SINOF
+                                      XDATBAS-DIA
+                                      SQLCA
+           IF ( XDATBAS-STAT  NOT = CN-XDATBAS-OK )
+             THEN
+      *>         MOVE  'SINOFF ERR'       TO  ABN-CMT2
+               PERFORM  DB-ERR-PROC
+             ELSE
+               CONTINUE
+           END-IF
+      *> *USER-E:
+      *>    +-------------------------------------------------+
+      *>    |使用するファイル数にあわせ変更する               |           P
+      *>    +-------------------------------------------------+
+      *> G   終了メッセージの表示                                         P
+      *> *USER-S:
+           DISPLAY    MSG-CNT-I01       CNT-I01             UPON SYSOUT
+           DISPLAY    MSG-CNT-DU01      CNT-DU01            UPON SYSOUT
+           DISPLAY    MSG-CNT-DO01      CNT-DO01            UPON SYSOUT
+           DISPLAY                      MSG-END             UPON SYSOUT
+      *> *USER-E:
+           CONTINUE.
+      *> 
+      *> *****************************************************************
+      *>                                                                 *
+      *>     ファイル(I01)入力処理                                       *P
+      *>                                                                 *
+      *> *****************************************************************
+       I01-INPUT-PROC                   SECTION.
+      *> G   ファイル（I01)入力処理
+           MOVE  'I01-INPUT-PROC'       TO  ABN-SEC
+      *> *USER-S:
+           READ  I01
+             AT END
+                MOVE  CN-TRUE           TO  SW-CUR-END
+           END-READ
+           IF         SW-CUR-END        =   SPACE
+            THEN
+              COMPUTE  CNT-I01          =   CNT-I01  +  1
+            ELSE
+              CONTINUE
+           END-IF
+      *> *USER-E
+           CONTINUE.
+      *> *****************************************************************
+      *>                                                                 *
+      *>     ユーザ コーディング  エリア                                 *P
+      *>                                                                 *
+      *> *****************************************************************
+      *>    +-------------------------------------------------+
+      *>    | ユーザ固有の処理を記述する。                    |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+      *> *USER-E:
+      *> *****************************************************************
+      *>                                                                 *
+      *>     日付取得処理                                                *P
+      *>                                                                 *
+      *> *****************************************************************
+       GET-CURRENT-DATE-PROC             SECTION.
+      *> G   日付取得処理                                                 P
+           MOVE  FUNCTION  CURRENT-DATE TO  W-HIZUKE
+           MOVE  W-D-YYYY               TO   DISP-D-YYYY
+           MOVE  W-D-MM                 TO   DISP-D-MM
+           MOVE  W-D-DD                 TO   DISP-D-DD
+           MOVE  W-T-HH                 TO   DISP-T-HH
+           MOVE  W-T-MM                 TO   DISP-T-MM
+           MOVE  W-T-SS                 TO   DISP-T-SS
+           MOVE  W-T-SS100              TO   DISP-T-SS100
+           CONTINUE.
+      *> *
+      *> *****************************************************************
+      *>                                                                 *
+      *>     ＤＢエラー処理                                              *P
+      *>                                                                 *
+      *> *****************************************************************
+       DB-ERR-PROC                     SECTION.
+      *> G   ＤＢのエラー処理                                             P
+      *>    +-------------------------------------------------+
+      *>    | ＤＢを使用する場合は、次のコメントを除去する。  |           P
+      *>    +-------------------------------------------------+
+      *> *USER-S:
+             MOVE  SQLCODE              TO   ABEND-CODE
+             CALL  'LBED0000'    USING  RBACK
+                                        XDATBAS-DIA
+                                        SQLCA
+      *> *USER-E:
+           PERFORM   ABEND-PROC.
+      *>      CONTINUE.
+      *> *****************************************************************
+      *>                                                                 *
+      *>     アベンドメッセージ表示 と アベンド処理                      *P
+      *>                                                                 *
+      *> *****************************************************************
+       ABEND-PROC                      SECTION.
+      *> G   アベンドメッセージ表示 と アベンド処理                       P
+           MOVE     W-DATE      TO  MSG-ABN1(20:8)
+           MOVE     W-TIME(1:6) TO  MSG-ABN1(30:6)
+           MOVE     ABEND-CODE  TO  ABN-CD
+           DISPLAY  MSG-ABN0  UPON  SYSOUT
+           DISPLAY  MSG-ABN1  UPON  SYSOUT
+           DISPLAY  MSG-ABN2  UPON  SYSOUT
+           DISPLAY  MSG-ABN3  UPON  SYSOUT
+           DISPLAY  MSG-ABN4  UPON  SYSOUT
+      *> *USER-S:
+      *>     IF  ABN-CMT1       =     SPACE
+      *>       THEN
+      *>         CONTINUE
+      *>       ELSE
+      *>         DISPLAY  MSG-ABN5  UPON  SYSOUT
+      *>     END-IF
+      *>     IF  ABN-CMT2       =     SPACE
+      *>       THEN
+      *>         CONTINUE
+      *>       ELSE
+      *>         DISPLAY  MSG-ABN6  UPON  SYSOUT
+      *>     END-IF
+      *>     IF  ABN-CMT3       =     SPACE
+      *>       THEN
+      *>         CONTINUE
+      *>       ELSE
+      *>         DISPLAY  MSG-ABN7  UPON  SYSOUT
+      *>     END-IF
+      *> *USER-E:
+           DISPLAY  MSG-ABN8  UPON  SYSOUT
+           CALL  'CBLABN'  USING  ABEND-CODE.
+      *>     CONTINUE.
+       END PROGRAM LBEA0000.

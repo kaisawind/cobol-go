@@ -1,0 +1,956 @@
+      *> HEADER,COBOL,CM102M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           CM102M.
+       AUTHOR.
+      *>CE     FEDERAL COMPILER TESTING CENTER.
+      *>  INSTALLATION.
+      *>CE      GENERAL SERVICES ADMINISTRATION
+      *>CE *     AUTOMATED DATA AND TELECOMMUNICATION SERVICE.
+      *>CE      SOFTWARE DEVELOPMENT OFFICE.
+      *>CE      5203 LEESBURG PIKE  SUITE 1100
+      *>CE      FALLS CHURCH VIRGINIA 22041.
+      *>CE 
+      *>CE      PHONE   (703) 756-6153
+      *>CE 
+      *>CE      " HIGH       ".
+       DATE-WRITTEN.
+      *>CE     CCVS-74 VERSION 4.0 - 1980 JULY 1.
+      *>CE     CREATION DATE     /    VALIDATION DATE
+      *>CE     "4.2 ".
+       SECURITY.
+      *>CE     NONE.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE
+           LABEL RECORDS
+           XXXXX084
+           DATA RECORD IS PRINT-REC DUMMY-RECORD.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  COMP-TWO PIC 9 COMP VALUE 2.
+       77  TWO PIC 9 VALUE 2.
+       77  COMP-THREE PIC 9 VALUE 3.
+       77  THREE PIC 9 VALUE 3.
+       77  SEND-SWITCH PIC 99 COMP.
+       77  MSG-NUM PIC 9(4).
+       77  MSG-70 PIC X(70).
+       77  PASSWORD1 PIC X(10) VALUE
+           XXXXX033.
+       01  ERR-MSG.
+           02  FILLER PIC X(33) VALUE
+               "THIS MESSAGE SHOULD NOT APPEAR - ".
+           02  TEST-IND PIC X(4).
+       01  LOG-HDR-1.
+           02  FILLER PIC X(48) VALUE SPACES.
+           02  FILLER PIC X(24) VALUE "LOG OF OUTGOING MESSAGES".
+       01  LOG-HDR-2.
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(14) VALUE "START  TIME".
+           02  FILLER PIC X(10) VALUE "ELAPSED".
+           02  FILLER PIC X(13) VALUE "STATUS/ERR".
+           02  FILLER PIC X(41) VALUE "LENGTH".
+           02  FILLER PIC X(7) VALUE "MESSAGE".
+       01  LOG-HDR-3.
+           02  FILLER PIC X VALUE SPACES.
+           02  FILLER PIC X(11) VALUE ALL "-".
+           02  FILLER PIC XXX VALUE SPACES.
+           02  FILLER PIC X(7) VALUE ALL "-".
+           02  FILLER PIC XXX VALUE SPACES.
+           02  FILLER PIC X(10) VALUE ALL "-".
+           02  FILLER PIC XXX VALUE SPACES.
+           02  FILLER PIC X(6) VALUE ALL "-".
+           02  FILLER PIC XXX VALUE SPACES.
+           02  FILLER PIC X(72) VALUE ALL "-".
+       01  LOG-LINE.
+           02  FILLER PIC X VALUE SPACE.
+           02  START-TIME.
+               03  HOURS PIC 99.
+               03  FILLER PIC X VALUE ":".
+               03  MINUTES PIC 99.
+               03  FILLER PIC X VALUE ":".
+               03  SECONDS PIC 99.99.
+           02  FILLER PIC XX VALUE SPACES.
+           02  ELAPSED PIC -(4)9.99.
+           02  FILLER PIC X(7) VALUE SPACES.
+           02  STAT PIC 99.
+           02  FILLER PIC X VALUE "/".
+           02  ERR PIC 9.
+           02  FILLER PIC X(5) VALUE SPACES.
+           02  LNTH PIC ZZZ9.
+           02  FILLER PIC X(5) VALUE SPACES.
+           02  MSG-OUT PIC X(72).
+       01  LOG-LINE-1.
+           02  FILLER PIC X(39) VALUE SPACES.
+           02  FILLER PIC X(8) VALUE "CONT".
+           02  MSG-FLD PIC X(72).
+       01  SUPERIMPOSITION.
+           02  S-ALL PIC X(4).
+           02  S-WORDS PIC X(6).
+           02  S-IN PIC X(3).
+           02  S-THIS PIC X(5).
+           02  S-MESSAGE PIC X(8).
+           02  S-SHOULD PIC X(7).
+           02  S-COME PIC X(5).
+           02  S-OUT PIC X(4).
+           02  S-ON PIC XXX.
+           02  S-THE PIC X(4).
+           02  S-SAME PIC X(5).
+           02  S-LINE PIC X(5).
+       01  MSG-A.
+           02  FILLER PIC X VALUE SPACE.
+           02  MSG-B.
+               03  FILLER PIC X VALUE SPACE.
+               03  MSG-C.
+                   04  FILLER PIC X VALUE SPACE.
+                   04  MSG-D.
+                       05  FILLER PIC X VALUE SPACE.
+                       05  MSG-E.
+                           06  FILLER PIC X(19) VALUE
+                                   "THIS IS MESSAGE NO.".
+                           06  MSG-NO PIC ZZZZ.
+                           06  FILLER PIC X(35) VALUE
+                                   ".--THIS SENTENCE MUST NOT APPEAR.".
+       01  SYSTEM-TIME.
+           02  HOURS PIC 99.
+           02  MINUTES PIC 99.
+           02  SECONDS PIC 99V99.
+       01  COMP-TIME.
+           02  COMP-HRS PIC 99.
+           02  COMP-MINS PIC 99.
+           02  COMP-SECS PIC 99V99.
+       01  MSG-F.
+           02  FILLER PIC X(19) VALUE  "THIS IS MESSAGE NO.".
+           02  MSG-F-NO PIC ZZZZ.
+           02  FILLER PIC X(40) VALUE
+                   " AND SHOULD APPEAR AT THE TOP OF A PAGE.".
+       01  MSG-G.
+           02  FILLER PIC X(19) VALUE  "THIS IS MESSAGE NO.".
+           02  MSG-G-NO PIC ZZZZ.
+           02  FILLER PIC X(41) VALUE
+                   " AND SHOULD APPEAR AFTER TWO BLANK LINES.".
+       01  MSG-H.
+           02  FILLER PIC X(19) VALUE "THIS IS MESSAGE NO.".
+           02  MSG-H-NO PIC ZZZZ.
+           02  FILLER PIC X(41) VALUE
+                   " AND SHOULD APPEAR BEFORE ONE BLANK LINE.".
+       01  LONG-MSG.
+           02  LONG-MSG-S1 PIC X(73) VALUE "ON PAGE XIII-21, PARAGRAPH 3.5.4(1)C, THE COBOL STANDARD STATES, ""EXCESS ".
+           02  LONG-MSG-S2 PIC X(67) VALUE "CHARACTERS OF A MESSAGE OR MESSAGE SEGMENT WILL NOT BE TRUNCATED.  ".
+           02  LONG-MSG-S3 PIC X(71) VALUE "CHARACTERS WILL BE PACKED TO A SIZE EQUAL TO THAT OF THE PHYSICAL LINE ".
+           02  LONG-MSG-S4 PIC X(69) VALUE "AND THEN OUTPUTTED TO THE DEVICE.  THE PROCESS CONTINUES ON THE NEXT ".
+           02  LONG-MSG-S5 PIC X(73) VALUE "LINE WITH THE EXCESS CHARACTERS.""  IF THIS ENTIRE PARAGRAPH WAS RECEIVED ".
+           02  LONG-MSG-S6 PIC X(71) VALUE "BY THE DESIGNATED DEVICE, THEN THE FOREGOING RULE IS SUPPORTED BY THIS ".
+           02  LONG-MSG-S7 PIC X(9) VALUE "COMPILER.".
+       01  REC-SKL-SUB PICTURE 9(2) VALUE ZERO.
+       01  REC-CT PICTURE 99 VALUE ZERO.
+       01  DELETE-CNT                   PICTURE 999  VALUE ZERO.
+       01  ERROR-COUNTER PICTURE IS 999 VALUE IS ZERO.
+       01  INSPECT-COUNTER PIC 999 VALUE ZERO.
+       01  PASS-COUNTER PIC 999 VALUE ZERO.
+       01  TOTAL-ERROR PIC 999 VALUE ZERO.
+       01  ERROR-HOLD PIC 999 VALUE ZERO.
+       01  DUMMY-HOLD PIC X(120) VALUE SPACE.
+       01  RECORD-COUNT PIC 9(5) VALUE ZERO.
+       01  CCVS-H-1.
+           02  FILLER   PICTURE X(27)  VALUE SPACE.
+           02 FILLER PICTURE X(67) VALUE
+           " FEDERAL COMPILER TESTING CENTER COBOL COMPILER VALIDATION   SYSTEM".
+           02  FILLER     PICTURE X(26)  VALUE SPACE.
+       01  CCVS-H-2.
+           02 FILLER PICTURE X(52) VALUE IS
+           "CCVS74 NCC  COPY, NOT FOR DISTRIBUTION.".
+           02 FILLER PICTURE IS X(19) VALUE IS "TEST RESULTS SET-  ".
+           02 TEST-ID PICTURE IS X(9).
+           02 FILLER PICTURE IS X(40) VALUE IS SPACE.
+       01  CCVS-H-3.
+           02  FILLER PICTURE X(34) VALUE
+           " FOR OFFICIAL USE ONLY    ".
+           02  FILLER PICTURE X(58) VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER PICTURE X(28) VALUE
+           "  COPYRIGHT   1974 ".
+       01  CCVS-E-1.
+           02 FILLER PICTURE IS X(52) VALUE IS SPACE.
+           02 FILLER PICTURE IS X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN PICTURE IS X(9).
+           02 FILLER PICTURE X(45) VALUE IS
+           " NTIS DISTRIBUTION COBOL 74".
+       01  CCVS-E-2.
+           02  FILLER                   PICTURE X(31)  VALUE
+           SPACE.
+           02  FILLER                   PICTURE X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL PICTURE IS XXX VALUE IS SPACE.
+               03 FILLER PICTURE IS X VALUE IS SPACE.
+               03 ENDER-DESC PIC X(44) VALUE "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER PICTURE X(22) VALUE
+           " FOR OFFICIAL USE ONLY".
+           02  FILLER PICTURE X(12) VALUE SPACE.
+           02  FILLER PICTURE X(58) VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER PICTURE X(13) VALUE SPACE.
+           02 FILLER PIC X(15) VALUE " COPYRIGHT 1974".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1 PIC XXX VALUE SPACE.
+           02 FILLER PIC XXXX VALUE " OF ".
+           02 CCVS-E-4-2 PIC XXX VALUE SPACE.
+           02 FILLER PIC X(40) VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER PIC X(30) VALUE "        *** INFORMATION  ***".
+           02 INFO-TEXT.
+           04 FILLER PIC X(20) VALUE SPACE.
+           04 XXCOMPUTED PIC X(20).
+           04 FILLER PIC X(5) VALUE SPACE.
+           04 XXCORRECT PIC X(20).
+       01  HYPHEN-LINE.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(65) VALUE IS "*****************************************************************".
+           02 FILLER PICTURE IS X(54) VALUE IS "******************************************************".
+       01  CCVS-PGM-ID PIC X(6) VALUE
+           "CM102M".
+       01  TEST-RESULTS.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 FEATURE                   PICTURE X(18).
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 P-OR-F                    PICTURE X(5).
+           02 FILLER                    PICTURE X  VALUE SPACE.
+           02  PAR-NAME PIC X(20).
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 COMPUTED-A                PICTURE X(20).
+           02  COMPUTED-SLASH-SET REDEFINES COMPUTED-A.
+               03  FILLER PIC X(8).
+               03  COMPUTED-STATUS PIC XX.
+               03  SLASH PIC X.
+               03  COMPUTED-ERR-KEY PIC X.
+               03  FILLER PIC X(8).
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 CORRECT-A                 PICTURE X(20).
+           02  CORRECT-SLASH-SET REDEFINES CORRECT-A.
+               03  FILLER PIC X(8).
+               03  CORRECT-2SLASH1 PIC 99/9.
+               03  FILLER PIC X(8).
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 RE-MARK                   PICTURE X(30).
+       01  COLUMNS-LINE-1.
+           02  FILLER PIC X(3) VALUE SPACES.
+           02  FILLER PIC X(17) VALUE "FEATURE TESTED".
+           02  FILLER PIC X(9) VALUE "RESLT".
+           02  FILLER PIC X(21) VALUE "PARAGRAPH NAME".
+           02  FILLER PIC X(22) VALUE "COMPUTED DATA".
+           02  FILLER PIC X(29) VALUE "CORRECT DATA".
+           02  FILLER PIC X(7) VALUE "REMARKS".
+       01  COLUMNS-LINE-2.
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(18) VALUE ALL "-".
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(5) VALUE ALL "-".
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(20) VALUE ALL "-".
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(20) VALUE ALL "-".
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(20) VALUE ALL "-".
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(31) VALUE ALL "-".
+       COMMUNICATION SECTION.
+       CD  CM-OUTQUE-1 FOR OUTPUT
+           DESTINATION COUNT IS ONE
+           TEXT LENGTH IS MSG-LENGTH
+           STATUS KEY IS STATUS-KEY
+           ERROR KEY IS ERR-KEY
+           SYMBOLIC DESTINATION IS SYM-DEST.
+       PROCEDURE    DIVISION.
+       SECT-CM102M-0001 SECTION.
+       CM102M-INIT.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE "CM102M     " TO TEST-ID.
+           MOVE     TEST-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE.
+           PERFORM COLUMN-NAMES-ROUTINE.
+           MOVE "MCS STATUS WORD" TO FEATURE.
+       DISAB-STATUS-TEST-01.
+           MOVE "INITIAL DISABLE TO OUTPUT CD" TO RE-MARK.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE 1 TO ONE.
+           MOVE
+           XXXXX032
+               TO SYM-DEST.
+           DISABLE OUTPUT CM-OUTQUE-1 WITH KEY
+           XXXXX033.
+           MOVE "INFO" TO P-OR-F.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           MOVE "       INFO TEST FOR" TO CORRECT-A.
+           GO TO DISAB-STATUS-WRITE-01.
+       DISAB-STATUS-DELETE-01.
+           PERFORM DE-LETE.
+       DISAB-STATUS-WRITE-01.
+           MOVE "DISAB-STATUS-TEST-01" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       DISAB-STATUS-TEST-02.
+           MOVE "NO DESTINATION SPECIFIED" TO RE-MARK.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE "GARBAGE" TO SYM-DEST.
+           MOVE 1 TO ONE.
+           DISABLE OUTPUT CM-OUTQUE-1 WITH KEY
+           XXXXX033.
+           IF STATUS-KEY IS EQUAL TO "20"
+               AND ERR-KEY IS EQUAL TO "1"
+               PERFORM PASS GO TO DISAB-STATUS-WRITE-02.
+           MOVE 201 TO CORRECT-2SLASH1.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           PERFORM FAIL.
+           GO TO DISAB-STATUS-WRITE-02.
+       DISAB-STATUS-DELETE-02.
+           PERFORM DE-LETE.
+       DISAB-STATUS-WRITE-02.
+           MOVE "DISAB-STATUS-TEST-02" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       DISAB-STATUS-TEST-03.
+           MOVE "INVALID PASSWORD USED" TO RE-MARK.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE 1 TO ONE.
+           MOVE
+           XXXXX032
+               TO SYM-DEST.
+           DISABLE OUTPUT CM-OUTQUE-1 WITH KEY
+               "GARBAGE".
+           IF STATUS-KEY IS EQUAL TO "40"
+               PERFORM PASS GO TO DISAB-STATUS-WRITE-03.
+           MOVE 400 TO CORRECT-2SLASH1.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           PERFORM FAIL.
+           GO TO DISAB-STATUS-WRITE-03.
+       DISAB-STATUS-DELETE-03.
+           PERFORM DE-LETE.
+       DISAB-STATUS-WRITE-03.
+           MOVE "DISAB-STATUS-TEST-03" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       DISAB-STATUS-TEST-04.
+           MOVE "INVALID DESTINATION COUNT (0)" TO RE-MARK.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE
+           XXXXX032
+               TO SYM-DEST.
+           MOVE 0 TO ONE.
+           DISABLE OUTPUT CM-OUTQUE-1 WITH KEY
+           XXXXX033.
+           IF STATUS-KEY IS EQUAL TO "30"
+               PERFORM PASS GO TO DISAB-STATUS-WRITE-04.
+           MOVE 300 TO CORRECT-2SLASH1.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           PERFORM FAIL.
+           GO TO DISAB-STATUS-WRITE-04.
+       DISAB-STATUS-DELETE-04.
+           PERFORM DE-LETE.
+       DISAB-STATUS-WRITE-04.
+           MOVE "DISAB-STATUS-TEST-04" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       DISAB-STATUS-TEST-05.
+           MOVE "COMBINATION ERROR" TO RE-MARK.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE SPACES TO SYM-DEST.
+           MOVE 0 TO ONE.
+           DISABLE OUTPUT CM-OUTQUE-1 WITH KEY
+               "GARBAGE".
+           MOVE "INFO" TO P-OR-F.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           GO TO DISAB-STATUS-WRITE-05.
+       DISAB-STATUS-DELETE-05.
+           PERFORM DE-LETE.
+       DISAB-STATUS-WRITE-05.
+           MOVE "DISAB-STATUS-TEST-05" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEND-STATUS-TEST-01.
+           MOVE "DESTINATION DISABLED" TO RE-MARK.
+           MOVE "CM102M- I AM THE FIRST MESSAGE IN QUEUE;" TO MSG-70.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE
+           XXXXX032
+               TO SYM-DEST.
+           MOVE 1 TO ONE.
+           MOVE 45 TO MSG-LENGTH.
+           SEND CM-OUTQUE-1 FROM MSG-70 WITH EMI
+               AFTER ADVANCING PAGE.
+           MOVE "THOU SHALT HAVE NO OTHER MESSAGES BEFORE ME." TO MSG-70
+           SEND CM-OUTQUE-1 FROM MSG-70 WITH EMI.
+           MOVE SPACES TO MSG-70.
+           MOVE 1 TO MSG-LENGTH.
+           SEND CM-OUTQUE-1 FROM MSG-70 WITH EGI.
+           IF STATUS-KEY IS EQUAL TO "10"
+               PERFORM PASS GO TO SEND-STATUS-WRITE-01.
+           MOVE 100 TO CORRECT-2SLASH1.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           PERFORM FAIL.
+           GO TO SEND-STATUS-WRITE-01.
+       SEND-STATUS-DELETE-01.
+           PERFORM DE-LETE.
+       SEND-STATUS-WRITE-01.
+           MOVE "SEND-STATUS-TEST-01" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEND-STATUS-TEST-02.
+           MOVE "COMBINATION ERROR" TO RE-MARK.
+           MOVE SPACES TO SYM-DEST.
+           MOVE 0 TO ONE.
+           MOVE 100 TO MSG-LENGTH.
+           MOVE "S-02" TO TEST-IND.
+           SEND CM-OUTQUE-1 FROM ERR-MSG WITH EMI.
+           MOVE "INFO" TO P-OR-F.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           GO TO SEND-STATUS-WRITE-02.
+       SEND-STATUS-DELETE-02.
+           PERFORM DE-LETE.
+       SEND-STATUS-WRITE-02.
+           MOVE "SEND-STATUS-TEST-02" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ENABL-STATUS-TEST-01.
+           MOVE "DESTINATION NOT SPECIFIED" TO RE-MARK.
+           MOVE SPACES TO SYM-DEST.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE 1 TO ONE.
+           ENABLE OUTPUT CM-OUTQUE-1 WITH KEY
+           XXXXX033.
+           IF STATUS-KEY IS EQUAL TO "20"
+               AND ERR-KEY IS EQUAL TO "1"
+               PERFORM PASS GO TO ENABL-STATUS-WRITE-01.
+           MOVE 201 TO CORRECT-2SLASH1.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           PERFORM FAIL.
+           GO TO ENABL-STATUS-WRITE-01.
+       ENABL-STATUS-DELETE-01.
+           PERFORM DE-LETE.
+       ENABL-STATUS-WRITE-01.
+           MOVE "ENABL-STATUS-TEST-01" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ENABL-STATUS-TEST-02.
+           MOVE "INVALID DESTINATION COUNT (0)" TO RE-MARK.
+           MOVE
+           XXXXX032
+               TO SYM-DEST.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE 0 TO ONE.
+           ENABLE OUTPUT CM-OUTQUE-1 WITH KEY
+           XXXXX033.
+           IF STATUS-KEY IS EQUAL TO "30"
+               PERFORM PASS GO TO ENABL-STATUS-WRITE-02.
+           MOVE 300 TO CORRECT-2SLASH1.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           PERFORM FAIL.
+           GO TO ENABL-STATUS-WRITE-02.
+       ENABL-STATUS-DELETE-02.
+           PERFORM DE-LETE.
+       ENABL-STATUS-WRITE-02.
+           MOVE "ENABL-STATUS-TEST-02" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ENABL-STATUS-TEST-03.
+           MOVE "INVALID PASSWORD USED" TO RE-MARK.
+           MOVE
+           XXXXX032
+               TO SYM-DEST.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE 1 TO ONE.
+           ENABLE OUTPUT CM-OUTQUE-1 WITH KEY
+               "GARBAGE".
+           IF STATUS-KEY IS EQUAL TO "40"
+               PERFORM PASS GO TO ENABL-STATUS-WRITE-03.
+           MOVE 400 TO CORRECT-2SLASH1.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           PERFORM FAIL.
+           GO TO ENABL-STATUS-WRITE-03.
+       ENABL-STATUS-DELETE-03.
+           PERFORM DE-LETE.
+       ENABL-STATUS-WRITE-03.
+           MOVE "ENABL-STATUS-TEST-03" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ENABL-STATUS-TEST-04.
+           MOVE "VALID ENABLE/NO ERROR EXPECTED" TO RE-MARK.
+           MOVE
+           XXXXX032
+               TO SYM-DEST.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE 1 TO ONE.
+           ENABLE OUTPUT CM-OUTQUE-1 WITH KEY
+           XXXXX033.
+           IF STATUS-KEY IS EQUAL TO ZERO
+               PERFORM PASS GO TO ENABL-STATUS-WRITE-04.
+           MOVE 0 TO CORRECT-2SLASH1.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           PERFORM FAIL.
+           GO TO ENABL-STATUS-WRITE-04.
+       ENABL-STATUS-DELETE-04.
+           PERFORM DE-LETE.
+       ENABL-STATUS-WRITE-04.
+           MOVE "ENABL-STATUS-TEST-04" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEND-STATUS-TEST-03.
+           MOVE "DESTINATION UNKNOWN" TO RE-MARK.
+           MOVE "GARBAGE" TO SYM-DEST.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE 1 TO ONE.
+           MOVE 37 TO MSG-LENGTH.
+           MOVE "S-03" TO TEST-IND.
+           SEND CM-OUTQUE-1 FROM ERR-MSG WITH EMI.
+           IF STATUS-KEY IS EQUAL TO "20"
+               AND ERR-KEY IS EQUAL TO "1"
+               PERFORM PASS GO TO SEND-STATUS-WRITE-03.
+           MOVE 201 TO CORRECT-2SLASH1.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           PERFORM FAIL.
+           GO TO SEND-STATUS-WRITE-03.
+       SEND-STATUS-DELETE-03.
+           PERFORM DE-LETE.
+       SEND-STATUS-WRITE-03.
+           MOVE "SEND-STATUS-TEST-03" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEND-STATUS-TEST-04.
+           MOVE "DESTINATION COUNT INVALID (0)" TO RE-MARK.
+           MOVE
+           XXXXX032
+               TO SYM-DEST.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE 0 TO ONE.
+           MOVE 37 TO MSG-LENGTH.
+           MOVE "S-04" TO TEST-IND.
+           SEND CM-OUTQUE-1 FROM ERR-MSG WITH EMI.
+           IF STATUS-KEY IS EQUAL TO "30"
+               PERFORM PASS GO TO SEND-STATUS-WRITE-04.
+           MOVE 300 TO CORRECT-2SLASH1.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           PERFORM FAIL.
+           GO TO SEND-STATUS-WRITE-04.
+       SEND-STATUS-DELETE-04.
+           PERFORM DE-LETE.
+       SEND-STATUS-WRITE-04.
+           MOVE "SEND-STATUS-TEST-04" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SEND-STATUS-TEST-05.
+           MOVE "CHARACTER COUNT EXCESSIVE" TO RE-MARK.
+           MOVE
+           XXXXX032
+               TO SYM-DEST.
+           MOVE "9" TO STATUS-KEY ERR-KEY.
+           MOVE 1 TO ONE.
+           MOVE 38 TO MSG-LENGTH.
+           MOVE "S-05" TO TEST-IND.
+           SEND CM-OUTQUE-1 FROM ERR-MSG WITH EMI.
+           IF STATUS-KEY IS EQUAL TO "50"
+               PERFORM PASS GO TO SEND-STATUS-WRITE-05.
+           MOVE 500 TO CORRECT-2SLASH1.
+           MOVE STATUS-KEY TO COMPUTED-STATUS.
+           MOVE "/" TO SLASH.
+           MOVE ERR-KEY TO COMPUTED-ERR-KEY.
+           PERFORM FAIL.
+           GO TO SEND-STATUS-WRITE-05.
+       SEND-STATUS-DELETE-05.
+           PERFORM DE-LETE.
+       SEND-STATUS-WRITE-05.
+           MOVE "SEND-STATUS-TEST-05" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       STATUS-TESTS-COMPLETED.
+           PERFORM END-ROUTINE.
+           PERFORM END-ROUTINE-1 THRU END-ROUTINE-3.
+           PERFORM END-ROUTINE.
+           MOVE LOG-HDR-1 TO PRINT-REC.
+           WRITE PRINT-REC
+               AFTER 3 LINES.
+           MOVE LOG-HDR-2 TO PRINT-REC.
+           WRITE PRINT-REC
+               AFTER 3 LINES.
+           MOVE LOG-HDR-3 TO PRINT-REC.
+           WRITE PRINT-REC.
+           PERFORM BLANK-LINE-PRINT.
+       VARIABLE-LENGTH-MSGS.
+           MOVE 1 TO ONE.
+           MOVE
+           XXXXX032
+               TO SYM-DEST.
+           MOVE 1 TO MSG-NO SEND-SWITCH.
+           MOVE 28 TO MSG-LENGTH.
+           MOVE MSG-A TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+           MOVE 2 TO MSG-NO.
+           MOVE 27 TO MSG-LENGTH.
+           MOVE MSG-B TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+           MOVE 3 TO MSG-NO.
+           MOVE 26 TO MSG-LENGTH.
+           MOVE MSG-C TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+           MOVE 4 TO MSG-NO.
+           MOVE 25 TO MSG-LENGTH.
+           MOVE MSG-D TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+           MOVE 2 TO SEND-SWITCH.
+           MOVE 5 TO MSG-NO.
+           MOVE 24 TO MSG-LENGTH.
+           MOVE MSG-E TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+       AFTER-PAGE-MSGS.
+           MOVE 6 TO MSG-NUM.
+           MOVE 3 TO SEND-SWITCH.
+           MOVE 63 TO MSG-LENGTH.
+           PERFORM AFTER-PAGE-MSGS-01 5 TIMES.
+           GO TO AFTER-THREE-MSGS.
+       AFTER-PAGE-MSGS-01.
+           MOVE MSG-NUM TO MSG-F-NO.
+           ADD 1 TO MSG-NUM.
+           MOVE MSG-F TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+       AFTER-THREE-MSGS.
+           MOVE 64 TO MSG-LENGTH.
+           PERFORM AFTER-THREE-MSGS-01 5 TIMES.
+           GO TO EGI-ONLY.
+       AFTER-THREE-MSGS-01.
+           MOVE MSG-NUM TO MSG-G-NO.
+           ADD 1 TO MSG-NUM SEND-SWITCH.
+           MOVE MSG-G TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+       EGI-ONLY.
+           MOVE "ONLY EGI WAS SENT.  NO MESSAGE ACCOMPANYING" TO MSG-OUT
+           ADD 1 TO SEND-SWITCH.
+           MOVE 0 TO MSG-LENGTH.
+           PERFORM SEND-AND-LOG.
+       BEFORE-ADV-INIT.
+           MOVE "0LTH" TO TEST-IND.
+           ADD 1 TO SEND-SWITCH.
+           MOVE ERR-MSG TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+       BEFORE-PAGE-MSGS.
+           MOVE 63 TO MSG-LENGTH.
+           PERFORM AFTER-PAGE-MSGS-01 5 TIMES.
+       BEFORE-TWO-MSGS.
+           MOVE 64 TO MSG-LENGTH.
+           PERFORM BEFORE-TWO-MSGS-01 5 TIMES.
+           GO TO ZERO-LINES-MSGS.
+       BEFORE-TWO-MSGS-01.
+           MOVE MSG-NUM TO MSG-H-NO.
+           ADD 1 TO MSG-NUM.
+           ADD 1 TO SEND-SWITCH.
+           MOVE MSG-H TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+       ZERO-LINES-MSGS.
+           ADD 1 TO SEND-SWITCH.
+           MOVE 59 TO MSG-LENGTH.
+           MOVE "ALL" TO SUPERIMPOSITION.
+           PERFORM ZERO-LINES-MSGS-01.
+           MOVE "WORDS" TO S-WORDS.
+           PERFORM ZERO-LINES-MSGS-01.
+           MOVE "IN" TO S-IN.
+           PERFORM ZERO-LINES-MSGS-01.
+           MOVE "THIS" TO S-THIS.
+           PERFORM ZERO-LINES-MSGS-01.
+           MOVE "MESSAGE" TO S-MESSAGE.
+           PERFORM ZERO-LINES-MSGS-01.
+           MOVE "SHOULD" TO S-SHOULD.
+           PERFORM ZERO-LINES-MSGS-01.
+           ADD 1 TO SEND-SWITCH.
+           MOVE "COME" TO S-COME.
+           PERFORM ZERO-LINES-MSGS-01.
+           MOVE "OUT" TO S-OUT.
+           PERFORM ZERO-LINES-MSGS-01.
+           MOVE "ON" TO S-ON.
+           PERFORM ZERO-LINES-MSGS-01.
+           MOVE "THE" TO S-THE.
+           PERFORM ZERO-LINES-MSGS-01.
+           MOVE "SAME" TO S-SAME.
+           PERFORM ZERO-LINES-MSGS-01.
+           MOVE "LINE." TO S-LINE.
+           PERFORM ZERO-LINES-MSGS-01.
+           GO TO 433-CHARACTER-MSG.
+       ZERO-LINES-MSGS-01.
+           MOVE SUPERIMPOSITION TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+           MOVE SPACES TO SUPERIMPOSITION.
+       433-CHARACTER-MSG.
+           ADD 1 TO SEND-SWITCH.
+           MOVE 433 TO MSG-LENGTH.
+           MOVE LONG-MSG-S1 TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+           MOVE LONG-MSG-S2 TO MSG-FLD.
+           WRITE PRINT-REC FROM LOG-LINE-1.
+           MOVE LONG-MSG-S3 TO MSG-FLD.
+           WRITE PRINT-REC FROM LOG-LINE-1.
+           MOVE LONG-MSG-S4 TO MSG-FLD.
+           WRITE PRINT-REC FROM LOG-LINE-1.
+           MOVE LONG-MSG-S5 TO MSG-FLD.
+           WRITE PRINT-REC FROM LOG-LINE-1.
+           MOVE LONG-MSG-S6 TO MSG-FLD.
+           WRITE PRINT-REC FROM LOG-LINE-1.
+           MOVE LONG-MSG-S7 TO MSG-FLD.
+           WRITE PRINT-REC FROM LOG-LINE-1.
+       MSG-BEFORE-DELAY-AND-DISABLE.
+           MOVE "EXPECT A PAUSE OF UP TO 30 SECONDS BEFORE TRANSMISSION OF NEXT MESSAGE." TO MSG-OUT.
+           MOVE 72 TO MSG-LENGTH.
+           MOVE 4 TO SEND-SWITCH.
+           PERFORM SEND-AND-LOG.
+       DELAY-FOR-30-SECS.
+           ACCEPT SYSTEM-TIME FROM TIME.
+           IF (HOURS OF SYSTEM-TIME * 3600 + MINUTES OF SYSTEM-TIME * 60
+               + SECONDS OF SYSTEM-TIME) - (COMP-HRS * 3600 + COMP-MINS
+               * 60 + COMP-SECS) IS LESS THAN 30
+               GO TO DELAY-FOR-30-SECS.
+       DISABLE-DEVICE.
+           MOVE "****  DEVICE DISABLED  ****" TO MSG-OUT.
+           MOVE 0 TO MSG-LENGTH.
+           MOVE 19 TO SEND-SWITCH.
+           PERFORM SEND-AND-LOG.
+       10-WHILE-DISABLED.
+           MOVE "TRANSMISSION NOW RESUMED." TO MSG-OUT.
+           MOVE 25 TO MSG-LENGTH.
+           MOVE 1 TO SEND-SWITCH.
+           PERFORM SEND-AND-LOG.
+           MOVE 24 TO MSG-LENGTH.
+           PERFORM 10-WHILE-DISABLED-01 8 TIMES.
+           GO TO 10-WHILE-DISABLED-02.
+       10-WHILE-DISABLED-01.
+           MOVE MSG-NUM TO MSG-NO.
+           ADD 1 TO MSG-NUM.
+           MOVE MSG-E TO MSG-OUT.
+           PERFORM SEND-AND-LOG.
+       10-WHILE-DISABLED-02.
+           MOVE "THERE SHOULD BE NO ABNORMAL DELAY IN RECEIVING THE NEXT MESSAGE." TO MSG-OUT.
+           MOVE 63 TO MSG-LENGTH.
+           PERFORM SEND-AND-LOG.
+       RE-ENABLE-OUTQUE.
+           MOVE "****  DEVICE NOW RE-ENABLED  ****" TO MSG-OUT.
+           MOVE 0 TO MSG-LENGTH.
+           MOVE 20 TO SEND-SWITCH.
+           PERFORM SEND-AND-LOG.
+       ENQUEUE-500-MORE.
+           MOVE "THIS IS THAT NEXT MESSAGE." TO MSG-OUT.
+           MOVE 26 TO MSG-LENGTH.
+           MOVE 2 TO SEND-SWITCH.
+           PERFORM SEND-AND-LOG.
+           MOVE 24 TO MSG-LENGTH.
+           PERFORM 10-WHILE-DISABLED-01 500 TIMES.
+       DELAY-DISABLE-DELAY-AND-STOP.
+           PERFORM DELAY-FOR-30-SECS.
+           PERFORM DISABLE-DEVICE.
+           PERFORM DELAY-FOR-30-SECS.
+           PERFORM END-ROUTINE THRU PARA-Z.
+           PERFORM END-ROUTINE-4.
+           CLOSE PRINT-FILE.
+           STOP RUN.
+       SEND-AND-LOG.
+           ACCEPT SYSTEM-TIME FROM TIME.
+           PERFORM UNIFORM-SEND.
+           ACCEPT COMP-TIME FROM TIME.
+           MOVE CORR SYSTEM-TIME TO START-TIME.
+           COMPUTE ELAPSED =
+               (COMP-HRS * 3600 + COMP-MINS * 60 + COMP-SECS) -
+               (HOURS OF SYSTEM-TIME * 3600 + MINUTES OF SYSTEM-TIME *
+               60 + SECONDS OF SYSTEM-TIME).
+           MOVE STATUS-KEY TO STAT.
+           MOVE ERR-KEY TO ERR.
+           MOVE MSG-LENGTH TO LNTH.
+           MOVE LOG-LINE TO PRINT-REC.
+           PERFORM WRITE-LINE.
+       UNIFORM-SEND SECTION.
+       UNIFORM-SEND-SWITCH.
+           GO TO
+               SEND-EMI-A1
+               SEND-EGI-A1
+               SEND-EMI-AP
+               SEND-EMI-A3-01
+               SEND-EMI-A3-02
+               SEND-EMI-A3-03
+               SEND-EMI-A3-04
+               SEND-EMI-A3-05
+               SEND-EGI-ONLY
+               SEND-EMI-BP
+               SEND-EMI-B2-01
+               SEND-EMI-B2-02
+               SEND-EMI-B2-03
+               SEND-EMI-B2-04
+               SEND-EMI-B2-05
+               SEND-EMI-A0
+               SEND-EMI-B0
+               SEND-LONG-MSG
+               DISABLE-OUTQUE
+               ENABLE-OUTQUE
+                   DEPENDING ON SEND-SWITCH.
+       SEND-EMI-A1.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EGI-A1.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EGI.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-AP.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI AFTER PAGE.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-A3-01.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI AFTER ADVANCING 3
+               LINES.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-A3-02.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               AFTER ADVANCING THREE LINES.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-A3-03.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               AFTER 3 LINE.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-A3-04.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               AFTER COMP-THREE.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-A3-05.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               AFTER 3.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EGI-ONLY.
+           SEND CM-OUTQUE-1 WITH EGI.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-BP.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               BEFORE ADVANCING PAGE.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-B2-01.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               BEFORE ADVANCING 2 LINES.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-B2-02.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               BEFORE ADVANCING TWO LINES.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-B2-03.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               BEFORE 2 LINE.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-B2-04.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               BEFORE COMP-TWO.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-B2-05.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               BEFORE 2.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-A0.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               AFTER 0 LINES.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-EMI-B0.
+           SEND CM-OUTQUE-1 FROM MSG-OUT WITH EMI
+               BEFORE ZERO LINES.
+           GO TO UNIFORM-SEND-EXIT.
+       SEND-LONG-MSG.
+           SEND CM-OUTQUE-1 FROM LONG-MSG WITH EMI AFTER PAGE.
+           GO TO UNIFORM-SEND-EXIT.
+       DISABLE-OUTQUE.
+           DISABLE OUTPUT CM-OUTQUE-1 KEY
+           PASSWORD1.
+           GO TO UNIFORM-SEND-EXIT.
+       ENABLE-OUTQUE.
+           ENABLE OUTPUT CM-OUTQUE-1 WITH KEY
+           XXXXX033.
+       UNIFORM-SEND-EXIT.
+           EXIT.
+       COMMON-SUBROUTINES SECTION.
+       PASS.
+           MOVE "PASS" TO P-OR-F.
+       FAIL.
+           ADD      1 TO ERROR-COUNTER.
+           MOVE "FAIL*" TO P-OR-F.
+       DE-LETE.
+           MOVE     SPACE TO P-OR-F.
+           MOVE     "    ************    " TO COMPUTED-A.
+           MOVE     "    ************    " TO CORRECT-A.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+           ADD 1 TO DELETE-CNT.
+       PRINT-DETAIL.
+           MOVE     TEST-RESULTS TO PRINT-REC.
+           PERFORM WRITE-LINE.
+           MOVE     SPACE TO P-OR-F.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE SPACE TO CORRECT-A.
+       COLUMN-NAMES-ROUTINE.
+           MOVE     COLUMNS-LINE-1 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+           MOVE     COLUMNS-LINE-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+           PERFORM  BLANK-LINE-PRINT.
+       END-ROUTINE.
+           MOVE     HYPHEN-LINE TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       PARA-Z.
+           PERFORM  BLANK-LINE-PRINT 4 TIMES.
+           MOVE     CCVS-E-1 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-1.
+           PERFORM  BLANK-LINE-PRINT.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+                    GO TO END-ROUTINE-2.
+           MOVE     ERROR-COUNTER TO ERROR-TOTAL.
+           GO TO    END-ROUTINE-3.
+       END-ROUTINE-2.
+           MOVE " NO" TO ERROR-TOTAL.
+       END-ROUTINE-3.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+           IF DELETE-CNT IS EQUAL TO ZERO
+               MOVE " NO" TO ERROR-TOTAL  ELSE
+           MOVE DELETE-CNT TO ERROR-TOTAL.
+           MOVE "TESTS DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-4.
+           MOVE CCVS-E-3 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       BLANK-LINE-PRINT.
+           MOVE     SPACE TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       WRITE-LINE.
+           WRITE DUMMY-RECORD AFTER ADVANCING 1 LINE.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1 TO PRINT-REC
+           WRITE PRINT-REC
+               AFTER ADVANCING PAGE.
+           MOVE CCVS-H-2 TO PRINT-REC.
+           WRITE PRINT-REC
+               AFTER 2 LINES.
+           MOVE CCVS-H-3 TO PRINT-REC.
+           WRITE PRINT-REC
+               AFTER 5 LINES.
+           MOVE HYPHEN-LINE TO PRINT-REC.
+           PERFORM WRITE-LINE.
+      *> END-OF,CM102M

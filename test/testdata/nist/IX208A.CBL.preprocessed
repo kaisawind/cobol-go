@@ -1,0 +1,1520 @@
+      *> HEADER,COBOL,IX208A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IX208A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>     THE FUNCTION OF THIS PROGRAM IS TO TEST THE PERMISSIBLE SYN-
+      *>     TACTICAL CONSTRUCTS OF COBOL ELEMENTS ASSOCIATED WITH LEVEL 2
+      *>     OF THE INDEXED I-O MODULE.  THE ELEMENTS TESTED IN THIS
+      *>     ROUTINE ARE:
+      *> 
+      *>     (1) READ STATEMENT; 
+      *>     (2) START STATEMENT; 
+      *>     (3) USE STATEMENT.
+      *> 
+      *>     EACH ELEMENT TESTED WILL BE EXERCISED SEMANTICALLY BY THIS
+      *>     ROUTINE.
+      *> 
+      *> 
+      *>        X-CARDS  WHICH MUST BE REPLACED FOR THIS PROGRAM ARE
+      *> 
+      *>              X-24   INDEXED FILE IMPLEMENTOR-NAME IN ASSGN TO
+      *>                     CLAUSE FOR DATA FILE IX-FS1
+      *>              X-25   INDEXED FILE IMPLEMENTOR-NAME IN ASSIGN TO
+      *>                     CLAUSE FOR DATA FILE IX-FD2
+      *>              X-44   INDEXED FILE IMPLEMENTOR-NAME IN ASSGN TO
+      *>                     CLAUSE FOR INDEX FILE IX-FS1
+      *>              X-45   INDEXED FILE IMPLEMENTOR-NAME IN ASSIGN TO
+      *>                     CLAUSE FOR INDEX FILE IX-FD2
+      *>              X-55   IMPLEMENTOR-NAME FOR SYSTEM PRINTER
+      *>              X-69   ADDITIONAL VALUE OF PHRASES
+      *>              X-74   VALUE OF IMPLEMENTOR-NAME
+      *>              X-75   OBJECT OF VALUE OF CLAUSE FOR FILE IX-FS1
+      *>              X-76   OBJECT OF VALUE OF CLAUSE FOR FILE IX-FD2
+      *>              X-82   IMPLEMENTOR-NAME FOR SOURCE-COMPUTER
+      *>              X-83   IMPLEMENTOR-NAME FOR OBJECT-COMPUTER
+      *> 
+      *>         NOTE:  X-CARDS 44,45,69,74,75 AND 76 ARE OPTIONAL
+      *>                AND NEED ONLY TO BE PRESENT IF THE COMPILER RE-
+      *>                QUIRES THIS CODE BE AVAILABLE FOR PROPER PROGRAM
+      *>                COMPILATION AND EXECUTION. IF THE VP-ROUTINE IS
+      *>                USED THE  X-CARDS MAY BE AUTOMATICALLY SELECTED
+      *>                FOR INCLUSION IN THE PROGRAM BY SPECIFYING THE
+      *>                APPROPRIATE LETTER IN THE "*OPT" VP-ROUTINE
+      *>                CONTROL CARD. THE LETTER  CORRESPONDS TO A
+      *>                CHARACTER IN POSITION 7 OF THE SOURCE LINE AND
+      *>                THEY ARE AS FOLLOWS
+      *> 
+      *>                   C  SELECTS X-CARDS 74,75 AND 76
+      *>                   G  SELECTS X-CARDS 69
+      *>                   J  SELECTS X-CARDS 44 AND 45
+      *> 
+      *>         NOTE:  THERE IS OPTIONAL SOURCE CODE IN THIS PROGRAM
+      *>                FOR THE CONVENIENCE OF THE USER.  THIS OPTIONAL
+      *>                CODE IS IDENTIFIED BY THE LETTER T,U OR X IN
+      *>                POSITION 7  OF THE SOURCE LINE.  USE OF
+      *>                SOURCE CODE WITH LETTER X WILL PRINT THE CONTENTS
+      *>                OF THE FILES AFTER THE TEST REPORT.  FOR CODE
+      *>                WITH LETTERS T OR U ONLY ONE SHOULD BE SELECTED.
+      *>                EITHER THE T"S OR THE U"S SHOULD BE USED EXCLU-
+      *>                SIVELY, NOT BOTH.  THE T"S PROVIDE A 29 CHARACTER
+      *>                INDEXED KEY SIZE FOR THE FILE AND THE U"S PROVIDE
+      *>                AN INDEXED KEY NO GREATER THAN 8 CHARACTERS.
+      *>                IF THE VP-ROUTINE IS USED THE APPROPRIATE
+      *>                SOURCE CODE MAY BE SELECTED BY SPECIFYING THE
+      *>                RESPECTIVE LETTER IN THE "*OPT" VP-ROUTINE CONTROL
+      *>                CARD.
+      *> 
+      *> *****************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+      *>     SELECT RAW-DATA   ASSIGN TO
+      *>     XXXXX062
+      *>            ORGANIZATION IS INDEXED
+      *>            ACCESS MODE IS RANDOM
+      *>            RECORD KEY IS RAW-DATA-KEY.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+           SELECT   IX-FD1
+              ASSIGN TO
+           XXXXX024
+      *>     XXXXX044
+               ORGANIZATION IS INDEXED
+              ALTERNATE RECORD KEY IS IX-FD1-ALTKEY1
+              RECORD KEY IS   IX-FD1-KEY
+              ACCESS MODE IS DYNAMIC.
+           SELECT   IX-FS2
+               ASSIGN TO
+           XXXXX025
+      *>     XXXXX045
+           RECORD KEY IS IX-FS2-KEY
+              ALTERNATE RECORD KEY IS IX-FS2-ALTKEY1
+              ACCESS MODE IS SEQUENTIAL
+               ORGANIZATION IS INDEXED.
+       DATA DIVISION.
+       FILE SECTION.
+      *> 
+      *> FD  RAW-DATA.
+      *> 
+      *> 01  RAW-DATA-SATZ.
+      *>     05  RAW-DATA-KEY        PIC X(6).
+      *>     05  C-DATE              PIC 9(6).
+      *>     05  C-TIME              PIC 9(8).
+      *>     05  C-NO-OF-TESTS       PIC 99.
+      *>     05  C-OK                PIC 999.
+      *>     05  C-ALL               PIC 999.
+      *>     05  C-FAIL              PIC 999.
+      *>     05  C-DELETED           PIC 999.
+      *>     05  C-INSPECT           PIC 999.
+      *>     05  C-NOTE              PIC X(13).
+      *>     05  C-INDENT            PIC X.
+      *>     05  C-ABORT             PIC X(8).
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       FD  IX-FD1
+           LABEL RECORD IS STANDARD
+           DATA RECORD IS IX-FD1R1-F-G-240
+           RECORD CONTAINS 240 CHARACTERS.
+       01  IX-FD1R1-F-G-240.
+           05 IX-FD1-REC-001-120        PICTURE X(120).
+           05 IX-FD1-REC-121-240.
+           10 FILLER          PICTURE X(8).
+           10 IX-FD1-KEY.
+              15 IX-FS1-KEYNUM PICTURE 9(5).
+      *>        15 FILLER        PICTURE 9(5).
+      *>     10 FILLER           PICTURE X(5).
+           10 FILLER           PICTURE X(19).
+           10 FILLER           PICTURE X(9).
+           10 IX-FD1-ALTKEY1.
+      *>        15 FILLER        PICTURE 9(5).
+              15 IX-FD1-ALTKEY1NUM      PICTURE 9(5).
+      *>     10 FILLER                    PICTURE 9(5).
+           10 FILLER                    PICTURE X(19).
+           10 FILLER                    PICTURE X(45).
+       FD  IX-FS2
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS IX-FS2R1-F-G-240
+                .
+       01  IX-FS2R1-F-G-240.
+           05 IX-FS2-REC-001-120        PICTURE X(120).
+           05 IX-FS2-REC-121-240.
+              10 FILLER                 PICTURE X(8).
+              10 IX-FS2-KEY.
+                 15 IX-FS2-KEYNUM       PICTURE 9(5).
+      *>           15 FILLER              PICTURE 9(5).
+      *>        10 FILLER                 PICTURE 9(5).
+              10 FILLER                 PICTURE X(19).
+              10 FILLER                 PICTURE X(9).
+              10 IX-FS2-ALTKEY1.
+      *>           15 FILLER              PICTURE 9(5).
+                 15 IX-FS2-ALTKEY1NUM   PICTURE 9(5).
+      *>        10 FILLER                 PICTURE 9(5).
+              10 FILLER                 PICTURE X(19).
+              10 FILLER                 PICTURE X(45).
+       WORKING-STORAGE SECTION.
+       01  IX-FD1-FILESIZE              PICTURE 9(6) VALUE 300.
+       01  IX-FS2-FILESIZE              PICTURE 9(6) VALUE 300.
+       01  WRK-IX-FD1-RECKEY.
+           03 WRK-DU-05V00-001          PICTURE 9(5) VALUE ZERO.
+      *>     03 FILLER                    PICTURE 9(5) VALUE ZERO.
+       01  WRK-IX-FS2-RECKEY.
+           03 WRK-DU-05V00-003          PICTURE 9(5)  VALUE  ZERO.
+      *>     03 FILLER                    PICTURE 9(5)  VALUE  ZERO.
+       01  WRK-IX-FD1-ALTKEY.
+      *>     03 FILLER                    PICTURE 9(5)  VALUE  ZERO.
+           03 WRK-DU-05V00-002          PICTURE 9(5)  VALUE  ZERO.
+       01  WRK-IX-FS2-ALTKEY.
+      *>     03 FILLER                    PICTURE 9(5)  VALUE  ZERO.
+           03 WRK-DU-05V00-004          PICTURE 9(5)  VALUE  ZERO.
+       01  EXCUT-COUNTER-06V00          PICTURE S9(6) VALUE  ZERO.
+       01  INV-KEY-COUNTER              PICTURE S9(6) VALUE  ZERO.
+       01  LOGICAL-FILE-REC             PICTURE S9(6) VALUE  ZERO.
+       01  ERROR-COUNTER-06V00          PICTURE S9(6) VALUE  ZERO.
+       01  ASCEND-DESEND-SWITCH        PICTURE XX   VALUE "UP".
+                   88 ASCEND VALUE "UP".
+                   88 DSCEND VALUE "DN".
+       01  FILE-RECORD-INFORMATION-REC.
+           03 FILE-RECORD-INFO-SKELETON.
+              05 FILLER                 PICTURE X(48)       VALUE
+                   "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+              05 FILLER                 PICTURE X(46)       VALUE
+                   ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+              05 FILLER                 PICTURE X(26)       VALUE
+                   ",LFIL=000000,ORG=  ,LBLR= ".
+              05 FILLER                 PICTURE X(37)       VALUE
+                   ",RECKEY=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY1=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY2=                             ".
+              05 FILLER                 PICTURE X(7)        VALUE SPACE.
+           03 FILE-RECORD-INFO          OCCURS  10  TIMES.
+              05 FILE-RECORD-INFO-P1-120.
+                 07 FILLER              PIC X(5).
+                 07 XFILE-NAME           PIC X(6).
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-NAME         PIC X(6).
+                 07 FILLER              PIC X(1).
+                 07 REELUNIT-NUMBER     PIC 9(1).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-NUMBER       PIC 9(6).
+                 07 FILLER              PIC X(6).
+                 07 UPDATE-NUMBER       PIC 9(2).
+                 07 FILLER              PIC X(5).
+                 07 ODO-NUMBER          PIC 9(4).
+                 07 FILLER              PIC X(5).
+                 07 XPROGRAM-NAME        PIC X(5).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-LENGTH       PIC 9(6).
+                 07 FILLER              PIC X(7).
+                 07 CHARS-OR-RECORDS    PIC X(2).
+                 07 FILLER              PIC X(1).
+                 07 XBLOCK-SIZE          PIC 9(4).
+                 07 FILLER              PIC X(6).
+                 07 RECORDS-IN-FILE     PIC 9(6).
+                 07 FILLER              PIC X(5).
+                 07 XFILE-ORGANIZATION   PIC X(2).
+                 07 FILLER              PIC X(6).
+                 07 XLABEL-TYPE          PIC X(1).
+              05 FILE-RECORD-INFO-P121-240.
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-KEY          PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY1      PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY2      PIC X(29).
+                 07 FILLER              PIC X(7).
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "IX208A".
+       PROCEDURE DIVISION.
+       DECLARATIVES.
+       USE-IX208A-TEST SECTION.
+           USE      AFTER ERROR PROCEDURE IX-FD1  IX-FS2.
+       USE-PAR-001.
+           ADD      010000  TO ERROR-COUNTER-06V00.
+       USE-PAR-EXIT.
+           EXIT.
+       END DECLARATIVES.
+       CCVS1 SECTION.
+       OPEN-FILES.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-1.
+      *>     MOVE "ABORTED " TO C-ABORT.
+      *>     ADD 1 TO C-NO-OF-TESTS.
+      *>     ACCEPT C-DATE  FROM DATE.
+      *>     ACCEPT C-TIME  FROM TIME.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-1.
+      *> END-E-1.
+      *>     CLOSE RAW-DATA.
+           OPEN    OUTPUT PRINT-FILE.
+           MOVE  CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE    ZERO TO REC-SKL-SUB.
+           PERFORM CCVS-INIT-FILE 9 TIMES.
+       CCVS-INIT-FILE.
+           ADD     1 TO REC-SKL-SUB.
+           MOVE    FILE-RECORD-INFO-SKELETON
+                TO FILE-RECORD-INFO (REC-SKL-SUB).
+       CCVS-INIT-EXIT.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-2.
+      *>     MOVE "OK.     " TO C-ABORT.
+      *>     MOVE PASS-COUNTER TO C-OK.
+      *>     MOVE ERROR-HOLD   TO C-ALL.
+      *>     MOVE ERROR-COUNTER TO C-FAIL.
+      *>     MOVE DELETE-COUNTER TO C-DELETED.
+      *>     MOVE INSPECT-COUNTER TO C-INSPECT.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-2.
+      *> END-E-2.
+      *>     CLOSE RAW-DATA.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO   FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-IX208A-0001 SECTION.
+       WRITE-INIT-GF-01.
+           OPEN     OUTPUT  IX-FD1.
+           OPEN     OUTPUT  IX-FS2.
+           MOVE     "IX-FD1"  TO XFILE-NAME (1).
+           MOVE     "R1-F-G"  TO XRECORD-NAME (1).
+           MOVE     ZERO      TO XRECORD-NUMBER (1).
+           MOVE     CCVS-PGM-ID TO XPROGRAM-NAME (1).
+           MOVE     000240    TO XRECORD-LENGTH (1).
+           MOVE     0001      TO XBLOCK-SIZE (1).
+           MOVE     "RC"      TO CHARS-OR-RECORDS (1).
+           MOVE     "IX"      TO XFILE-ORGANIZATION (1).
+           MOVE     "S"       TO XLABEL-TYPE (1).
+           MOVE     000300    TO IX-FD1-FILESIZE.
+           MOVE     000300    TO RECORDS-IN-FILE (1).
+           MOVE     00001     TO WRK-DU-05V00-001.
+           MOVE     00300     TO WRK-DU-05V00-002.
+           MOVE     ZERO      TO EXCUT-COUNTER-06V00.
+           MOVE     ZERO      TO INV-KEY-COUNTER.
+           MOVE     "WRITE-INIT-GF-01" TO PAR-NAME.
+           MOVE     "IX-FS2"  TO XFILE-NAME (2).
+           MOVE     "R1-F-G"  TO XRECORD-NAME (2).
+           MOVE     ZERO      TO XRECORD-NUMBER (2).
+           MOVE     CCVS-PGM-ID TO XPROGRAM-NAME (2).
+           MOVE     000240    TO XRECORD-LENGTH (2).
+           MOVE     0001      TO XBLOCK-SIZE (2).
+           MOVE     "RC"      TO CHARS-OR-RECORDS (2).
+           MOVE     "IX"      TO XFILE-ORGANIZATION (2).
+           MOVE     "S"       TO XLABEL-TYPE (2).
+           MOVE     00300     TO IX-FS2-FILESIZE.
+           MOVE     00300     TO RECORDS-IN-FILE (2).
+           MOVE     00001     TO WRK-DU-05V00-003.
+           MOVE     00300     TO WRK-DU-05V00-004.
+       WRITE-TEST-GF-00.
+           ADD      0001 TO   XRECORD-NUMBER (1).
+           MOVE     WRK-IX-FD1-RECKEY  TO XRECORD-KEY (1).
+           MOVE     WRK-IX-FD1-ALTKEY  TO ALTERNATE-KEY1 (1).
+           MOVE     FILE-RECORD-INFO (1) TO IX-FD1R1-F-G-240.
+           WRITE    IX-FD1R1-F-G-240
+                    INVALID KEY
+                    ADD       000001 TO INV-KEY-COUNTER.
+           ADD      000001  TO EXCUT-COUNTER-06V00.
+           ADD      00001   TO WRK-DU-05V00-001.
+           SUBTRACT 00001   FROM WRK-DU-05V00-002.
+           IF       XRECORD-NUMBER (1) LESS THAN IX-FD1-FILESIZE
+                    GO TO WRITE-TEST-GF-00.
+           CLOSE    IX-FD1.
+       WRITE-TEST-GF-01.
+           MOVE     "CREATE FILE IX-FD1"  TO FEATURE.
+           IF       EXCUT-COUNTER-06V00  NOT EQUAL TO IX-FD1-FILESIZE
+                    PERFORM   FAIL
+                    MOVE      IX-FD1-FILESIZE  TO  CORRECT-N
+                    MOVE      EXCUT-COUNTER-06V00 TO COMPUTED-N
+           MOVE "INCORRECT NUMBER OF WRITES; IX-41"        TO RE-MARK
+                    PERFORM   PRINT-DETAIL
+                    GO TO    WRITE-INIT-GF-02.
+           IF       INV-KEY-COUNTER NOT EQUAL TO ZERO
+                    PERFORM   FAIL
+                    MOVE      INV-KEY-COUNTER TO COMPUTED-N
+                    MOVE      ZERO TO  CORRECT-N
+             MOVE "INVALID KEY ON WRITE; IX-41" TO RE-MARK
+                    PERFORM   PRINT-DETAIL
+                    GO TO    WRITE-INIT-GF-02.
+      *> 
+      *>     01
+      *> 
+           PERFORM  PASS.
+           PERFORM  PRINT-DETAIL.
+       WRITE-INIT-GF-02.
+           MOVE     ZERO   TO INV-KEY-COUNTER.
+           MOVE     ZERO   TO EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-02-1.
+           ADD      0001  TO  XRECORD-NUMBER (2).
+           MOVE     WRK-IX-FS2-RECKEY  TO  XRECORD-KEY (2).
+           MOVE     WRK-IX-FS2-ALTKEY  TO  ALTERNATE-KEY1 (2).
+           MOVE     FILE-RECORD-INFO (2) TO IX-FS2R1-F-G-240.
+           WRITE    IX-FS2R1-F-G-240
+                    INVALID KEY
+                    ADD   000001 TO INV-KEY-COUNTER.
+           ADD      000001 TO EXCUT-COUNTER-06V00.
+           ADD      00001  TO WRK-DU-05V00-003.
+           SUBTRACT 00001  FROM WRK-DU-05V00-004.
+           IF       XRECORD-NUMBER (2) LESS THAN IX-FS2-FILESIZE
+                    GO TO  WRITE-TEST-GF-02-1.
+           CLOSE    IX-FS2.
+       WRITE-TEST-GF-02.
+           MOVE     "CREATE FILE IX-FS2" TO  FEATURE.
+           MOVE     "WRITE-TEST-GF-02  " TO PAR-NAME.
+           IF       EXCUT-COUNTER-06V00 NOT EQUAL TO IX-FS2-FILESIZE
+                    PERFORM   FAIL
+                    MOVE      IX-FS2-FILESIZE  TO  CORRECT-N
+                    MOVE      EXCUT-COUNTER-06V00 TO COMPUTED-N
+             MOVE      "INCORRECT NUMBER OF WRITES; IX-41" TO RE-MARK
+                    PERFORM   PRINT-DETAIL
+                    GO  TO    READ-INIT-F1-01.
+      *> 
+      *>     02
+      *> 
+           IF       INV-KEY-COUNTER  NOT EQUAL TO ZERO
+                    PERFORM   FAIL
+                    MOVE      INV-KEY-COUNTER  TO COMPUTED-N
+                    MOVE      ZERO TO CORRECT-N
+             MOVE      "INVALID KEY ON WRITE; IX-41" TO RE-MARK
+                    PERFORM   PRINT-DETAIL
+                    GO TO     READ-INIT-F1-01.
+           PERFORM  PASS.
+           PERFORM  PRINT-DETAIL.
+       READ-INIT-F1-01.
+           PERFORM  BLANK-LINE-PRINT.
+           MOVE     "THE FOLLOWING  TESTS ACCESS A FILE DEFINED AS      ACCESS MODE IS DYNAMIC."  TO  PRINT-REC.
+           PERFORM  WRITE-LINE.
+           PERFORM  BLANK-LINE-PRINT.
+           MOVE     "READ NEXT"  TO FEATURE.
+           MOVE     "READ-TEST-F1-01" TO PAR-NAME.
+       READ-INIT-F1-01-R1.
+           OPEN  INPUT  IX-FD1.
+           PERFORM  INX-INIT-002-R.
+       READ-TEST-F1-01-1.
+           READ     IX-FD1 NEXT.
+           MOVE     IX-FD1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           PERFORM  INX-VERIFY-002.
+           IF       EXCUT-COUNTER-06V00 LESS THAN  10
+                    GO TO READ-TEST-F1-01-1.
+           CLOSE    IX-FD1.
+       READ-TEST-F1-01.
+           PERFORM  INX-TEST-002.
+           GO TO  READ-INIT-F1-02.
+      *> 
+      *>     01
+      *> 
+       READ-DELETE-F1-01.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       READ-INIT-F1-02.
+           PERFORM  INX-INIT-002-R.
+           OPEN     INPUT     IX-FD1.
+       READ-TEST-F1-02.
+           MOVE     SPACE TO FILE-RECORD-INFO (9).
+           MOVE     SPACE TO FILE-RECORD-INFO (1).
+           READ     IX-FD1   NEXT RECORD
+                    INTO   FILE-RECORD-INFO (9).
+           MOVE     IX-FD1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           PERFORM  INX-VERIFY-002.
+           IF       XRECORD-NUMBER (9) NOT EQUAL TO LOGICAL-FILE-REC
+                    ADD   000100  TO ERROR-COUNTER-06V00.
+           IF       EXCUT-COUNTER-06V00 LESS THAN 10
+                    GO TO  READ-TEST-F1-02.
+           CLOSE    IX-FD1.
+           MOVE "READ-TEST-F1-02" TO PAR-NAME.
+           MOVE "READ . NEXT INTO" TO FEATURE.
+           PERFORM  INX-TEST-002.
+      *> 
+      *>     02
+      *> 
+           GO TO  READ-INIT-F1-03.
+       READ-DELETE-F1-02.
+           MOVE "READ-TEST-F1-02     " TO PAR-NAME.
+           MOVE "READ ... INTO       " TO FEATURE.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       READ-INIT-F1-03.
+           OPEN     INPUT  IX-FD1.
+           PERFORM  INX-INIT-002-R.
+       READ-TEST-F1-03.
+           MOVE     SPACE TO FILE-RECORD-INFO (9).
+           MOVE     SPACE TO FILE-RECORD-INFO (1).
+           READ     IX-FD1  NEXT
+                    INTO   FILE-RECORD-INFO (9).
+           MOVE     IX-FD1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           PERFORM  INX-VERIFY-002.
+           IF       XRECORD-NUMBER (9) NOT EQUAL TO LOGICAL-FILE-REC
+                    ADD   000100  TO  ERROR-COUNTER-06V00.
+           IF       EXCUT-COUNTER-06V00 LESS THAN 10
+                    GO TO READ-TEST-F1-03.
+           CLOSE    IX-FD1.
+       READ-TEST-F1-03-1.
+           MOVE "READ-TEST-F1-03" TO PAR-NAME.
+           MOVE "READ . NEXT INTO" TO FEATURE.
+           PERFORM  INX-TEST-002.
+      *> 
+      *>     03
+      *> 
+           GO TO  READ-INIT-F1-04.
+       READ-DELETE-TEST-F1-03.
+           MOVE "READ-TEST-F1-03     " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       READ-INIT-F1-04.
+           OPEN     INPUT  IX-FD1.
+           PERFORM  INX-INIT-002-R.
+           MOVE     IX-FD1-FILESIZE TO ERROR-COUNTER-06V00.
+           ADD      000001  TO ERROR-COUNTER-06V00.
+           MOVE "READ-TEST-F1-04" TO PAR-NAME.
+           MOVE "READ . NEXT INTO" TO FEATURE.
+       READ-TEST-F1-04.
+           MOVE     SPACE TO FILE-RECORD-INFO (9).
+           MOVE     SPACE TO FILE-RECORD-INFO (1).
+           READ     IX-FD1  NEXT INTO  FILE-RECORD-INFO (9) AT END
+                    SUBTRACT   000001  FROM  ERROR-COUNTER-06V00
+                   GO TO  READ-TEST-F1-04-1.
+           MOVE     IX-FD1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           PERFORM  INX-VERIFY-002.
+           IF       EXCUT-COUNTER-06V00  GREATER THAN IX-FD1-FILESIZE
+                    NEXT SENTENCE
+                    ELSE
+                    GO TO   READ-TEST-F1-04.
+      *> 
+      *>     TEST READ-TEST-F1-04 TESTS THE COBOL CONSTRUCT  "READ FILE-
+      *>     NAME NEXT INTO IDENTIFIER AT END".  THE TEST READS THE FILE
+      *>     SEQUENTIALY VIA THE RECORD KEY  (RECORD KEY IS THE KEY OF
+      *>     REFERENCE) UNTIL AN END-OF-FILE CONDITION OCCURS.  A CHECK
+      *>     IS MADE TO VERIFY THAT THE PROPER RECORDS WERE RETRIVED AND
+      *>     THE AT END PATH WAS TAKEN ON THE 301 ST READ.
+      *> 
+       READ-TEST-F1-04-1.
+           CLOSE   IX-FD1.
+           PERFORM  INX-TEST-002.
+      *>    .04
+           GO TO  READ-INIT-F2-01.
+       READ-DELETE-F1-04.
+           MOVE "READ-TEST-F1-04     " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       READ-INIT-F2-01.
+           OPEN     INPUT  IX-FD1.
+           MOVE "READ-TEST-F2-01" TO PAR-NAME.
+           MOVE "READ . KEY IS .." TO FEATURE.
+           PERFORM  INX-INIT-002-R.
+           MOVE     ZERO TO WRK-DU-05V00-001.
+       READ-TEST-F2-01.
+           ADD      00005   TO WRK-DU-05V00-001.
+           ADD      000004  TO LOGICAL-FILE-REC.
+           MOVE     WRK-IX-FD1-RECKEY TO IX-FD1-KEY.
+           READ     IX-FD1
+                            KEY IS  IX-FD1-KEY.
+           MOVE     IX-FD1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           PERFORM  INX-VERIFY-002.
+           MOVE     SPACE TO FILE-RECORD-INFO (1).
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   READ-TEST-F2-01.
+           CLOSE    IX-FD1.
+           PERFORM  INX-TEST-002.
+      *>    .05
+           GO TO  READ-INIT-F2-02.
+       READ-DELETE-F2-01.
+           MOVE "READ-TEST-F2-01     " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       READ-INIT-F2-02.
+           MOVE "READ-TEST-F2-02     " TO PAR-NAME.
+           MOVE "READ ... INTO       " TO FEATURE.
+           OPEN     INPUT  IX-FD1.
+           PERFORM  INX-INIT-002-R.
+           MOVE     ZERO TO WRK-DU-05V00-001.
+       READ-TEST-F2-02.
+           MOVE     SPACE TO FILE-RECORD-INFO (9).
+           MOVE     SPACE TO FILE-RECORD-INFO (1).
+           ADD      00005   TO WRK-DU-05V00-001.
+           ADD      000004  TO LOGICAL-FILE-REC.
+           MOVE     WRK-IX-FD1-RECKEY TO IX-FD1-KEY.
+           READ     IX-FD1  INTO   FILE-RECORD-INFO (9)
+                    KEY IS IX-FD1-KEY.
+           MOVE     IX-FD1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           PERFORM  INX-VERIFY-002.
+           IF       XRECORD-NUMBER (9)   NOT EQUAL   TO LOGICAL-FILE-REC
+                    ADD   000100 TO ERROR-COUNTER-06V00.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   READ-TEST-F2-02.
+           CLOSE    IX-FD1.
+           PERFORM  INX-TEST-002.
+      *>    .06
+           GO TO  READ-INIT-F2-03.
+       READ-DELETE-F2-02.
+           MOVE "READ-TEST-F2-02     " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       READ-INIT-F2-03.
+           MOVE "READ-TEST-F2-03     " TO PAR-NAME.
+           MOVE "READ . KEY ALTERNATE" TO FEATURE.
+           OPEN     INPUT  IX-FD1.
+           PERFORM  INX-INIT-002-R.
+           MOVE     ZERO  TO WRK-DU-05V00-002.
+           MOVE     301  TO LOGICAL-FILE-REC.
+       READ-TEST-F2-03.
+           MOVE      SPACE TO FILE-RECORD-INFO (1).
+           ADD      00005   TO WRK-DU-05V00-002.
+           SUBTRACT  00006  FROM LOGICAL-FILE-REC.
+           MOVE     WRK-IX-FD1-ALTKEY  TO IX-FD1-ALTKEY1.
+           READ     IX-FD1  RECORD
+                                   KEY IX-FD1-ALTKEY1.
+           MOVE     IX-FD1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           PERFORM  INX-VERIFY-002.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   READ-TEST-F2-03.
+           CLOSE    IX-FD1.
+           PERFORM  INX-TEST-002.
+      *>    .07
+           GO TO  READ-INIT-F2-04.
+       READ-DELETE-F2-03.
+           MOVE "READ-TEST-F2-03     " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       READ-INIT-F2-04.
+           MOVE "READ-TEST-F2-04     " TO PAR-NAME.
+           MOVE "READ .RECORD KEY ..." TO FEATURE.
+           OPEN     INPUT  IX-FD1.
+           PERFORM  INX-INIT-002-R.
+           MOVE     00301  TO WRK-DU-05V00-001.
+           MOVE     SPACE TO IX-FD1R1-F-G-240.
+       READ-TEST-F2-04.
+           ADD      00005   TO WRK-DU-05V00-001.
+           MOVE     WRK-IX-FD1-RECKEY TO IX-FD1-KEY.
+           READ     IX-FD1  RECORD
+                                   KEY IX-FD1-KEY
+           INVALID  SUBTRACT  000001  FROM ERROR-COUNTER-06V00.
+           ADD     000001  TO EXCUT-COUNTER-06V00.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   READ-TEST-F2-04.
+           CLOSE    IX-FD1.
+           PERFORM  INX-TEST-002.
+      *>    .08
+           GO TO  READ-INIT-F2-05.
+       READ-DELETE-F2-04.
+           MOVE "READ-TEST-F2-04     " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       READ-INIT-F2-05.
+           MOVE "READ-TEST-F2-05     " TO PAR-NAME.
+           MOVE "READ RECORD KEY IS A" TO FEATURE.
+           OPEN     INPUT  IX-FD1.
+           PERFORM  INX-INIT-002-R.
+           MOVE     00010  TO WRK-DU-05V00-001.
+           MOVE     00301  TO WRK-DU-05V00-002.
+           MOVE     SPACE TO IX-FD1R1-F-G-240.
+       READ-TEST-F2-05.
+           MOVE     WRK-IX-FD1-RECKEY TO IX-FD1-KEY.
+           MOVE     SPACE TO FILE-RECORD-INFO (1).
+           ADD      00005   TO WRK-DU-05V00-002.
+           MOVE     WRK-IX-FD1-ALTKEY  TO IX-FD1-ALTKEY1.
+           READ     IX-FD1  RECORD
+                                   KEY IS IX-FD1-ALTKEY1
+           INVALID KEY SUBTRACT  000001  FROM ERROR-COUNTER-06V00.
+           ADD    00001  TO EXCUT-COUNTER-06V00.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   READ-TEST-F2-05.
+           CLOSE    IX-FD1.
+           PERFORM  INX-TEST-002.
+      *>    .09
+           GO TO START-INIT-GF-01.
+       READ-DELETE-F2-05.
+           MOVE "READ-TEST-F2-05     " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       INX-INIT-002-R.
+           MOVE     00010  TO ERROR-COUNTER-06V00.
+           MOVE     ZERO TO EXCUT-COUNTER-06V00.
+           MOVE     ZERO TO INV-KEY-COUNTER.
+           MOVE     ZERO TO LOGICAL-FILE-REC.
+       INX-VERIFY-002.
+           ADD      000001    TO  EXCUT-COUNTER-06V00.
+           ADD      000001    TO  LOGICAL-FILE-REC.
+           IF       XRECORD-NUMBER (1) EQUAL TO  LOGICAL-FILE-REC
+                    SUBTRACT   000001 FROM  ERROR-COUNTER-06V00.
+       INX-TEST-002.
+           IF       ERROR-COUNTER-06V00 EQUAL TO ZERO
+                    PERFORM   PASS
+                    ELSE
+                    PERFORM   FAIL
+                    MOVE      ZERO TO   CORRECT-N
+                    MOVE      ERROR-COUNTER-06V00 TO COMPUTED-N
+                    MOVE "SEE PROGRAM (READ-TEST- ; IX-28)" TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+      *> 
+      *>        EACH TEST IS EXECUTED 10 TIMES EXCEPT FOR  INX-TEST-002-04
+      *>     WHICH IS EXECUTED 300 TIMES.  FOLLOWING THE LAST
+      *>     EXECUTION A TEST IS MADE ON ERROR-COUNTER-06V00 WHICH IS
+      *>     EXPECTED TO BE ZERO.  IF ERROR-COUNTER-06V00 IS NOT ZERO
+      *>     THE VALUE IN THE COUNTER INDICATES HOW THE EXECUTION FAILED
+      *>     AND THE NUMBER OF TIMES THE UNEXPECTED ACTION OCCURRED
+      *>     DURING THE TEST.  BEFORE THE TEST BEGINS ERROR-COUNTER-06V00
+      *>     IS INITIALIZED WITH A VALUE.  EACH TIME THE CORRECT RECORD
+      *>     WAS MADE AVAILABLE FOLLOWING THE READ, OR AN INVALID KEY
+      *>     CONDITION OCCURRED THAT WAS EXPECTED FOLLOWING A READ OR
+      *>     START, ERROR-COUNTER-06V00 IS DECREMENTED BY 1.
+      *>     FOR EACH EXECUTION THAT DID NOT PRODUCE THE EXPECTED
+      *>     RESULTS  THE ERROR-COUNTER-06V00 IS INCREMENTED BY THE VALUE
+      *>     FOR THE ACTION LISTED BELOW, E.G., VALUE 20003 WOULD INDICATE
+      *>     THAT OF THE 10 EXECUTIONS DURING THE TEST (READING LEFT TO
+      *>     RIGHT)  2 INVALID KEY CONDITIONS AND 3 RECORDS RETRIEVED
+      *>     AS A RESULT OF THE READ OR START WAS NOT-AS EXPECTED.
+      *> 
+      *> 
+      *> 
+      *>     COMPUTED RESULT                 INDICATED
+      *>        INCREMENTS                     ACTION
+      *> 
+      *>        000100          THE  RECORD  FOUND IN THE IDENTIFIER
+      *>                        SPECIFIED IN THE INTO PHRASE OF THE
+      *>                        READ STATEMENT WAS NOT THE RECORD
+      *>                        EXPECTED FOLLOWING EXECUTION OF THE
+      *>                        READ.
+      *> 
+      *>        000001          THE RECORD RETREIVED FROM THE FILE
+      *>                        FOLLOWING THE READ WAS NOT THE ONE
+      *>                        EXPECTED.
+      *> 
+      *>        010000          AN UNEXPECTED INVALID KEY OR AT END
+      *>                        CONDITION OCCURRED.  NOTE - ASSUMPTION
+      *>                        IS THAT THE "USE" STATEMENT IS ONLY
+      *>                        EXECUTED WHEN AN INVALID KEY OR AT END
+      *>                        CONDITION OCCURS AND THE INVALID KEY OR
+      *>                        AT END PHRASE HAS NOT BEEN SPECIFIED.
+      *> 
+       START-INIT-GF-01.
+           OPEN     INPUT  IX-FD1.
+           OPEN     INPUT  IX-FS2.
+           PERFORM  BLANK-LINE-PRINT.
+           MOVE     "THE FOLLOWING TESTS ACCESS A FILE DEFINE AS        ACCESS MODE IS SEQUENTIAL"  TO PRINT-REC.
+           PERFORM  WRITE-LINE.
+           PERFORM  BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-01    " TO PAR-NAME.
+           MOVE     "START  EQUAL TO"  TO FEATURE.
+           PERFORM  INX-INIT-003-R.
+       START-TEST-GF-01.
+           ADD      00003   TO WRK-DU-05V00-003.
+           MOVE     WRK-IX-FS2-RECKEY TO IX-FS2-KEY.
+           START    IX-FS2.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO      START-TEST-GF-01-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   START-TEST-GF-01.
+       START-TEST-GF-01-1.
+           PERFORM  INX-TEST-003.
+      *>    .01
+           GO TO  START-INIT-GF-02.
+       INX-DELETE-003-01.
+           MOVE "START-TEST-GF-01    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-02.
+           PERFORM  INX-INIT-003-R.
+       START-TEST-GF-02.
+           ADD      00003   TO WRK-DU-05V00-003.
+           MOVE     WRK-IX-FS2-RECKEY TO IX-FS2-KEY.
+           START    IX-FS2
+                            KEY EQUAL TO IX-FS2-KEY.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO     START-TEST-GF-02-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO    START-TEST-GF-02.
+       START-TEST-GF-02-1.
+           MOVE "START-TEST-GF-02    " TO PAR-NAME.
+           MOVE "START KEY EQUAL TO  " TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .02
+           GO TO   START-INIT-GF-03.
+       START-DELETE-GF-02.
+           MOVE "START-TEST-GF-02    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-03.
+           PERFORM  INX-INIT-003-R.
+       START-TEST-GF-03.
+           ADD      00003   TO WRK-DU-05V00-003.
+           MOVE     WRK-IX-FS2-RECKEY TO IX-FS2-KEY.
+           START    IX-FS2
+                            KEY IS EQUAL TO  IX-FS2-KEY.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO    START-TEST-GF-03-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO    START-TEST-GF-03.
+       START-TEST-GF-03-1.
+           MOVE "START-TEST-GF-03    " TO PAR-NAME.
+           MOVE "START KEY IS EQUAL  " TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .03
+           GO TO  START-INIT-GF-04.
+       START-DELETE-GF-03.
+           MOVE "START-TEST-GF-03    " TO PAR-NAME.
+           MOVE "START KEY IS EQUAL  " TO FEATURE.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-04.
+           PERFORM  INX-INIT-003-R.
+       START-TEST-GF-04.
+           ADD      00003   TO WRK-DU-05V00-003.
+           MOVE     WRK-IX-FS2-RECKEY TO IX-FS2-KEY.
+           START    IX-FS2
+                            KEY IS EQUAL  IX-FS2-KEY.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO       START-TEST-GF-04-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   START-TEST-GF-04.
+       START-TEST-GF-04-1.
+           MOVE "START-TEST-GF-04    " TO PAR-NAME.
+           MOVE "START KEY IS EQUAL  " TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .04
+           GO TO START-INIT-GF-05.
+       INX-DELETE-003-04.
+           MOVE "START-TEST-GF-04    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-05.
+           PERFORM  INX-INIT-003-R.
+       START-TEST-GF-05.
+           ADD      00003   TO WRK-DU-05V00-003.
+           MOVE     WRK-IX-FS2-RECKEY TO IX-FS2-KEY.
+           START    IX-FS2
+                            KEY IS  =  IX-FS2-KEY.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO       START-TEST-GF-05-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO    START-TEST-GF-05.
+       START-TEST-GF-05-1.
+           MOVE "START-TEST-GF-05    " TO PAR-NAME.
+           MOVE "START KEY IS = ...  " TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .05
+           GO TO  START-INIT-GF-06.
+       START-DELETE-GF-05.
+           MOVE "START-TEST-GF-05    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-06.
+           PERFORM  INX-INIT-003-R.
+           ADD      000001 TO LOGICAL-FILE-REC.
+       START-TEST-GF-06.
+           ADD      00003   TO WRK-DU-05V00-003.
+           MOVE     WRK-IX-FS2-RECKEY TO IX-FS2-KEY.
+           START    IX-FS2
+                            KEY IS GREATER THAN  IX-FS2-KEY.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO   START-TEST-GF-06-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   START-TEST-GF-06.
+       START-TEST-GF-06-1.
+           MOVE "START-TEST-GF-06    " TO PAR-NAME.
+           MOVE     "START  GREATER THAN"  TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .06
+           GO TO START-INIT-GF-07.
+       START-DELETE-GF-06.
+           MOVE "START-TEST-GF-06    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-07.
+           PERFORM  INX-INIT-003-R.
+           ADD      000001 TO LOGICAL-FILE-REC.
+       START-TEST-GF-07.
+           ADD      00003   TO WRK-DU-05V00-003.
+           MOVE     WRK-IX-FS2-RECKEY TO IX-FS2-KEY.
+           START    IX-FS2
+                            KEY GREATER THAN IX-FS2-KEY.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO   START-TEST-GF-07-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   START-TEST-GF-07.
+       START-TEST-GF-07-1.
+           MOVE "START-TEST-GF-07    " TO PAR-NAME.
+           MOVE "START KEY GREATER THAN" TO FEATURE.
+      *>    .07
+           GO TO  START-INIT-GF-08.
+       START-DELETE-GF-07.
+           MOVE "START-TEST-GF-07    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-08.
+           PERFORM  INX-INIT-003-R.
+           SUBTRACT   WRK-DU-05V00-004  FROM  IX-FS2-FILESIZE
+                    GIVING     LOGICAL-FILE-REC.
+           MOVE     "DN"  TO ASCEND-DESEND-SWITCH.
+       START-TEST-GF-08.
+           ADD      00003   TO WRK-DU-05V00-004.
+           MOVE     WRK-IX-FS2-ALTKEY  TO IX-FS2-ALTKEY1.
+           START    IX-FS2
+                            KEY IS GREATER IX-FS2-ALTKEY1.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO       START-TEST-GF-08-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO    START-TEST-GF-08.
+       START-TEST-GF-08-1.
+           MOVE "START-TEST-GF-08    " TO PAR-NAME.
+           MOVE "START KEY IS GREATER" TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .08
+           GO TO   START-INIT-GF-09.
+       START-DELETE-GF-08.
+           MOVE "START-TEST-GF-08    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-09.
+           PERFORM  INX-INIT-003-R.
+           SUBTRACT   WRK-DU-05V00-004  FROM  IX-FS2-FILESIZE
+                    GIVING     LOGICAL-FILE-REC.
+           MOVE     "DN"  TO ASCEND-DESEND-SWITCH.
+       START-TEST-GF-09.
+           ADD      00003   TO WRK-DU-05V00-004.
+           MOVE     WRK-IX-FS2-ALTKEY  TO IX-FS2-ALTKEY1.
+           START    IX-FS2
+                            KEY IS >  IX-FS2-ALTKEY1.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO       START-TEST-GF-09-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM   INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO START-TEST-GF-09.
+       START-TEST-GF-09-1.
+           MOVE "START-TEST-GF-09    " TO PAR-NAME.
+           MOVE "START KEY IS > ...  " TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .09
+           GO TO START-INIT-GF-10.
+       START-DELETE-GF-09.
+           MOVE "START-TEST-GF-09    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-10.
+           PERFORM  INX-INIT-003-R.
+           SUBTRACT   WRK-DU-05V00-004  FROM  IX-FS2-FILESIZE
+                    GIVING     LOGICAL-FILE-REC.
+           MOVE     "DN"  TO ASCEND-DESEND-SWITCH.
+       START-TEST-GF-10.
+           ADD      00003   TO WRK-DU-05V00-004.
+           MOVE     WRK-IX-FS2-ALTKEY  TO IX-FS2-ALTKEY1.
+           START    IX-FS2
+                            KEY  > IX-FS2-ALTKEY1.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO       START-TEST-GF-10-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   START-TEST-GF-10.
+       START-TEST-GF-10-1.
+           MOVE "START-TEST-GF-10    " TO PAR-NAME.
+           MOVE "START ... KEY > ... " TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .10
+           GO TO  START-INIT-GF-11.
+       START-DELETE-GF-10.
+           MOVE "START-TEST-GF-10    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-11.
+           MOVE     "START  NOT LESS THAN" TO FEATURE.
+           PERFORM  INX-INIT-003-R.
+           SUBTRACT   WRK-DU-05V00-004  FROM  IX-FS2-FILESIZE
+                    GIVING     LOGICAL-FILE-REC.
+           ADD      000001  TO LOGICAL-FILE-REC.
+           MOVE     "DN"  TO ASCEND-DESEND-SWITCH.
+       START-TEST-GF-11.
+           ADD      00003   TO WRK-DU-05V00-004.
+           MOVE     WRK-IX-FS2-ALTKEY  TO IX-FS2-ALTKEY1.
+           START    IX-FS2
+                            KEY IS NOT LESS THAN IX-FS2-ALTKEY1.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO       START-TEST-GF-11-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO    START-TEST-GF-11.
+       START-TEST-GF-11-1.
+           MOVE "START-TEST-GF-11    " TO PAR-NAME.
+           MOVE "START KEY IS NOT LESS THAN" TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .11
+           GO TO START-INIT-GF-12.
+       START-DELETE-GF-22.
+           MOVE "START-TEST-GF-11    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-12.
+           PERFORM  INX-INIT-003-R.
+           SUBTRACT   WRK-DU-05V00-004  FROM  IX-FS2-FILESIZE
+                    GIVING     LOGICAL-FILE-REC.
+           ADD      000001  TO LOGICAL-FILE-REC.
+           MOVE     "DN"  TO ASCEND-DESEND-SWITCH.
+       START-TEST-GF-12.
+           ADD      00003   TO WRK-DU-05V00-004.
+           MOVE     WRK-IX-FS2-ALTKEY  TO IX-FS2-ALTKEY1.
+           START    IX-FS2
+                            KEY IS NOT LESS  IX-FS2-ALTKEY1.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO       START-TEST-GF-12-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   START-TEST-GF-12.
+       START-TEST-GF-12-1.
+           MOVE "START-TEST-GF-12    " TO PAR-NAME.
+           MOVE "START KEY IS NOT LESS" TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .12
+           GO TO START-INIT-GF-13.
+       START-DELETE-GF-12.
+           MOVE "START-TEST-GF-12    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-13.
+           PERFORM  INX-INIT-003-R.
+           SUBTRACT   WRK-DU-05V00-004  FROM  IX-FS2-FILESIZE
+                    GIVING     LOGICAL-FILE-REC.
+           ADD      000001  TO LOGICAL-FILE-REC.
+           MOVE     "DN"  TO ASCEND-DESEND-SWITCH.
+       START-TEST-GF-13.
+           ADD      00003   TO WRK-DU-05V00-004.
+           MOVE     WRK-IX-FS2-ALTKEY  TO IX-FS2-ALTKEY1.
+           START    IX-FS2
+                            KEY NOT LESS THAN  IX-FS2-ALTKEY1.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO       START-TEST-GF-13-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO    START-TEST-GF-13.
+       START-TEST-GF-13-1.
+           MOVE "START-TEST-GF-13    " TO PAR-NAME.
+           MOVE "START KEY NOT LESS THAN " TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .13
+           GO TO START-INIT-GF-14.
+       START-DELETE-GF-13.
+           MOVE "START-TEST-GF-13    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-14.
+           PERFORM  INX-INIT-003-R.
+           SUBTRACT   WRK-DU-05V00-004  FROM  IX-FS2-FILESIZE
+                    GIVING     LOGICAL-FILE-REC.
+           ADD      000001  TO LOGICAL-FILE-REC.
+           MOVE     "DN"  TO ASCEND-DESEND-SWITCH.
+       START-TEST-GF-14.
+           ADD      00003   TO WRK-DU-05V00-004.
+           MOVE     WRK-IX-FS2-ALTKEY  TO IX-FS2-ALTKEY1.
+           START    IX-FS2
+                            KEY IS NOT  <   IX-FS2-ALTKEY1.
+           READ     IX-FS2       RECORD  AT END
+                   ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO       START-TEST-GF-14-1.
+           MOVE     IX-FS2R1-F-G-240  TO  FILE-RECORD-INFO (2).
+           PERFORM  INX-VERIFY-003A.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   START-TEST-GF-14.
+       START-TEST-GF-14-1.
+           MOVE "START-TEST-GF-14    " TO PAR-NAME.
+           MOVE "START KEY IS NOT <  " TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .14
+           GO TO  START-INIT-GF-15.
+       START-DELETE-GF-14.
+           MOVE "START-TEST-GF-14    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-15.
+           PERFORM  BLANK-LINE-PRINT.
+           MOVE     "THE FOLLOWING TESTS ACCESS A FILE DEFINED AS       ACCESS MODE IS DYNAMIC"  TO PRINT-REC.
+           PERFORM  WRITE-LINE.
+           PERFORM  BLANK-LINE-PRINT.
+           MOVE     "START  EQUAL TO " TO FEATURE.
+           PERFORM  INX-INIT-003-R.
+           SUBTRACT   WRK-DU-05V00-002  FROM  IX-FD1-FILESIZE
+                    GIVING     LOGICAL-FILE-REC.
+           ADD      000001  TO LOGICAL-FILE-REC.
+           MOVE     "DN"  TO ASCEND-DESEND-SWITCH.
+       START-TEST-GF-15.
+           ADD      000002  TO WRK-DU-05V00-002.
+           MOVE     WRK-IX-FD1-ALTKEY  TO IX-FD1-ALTKEY1.
+           START    IX-FD1
+                            KEY IS EQUAL TO  IX-FD1-ALTKEY1
+           INVALID KEY  ADD 010000  TO ERROR-COUNTER-06V00.
+           READ     IX-FD1  NEXT RECORD  AT END
+                    ADD   010000  TO ERROR-COUNTER-06V00
+                    GO TO       START-TEST-GF-15-1.
+           MOVE     IX-FD1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           PERFORM  INX-VERIFY-003B.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO    START-TEST-GF-15.
+       START-TEST-GF-15-1.
+           MOVE "START-TEST-GF-15    " TO PAR-NAME.
+           MOVE "START KEY IS EQUAL TO" TO FEATURE.
+           PERFORM  INX-TEST-003.
+      *>    .15
+           GO TO START-INIT-GF-16.
+       START-DELETE-GF-15.
+           MOVE "START-TEST-GF-15    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-16.
+           MOVE      00055  TO WRK-DU-05V00-001.
+           MOVE     WRK-IX-FD1-RECKEY TO IX-FD1-KEY.
+           MOVE     "START  INVALID KEY"  TO FEATURE.
+           PERFORM  INX-INIT-003-R.
+           MOVE     IX-FD1-FILESIZE  TO  LOGICAL-FILE-REC.
+           MOVE     IX-FD1-FILESIZE  TO  WRK-DU-05V00-002.
+       START-TEST-GF-16.
+           ADD      000002  TO WRK-DU-05V00-002.
+           MOVE     WRK-IX-FD1-ALTKEY  TO IX-FD1-ALTKEY1.
+           START    IX-FD1
+                            KEY IS EQUAL TO IX-FD1-ALTKEY1
+            INVALID SUBTRACT   000001  FROM ERROR-COUNTER-06V00.
+           ADD      000001 TO EXCUT-COUNTER-06V00.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO    START-TEST-GF-16.
+           MOVE "START-TEST-GF-16    " TO PAR-NAME.
+           PERFORM  INX-TEST-003.
+      *>    .16
+           GO TO    START-INIT-GF-17.
+       START-DELETE-GF-16.
+           MOVE "START-TEST-GF-16    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-17.
+           MOVE     00055  TO WRK-DU-05V00-002.
+           MOVE     WRK-IX-FD1-ALTKEY TO IX-FD1-ALTKEY1.
+           PERFORM  INX-INIT-003-R.
+           MOVE     IX-FD1-FILESIZE  TO  LOGICAL-FILE-REC.
+           MOVE     IX-FD1-FILESIZE  TO  WRK-DU-05V00-001.
+       START-TEST-GF-17.
+           ADD      00003   TO WRK-DU-05V00-001.
+           MOVE     WRK-IX-FD1-RECKEY TO IX-FD1-KEY.
+           START    IX-FD1   INVALID KEY
+                    SUBTRACT   000001  FROM ERROR-COUNTER-06V00.
+           ADD      000001 TO EXCUT-COUNTER-06V00.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO    START-TEST-GF-17.
+           MOVE "START-TEST-GF-17    " TO PAR-NAME.
+           PERFORM  INX-TEST-003.
+      *>    .17
+           GO TO   START-INIT-GF-18.
+       START-DELETE-GF-17.
+           MOVE "START-TEST-GF-17    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-18.
+           MOVE     00055  TO WRK-DU-05V00-002.
+           MOVE     WRK-IX-FD1-ALTKEY TO IX-FD1-ALTKEY1.
+           PERFORM  INX-INIT-003-R.
+           MOVE     IX-FD1-FILESIZE  TO  LOGICAL-FILE-REC.
+           MOVE     IX-FD1-FILESIZE  TO  WRK-DU-05V00-001.
+       START-TEST-GF-18.
+           ADD      00003   TO WRK-DU-05V00-001.
+           MOVE     WRK-IX-FD1-RECKEY TO IX-FD1-KEY.
+           START    IX-FD1  ; INVALID KEY
+                    SUBTRACT   000001  FROM ERROR-COUNTER-06V00.
+           ADD      000001 TO EXCUT-COUNTER-06V00.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO    START-TEST-GF-18.
+           MOVE "START-TEST-GF-18    " TO PAR-NAME.
+           PERFORM  INX-TEST-003.
+      *>    .18
+           GO TO START-INIT-GF-19.
+       START-DELETE-GF-18.
+           MOVE "START-TEST-GF-18    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       START-INIT-GF-19.
+           PERFORM  INX-INIT-003-R.
+           MOVE     IX-FD1-FILESIZE  TO  WRK-DU-05V00-001.
+           MOVE     WRK-IX-FD1-RECKEY TO IX-FD1-KEY.
+           MOVE     IX-FD1-FILESIZE  TO  WRK-DU-05V00-002.
+       START-TEST-GF-19.
+           ADD      000002  TO WRK-DU-05V00-002.
+           MOVE     WRK-IX-FD1-ALTKEY TO IX-FD1-ALTKEY1.
+           START    IX-FD1
+                           KEY IS EQUAL TO  IX-FD1-ALTKEY1
+           ; INVALID KEY SUBTRACT 000001  FROM ERROR-COUNTER-06V00.
+           ADD      000001  TO EXCUT-COUNTER-06V00.
+           IF       EXCUT-COUNTER-06V00  LESS THAN 10
+                    GO TO   START-TEST-GF-19.
+           MOVE "START-TEST-GF-19    " TO PAR-NAME.
+           PERFORM  INX-TEST-003.
+      *>    .19
+           GO TO START-END.
+       START-DELETE-GF-19.
+           MOVE "START-TEST-GF-19    " TO PAR-NAME.
+           PERFORM  DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       INX-INIT-003-R.
+           MOVE     ZERO TO LOGICAL-FILE-REC.
+           MOVE     ZERO TO EXCUT-COUNTER-06V00.
+           MOVE     00055  TO WRK-DU-05V00-002.
+           MOVE     00050  TO WRK-DU-05V00-004.
+           MOVE     ZERO TO WRK-DU-05V00-003.
+           MOVE     10  TO ERROR-COUNTER-06V00.
+       INX-VERIFY-003A.
+           IF       ASCEND
+                    ADD    000003  TO LOGICAL-FILE-REC
+                    ELSE
+                    SUBTRACT   000003  FROM  LOGICAL-FILE-REC.
+           IF       LOGICAL-FILE-REC  EQUAL  TO XRECORD-NUMBER (2)
+                    SUBTRACT   000001  FROM ERROR-COUNTER-06V00.
+           ADD      000001 TO EXCUT-COUNTER-06V00.
+       INX-VERIFY-003B.
+           IF       ASCEND
+                    ADD    000002  TO LOGICAL-FILE-REC
+                    ELSE
+                    SUBTRACT   000002  FROM  LOGICAL-FILE-REC.
+           IF       LOGICAL-FILE-REC  EQUAL  TO XRECORD-NUMBER (1)
+                    SUBTRACT   000001  FROM ERROR-COUNTER-06V00.
+           ADD      000001 TO EXCUT-COUNTER-06V00.
+       INX-TEST-003.
+           IF       EXCUT-COUNTER-06V00  NOT EQUAL  TO 000010
+                    MULTIPLY  100  BY   EXCUT-COUNTER-06V00
+                    ADD  EXCUT-COUNTER-06V00 TO ERROR-COUNTER-06V00.
+           IF       ERROR-COUNTER-06V00 EQUAL TO ZERO
+                    PERFORM PASS
+                    ELSE
+                    PERFORM   FAIL
+                    MOVE   ZERO  TO CORRECT-N
+                    MOVE     ERROR-COUNTER-06V00  TO COMPUTED-N
+                    MOVE "SEE PROGRAM (START-TEST- ); IX-36" TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+      *> 
+      *>        EACH TEST IS EXECUTED 10 TIMES.  FOLLOWING THE 10TH
+      *>     EXECUTION A TEST IS MADE ON ERROR-COUNTER-06V00 WHICH IS
+      *>     EXPECTED TO BE ZERO.  IF ERROR-COUNTER-06V00 IS NOT ZERO
+      *>     THE VALUE IN THE COUNTER INDICATES HOW THE EXECUTION FAILED
+      *>     AND THE NUMBER OF TIMES THE UNEXPECTED ACTION OCCURRED
+      *>     DURING THE TEST.  BEFORE THE TEST BEGINS ERROR-COUNTER-06V00
+      *>     IS LOADED WITH THE VALUE 10.  EACH TIME THE CORRECT RECORD
+      *>     WAS MADE AVAILABLE FOLLOWING THE READ, OR AN INVALID KEY
+      *>     CONDITION OCCURRED THAT WAS EXPECTED FOLLOWING A READ OR
+      *>     START, ERROR-COUNTER-06V00 IS DECREMENTED BY 1.
+      *>     FOR EACH ACTION THAT DID NOT OCCUR AS
+      *>     EXPECTED THE ERROR-COUNTER-06V00 IS INCREMENTED BY THE VALUE
+      *>     FOR THE ACTION LISTED BELOW, E.G., VALUE 20003 WOULD INDICATE
+      *>     THAT OF THE 10 EXECUTIONS DURING THE TEST (READING LEFT TO
+      *>     RIGHT)  2 INVALID KEY CONDITIONS AND 3 RECORDS RETRIEVED
+      *>     AS A RESULT OF THE READ OR START WAS NOT AS EXPECTED.
+      *> 
+      *>     COMPUTED RESULT                 INDICATED
+      *>        INCREMENTS                     ACTION
+      *> 
+      *>        000001          THE RECORD RETREIVED FROM THE FILE
+      *>                        FOLLOWING THE READ WAS NOT THE ONE
+      *>                        EXPECTED.
+      *> 
+      *>        000100          INDICATES,BY 10"S THE NUMBER OF TIMES THE
+      *>                        TEST WAS EXECUTED.
+      *> 
+      *>        010000          AN UNEXPECTED INVALID KEY OR AT END
+      *>                        CONDITION OCCURRED.  NOTE - ASSUMPTION
+      *>                        IS THAT THE "USE" STATEMENT IS ONLY
+      *>                        EXECUTED WHEN AN INVALID KEY OR AT END
+      *>                        CONDITION OCCURS AND THE INVALID KEY OR
+      *>                        AT END PHRASE HAS NOT BEEN SPECIFIED.
+      *> 
+       START-END.
+           CLOSE    IX-FD1.
+            CLOSE   IX-FS2.
+       INX-EXIT-003.
+           EXIT.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,IX208A

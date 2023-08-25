@@ -1,0 +1,111 @@
+      *> HEADER,COBOL,IC106A,SUBRTN,IC107A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC107A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>         THE SUBPROGRAM IC107 CONTAINS TABLES AND AN INDEX
+      *>     DATA ITEM WHICH ARE DEFINED IN THE LINKAGE SECTION AND
+      *>     NAMED AS OPERANDS IN THE USING PHRASE OF THE PROCEDURE
+      *>     DIVISION HEADER.  ONE OF THE TABLES HAS AN INDEX DEFINED
+      *>     FOR IT.  THIS INDEX SHOULD BE SEPARATE FROM THE INDEX
+      *>     DEFINED FOR THE SAME TABLE IN THE MAIN PROGRAM IC106, 
+      *>     BUT NO SPACE SHOULD BE ALLOCATED FOR THE TABLES DEFINED
+      *>     IN THE LINKAGE SECTION.  THE INDEX DATA ITEM IS SET IN
+      *>     THE MAIN PROGRAM PRIOR TO CALLING IC107, AND IT IS USED
+      *>     IN THIS SUBPROGRAM TO SET AN INDEX FOR REFERENCING THE
+      *>     TABLE IN THE SUBPROGRAM.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  IDN3  USAGE IS INDEX.
+       77  S1  PICTURE 99.
+       77  AL-CON PICTURE XXX  VALUE "XYZ".
+       LINKAGE SECTION.
+       77  IDN2  USAGE IS INDEX.
+       01  GROUP-1.
+           02  DN1 PICTURE X OCCURS 10 TIMES
+                             INDEXED BY IN3.
+       01  GROUP-2.
+           02    GROUP-21.
+               06 DN2 PIC X OCCURS 10 TIMES.
+           02     GROUP-2-1 REDEFINES GROUP-21.
+               03  FILLER  PICTURE X(7).
+               03  DN3     PICTURE XXX.
+       PROCEDURE DIVISION USING IDN2 GROUP-1 GROUP-2.
+       SECT-IC107-0001 SECTION.
+       LINK-TEST-02-01.
+           SET IN3 TO IDN2.
+           IF DN1 (IN3) EQUAL TO "F"
+               MOVE "G" TO DN2 (7).
+       LINK-TEST-02-02.
+           SET IDN3 TO IDN2.
+           SET IN3 TO IDN3.
+           IF IN3 EQUAL TO 6
+               MOVE "F" TO DN2 (6).
+      *>         THE TESTS IN LINK-TEST-02 USE THE INDEX DATA ITEM
+      *>     WHICH IS DEFINED IN THE LINKAGE SECTION AND WAS SET IN
+      *>     THE MAIN PROGRAM BEFORE THIS SUBPROGRAM WAS CALLED.
+       LINK-TEST-03-01.
+           SET IN3 TO 1.
+           MOVE 1 TO S1.
+           MOVE DN1 (IN3) TO DN2 (S1).
+       LINK-TEST-03-02.
+           SET IN3 UP BY 1.
+           ADD 1 TO S1.
+           MOVE DN1 (IN3) TO DN2 (S1).
+      *>         THE TESTS IN LINK-TEST-03 SET THE INDEX DEFINED IN THE
+      *>     TABLE IN THE LINKAGE SECTION AND USE THE INDEX TO REFERENCE
+      *>     THE TABLE ITEMS.
+       LINK-TEST-04-01.
+           SET IN3 TO 3.
+           SET IDN2 TO IN3.
+       LINK-TEST-04-02.
+           IF IDN2 IS EQUAL TO IN3
+               MOVE "C" TO DN2 (3).
+      *>         THE TESTS IN LINK-TEST-04 RESET THE INDEX DATA ITEM
+      *>     TO CORRESPOND TO TABLE POSITION 3, AND COMPARES THE
+      *>     INDEX DATA ITEM TO THE INDEX.
+       LINK-TEST-05-01.
+           MOVE 4 TO S1.
+           SET IN3 TO S1.
+           MOVE DN1 (IN3) TO DN2 (S1).
+       LINK-TEST-05-02.
+           MOVE DN1 (5) TO DN2 (5).
+      *>         THE TESTS IN LINK-TEST-05 MOVE DATA FROM THE FIRST
+      *>     TABLE DEFINED IN THE LINKAGE SECTION TO THE SECOND TABLE.
+       LINK-TEST-06.
+           MOVE AL-CON TO DN3.
+      *>         THIS TEST MOVES DATA TO THE REDEFINED FIELD IN A TABLE
+      *>     IN THE LINKAGE SECTION.
+       EXIT-IC107.
+           EXIT PROGRAM.
+      *> END-OF,IC107A

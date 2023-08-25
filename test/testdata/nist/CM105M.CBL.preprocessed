@@ -1,0 +1,490 @@
+      *> HEADER,COBOL,CM105M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           CM105M.
+       AUTHOR.
+      *>CE     FEDERAL COMPILER TESTING CENTER.
+      *>  INSTALLATION.
+      *>CE      GENERAL SERVICES ADMINISTRATION
+      *>CE *     AUTOMATED DATA AND TELECOMMUNICATION SERVICE.
+      *>CE     SOFTWARE DEVELOPMENT OFFICE.
+      *>CE      5203 LEESBURG PIKE  SUITE 1100
+      *>CE      FALLS CHURCH VIRGINIA 22041.
+      *>CE 
+      *>CE      PHONE   (703) 756-6153
+      *>CE 
+      *>CE      " HIGH       ".
+       DATE-WRITTEN.
+      *>CE     CCVS-74 VERSION 4.0 - 1980 JULY 1.
+      *>CE     CREATION DATE     /    VALIDATION DATE
+      *>CE     "4.2 ".
+       SECURITY.
+      *>CE     NONE.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE
+           LABEL RECORDS
+           XXXXX084
+           DATA RECORD IS PRINT-REC DUMMY-RECORD.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  P    PIC X(12).
+       77  PP   PIC X(24).
+       77  PPP  PIC X(36).
+       77  PS   PIC X(24).
+       77  PSP  PIC X(36).
+       77  PPS  PIC X(36).
+       01  QUEUE-NAMES.
+           02  PPPP PIC X(48) VALUE
+           XXXXX038.
+           02  PPPS PIC X(48) VALUE
+           XXXXX039.
+           02  PPSP PIC X(48) VALUE
+           XXXXX040.
+           02  PSPP PIC X(48) VALUE
+           XXXXX041.
+       01  QUEUE-NAMES-TABLE REDEFINES QUEUE-NAMES.
+           02  NAME-SET PIC X(48) OCCURS 4 TIMES INDEXED BY I1.
+       01  TEST-RESULTS.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 FEATURE                   PICTURE X(18).
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 P-OR-F                    PICTURE X(5).
+           02 FILLER                    PICTURE X  VALUE SPACE.
+           02  PAR-NAME PIC X(20).
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02  COMPUTED-A.
+               03  FILLER PIC X(9) VALUE SPACE.
+               03  STAT PIC XX.
+               03  FILLER PIC X(9) VALUE SPACE.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02  CORRECT-A.
+               03  FILLER PIC X(8).
+               03  CORRECT-QUEUE PIC X(4).
+               03  FILLER PIC X(8).
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02  RE-MARK.
+               03  QUEUE-KEY PIC X(4).
+               03  FILLER PIC X(26).
+       01  COLUMNS-LINE-1.
+           02  FILLER PIC X(3) VALUE SPACES.
+           02  FILLER PIC X(17) VALUE "FEATURE TESTED".
+           02  FILLER PIC X(9) VALUE "RESLT".
+           02  FILLER PIC X(21) VALUE "PARAGRAPH NAME".
+           02  FILLER PIC X(22) VALUE "COMPUTED DATA".
+           02  FILLER PIC X(29) VALUE "CORRECT DATA".
+           02  FILLER PIC X(7) VALUE "REMARKS".
+       01  COLUMNS-LINE-2.
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(18) VALUE ALL "-".
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(5) VALUE ALL "-".
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(20) VALUE ALL "-".
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(20) VALUE ALL "-".
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(20) VALUE ALL "-".
+           02  FILLER PIC X VALUE SPACE.
+           02  FILLER PIC X(31) VALUE ALL "-".
+       01  REC-SKL-SUB PICTURE 9(2) VALUE ZERO.
+       01  REC-CT PICTURE 99 VALUE ZERO.
+       01  DELETE-CNT                   PICTURE 999  VALUE ZERO.
+       01  ERROR-COUNTER PICTURE IS 999 VALUE IS ZERO.
+       01  INSPECT-COUNTER PIC 999 VALUE ZERO.
+       01  PASS-COUNTER PIC 999 VALUE ZERO.
+       01  TOTAL-ERROR PIC 999 VALUE ZERO.
+       01  ERROR-HOLD PIC 999 VALUE ZERO.
+       01  DUMMY-HOLD PIC X(120) VALUE SPACE.
+       01  RECORD-COUNT PIC 9(5) VALUE ZERO.
+       01  CCVS-H-1.
+           02  FILLER   PICTURE X(27)  VALUE SPACE.
+           02 FILLER PICTURE X(67) VALUE
+           " FEDERAL COMPILER TESTING CENTER COBOL COMPILER VALIDATION   SYSTEM".
+           02  FILLER     PICTURE X(26)  VALUE SPACE.
+       01  CCVS-H-2.
+           02 FILLER PICTURE X(52) VALUE IS
+           "CCVS74 NCC  COPY, NOT FOR DISTRIBUTION.".
+           02 FILLER PICTURE IS X(19) VALUE IS "TEST RESULTS SET-  ".
+           02 TEST-ID PICTURE IS X(9).
+           02 FILLER PICTURE IS X(40) VALUE IS SPACE.
+       01  CCVS-H-3.
+           02  FILLER PICTURE X(34) VALUE
+           " FOR OFFICIAL USE ONLY    ".
+           02  FILLER PICTURE X(58) VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER PICTURE X(28) VALUE
+           "  COPYRIGHT   1974 ".
+       01  CCVS-E-1.
+           02 FILLER PICTURE IS X(52) VALUE IS SPACE.
+           02 FILLER PICTURE IS X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN PICTURE IS X(9).
+           02 FILLER PICTURE X(45) VALUE IS
+           " NTIS DISTRIBUTION COBOL 74".
+       01  CCVS-E-2.
+           02  FILLER                   PICTURE X(31)  VALUE
+           SPACE.
+           02  FILLER                   PICTURE X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL PICTURE IS XXX VALUE IS SPACE.
+               03 FILLER PICTURE IS X VALUE IS SPACE.
+               03 ENDER-DESC PIC X(44) VALUE "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER PICTURE X(22) VALUE
+           " FOR OFFICIAL USE ONLY".
+           02  FILLER PICTURE X(12) VALUE SPACE.
+           02  FILLER PICTURE X(58) VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER PICTURE X(13) VALUE SPACE.
+           02 FILLER PIC X(15) VALUE " COPYRIGHT 1974".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1 PIC XXX VALUE SPACE.
+           02 FILLER PIC XXXX VALUE " OF ".
+           02 CCVS-E-4-2 PIC XXX VALUE SPACE.
+           02 FILLER PIC X(40) VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER PIC X(30) VALUE "        *** INFORMATION  ***".
+           02 INFO-TEXT.
+           04 FILLER PIC X(20) VALUE SPACE.
+           04 XXCOMPUTED PIC X(20).
+           04 FILLER PIC X(5) VALUE SPACE.
+           04 XXCORRECT PIC X(20).
+       01  HYPHEN-LINE.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(65) VALUE IS "*****************************************************************".
+           02 FILLER PICTURE IS X(54) VALUE IS "******************************************************".
+       01  CCVS-PGM-ID PIC X(6) VALUE
+           "CM105M".
+       01  MAIN-QUEUE-NAME.
+           02 MAIN-QUEUE   PIC X(12).
+           02 FILLER       PIC X(36) VALUE SPACE.
+       COMMUNICATION SECTION.
+       CD  CM-INQUE-1 INPUT STATUS KEY IS IN-STAT SUB-QUEUE-3
+           IS-OF-NO-INTEREST COUNT NAMED-BELOW SOURCE NOT-USED.
+       01  INQUE-RECORD.
+           02  QUEUE-SET PIC X(48).
+           02  FILLER PIC X(33).
+           02  MSG-COUNT-N PIC 9(6).
+           02  MSG-CNT REDEFINES MSG-COUNT-N.
+               03  FILLER PIC X(4).
+               03  MSG-COUNT PIC XX.
+       PROCEDURE    DIVISION.
+       SECT-CM105M-0001 SECTION.
+       CM105M-INIT.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE "CM105M     " TO TEST-ID.
+           MOVE     TEST-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE.
+           PERFORM COLUMN-NAMES-ROUTINE.
+           MOVE
+           XXXXX030
+           TO MAIN-QUEUE.
+           MOVE MAIN-QUEUE-NAME TO QUEUE-SET.
+           ENABLE INPUT CM-INQUE-1 KEY
+           XXXXX031.
+           PERFORM BUILD-UP-QUEUES VARYING I1 FROM 1 BY 1
+               UNTIL I1 IS GREATER THAN 4.
+           GO TO BEGIN-TESTS.
+       BUILD-UP-QUEUES.
+           MOVE NAME-SET (I1) TO QUEUE-SET.
+           ACCEPT CM-INQUE-1 COUNT.
+           IF MSG-COUNT IS LESS THAN 10 GO TO BUILD-UP-QUEUES.
+       BEGIN-TESTS.
+           DISABLE INPUT CM-INQUE-1 KEY
+           XXXXX031.
+           MOVE PPPP TO  P  PP  PPP.
+           MOVE PPSP TO  PPS.
+           MOVE PSPP TO  PS  PSP.
+       QUEUE-TEST-01.
+           MOVE "QUEUE SERIES PPPP" TO FEATURE.
+           MOVE PPPP TO QUEUE-SET.
+           PERFORM RECEIVE-A-MSG.
+           IF QUEUE-KEY IS EQUAL TO "PPPP"
+               PERFORM PASS GO TO QUEUE-TEST-WRITE-01.
+           MOVE "PPPP" TO CORRECT-QUEUE.
+           PERFORM FAIL.
+       QUEUE-TEST-WRITE-01.
+           MOVE "QUEUE-TEST-01" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       QUEUE-TEST-02.
+           MOVE "QUEUE SERIES PPPS" TO FEATURE.
+           MOVE PPPS TO QUEUE-SET.
+           PERFORM RECEIVE-A-MSG.
+           IF QUEUE-KEY IS EQUAL TO "PPPS"
+               PERFORM PASS   GO TO QUEUE-TEST-WRITE-02.
+           MOVE "PPPS" TO CORRECT-QUEUE.
+           PERFORM FAIL.
+       QUEUE-TEST-WRITE-02.
+           MOVE "QUEUE-TEST-02" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       QUEUE-TEST-03.
+           MOVE "QUEUE SERIES PPSP" TO FEATURE.
+           MOVE PPSP TO QUEUE-SET.
+           PERFORM RECEIVE-A-MSG.
+           IF QUEUE-KEY IS EQUAL TO "PPSP"
+               PERFORM PASS   GO TO QUEUE-TEST-WRITE-03.
+           MOVE "PPSP" TO CORRECT-QUEUE.
+           PERFORM FAIL.
+       QUEUE-TEST-WRITE-03.
+           MOVE "QUEUE-TEST-03" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       QUEUE-TEST-04.
+           MOVE "QUEUE SERIES PSPP" TO FEATURE.
+           MOVE PSPP TO QUEUE-SET.
+           PERFORM RECEIVE-A-MSG.
+           IF QUEUE-KEY IS EQUAL TO "PSPP"
+               PERFORM PASS   GO TO QUEUE-TEST-WRITE-04.
+           MOVE "PSPP" TO CORRECT-QUEUE.
+           PERFORM FAIL.
+       QUEUE-TEST-WRITE-04.
+           MOVE "QUEUE-TEST-04" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       QUEUE-TEST-05.
+           MOVE "QUEUE SERIES P" TO FEATURE.
+           MOVE P TO QUEUE-SET.
+           PERFORM RECEIVE-A-MSG.
+           IF QUEUE-KEY IS EQUAL TO "PPPP"
+               PERFORM PASS   GO TO QUEUE-TEST-WRITE-05.
+           MOVE "PPPP" TO CORRECT-QUEUE.
+           PERFORM FAIL.
+       QUEUE-TEST-WRITE-05.
+           MOVE "QUEUE-TEST-05" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       QUEUE-TEST-06.
+           MOVE "QUEUE SERIES PP" TO FEATURE.
+           MOVE PP TO QUEUE-SET.
+           PERFORM RECEIVE-A-MSG.
+           IF QUEUE-KEY IS EQUAL TO "PPPP"
+               PERFORM PASS   GO TO QUEUE-TEST-WRITE-06.
+           MOVE "PPPP" TO CORRECT-QUEUE.
+           PERFORM FAIL.
+       QUEUE-TEST-WRITE-06.
+           MOVE "QUEUE-TEST-06" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       QUEUE-TEST-07.
+           MOVE "QUEUE SERIES PPP" TO FEATURE.
+           MOVE PPP TO QUEUE-SET.
+           PERFORM RECEIVE-A-MSG.
+           IF QUEUE-KEY IS EQUAL TO "PPPP"
+               PERFORM PASS   GO TO QUEUE-TEST-WRITE-07.
+           MOVE "PPPP" TO CORRECT-QUEUE.
+           PERFORM FAIL.
+       QUEUE-TEST-WRITE-07.
+           MOVE "QUEUE-TEST-07" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       QUEUE-TEST-08.
+           MOVE "QUEUE SERIES PS" TO FEATURE.
+           MOVE PS TO QUEUE-SET.
+           PERFORM RECEIVE-A-MSG.
+           IF QUEUE-KEY IS EQUAL TO "PSPP"
+               PERFORM PASS   GO TO QUEUE-TEST-WRITE-08.
+           MOVE "PSPP" TO CORRECT-QUEUE.
+           PERFORM FAIL.
+       QUEUE-TEST-WRITE-08.
+           MOVE "QUEUE-TEST-08" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       QUEUE-TEST-09.
+           MOVE "QUEUE SERIES PSP" TO FEATURE.
+           MOVE PSP TO QUEUE-SET.
+           PERFORM RECEIVE-A-MSG.
+           IF QUEUE-KEY IS EQUAL TO "PSPP"
+               PERFORM PASS   GO TO QUEUE-TEST-WRITE-09.
+           MOVE "PSPP" TO CORRECT-QUEUE.
+           PERFORM FAIL.
+       QUEUE-TEST-WRITE-09.
+           MOVE "QUEUE-TEST-09" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       QUEUE-TEST-10.
+           MOVE "QUEUE SERIES PPS" TO FEATURE.
+           MOVE PPS TO QUEUE-SET.
+           PERFORM RECEIVE-A-MSG.
+           IF QUEUE-KEY IS EQUAL TO "PPSP"
+               PERFORM PASS  GO TO QUEUE-TEST-WRITE-10.
+           MOVE "PPSP" TO CORRECT-QUEUE.
+           PERFORM FAIL.
+       QUEUE-TEST-WRITE-10.
+           MOVE "QUEUE-TEST-10" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ACCEPT-TEST-01.
+           MOVE "ACCEPT GROUP QUEUE" TO FEATURE.
+           MOVE PPPP TO QUEUE-SET.
+           ACCEPT CM-INQUE-1 COUNT.
+           IF IN-STAT IS NOT EQUAL TO "00"
+               MOVE IN-STAT TO STAT
+               MOVE "BAD STATUS FOR PPPP" TO RE-MARK
+               ELSE
+               MOVE MSG-COUNT TO STAT
+               MOVE "COUNT FOR PPPP" TO RE-MARK.
+           PERFORM ACCEPT-WRITE-01.
+           MOVE PPPS TO QUEUE-SET.
+           ACCEPT CM-INQUE-1 COUNT.
+           IF IN-STAT IS NOT EQUAL TO "00"
+               MOVE IN-STAT TO STAT
+               MOVE "BAD STATUS FOR PPPS" TO RE-MARK
+               ELSE
+               MOVE MSG-COUNT TO STAT
+               MOVE "COUNT FOR PPPS" TO RE-MARK.
+           PERFORM ACCEPT-WRITE-01.
+           MOVE PPSP TO QUEUE-SET.
+           ACCEPT CM-INQUE-1 COUNT.
+           IF IN-STAT IS NOT EQUAL TO "00"
+               MOVE IN-STAT TO STAT
+               MOVE "BAD STATUS FOR PPSP"  TO RE-MARK
+               ELSE
+               MOVE MSG-COUNT TO STAT
+               MOVE "COUNT FOR PPSP" TO RE-MARK.
+           PERFORM ACCEPT-WRITE-01.
+           MOVE PSPP TO QUEUE-SET.
+           ACCEPT CM-INQUE-1 COUNT.
+           IF IN-STAT IS NOT EQUAL TO "00"
+               MOVE IN-STAT TO STAT
+               MOVE "BAD STATUS FOR PSPP" TO RE-MARK
+               ELSE
+               MOVE MSG-COUNT TO STAT
+               MOVE "COUNT FOR PSPP" TO RE-MARK.
+           PERFORM ACCEPT-WRITE-01.
+           MOVE P TO QUEUE-SET.
+           ACCEPT CM-INQUE-1 COUNT.
+           IF IN-STAT IS NOT EQUAL TO "00"
+               MOVE IN-STAT TO STAT
+               MOVE "BAD STATUS FOR P" TO RE-MARK
+               ELSE
+               MOVE MSG-COUNT TO STAT
+               MOVE "COUNT FOR P" TO RE-MARK.
+           PERFORM ACCEPT-WRITE-01.
+           MOVE PP TO QUEUE-SET.
+           ACCEPT CM-INQUE-1 COUNT.
+           IF IN-STAT IS NOT EQUAL TO "00"
+               MOVE IN-STAT TO STAT
+               MOVE "BAD STATUS FOR PP" TO STAT
+               ELSE
+               MOVE MSG-COUNT TO STAT
+               MOVE "COUNT FOR PP" TO RE-MARK.
+           PERFORM ACCEPT-WRITE-01.
+           MOVE PPP TO QUEUE-SET.
+           ACCEPT CM-INQUE-1 COUNT.
+           IF IN-STAT IS NOT EQUAL TO "00"
+               MOVE IN-STAT TO STAT
+               MOVE "BAD STATUS FOR PPP" TO STAT
+               ELSE
+               MOVE MSG-COUNT TO STAT
+               MOVE "COUNT FOR PPP" TO RE-MARK.
+           PERFORM ACCEPT-WRITE-01.
+           MOVE PS TO QUEUE-SET.
+           ACCEPT CM-INQUE-1 COUNT.
+           IF IN-STAT IS NOT EQUAL TO "00"
+               MOVE IN-STAT TO STAT
+               MOVE "BAD STATUS FOR PS" TO STAT
+               ELSE
+               MOVE MSG-COUNT TO STAT
+               MOVE "COUNT FOR PS" TO RE-MARK.
+           PERFORM ACCEPT-WRITE-01.
+           MOVE PSP TO QUEUE-SET.
+           ACCEPT CM-INQUE-1 COUNT.
+           IF IN-STAT IS NOT EQUAL TO "00"
+               MOVE IN-STAT TO STAT
+               MOVE "BAD STATUS FOR PSP" TO STAT
+               ELSE
+               MOVE MSG-COUNT TO STAT
+               MOVE "COUNT FOR PSP" TO RE-MARK.
+           PERFORM ACCEPT-WRITE-01.
+           MOVE PPS TO QUEUE-SET.
+           ACCEPT CM-INQUE-1 COUNT.
+           IF IN-STAT IS NOT EQUAL TO "00"
+               MOVE IN-STAT TO STAT
+               MOVE "BAD STATUS FOR PPS" TO STAT
+               ELSE
+               MOVE MSG-COUNT TO STAT
+               MOVE "COUNT FOR PPS" TO RE-MARK.
+           PERFORM ACCEPT-WRITE-01.
+           GO TO CM105-FINI.
+       ACCEPT-WRITE-01.
+           MOVE "ACCEPT-TEST-01" TO PAR-NAME.
+           MOVE "INFO" TO P-OR-F.
+           PERFORM PRINT-DETAIL.
+       CM105-FINI.
+           PERFORM END-ROUTINE THRU END-ROUTINE-4.
+           CLOSE PRINT-FILE.
+           STOP RUN.
+       RECEIVE-A-MSG.
+           MOVE SPACE TO RE-MARK.
+           RECEIVE CM-INQUE-1 MESSAGE INTO RE-MARK
+               NO DATA MOVE "NOTHING RECEIVED FROM MCS" TO RE-MARK.
+       COMMON-SUBROUTINES SECTION.
+       PASS.
+           MOVE "PASS" TO P-OR-F.
+       FAIL.
+           MOVE " SEE REMARKS COLUMN " TO COMPUTED-A.
+           ADD      1 TO ERROR-COUNTER.
+           MOVE "FAIL*" TO P-OR-F.
+       PRINT-DETAIL.
+           MOVE     TEST-RESULTS TO PRINT-REC.
+           PERFORM WRITE-LINE.
+           MOVE     SPACE TO P-OR-F.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE SPACE TO CORRECT-A.
+           MOVE SPACE TO RE-MARK.
+       COLUMN-NAMES-ROUTINE.
+           MOVE     COLUMNS-LINE-1 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+           MOVE     COLUMNS-LINE-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+           PERFORM  BLANK-LINE-PRINT.
+       END-ROUTINE.
+           MOVE     HYPHEN-LINE TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       PARA-Z.
+           PERFORM  BLANK-LINE-PRINT 4 TIMES.
+           MOVE     CCVS-E-1 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-1.
+           PERFORM  BLANK-LINE-PRINT.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+                    GO TO END-ROUTINE-2.
+           MOVE     ERROR-COUNTER TO ERROR-TOTAL.
+           GO TO    END-ROUTINE-3.
+       END-ROUTINE-2.
+           MOVE " NO" TO ERROR-TOTAL.
+       END-ROUTINE-3.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+           IF DELETE-CNT IS EQUAL TO ZERO
+               MOVE " NO" TO ERROR-TOTAL  ELSE
+           MOVE DELETE-CNT TO ERROR-TOTAL.
+           MOVE "TESTS DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-4.
+           MOVE CCVS-E-3 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       BLANK-LINE-PRINT.
+           MOVE     SPACE TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       WRITE-LINE.
+           WRITE DUMMY-RECORD AFTER ADVANCING 1 LINE.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1 TO PRINT-REC
+           WRITE PRINT-REC
+               AFTER ADVANCING PAGE.
+           MOVE CCVS-H-2 TO PRINT-REC.
+           WRITE PRINT-REC
+               AFTER 2 LINES.
+           MOVE CCVS-H-3 TO PRINT-REC.
+           WRITE PRINT-REC
+               AFTER 5 LINES.
+           MOVE HYPHEN-LINE TO PRINT-REC.
+           PERFORM WRITE-LINE.
+      *> END-OF,CM105M

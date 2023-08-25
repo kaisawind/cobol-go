@@ -1,0 +1,509 @@
+      *> HEADER,COBOL,NC244A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC244A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     PROGRAM NCC244A TESTS THE CONSTRUCTION  AND ACCESS OF A   *
+      *>     TWO-DIMENSIONAL TABLE WHICH HAS MULTIPLE INDICES.         *
+      *>     RELATIVE INDEXING AND FORMATS 1 AND 2 OF THE "SET"        *
+      *>     STATEMENT ARE USED.                                       *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  SUB-COMP1    PICTURE S9     VALUE 3    COMPUTATIONAL.
+       77  SUB-COMP2    PICTURE S9(10) VALUE 1    COMPUTATIONAL.
+       77  SUB-COMP3    PICTURE S9(18) VALUE 49   COMPUTATIONAL.
+       77  SUB-COMP4    PICTURE 9      VALUE 3    COMPUTATIONAL.
+       77  SUB-COMP5    PICTURE 9(10)  VALUE 1    COMPUTATIONAL.
+       77  SUB-COMP6    PICTURE 9(18)  VALUE 9    COMPUTATIONAL.
+       77  SUB-7        PICTURE 99  VALUE 20.
+       77  SUB-8        PICTURE 99 VALUE 01.
+       77  SUB-9        PICTURE 99  VALUE 10.
+       77  IN-SERT     PICTURE AA  VALUE "AA".
+       77  ENTRY-HOLD  PICTURE XX  VALUE SPACES.
+       01  IDX-HOLD.
+           02  IDX-3HOLD PICTURE 9(6)  VALUE 0.
+           02  FILLER    PICTURE X(8)  VALUE SPACES.
+           02  IDX-14HOLD PICTURE 9(6) VALUE 0.
+       01  TWO-DIMENSION-TABLE.
+           02  GRP-ENTRY OCCURS 50 INDEXED IDX-1 IDX-2 IDX-3 IDX-4
+               IDX-5.
+               03  ENTRY-1  PICTURE 99.
+               03  ELEM-ENTRY OCCURS 10 TIMES INDEXED BY IDX-6 IDX-7
+                   IDX-8 IDX-9 IDX-10 IDX-11 IDX-12 IDX-13 IDX-14
+                   IDX-15.
+                   04  ENTRY-2 PICTURE XX.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC244A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC244A-001 SECTION.
+       TH-18-001.
+       BUILD-2DEM-TABLE.
+           SET IDX-1  IDX-2  IDX-3  IDX-4  IDX-5  IDX-6  IDX-7  IDX-8
+               IDX-9  IDX-10 TO 01.
+           SET IDX-11  IDX-12  IDX-13  IDX-14  IDX-15 TO 01.
+       BUILD-LEVEL-1.
+           SET ENTRY-1 (IDX-5) TO IDX-5.
+           IF IDX-5 EQUAL TO 6 MOVE "BB" TO IN-SERT GO TO BUILD-ENTRY.
+           IF IDX-5 EQUAL TO 11 MOVE "CC" TO IN-SERT GO TO BUILD-ENTRY.
+           IF IDX-5 EQUAL TO 16 MOVE "DD" TO IN-SERT GO TO BUILD-ENTRY.
+           IF IDX-5 EQUAL TO 21 MOVE "EE" TO IN-SERT GO TO BUILD-ENTRY.
+           IF IDX-5 EQUAL TO 26 MOVE "FF" TO IN-SERT GO TO BUILD-ENTRY.
+           IF IDX-5 EQUAL TO 31 MOVE "GG" TO IN-SERT GO TO BUILD-ENTRY.
+           IF IDX-5 EQUAL TO 36 MOVE "HH" TO IN-SERT GO TO BUILD-ENTRY.
+           IF IDX-5 EQUAL TO 41 MOVE "II" TO IN-SERT GO TO BUILD-ENTRY.
+           IF IDX-5 EQUAL TO 46 MOVE "JJ" TO IN-SERT.
+       BUILD-ENTRY.
+           MOVE IN-SERT TO ENTRY-2 (IDX-5, IDX-15).
+           IF IDX-15 EQUAL TO 10 AND IDX-5 EQUAL TO 50
+               GO TO BUILD-EXIT.
+           IF IDX-15 EQUAL TO 10
+               SET IDX-15 TO 01
+               SET IDX-5 UP BY 1
+               GO TO BUILD-LEVEL-1.
+           SET IDX-15 UP BY 01.
+           GO TO BUILD-ENTRY.
+       BUILD-EXIT.
+           EXIT.
+       TABLE-CHECKING SECTION.
+      *> 
+       IDX-INIT-F1-1.
+           MOVE "IDX-TEST-F1-1" TO PAR-NAME.
+           MOVE "VI-126 6.22.2" TO ANSI-REFERENCE.
+           MOVE "RELATIVE INDEXING   " TO FEATURE.
+       IDX-TEST-F1-1.
+           SET IDX-4  IDX-14 TO SUB-COMP2.
+           IF ENTRY-2 (IDX-4 + 49, IDX-14 + 9) EQUAL TO "JJ"
+               PERFORM PASS
+               GO TO IDX-WRITE-F1-1
+           ELSE
+               GO TO IDX-FAIL-F1-1.
+       IDX-DELETE-F1-1.
+           PERFORM DE-LETE.
+           GO TO IDX-WRITE-F1-1.
+       IDX-FAIL-F1-1.
+           MOVE ENTRY-2 (IDX-4 + 49, IDX-14 + 9) TO COMPUTED-A.
+           MOVE "JJ" TO CORRECT-A.
+           PERFORM FAIL.
+       IDX-WRITE-F1-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       IDX-INIT-F2-2.
+           MOVE "IDX-TEST-F2-2" TO PAR-NAME.
+           MOVE "VI-126 6.22.2" TO ANSI-REFERENCE.
+           MOVE "SET DN BY COMP ITEM " TO FEATURE.
+       IDX-TEST-F2-2.
+           SET IDX-3 TO SUB-COMP3.
+           SET IDX-3 DOWN BY SUB-7.
+           IF ENTRY-1 (IDX-3) EQUAL TO 29
+               PERFORM PASS
+               GO TO IDX-WRITE-F2-2
+           ELSE
+               GO TO IDX-FAIL-F2-2.
+       IDX-DELETE-F2-2.
+           PERFORM DE-LETE.
+           GO TO IDX-WRITE-F2-2.
+       IDX-FAIL-F2-2.
+           MOVE ENTRY-1 (IDX-3) TO COMPUTED-N.
+           MOVE 29 TO CORRECT-N.
+           PERFORM FAIL.
+       IDX-WRITE-F2-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       IDX-INIT-F2-3.
+           MOVE "IDX-TEST-F2-3" TO PAR-NAME.
+           MOVE "VI-126 6.22.2" TO ANSI-REFERENCE.
+           MOVE "SET UP BY COMP ITEM " TO FEATURE.
+       IDX-TEST-F2-3.
+           SET IDX-2 TO SUB-COMP6.
+           SET IDX-2 UP BY SUB-COMP1.
+           IF ENTRY-1 (IDX-2) EQUAL TO 12
+               PERFORM PASS
+               GO TO IDX-WRITE-F2-3
+           ELSE
+               GO TO IDX-FAIL-F2-3.
+       IDX-DELETE-F2-3.
+           PERFORM DE-LETE.
+           GO TO IDX-WRITE-F2-3.
+       IDX-FAIL-F2-3.
+           MOVE ENTRY-1 (IDX-2) TO COMPUTED-N.
+           MOVE 12 TO CORRECT-N.
+           PERFORM FAIL.
+       IDX-WRITE-F2-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       IDX-INIT-F2-4.
+           MOVE "IDX-TEST-F2-4" TO PAR-NAME.
+           MOVE "VI-126 6.22.2" TO ANSI-REFERENCE.
+           MOVE "MULT OPERND SET STMT" TO FEATURE.
+           GO TO IDX-TEST-F2-4.
+       TEST-4.
+           SET IDX-1  IDX-6 DOWN BY SUB-COMP5.
+           MOVE ENTRY-2 (IDX-1, IDX-6) TO ENTRY-HOLD.
+       TEST-4EXIT.
+           EXIT.
+       IDX-TEST-F2-4.
+           SET IDX-1 TO SUB-COMP3.
+           SET IDX-6 TO SUB-9.
+           PERFORM TEST-4 THRU TEST-4EXIT UNTIL
+                      ENTRY-2 (IDX-1, IDX-6) EQUAL TO "II".
+           IF ENTRY-HOLD EQUAL TO "II"
+               PERFORM PASS
+               GO TO IDX-WRITE-F2-4
+           ELSE
+               GO TO IDX-FAIL-F2-4.
+       IDX-DELETE-F2-4.
+           PERFORM DE-LETE.
+           GO TO IDX-WRITE-F2-4.
+       IDX-FAIL-F2-4.
+           MOVE ENTRY-HOLD TO COMPUTED-A.
+           MOVE "II" TO CORRECT-A.
+       IDX-WRITE-F2-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       IDX-INIT-F2-5.
+           MOVE "IDX-TEST-F2-5" TO PAR-NAME.
+           MOVE "VI-126 6.22.2" TO ANSI-REFERENCE.
+           MOVE "PFM VARYNG COMP ITEM" TO FEATURE.
+           MOVE SPACES TO ENTRY-HOLD.
+           GO TO IDX-TEST-F2-5.
+       TEST-5.
+           SET IDX-3 TO SUB-COMP2.
+           SET IDX-14 TO SUB-COMP5.
+           MOVE ENTRY-2 (IDX-3, IDX-14) TO ENTRY-HOLD.
+       IDX-TEST-F2-5.
+           SET IDX-3, IDX-14 TO 01.
+           PERFORM TEST-5
+                   VARYING SUB-COMP5 FROM 1 BY SUB-8
+                   UNTIL ENTRY-2 (IDX-3, IDX-14) EQUAL TO "JJ"
+                      OR IDX-14 EQUAL TO 10
+                   AFTER SUB-COMP2 FROM 1 BY 1
+                   UNTIL ENTRY-1 (IDX-3) EQUAL TO 46.
+           IF ENTRY-HOLD EQUAL TO "JJ"
+               PERFORM PASS
+               GO TO IDX-WRITE-F2-5
+           ELSE
+               GO TO IDX-FAIL-F2-5.
+       IDX-DELETE-F2-5.
+           PERFORM DE-LETE.
+           MOVE "IDX-TEST-F2-5" TO PAR-NAME.
+           MOVE  "PFM VARYING COMP ITEM" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE IF THIS TEST IS DELETED TEST-6 WILL ALSO BE DELETED.
+           PERFORM DE-LETE.
+           MOVE "IDX-TEST-F2-6" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO CLOSE-FILES.
+       IDX-FAIL-F2-5.
+           MOVE "JJ" TO CORRECT-A.
+           MOVE ENTRY-HOLD TO COMPUTED-A.
+           PERFORM FAIL.
+       IDX-WRITE-F2-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       IDX-INIT-F2-6.
+           MOVE "IDX-TEST-F2-6" TO PAR-NAME.
+           MOVE "VI-126 6.22.2" TO ANSI-REFERENCE.
+       IDX-TEST-F2-6.
+           IF IDX-3 EQUAL TO 46 AND IDX-14 EQUAL TO 01
+               PERFORM PASS
+               GO TO IDX-WRITE-F2-6
+           ELSE
+               GO TO IDX-FAIL-F2-6.
+       IDX-DELETE-F2-6.
+           PERFORM DE-LETE.
+           GO TO IDX-WRITE-F2-6.
+       IDX-FAIL-F2-6.
+           SET IDX-3HOLD TO IDX-3.
+           SET IDX-14HOLD TO IDX-14.
+           MOVE IDX-HOLD TO COMPUTED-A.
+           PERFORM FAIL.
+           MOVE "000046        000001" TO CORRECT-A.
+           MOVE "COMPARE INDEXES OF TEST-5" TO RE-MARK.
+       IDX-WRITE-F2-6.
+           PERFORM PRINT-DETAIL.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC244A

@@ -1,0 +1,67 @@
+      *> HEADER,COBOL,CM401M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+            CM401M.
+      *> The following program tests the flagging of level 2
+      *> features of the communication module.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       FILE SECTION.
+       COMMUNICATION SECTION.
+       CD COMMNAME FOR INITIAL INPUT
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+           SYMBOLIC SUB-QUEUE-1 IS CQ.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       01 CREC.
+           03 CNAME1   PIC X(8).
+           03 CQ       PIC 9(8).
+           03 FILLER   PIC X(62).
+           03 CINT     PIC 9.
+           03 FILLER   PIC X(8).
+       
+       CD COMM2 FOR OUTPUT
+           DESTINATION TABLE OCCURS 7 TIMES.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       PROCEDURE DIVISION.
+       
+       CM401M-CONTROL.
+           PERFORM CM401M-DISABLE THRU CM401M-SENDREP.
+           STOP RUN.
+       
+       CM401M-DISABLE.
+           DISABLE INPUT COMMNAME WITH KEY CNAME1.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       CM401M-ENABLE.
+           ENABLE INPUT COMMNAME WITH KEY CNAME1.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       CM401M-PURGE.
+           PURGE COMM2.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       CM401M-SEND.
+           SEND COMM2 FROM CNAME1.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       CM401M-SENDID.
+           SEND COMM2 FROM CNAME1 WITH CINT.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       CM401M-SENDESI.
+           SEND COMM2 FROM CNAME1 WITH ESI.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       CM401M-SENDREP.
+           SEND COMM2 WITH EMI REPLACING LINE.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 10.
+      *> END-OF,CM401M

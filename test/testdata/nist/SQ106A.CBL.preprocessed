@@ -1,0 +1,2660 @@
+      *> HEADER,COBOL,SQ106A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SQ106A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>     USING CCVS85 VERSION 1.0 ISSUED IN JANUARY 1986.          *
+      *>                              REVISED 1986, AUGUST             *
+      *>                                                               *
+      *>     CREATION DATE     /     VALIDATION DATE                   *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>             X-01   SEQUENTIAL MAGNETIC TAPE FILE              *
+      *>             X-55   SYSTEM PRINTER                             *
+      *>             X-82   SOURCE-COMPUTER                            *
+      *>             X-83   OBJECT-COMPUTER.                           *
+      *>                                                               *
+      *> ***************************************************************
+       
+      *>     THIS PROGRAM BUILDS A SEQUENTIAL TAPE FILE WHICH CONTAINS *
+      *>     BOTH 120 CHARACTER AND 151 CHARACTER RECORDS.             *
+      *>                                                               *
+      *>     THE SEQUENCE OF RECORD TYPES IS SLSSLSLLLSS, WHERE S      *
+      *>     INDICATES 120 CHARACTERS AND L INDICATES 151 CHARACTERS,  *
+      *>     FOR A TOTAL OF 11 RECORDS IN THE FILE.  SIX OF THE        *
+      *>     RECORDS ARE WRITEN USING WRITE FROM, THE OTHERS USING A   *
+      *>     WRITE STATEMENT WITHOUT THE FROM PHRASE.  THE FILE IS     *
+      *>     THEN CLOSED AND REOPENED FOR INPUT.  IT IS READ USING     *
+      *>     TWELVE DIFFERENT FORMATS OF THE READ STATEMENT.  THE      *
+      *>     VARIANTS ARE PRODUCED BY INCLUDING OR OMITTING THE NOT AT *
+      *>     END AND END-READ PHRASES, AND INCLUDING OR EXCLUDING THE  *
+      *>     OPTIONAL WORD "AT" IN THE END AND NOT END PHRASES.        *
+      *>     FIELDS IN EACH RECORD ARE CHECKED AGAINST THE EXPECTED    *
+      *>     VALUES.                                                   *
+      *>                                                               *
+      *>     WHERE A SHORT RECORD IS EXPECTED, A CHECK IS MADE THAT    *
+      *>     THE RECORD AREA DOES NOT CONTAIN THE VALUES THAT WERE     *
+      *>     PRESENT IN THAT PART OF THE RECORD AREA BEYOND THE RECORD *
+      *>     WHEN IT WAS WRITTEN.  THIS ASSUMPTION IS NOT FULLY        *
+      *>     JUSTIFIED, AS THE CONTENT OF THE RECORD AREA BEYOND THE   *
+      *>     END OF THE RECORD WHEN A SHORT RECORD IS READ IS          *
+      *>     UNDEFINED, BUT IT IS UNLIKELY THAT THE VALUES TESTED FOR  *
+      *>     WOULD OCCUR BY CHANCE.                                    *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+      *>     SELECT RAW-DATA   ASSIGN TO
+      *>     XXXXX062
+      *>            ORGANIZATION IS INDEXED
+      *>            ACCESS MODE IS RANDOM
+      *>            RECORD KEY IS RAW-DATA-KEY.
+      *> 
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+      *> 
+           SELECT SQ-VS6 ASSIGN
+           XXXXX001
+           STATUS SQ-STATUS
+           ORGANIZATION IS SEQUENTIAL.
+      *> 
+      *> 
+       DATA DIVISION.
+       FILE SECTION.
+      *> 
+      *> FD  RAW-DATA.
+      *> 
+      *> 01  RAW-DATA-SATZ.
+      *>     05  RAW-DATA-KEY        PIC X(6).
+      *>     05  C-DATE              PIC 9(6).
+      *>     05  C-TIME              PIC 9(8).
+      *>     05  C-NO-OF-TESTS       PIC 99.
+      *>     05  C-OK                PIC 999.
+      *>     05  C-ALL               PIC 999.
+      *>     05  C-FAIL              PIC 999.
+      *>     05  C-DELETED           PIC 999.
+      *>     05  C-INSPECT           PIC 999.
+      *>     05  C-NOTE              PIC X(13).
+      *>     05  C-INDENT            PIC X.
+      *>     05  C-ABORT             PIC X(8).
+      *> 
+       FD  PRINT-FILE
+           LABEL RECORDS
+           XXXXX084
+           DATA RECORD IS PRINT-REC DUMMY-RECORD
+                     .
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+      *> 
+      *> 
+       FD  SQ-VS6
+           LABEL RECORDS ARE STANDARD
+           DATA RECORDS ARE SQ-VS6R1-M-G-120  SQ-VS6R2-M-G-151
+           RECORD CONTAINS 120 TO 151 CHARACTERS.
+      *> 
+       01  SQ-VS6R1-M-G-120.
+           02  SQ-VS6R1-FIRST PIC X(120).
+      *> 
+       01  SQ-VS6R2-M-G-151.
+           02  SQ-VS6R2-FIRST  PIC X(120).
+           02  SQ-VS6R2-SECOND.
+               05  SQ-VS6R2-SECOND-L.
+                   07  LONG-OR-SHORT   PIC X(5).
+                   07  SQ-VS6-RECNO    PIC X(5).
+               05  SQ-VS6R2-SECOND-R.
+                   07  SQ-VS6-FILLER   PIC X(21).
+      *> 
+      *> 
+       WORKING-STORAGE SECTION.
+      *> 
+      *> **************************************************************
+      *>                                                              *
+      *>     WORKING-STORAGE DATA ITEMS SPECIFIC TO THIS TEST SUITE   *
+      *>                                                              *
+      *> **************************************************************
+      *> 
+       01  SQ-STATUS.
+         03  SQ-STATUS-1 PIC X.
+         03  SQ-STATUS-2 PIC X.
+      *> 
+       01  BUFFER-COPY.
+         03  BUFFER-COPY-120    PIC X(120).
+         03  BUFFER-COPY-SECOND.
+             05  BUFFER-COPY-SECOND-L.
+                 07  BUFFER-COPY-L-OR-S PIC X(5).
+                 07  BUFFER-COPY-RECNO  PIC 9(5).
+             05  BUFFER-COPY-SECOND-R.
+                 07  BUFFER-COPY-END    PIC X(21).
+      *> 
+       01  EOF-FLAG      PIC X(12).
+       01  NOT-EOF-FLAG  PIC X(12).
+       01  END-READ-FLAG PIC X(12).
+      *> 
+       01  DELETE-SW.
+         03  DELETE-SW-1 PIC X.
+         03  DELETE-SW-1-GROUP.
+           05  DELETE-SW-2 PIC X.
+           05  DELETE-SW-2-GROUP.
+               07  DELETE-SW-3 PIC X.
+      *> 
+      *> **************************************************************
+      *>                                                              *
+      *>     WORKING-STORAGE DATA ITEMS USED BY THE CCVS              *
+      *>                                                              *
+      *> **************************************************************
+      *> 
+       01  REC-SKEL-SUB   PIC 99.
+      *> 
+       01  FILE-RECORD-INFORMATION-REC.
+           03 FILE-RECORD-INFO-SKELETON.
+              05 FILLER                 PICTURE X(48)       VALUE
+                   "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+              05 FILLER                 PICTURE X(46)       VALUE
+                   ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+              05 FILLER                 PICTURE X(26)       VALUE
+                   ",LFIL=000000,ORG=  ,LBLR= ".
+              05 FILLER                 PICTURE X(37)       VALUE
+                   ",RECKEY=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY1=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY2=                             ".
+              05 FILLER                 PICTURE X(7)        VALUE SPACE.
+           03 FILE-RECORD-INFO          OCCURS  10  TIMES.
+              05 FILE-RECORD-INFO-P1-120.
+                 07 FILLER              PIC X(5).
+                 07 XFILE-NAME          PIC X(6).
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-NAME        PIC X(6).
+                 07 FILLER              PIC X(1).
+                 07 REELUNIT-NUMBER     PIC 9(1).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-NUMBER      PIC 9(6).
+                 07 FILLER              PIC X(6).
+                 07 UPDATE-NUMBER       PIC 9(2).
+                 07 FILLER              PIC X(5).
+                 07 ODO-NUMBER          PIC 9(4).
+                 07 FILLER              PIC X(5).
+                 07 XPROGRAM-NAME       PIC X(5).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-LENGTH      PIC 9(6).
+                 07 FILLER              PIC X(7).
+                 07 CHARS-OR-RECORDS    PIC X(2).
+                 07 FILLER              PIC X(1).
+                 07 XBLOCK-SIZE         PIC 9(4).
+                 07 FILLER              PIC X(6).
+                 07 RECORDS-IN-FILE     PIC 9(6).
+                 07 FILLER              PIC X(5).
+                 07 XFILE-ORGANIZATION  PIC X(2).
+                 07 FILLER              PIC X(6).
+                 07 XLABEL-TYPE         PIC X(1).
+              05 FILE-RECORD-INFO-P121-240.
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-KEY         PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY1      PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY2      PIC X(29).
+                 07 FILLER              PIC X(7).
+      *> 
+       01  TEST-RESULTS.
+           02 FILLER              PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER              PIC X(14)  VALUE SPACE.
+             03 PARDOT-X            PIC X      VALUE SPACE.
+             03 DOTVALUE            PIC 99     VALUE ZERO.
+           02 FILLER              PIC X      VALUE SPACE.
+           02 FEATURE             PIC X(24)  VALUE SPACE.
+           02 FILLER              PIC X      VALUE SPACE.
+           02 P-OR-F              PIC X(5)   VALUE SPACE.
+           02 FILLER              PIC X(9)   VALUE SPACE.
+           02 RE-MARK             PIC X(61).
+       01  TEST-COMPUTED.
+         02 FILLER  PIC X(30)  VALUE SPACE.
+         02 FILLER  PIC X(17)  VALUE "      COMPUTED =".
+         02 COMPUTED-X.
+           03 COMPUTED-A    PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N    REDEFINES COMPUTED-A PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+              04 COMPUTED-18V0                   PIC -9(18).
+              04 FILLER                          PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+      *> 
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X        VALUE  SPACE.
+           02 FILLER  PIC IS X(17)    VALUE "PARAGRAPH-NAME".
+           02 FILLER  PIC IS X        VALUE  SPACE.
+           02 FILLER  PIC IS X(24)    VALUE IS "FEATURE".
+           02 FILLER  PIC IS X        VALUE  SPACE.
+           02 FILLER  PIC IS X(5)     VALUE "PASS ".
+           02 FILLER  PIC IS X(9)     VALUE  SPACE.
+           02 FILLER  PIC IS X(62)    VALUE "REMARKS".
+       01  CCVS-C-2.
+           02 FILLER  PIC X(19)  VALUE  SPACE.
+           02 FILLER  PIC X(6)   VALUE "TESTED".
+           02 FILLER  PIC X(19)  VALUE  SPACE.
+           02 FILLER  PIC X(4)   VALUE "FAIL".
+           02 FILLER  PIC X(72)  VALUE  SPACE.
+      *> 
+       01  REC-SKL-SUB       PIC 9(2)     VALUE ZERO.
+       01  REC-CT            PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER    PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER     PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER   PIC 999      VALUE ZERO.
+       01  PASS-COUNTER      PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR       PIC 999      VALUE ZERO.
+       01  ERROR-HOLD        PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD        PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT      PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE    PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER          PIC X(39)    VALUE SPACES.
+           02  FILLER          PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER          PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER            PIC X(40)  VALUE SPACE.
+         02  FILLER            PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER            PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER            PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER            PIC X(41)  VALUE SPACE.
+      *> 
+       01  CCVS-H-2B.
+         02  FILLER            PIC X(15)  VALUE "TEST RESULT OF ".
+         02  TEST-ID           PIC X(9).
+         02  FILLER            PIC X(4)   VALUE " IN ".
+         02  FILLER            PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER            PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER            PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER          PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER          PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER          PIC X(28)  VALUE
+                  "  COPYRIGHT   1985,1986 ".
+       01  CCVS-E-1.
+           02 FILLER           PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN         PIC X(9).
+           02 FILLER           PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER          PIC X(31)  VALUE SPACE.
+           02  FILLER          PIC X(21)  VALUE SPACE.
+           02  CCVS-E-2-2.
+               03 ERROR-TOTAL    PIC XXX    VALUE SPACE.
+               03 FILLER         PIC X      VALUE SPACE.
+               03 ENDER-DESC     PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER          PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER          PIC X(12)  VALUE SPACE.
+           02  FILLER          PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER          PIC X(8)   VALUE SPACE.
+           02  FILLER          PIC X(20)  VALUE
+                   " COPYRIGHT 1985,1986".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1       PIC XXX    VALUE SPACE.
+           02 FILLER           PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2       PIC XXX    VALUE SPACE.
+           02 FILLER           PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER           PIC X(19)  VALUE "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER             PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED         PIC X(20).
+             04 FILLER             PIC X(5)   VALUE SPACE.
+             04 XXCORRECT          PIC X(20).
+           02 INF-ANSI-REFERENCE PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID  PIC X(9)   VALUE
+           "SQ106A".
+      *> 
+      *> 
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+      *>     OPEN    I-O RAW-DATA.
+      *>     MOVE    CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ    RAW-DATA INVALID KEY GO TO END-E-1.
+      *>     MOVE   "ABORTED "   TO C-ABORT.
+      *>     ADD     1           TO C-NO-OF-TESTS.
+      *>     ACCEPT  C-DATE      FROM DATE.
+      *>     ACCEPT  C-TIME      FROM TIME.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY CONTINUE.
+      *> END-E-1.
+      *>     CLOSE   RAW-DATA.
+           OPEN    OUTPUT PRINT-FILE.
+           MOVE    CCVS-PGM-ID TO TEST-ID.
+           MOVE    CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE    ZERO TO REC-SKEL-SUB.
+           PERFORM CCVS-INIT-FILE 10 TIMES.
+           GO TO CCVS1-EXIT.
+      *> 
+       CCVS-INIT-FILE.
+           ADD     1 TO REC-SKL-SUB.
+           MOVE    FILE-RECORD-INFO-SKELETON TO
+                        FILE-RECORD-INFO (REC-SKL-SUB).
+      *> 
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13.
+           CLOSE   PRINT-FILE.
+      *>     OPEN    I-O RAW-DATA.
+      *>     MOVE    CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ    RAW-DATA INVALID KEY GO TO END-E-2.
+      *>     MOVE   "OK.     " TO C-ABORT.
+      *>     MOVE    PASS-COUNTER  TO C-OK.
+      *>     MOVE    ERROR-HOLD    TO C-ALL.
+      *>     MOVE    ERROR-COUNTER TO C-FAIL.
+      *>     MOVE    DELETE-CNT    TO C-DELETED.
+      *>     MOVE    INSPECT-COUNTER TO C-INSPECT.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY CONTINUE.
+      *> END-E-2.
+      *>     CLOSE   RAW-DATA.
+       TERMINATE-CCVS.
+      *>     EXIT    PROGRAM.
+           STOP    RUN.
+      *> 
+       INSPT.
+           MOVE   "INSPT" TO P-OR-F.
+           ADD     1 TO INSPECT-COUNTER.
+           PERFORM PRINT-DETAIL.
+      *> 
+       PASS.
+           MOVE   "PASS " TO P-OR-F.
+           ADD     1 TO PASS-COUNTER.
+           PERFORM PRINT-DETAIL.
+      *> 
+       FAIL.
+           MOVE   "FAIL*" TO P-OR-F.
+           ADD     1 TO ERROR-COUNTER.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DE-LETE.
+           MOVE   "****TEST DELETED****" TO RE-MARK.
+           MOVE   "*****" TO P-OR-F.
+           ADD     1 TO DELETE-COUNTER.
+           PERFORM PRINT-DETAIL.
+      *> 
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+               MOVE   "." TO PARDOT-X
+               MOVE    REC-CT TO DOTVALUE.
+           MOVE    TEST-RESULTS TO PRINT-REC.
+           PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"
+               PERFORM WRITE-LINE
+               PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+           ELSE
+               PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE    SPACE TO P-OR-F.
+           MOVE    SPACE TO COMPUTED-X.
+           MOVE    SPACE TO CORRECT-X.
+           IF REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE    SPACE TO RE-MARK.
+      *> 
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE    HYPHEN-LINE TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE    CCVS-E-1 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 2 TIMES.
+      *> 
+       END-ROUTINE-1.
+           ADD     ERROR-COUNTER   TO ERROR-HOLD
+           ADD     INSPECT-COUNTER TO ERROR-HOLD.
+           ADD     DELETE-COUNTER  TO ERROR-HOLD.
+           ADD     PASS-COUNTER    TO ERROR-HOLD.
+           MOVE    PASS-COUNTER    TO CCVS-E-4-1.
+           MOVE    ERROR-HOLD      TO CCVS-E-4-2.
+           MOVE    CCVS-E-4        TO CCVS-E-2-2.
+           MOVE    CCVS-E-2        TO DUMMY-RECORD
+           PERFORM WRITE-LINE.
+           MOVE   "TEST(S) FAILED" TO ENDER-DESC.
+           IF ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE   "NO " TO ERROR-TOTAL
+           ELSE
+               MOVE    ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE    CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE   "NO " TO ERROR-TOTAL
+           ELSE
+               MOVE    DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE   "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE    CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+           IF INSPECT-COUNTER EQUAL TO ZERO
+               MOVE   "NO " TO ERROR-TOTAL
+           ELSE
+               MOVE    INSPECT-COUNTER TO ERROR-TOTAL.
+           MOVE   "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+           MOVE    CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE    CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+      *> 
+       WRITE-LINE.
+           ADD     1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE  DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE  SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE  CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE  CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE  HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE  DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE  ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+      *> 
+       WRT-LN.
+           WRITE   DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE    SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE    ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE    XXINFO TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 2 TIMES.
+           MOVE    SPACES TO INF-ANSI-REFERENCE.
+           GO TO   FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE    TEST-COMPUTED  TO PRINT-REC
+           PERFORM WRITE-LINE
+           MOVE    ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE    TEST-CORRECT   TO PRINT-REC
+           PERFORM WRITE-LINE 2 TIMES.
+           MOVE    SPACES         TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX.
+           EXIT.
+       BAIL-OUT.
+           IF COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE    CORRECT-A      TO XXCORRECT.
+           MOVE    COMPUTED-A     TO XXCOMPUTED.
+           MOVE    ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE    XXINFO TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 2 TIMES.
+           MOVE    SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX.
+           EXIT.
+       CCVS1-EXIT.
+           EXIT.
+      *> 
+      *> ***************************************************************
+      *>                                                               *
+      *>     THIS POINT MARKS THE END OF THE CCVS MONITOR ROUTINES AND *
+      *>     THE START OF THE TESTS OF SPECIFIC COBOL FEATURES.        *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+       SECT-SQ106-0001 SECTION.
+       SEQ-INIT-01.
+           MOVE    SPACE TO DELETE-SW.
+      *> 
+           MOVE   "SQ-VS6" TO XFILE-NAME (1).
+           MOVE    CCVS-PGM-ID TO XPROGRAM-NAME (1).
+           MOVE   "RC"  TO CHARS-OR-RECORDS (1).
+           MOVE    0001 TO XBLOCK-SIZE (1).
+           MOVE    11   TO RECORDS-IN-FILE (1).
+           MOVE   "SQ"  TO XFILE-ORGANIZATION (1).
+           MOVE   "S"   TO XLABEL-TYPE (1).
+           MOVE    0    TO XRECORD-NUMBER (1).
+           MOVE    ZERO TO BUFFER-COPY-RECNO.
+           MOVE   "MULTIPLE REC LENGTHS" TO BUFFER-COPY-END.
+      *> 
+      *>     THE FIRST ACTION IS TO OPEN THE FILE FOR OUTPUT, AND SO
+      *>     CREATE IT.  IF THE OPEN IS DELETED, ALL SUCCEDING TESTS
+      *>     ARE AUTOMATICALLY DELETED WITH IT.  A SUBORDINATE TEST
+      *>     CHECKS THE I-O STATUS RETURNED FROM THE OPEN OPERATION.
+      *> 
+           MOVE   "**"  TO SQ-STATUS.
+           MOVE   "OPEN FILE FOR OUTPUT" TO FEATURE.
+           MOVE   "SEQ-TEST-GF-01" TO PAR-NAME.
+           GO TO   SEQ-TEST-GF-01.
+       SEQ-DELETE-01.
+           MOVE   "*" TO DELETE-SW-1.
+           GO TO   SEQ-DELETE-01-01.
+       SEQ-TEST-GF-01.
+           OPEN OUTPUT SQ-VS6.
+           GO TO   SEQ-TEST-GF-01-01.
+       SEQ-DELETE-01-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-01-01-END.
+       SEQ-TEST-GF-01-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM OPEN" TO RE-MARK
+               MOVE   "VII-2, VII-39" TO ANSI-REFERENCE
+               PERFORM FAIL
+               MOVE   "*" TO DELETE-SW-1.
+       SEQ-TEST-01-01-END.
+      *> 
+      *> 
+      *>     UNLESS AN ERROR OCCURRED DURING EXECUTION OF THE OPEN
+      *>     STATEMENT, THE FILE IS NOW OPEN, AND READY FOR RECORDS TO
+      *>     BE WRITTEN TO IT.  IF AN ERROR I-O STATUS VALUE WAS
+      *>     RETURNED, ALL THE REMAINING TESTS ARE DELETED.
+      *> 
+      *>     CREATE A SHORT RECORD USING THE BASIC WRITE STATEMENT
+      *> 
+       SEQ-INIT-02.
+           MOVE    1 TO REC-CT.
+           MOVE   "WRITE SHORT RECORD" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-02" TO PAR-NAME.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "R1-M-G" TO XRECORD-NAME (1).
+           MOVE    120 TO XRECORD-LENGTH (1).
+           MOVE   "SHORT" TO BUFFER-COPY-L-OR-S.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-02.
+           GO TO SEQ-TEST-WR-02.
+       SEQ-DELETE-02.
+           GO TO   SEQ-DELETE-02-01.
+       SEQ-TEST-WR-02.
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO SQ-VS6R2-FIRST.
+           MOVE    BUFFER-COPY-SECOND TO SQ-VS6R2-SECOND.
+           WRITE   SQ-VS6R1-M-G-120.
+           GO TO   SEQ-TEST-WR-02-01.
+       SEQ-DELETE-02-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-02-01-END.
+       SEQ-TEST-WR-02-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM WRITE" TO RE-MARK
+               MOVE   "VII-3, VII-53,4.7.4(6)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-02-01-END.
+      *> 
+      *>     CREATE A LONG RECORD USING THE BASIC WRITE STATEMENT
+      *> 
+       SEQ-INIT-03.
+           MOVE    1 TO REC-CT.
+           MOVE   "WRITE LONG RECORD" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-03" TO PAR-NAME.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "R2-M-G" TO XRECORD-NAME (1).
+           MOVE    151 TO XRECORD-LENGTH (1).
+           MOVE   "LONG" TO BUFFER-COPY-L-OR-S.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-03.
+           GO TO SEQ-TEST-WR-03.
+       SEQ-DELETE-03.
+           GO TO   SEQ-DELETE-03-01.
+       SEQ-TEST-WR-03.
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO SQ-VS6R2-FIRST.
+           MOVE    BUFFER-COPY-SECOND TO SQ-VS6R2-SECOND.
+           WRITE   SQ-VS6R2-M-G-151.
+           GO TO   SEQ-TEST-WR-03-01.
+       SEQ-DELETE-03-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-03-01-END.
+       SEQ-TEST-WR-03-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM WRITE" TO RE-MARK
+               MOVE   "VII-3, VII-53,4.7.4(6)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-03-01-END.
+      *> 
+      *> 
+      *>     CREATE A SHORT RECORD USING WRITE FROM, WITH A 151
+      *>     CHARACTER AREA AS THE SOURCE.
+      *> 
+       SEQ-INIT-04.
+           MOVE    1 TO REC-CT.
+           MOVE   "WRITE SHORT RECORD FROM" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-04" TO PAR-NAME.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "R1-M-G" TO XRECORD-NAME (1).
+           MOVE    120 TO XRECORD-LENGTH (1).
+           MOVE   "SHORT" TO BUFFER-COPY-L-OR-S.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-04.
+           GO TO SEQ-TEST-WR-04.
+       SEQ-DELETE-04.
+           GO TO   SEQ-DELETE-04-01.
+       SEQ-TEST-WR-04.
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO BUFFER-COPY-120.
+           WRITE   SQ-VS6R1-M-G-120 FROM BUFFER-COPY.
+           GO TO   SEQ-TEST-WR-04-01.
+       SEQ-DELETE-04-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-04-01-END.
+       SEQ-TEST-WR-04-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM WRITE" TO RE-MARK
+               MOVE   "VII-3, VII-53,4.7.4(6)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-04-01-END.
+      *> 
+      *> 
+      *>     CREATE A SHORT RECORD USING WRITE FROM, WITH A 151
+      *>     CHARACTER SOURCE FIELD.
+      *> 
+       SEQ-INIT-05.
+           MOVE    1 TO REC-CT.
+           MOVE   "WRITE SHORT RECORD FROM" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-05" TO PAR-NAME.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "R1-M-G" TO XRECORD-NAME (1).
+           MOVE    120 TO XRECORD-LENGTH (1).
+           MOVE   "SHORT" TO BUFFER-COPY-L-OR-S.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW-1 NOT EQUAL SPACE
+               GO TO SEQ-DELETE-05.
+           GO TO SEQ-TEST-WR-05.
+       SEQ-DELETE-05.
+           GO TO   SEQ-DELETE-05-01.
+       SEQ-TEST-WR-05.
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO BUFFER-COPY-120.
+           WRITE   SQ-VS6R1-M-G-120 FROM BUFFER-COPY.
+           GO TO   SEQ-TEST-WR-05-01.
+       SEQ-DELETE-05-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-05-01-END.
+       SEQ-TEST-WR-05-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM WRITE" TO RE-MARK
+               MOVE   "VII-3, VII-53,4.7.4(6)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-05-01-END.
+      *> 
+      *> 
+      *>     CREATE A LONG RECORD USING WRITE FROM.
+      *> 
+       SEQ-INIT-06.
+           MOVE    1 TO REC-CT.
+           MOVE   "WRITE LONG RECORD FROM" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-06" TO PAR-NAME.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "R2-M-G" TO XRECORD-NAME (1).
+           MOVE    151 TO XRECORD-LENGTH (1).
+           MOVE   "LONG" TO BUFFER-COPY-L-OR-S.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-06.
+           GO TO SEQ-TEST-WR-06.
+       SEQ-DELETE-06.
+           GO TO   SEQ-DELETE-06-01.
+       SEQ-TEST-WR-06.
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO BUFFER-COPY-120.
+           WRITE   SQ-VS6R2-M-G-151 FROM BUFFER-COPY.
+           GO TO   SEQ-TEST-WR-06-01.
+       SEQ-DELETE-06-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-06-01-END.
+       SEQ-TEST-WR-06-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM WRITE" TO RE-MARK
+               MOVE   "VII-3, VII-53,4.7.4(6)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-06-01-END.
+      *> 
+      *> 
+      *>     CREATE A SHORT RECORD USING WRITE FROM, WITH A 151
+      *>     CHARACTER AREA AS THE SOURCE.
+      *> 
+       SEQ-INIT-07.
+           MOVE    1 TO REC-CT.
+           MOVE   "WRITE SHORT RECORD FROM" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-07" TO PAR-NAME.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "R1-M-G" TO XRECORD-NAME (1).
+           MOVE    120 TO XRECORD-LENGTH (1).
+           MOVE   "SHORT" TO BUFFER-COPY-L-OR-S.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-07.
+           GO TO SEQ-TEST-WR-07.
+       SEQ-DELETE-07.
+           GO TO   SEQ-DELETE-07-01.
+       SEQ-TEST-WR-07.
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO BUFFER-COPY-120.
+           WRITE   SQ-VS6R1-M-G-120 FROM BUFFER-COPY.
+           GO TO   SEQ-TEST-WR-07-01.
+       SEQ-DELETE-07-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-07-01-END.
+       SEQ-TEST-WR-07-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM WRITE" TO RE-MARK
+               MOVE   "VII-3, VII-53,4.7.4(6)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-07-01-END.
+      *> 
+      *> 
+      *>     CREATE A LONG RECORD USING WRITE FROM, USING A 151
+      *>     CHARACTER SOURCE AREA.
+      *> 
+       SEQ-INIT-08.
+           MOVE    1 TO REC-CT.
+           MOVE   "WRITE LONG RECORD FROM" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-08" TO PAR-NAME.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "R2-M-G" TO XRECORD-NAME (1).
+           MOVE    151 TO XRECORD-LENGTH (1).
+           MOVE   "LONG" TO BUFFER-COPY-L-OR-S.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-08.
+           GO TO SEQ-TEST-WR-08.
+       SEQ-DELETE-08.
+           GO TO   SEQ-DELETE-08-01.
+       SEQ-TEST-WR-08.
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO BUFFER-COPY-120.
+           WRITE   SQ-VS6R2-M-G-151 FROM BUFFER-COPY.
+           GO TO   SEQ-TEST-WR-08-01.
+       SEQ-DELETE-08-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-08-01-END.
+       SEQ-TEST-WR-08-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM WRITE" TO RE-MARK
+               MOVE   "VII-3, VII-53,4.7.4(6)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-08-01-END.
+      *> 
+      *> 
+      *>     CREATE A LONG RECORD USING WRITE FROM, USING A 151
+      *>     CHARACTER SOURCE AREA.
+      *> 
+       SEQ-INIT-09.
+           MOVE    1 TO REC-CT.
+           MOVE   "WRITE LONG RECORD FROM" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-09" TO PAR-NAME.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "R2-M-G" TO XRECORD-NAME (1).
+           MOVE    151 TO XRECORD-LENGTH (1).
+           MOVE   "LONG" TO BUFFER-COPY-L-OR-S.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-09.
+           GO TO SEQ-TEST-WR-09.
+       SEQ-DELETE-09.
+           GO TO   SEQ-DELETE-09-01.
+       SEQ-TEST-WR-09.
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO BUFFER-COPY-120.
+           WRITE   SQ-VS6R2-M-G-151 FROM BUFFER-COPY.
+           GO TO   SEQ-TEST-WR-09-01.
+       SEQ-DELETE-09-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-09-01-END.
+       SEQ-TEST-WR-09-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM WRITE" TO RE-MARK
+               MOVE   "VII-3, VII-53,4.7.4(6)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-09-01-END.
+      *> 
+      *> 
+      *>     CREATE A LONG RECORD USING THE BASIC WRITE STATEMENT
+      *> 
+       SEQ-INIT-10.
+           MOVE    1 TO REC-CT.
+           MOVE   "WRITE LONG RECORD" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-10" TO PAR-NAME.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "R2-M-G" TO XRECORD-NAME (1).
+           MOVE    151 TO XRECORD-LENGTH (1).
+           MOVE   "LONG" TO BUFFER-COPY-L-OR-S.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-10.
+           GO TO SEQ-TEST-WR-10.
+       SEQ-DELETE-10.
+           GO TO   SEQ-DELETE-10-01.
+       SEQ-TEST-WR-10.
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO SQ-VS6R2-FIRST.
+           MOVE    BUFFER-COPY-SECOND TO SQ-VS6R2-SECOND.
+           WRITE   SQ-VS6R2-M-G-151.
+           GO TO   SEQ-TEST-WR-10-01.
+       SEQ-DELETE-10-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-10-01-END.
+       SEQ-TEST-WR-10-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM WRITE" TO RE-MARK
+               MOVE   "VII-3, VII-53,4.7.4(6)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-10-01-END.
+      *> 
+      *> 
+      *>     CREATE A SHORT RECORD USING THE BASIC WRITE STATEMENT
+      *> 
+       SEQ-INIT-11.
+           MOVE    1 TO REC-CT.
+           MOVE   "WRITE SHORT RECORD" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-11" TO PAR-NAME.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "R1-M-G" TO XRECORD-NAME (1).
+           MOVE    120 TO XRECORD-LENGTH (1).
+           MOVE   "SHORT" TO BUFFER-COPY-L-OR-S.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-11.
+           GO TO SEQ-TEST-WR-11.
+       SEQ-DELETE-11.
+           GO TO   SEQ-DELETE-11-01.
+       SEQ-TEST-WR-11.
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO SQ-VS6R2-FIRST.
+           MOVE    BUFFER-COPY-SECOND TO SQ-VS6R2-SECOND.
+           WRITE   SQ-VS6R1-M-G-120.
+           GO TO   SEQ-TEST-WR-11-01.
+       SEQ-DELETE-11-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-11-01-END.
+       SEQ-TEST-WR-11-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM WRITE" TO RE-MARK
+               MOVE   "VII-3, VII-53,4.7.4(6)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-11-01-END.
+      *> 
+      *>     CREATE A SHORT RECORD USING THE BASIC WRITE STATEMENT
+      *> 
+       SEQ-INIT-12.
+           MOVE    1 TO REC-CT.
+           MOVE   "WRITE SHORT RECORD" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-12" TO PAR-NAME.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "R1-M-G" TO XRECORD-NAME (1).
+           MOVE    120 TO XRECORD-LENGTH (1).
+           MOVE   "SHORT" TO BUFFER-COPY-L-OR-S.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-12.
+           GO TO SEQ-TEST-WR-12.
+       SEQ-DELETE-12.
+           GO TO   SEQ-DELETE-12-01.
+       SEQ-TEST-WR-12.
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO SQ-VS6R2-FIRST.
+           MOVE    BUFFER-COPY-SECOND TO SQ-VS6R2-SECOND.
+           WRITE   SQ-VS6R1-M-G-120.
+           GO TO   SEQ-TEST-WR-12-01.
+       SEQ-DELETE-12-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-12-01-END.
+       SEQ-TEST-WR-12-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM WRITE" TO RE-MARK
+               MOVE   "VII-3, VII-53,4.7.4(6)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-12-01-END.
+      *> 
+      *> 
+      *>     ALL REQUIRED RECORDS HAVE BEEN WRITTEN, SO THE FILE
+      *>     CAN BE CLOSED.
+      *> 
+       SEQ-INIT-13.
+           MOVE    1 TO REC-CT.
+           MOVE   "CLOSE NEW FILE" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-13" TO PAR-NAME.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-13.
+           GO TO SEQ-TEST-WR-13.
+       SEQ-DELETE-13.
+           GO TO   SEQ-DELETE-13-01.
+       SEQ-TEST-WR-13.
+           CLOSE   SQ-VS6.
+           GO TO   SEQ-TEST-WR-13-01.
+       SEQ-DELETE-13-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-13-01-END.
+       SEQ-TEST-WR-13-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM CLOSE" TO RE-MARK
+               MOVE   "VII-3, VII-38,4.2.4(4)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-13-01-END.
+      *> 
+      *> 
+      *>     A SEQUENTIAL TAPE FILE CONTAINING 11 RECORDS HAS BEEN
+      *>     CREATED.  THE FILE CONTAINS RECORDS OF 120 CHARACTERS AND
+      *>     RECORDS OF 151 CHARACTERS.  THE SEQUENCE IN WHICH THE
+      *>     RECORDS WERE WRITTEN IS SLSSLSLLLSS.  THE NEXT GROUP OF
+      *>     OPENS THE FILE FOR INPUT AND READS IT, USING TWELVE
+      *>     DIFFERENT FORMATS OF THE READ STATEMENT.  DELETION OF THIS
+      *>     TEST CAUSES DELETION OF ALL SUBSEQUENT TESTS.
+      *> 
+      *> 
+       SEQ-INIT-14.
+           MOVE   "**"  TO SQ-STATUS.
+           MOVE   "OPEN FILE FOR INPUT" TO FEATURE.
+           MOVE   "SEQ-TEST-GF-14" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO SEQ-DELETE-14.
+           GO TO   SEQ-TEST-GF-14.
+       SEQ-DELETE-14.
+           MOVE   "*" TO DELETE-SW-1.
+           GO TO   SEQ-DELETE-14-01.
+       SEQ-TEST-GF-14.
+           OPEN INPUT SQ-VS6.
+           GO TO   SEQ-TEST-GF-14-01.
+       SEQ-DELETE-14-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-14-01-END.
+       SEQ-TEST-GF-14-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM OPEN" TO RE-MARK
+               MOVE   "VII-2, VII-39" TO ANSI-REFERENCE
+               PERFORM FAIL
+               MOVE   "*" TO DELETE-SW-1.
+       SEQ-TEST-14-01-END.
+      *> 
+      *> 
+      *>     UNLESS AN ERROR OCCURRED DURING EXECUTION OF THE OPEN
+      *>     STATEMENT, THE FILE IS NOW OPEN, AND READY FOR RECORDS TO
+      *>     BE WRITTEN TO IT.  IF AN ERROR I-O STATUS VALUE WAS
+      *>     RETURNED, ALL THE REMAINING TESTS ARE DELETED.
+      *> 
+      *>     READ A SHORT RECORD, USING READ ... AT END
+      *> 
+       SEQ-INIT-15.
+           MOVE    1 TO REC-CT.
+           MOVE    1 TO XRECORD-NUMBER (1).
+           MOVE   "**********" TO SQ-VS6R2-SECOND-L.
+           MOVE   "SHORT" TO BUFFER-COPY-L-OR-S.
+           MOVE    1 TO BUFFER-COPY-RECNO.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "READ SHORT AT END" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-15" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-15.
+           GO TO   SEQ-TEST-RD-15.
+       SEQ-DELETE-15.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-15-01.
+      *> 
+      *>     EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-15.
+           READ    SQ-VS6 AT END
+                      MOVE    "EXECUTED" TO EOF-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-15-01.
+      *> 
+      *>     CHECK THE FILE STATUS VALUE
+      *> 
+       SEQ-DELETE-15-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-15-01-END.
+       SEQ-TEST-RD-15-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS ON READ" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-15-01-END.
+      *> 
+      *>     CHECK THE RECORD NUMBER OF THE RECORD READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO   SEQ-DELETE-15-02.
+           GO TO   SEQ-TEST-RD-15-02.
+       SEQ-DELETE-15-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-15-02-END.
+       SEQ-TEST-RD-15-02.
+           IF XRECORD-NUMBER (1) = XRECORD-NUMBER (2)
+               PERFORM PASS
+           ELSE
+               MOVE    XRECORD-NUMBER (2) TO COMPUTED-A
+               MOVE    XRECORD-NUMBER (1) TO CORRECT-A
+               MOVE   "UNEXPECTED RECORD RETURNED" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-15-02-END.
+      *> 
+      *>     CHECK THE EXTENDED PART OF THE RECORD
+      *> 
+           ADD     1 TO REC-CT.
+      *>     IF DELETE-SW NOT = TO SPACE
+      *>         GO TO SEQ-DELETE-15-03.
+      *>     GO TO   SEQ-TEST-RD-15-03.
+       SEQ-DELETE-15-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-15-03-END.
+       SEQ-TEST-RD-15-03.
+           IF SQ-VS6R2-SECOND-L NOT = BUFFER-COPY-SECOND-L
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-VS6R2-SECOND-L TO COMPUTED-A
+               MOVE   "**UNDEFINED**" TO CORRECT-A
+               MOVE   "BUFFER CONTENTS FOR LONG RECORD" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-15-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-15-04.
+           GO TO   SEQ-TEST-RD-15-04.
+       SEQ-DELETE-15-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-15-04-END.
+       SEQ-TEST-RD-15-04.
+           IF EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH TAKEN BEFORE EOF" TO RE-MARK
+               MOVE   "V11-46, 4.4.4(10)" TO ANSI-REFERENCE
+               MOVE   "*" TO DELETE-SW-2
+               PERFORM FAIL.
+       SEQ-TEST-15-04-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     READ A LONG RECORD, USING READ ... END
+      *> 
+       SEQ-INIT-16.
+           MOVE    1 TO REC-CT.
+           ADD     1 TO XRECORD-NUMBER (1).
+           MOVE   "**********" TO SQ-VS6R2-SECOND-L.
+           MOVE   "LONG"  TO BUFFER-COPY-L-OR-S.
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "READ LONG END" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-16" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-16.
+           GO TO   SEQ-TEST-RD-16.
+        SEQ-DELETE-16.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-16-01.
+      *> 
+      *>    EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-16.
+           READ    SQ-VS6 END
+                      MOVE   "EXECUTED" TO EOF-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-16-01.
+       SEQ-DELETE-16-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-16-01-END.
+      *> 
+      *>    CHECK THE FILE STATUS RETURNED
+      *> 
+       SEQ-TEST-RD-16-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS ON READ" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-16-01-END.
+      *> 
+      *>     CHECK THE IDENTITY OF THE RECORD RETURNED
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO   SEQ-DELETE-16-02.
+           GO TO   SEQ-TEST-RD-16-02.
+       SEQ-DELETE-16-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-16-02-END.
+       SEQ-TEST-RD-16-02.
+           IF XRECORD-NUMBER (1) = XRECORD-NUMBER (2)
+               PERFORM PASS
+           ELSE
+               MOVE    XRECORD-NUMBER (2) TO COMPUTED-A
+               MOVE    XRECORD-NUMBER (1) TO CORRECT-A
+               MOVE   "UNEXPECTED RECORD RETURNED" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-16-02-END.
+      *> 
+      *>     CHECK THE RECORD EXTENSION AREA
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL TO SPACE
+               GO TO SEQ-DELETE-16-03.
+           GO TO   SEQ-TEST-RD-16-03.
+       SEQ-DELETE-16-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-16-03-END.
+       SEQ-TEST-RD-16-03.
+           IF SQ-VS6R2-SECOND-L = BUFFER-COPY-SECOND-L
+               PERFORM PASS
+           ELSE
+               MOVE SQ-VS6R2-SECOND-L TO COMPUTED-A
+               MOVE    BUFFER-COPY-SECOND-L TO CORRECT-A
+               MOVE   "INCORRECT VALUE IN BUFFER EXTENSION" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-16-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PHRASE
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-16-04.
+           GO TO   SEQ-TEST-RD-16-04.
+       SEQ-DELETE-16-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-16-04-END.
+       SEQ-TEST-RD-16-04.
+           IF EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH TAKEN BEFORE EOF" TO RE-MARK
+               MOVE   "V11-46,4.4.4(10)" TO ANSI-REFERENCE
+               MOVE   "*" TO DELETE-SW-2
+               PERFORM FAIL.
+       SEQ-TEST-16-04-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     READ A SHORT RECORD, USING READ ... AT END ... NOT AT END
+      *> 
+       SEQ-INIT-17.
+           MOVE    1 TO REC-CT.
+           ADD     1 TO XRECORD-NUMBER (1).
+           MOVE   "**********" TO SQ-VS6R2-SECOND-L.
+           MOVE   "SHORT"  TO BUFFER-COPY-L-OR-S.
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO NOT-EOF-FLAG.
+           MOVE   "READ SHORT AT END N A E" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-17" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-17.
+           GO TO   SEQ-TEST-RD-17.
+       SEQ-DELETE-17.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-17-01.
+      *> 
+      *>     EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-17.
+           READ    SQ-VS6
+              AT END
+                      MOVE   "EXECUTED" TO EOF-FLAG
+              NOT AT END
+                      MOVE   "EXECUTED" TO NOT-EOF-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-17-01.
+      *> 
+      *>     CHECK THE FILE STATUS VALUE
+      *> 
+       SEQ-DELETE-17-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-17-01-END.
+       SEQ-TEST-RD-17-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS ON READ" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-17-01-END.
+      *> 
+      *>     CHECK THE RECORD NUMBER OF THE RECORD READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO   SEQ-DELETE-17-02.
+           GO TO   SEQ-TEST-RD-17-02.
+       SEQ-DELETE-17-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-17-02-END.
+       SEQ-TEST-RD-17-02.
+           IF XRECORD-NUMBER (1) = XRECORD-NUMBER (2)
+               PERFORM PASS
+           ELSE
+               MOVE    XRECORD-NUMBER (2) TO COMPUTED-A
+               MOVE    XRECORD-NUMBER (1) TO CORRECT-A
+               MOVE   "UNEXPECTED RECORD RETURNED" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-17-02-END.
+      *> 
+      *>     CHECK THE EXTENDED PART OF THE RECORD
+      *> 
+           ADD     1 TO REC-CT.
+      *>     IF DELETE-SW NOT = TO SPACE
+      *>         GO TO SEQ-DELETE-17-03.
+      *>     GO TO   SEQ-TEST-RD-17-03.
+       SEQ-DELETE-17-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-17-03-END.
+       SEQ-TEST-RD-17-03.
+           IF SQ-VS6R2-SECOND-L NOT = BUFFER-COPY-SECOND-L
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-VS6R2-SECOND-L TO COMPUTED-A
+               MOVE   "**UNDEFINED**" TO CORRECT-A
+               MOVE   "BUFFER CONTENTS FOR LONG RECORD" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-17-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE NOT END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-17-04.
+           GO TO   SEQ-TEST-RD-17-04.
+       SEQ-DELETE-17-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-17-04-END.
+       SEQ-TEST-RD-17-04.
+           IF NOT-EOF-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    NOT-EOF-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "VII-46,4.4.4(11)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-17-04-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-17-05.
+           GO TO   SEQ-TEST-RD-17-05.
+       SEQ-DELETE-17-05.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-17-05-END.
+       SEQ-TEST-RD-17-05.
+           IF EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH TAKEN BEFORE EOF" TO RE-MARK
+               MOVE   "V11-46, 4.4.4(10)" TO ANSI-REFERENCE
+               MOVE   "*" TO DELETE-SW-2
+               PERFORM FAIL.
+       SEQ-TEST-17-05-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     READ A SHORT RECORD, USING READ ... END ... NOT AT END
+      *> 
+       SEQ-INIT-18.
+           MOVE    1 TO REC-CT.
+           ADD     1 TO XRECORD-NUMBER (1).
+           MOVE   "**********" TO SQ-VS6R2-SECOND-L.
+           MOVE   "SHORT"  TO BUFFER-COPY-L-OR-S.
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO NOT-EOF-FLAG.
+           MOVE   "READ SHORT END N A E" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-18" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-18.
+           GO TO   SEQ-TEST-RD-18.
+       SEQ-DELETE-18.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-18-01.
+      *> 
+      *>     EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-18.
+           READ    SQ-VS6
+              END
+                      MOVE   "EXECUTED" TO EOF-FLAG
+              NOT AT END
+                      MOVE   "EXECUTED" TO NOT-EOF-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-18-01.
+      *> 
+      *>     CHECK THE FILE STATUS VALUE
+      *> 
+       SEQ-DELETE-18-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-18-01-END.
+       SEQ-TEST-RD-18-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS ON READ" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-18-01-END.
+      *> 
+      *>     CHECK THE RECORD NUMBER OF THE RECORD READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO   SEQ-DELETE-18-02.
+           GO TO   SEQ-TEST-RD-18-02.
+       SEQ-DELETE-18-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-18-02-END.
+       SEQ-TEST-RD-18-02.
+           IF XRECORD-NUMBER (1) = XRECORD-NUMBER (2)
+               PERFORM PASS
+           ELSE
+               MOVE    XRECORD-NUMBER (2) TO COMPUTED-A
+               MOVE    XRECORD-NUMBER (1) TO CORRECT-A
+               MOVE   "UNEXPECTED RECORD RETURNED" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-18-02-END.
+      *> 
+      *>     CHECK THE EXTENDED PART OF THE RECORD
+      *> 
+           ADD     1 TO REC-CT.
+      *>     IF DELETE-SW NOT = TO SPACE
+      *>         GO TO SEQ-DELETE-18-03.
+      *>     GO TO   SEQ-TEST-RD-18-03.
+       SEQ-DELETE-18-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-18-03-END.
+       SEQ-TEST-RD-18-03.
+           IF SQ-VS6R2-SECOND-L NOT = BUFFER-COPY-SECOND-L
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-VS6R2-SECOND-L TO COMPUTED-A
+               MOVE   "**UNDEFINED**" TO CORRECT-A
+               MOVE   "BUFFER CONTENTS FOR LONG RECORD" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-18-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE NOT END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-18-04.
+           GO TO   SEQ-TEST-RD-18-04.
+       SEQ-DELETE-18-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-18-04-END.
+       SEQ-TEST-RD-18-04.
+           IF NOT-EOF-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    NOT-EOF-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "VII-46,4.4.4(11)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-18-04-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-18-05.
+           GO TO   SEQ-TEST-RD-18-05.
+       SEQ-DELETE-18-05.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-18-05-END.
+       SEQ-TEST-RD-18-05.
+           IF EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH TAKEN BEFORE EOF" TO RE-MARK
+               MOVE   "V11-46, 4.4.4(10)" TO ANSI-REFERENCE
+               MOVE   "*" TO DELETE-SW-2
+               PERFORM FAIL.
+       SEQ-TEST-18-05-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     READ A LONG RECORD, USING READ ... AT END ... NOT END ...
+      *> 
+       SEQ-INIT-19.
+           MOVE    1 TO REC-CT.
+           ADD     1 TO XRECORD-NUMBER (1).
+           MOVE   "**********" TO SQ-VS6R2-SECOND-L.
+           MOVE   "LONG" TO BUFFER-COPY-L-OR-S.
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO NOT-EOF-FLAG.
+           MOVE   "READ LONG AT END NOT END" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-19" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-19.
+           GO TO   SEQ-TEST-RD-19.
+       SEQ-DELETE-19.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-19-01.
+      *> 
+      *>    EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-19.
+           READ    SQ-VS6
+              AT END
+                      MOVE   "EXECUTED" TO EOF-FLAG
+              NOT END
+                      MOVE   "EXECUTED" TO NOT-EOF-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-19-01.
+       SEQ-DELETE-19-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-19-01-END.
+      *> 
+      *>    CHECK THE FILE STATUS RETURNED
+      *> 
+       SEQ-TEST-RD-19-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS ON READ" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-19-01-END.
+      *> 
+      *>     CHECK THE IDENTITY OF THE RECORD RETURNED
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO   SEQ-DELETE-19-02.
+           GO TO   SEQ-TEST-RD-19-02.
+       SEQ-DELETE-19-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-19-02-END.
+       SEQ-TEST-RD-19-02.
+           IF XRECORD-NUMBER (1) = XRECORD-NUMBER (2)
+               PERFORM PASS
+           ELSE
+               MOVE    XRECORD-NUMBER (2) TO COMPUTED-A
+               MOVE    XRECORD-NUMBER (1) TO CORRECT-A
+               MOVE   "UNEXPECTED RECORD RETURNED" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-19-02-END.
+      *> 
+      *>     CHECK THE RECORD EXTENSION AREA
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL TO SPACE
+               GO TO SEQ-DELETE-19-03.
+           GO TO   SEQ-TEST-RD-19-03.
+       SEQ-DELETE-19-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-19-03-END.
+       SEQ-TEST-RD-19-03.
+           IF SQ-VS6R2-SECOND-L = BUFFER-COPY-SECOND-L
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-VS6R2-SECOND-L TO COMPUTED-A
+               MOVE    BUFFER-COPY-SECOND-L TO CORRECT-A
+               MOVE   "INCORRECT VALUE IN BUFFER EXTENSION" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-19-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE NOT END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-19-04.
+           GO TO   SEQ-TEST-RD-19-04.
+       SEQ-DELETE-19-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-19-04-END.
+       SEQ-TEST-RD-19-04.
+           IF NOT-EOF-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    NOT-EOF-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "VII-46,4.4.4(11)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-19-04-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PHRASE
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-19-05.
+           GO TO   SEQ-TEST-RD-19-05.
+       SEQ-DELETE-19-05.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-19-05-END.
+       SEQ-TEST-RD-19-05.
+           IF EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH TAKEN BEFORE EOF" TO RE-MARK
+               MOVE   "V11-46,4.4.4(10)" TO ANSI-REFERENCE
+               MOVE   "*" TO DELETE-SW-2
+               PERFORM FAIL.
+       SEQ-TEST-19-05-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     READ A SHORT RECORD, USING READ ... END ... NOT END
+      *> 
+       SEQ-INIT-20.
+           MOVE    1 TO REC-CT.
+           ADD     1 TO XRECORD-NUMBER (1).
+           MOVE   "**********" TO SQ-VS6R2-SECOND-L.
+           MOVE   "SHORT" TO BUFFER-COPY-L-OR-S.
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO NOT-EOF-FLAG.
+           MOVE   "READ SHORT END NOT END" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-20" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-20.
+           GO TO   SEQ-TEST-RD-20.
+       SEQ-DELETE-20.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-20-01.
+      *> 
+      *>     EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-20.
+           READ    SQ-VS6
+              END
+                      MOVE   "EXECUTED" TO EOF-FLAG
+              NOT END
+                      MOVE   "EXECUTED" TO NOT-EOF-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-20-01.
+      *> 
+      *>     CHECK THE FILE STATUS VALUE
+      *> 
+       SEQ-DELETE-20-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-20-01-END.
+       SEQ-TEST-RD-20-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS ON READ" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-20-01-END.
+      *> 
+      *>     CHECK THE RECORD NUMBER OF THE RECORD READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO   SEQ-DELETE-20-02.
+           GO TO   SEQ-TEST-RD-20-02.
+       SEQ-DELETE-20-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-20-02-END.
+       SEQ-TEST-RD-20-02.
+           IF XRECORD-NUMBER (1) = XRECORD-NUMBER (2)
+               PERFORM PASS
+           ELSE
+               MOVE    XRECORD-NUMBER (2) TO COMPUTED-A
+               MOVE    XRECORD-NUMBER (1) TO CORRECT-A
+               MOVE   "UNEXPECTED RECORD RETURNED" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-20-02-END.
+      *> 
+      *>     CHECK THE EXTENDED PART OF THE RECORD
+      *> 
+           ADD     1 TO REC-CT.
+      *>     IF DELETE-SW NOT = TO SPACE
+      *>         GO TO SEQ-DELETE-20-03.
+      *>     GO TO   SEQ-TEST-RD-20-03.
+       SEQ-DELETE-20-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-20-03-END.
+       SEQ-TEST-RD-20-03.
+           IF SQ-VS6R2-SECOND-L NOT = BUFFER-COPY-SECOND-L
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-VS6R2-SECOND-L TO COMPUTED-A
+               MOVE   "**UNDEFINED**" TO CORRECT-A
+               MOVE   "BUFFER CONTENTS FOR LONG RECORD" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-20-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE NOT END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-20-04.
+           GO TO   SEQ-TEST-RD-20-04.
+       SEQ-DELETE-20-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-20-04-END.
+       SEQ-TEST-RD-20-04.
+           IF NOT-EOF-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    NOT-EOF-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "VII-46,4.4.4(11)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-20-04-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-20-05.
+           GO TO   SEQ-TEST-RD-20-05.
+       SEQ-DELETE-20-05.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-20-05-END.
+       SEQ-TEST-RD-20-05.
+           IF EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH TAKEN BEFORE EOF" TO RE-MARK
+               MOVE   "V11-46, 4.4.4(10)" TO ANSI-REFERENCE
+               MOVE   "*" TO DELETE-SW-2
+               PERFORM FAIL.
+       SEQ-TEST-20-05-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     READ A LONG RECORD, 
+      *>     USING READ ... AT END ... END-READ
+      *> 
+       SEQ-INIT-21.
+           MOVE    1 TO REC-CT.
+           ADD     1 TO XRECORD-NUMBER (1).
+           MOVE   "**********" TO SQ-VS6R2-SECOND-L.
+           MOVE   "LONG" TO BUFFER-COPY-L-OR-S.
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO NOT-EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO END-READ-FLAG.
+           MOVE   "READ LONG AT END END-RD" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-21" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-21.
+           GO TO   SEQ-TEST-RD-21.
+       SEQ-DELETE-21.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-21-01.
+      *> 
+      *>    EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-21.
+           READ    SQ-VS6
+              AT END
+                      MOVE   "EXECUTED" TO EOF-FLAG
+           END-READ
+           MOVE   "EXECUTED" TO END-READ-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-21-01.
+       SEQ-DELETE-21-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-21-01-END.
+      *> 
+      *>    CHECK THE FILE STATUS RETURNED
+      *> 
+       SEQ-TEST-RD-21-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS ON READ" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-21-01-END.
+      *> 
+      *>     CHECK THE IDENTITY OF THE RECORD RETURNED
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO   SEQ-DELETE-21-02.
+           GO TO   SEQ-TEST-RD-21-02.
+       SEQ-DELETE-21-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-21-02-END.
+       SEQ-TEST-RD-21-02.
+           IF XRECORD-NUMBER (1) = XRECORD-NUMBER (2)
+               PERFORM PASS
+           ELSE
+               MOVE    XRECORD-NUMBER (2) TO COMPUTED-A
+               MOVE    XRECORD-NUMBER (1) TO CORRECT-A
+               MOVE   "UNEXPECTED RECORD RETURNED" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-21-02-END.
+      *> 
+      *>     CHECK THE RECORD EXTENSION AREA
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL TO SPACE
+               GO TO SEQ-DELETE-21-03.
+           GO TO   SEQ-TEST-RD-21-03.
+       SEQ-DELETE-21-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-21-03-END.
+       SEQ-TEST-RD-21-03.
+           IF SQ-VS6R2-SECOND-L = BUFFER-COPY-SECOND-L
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-VS6R2-SECOND-L TO COMPUTED-A
+               MOVE    BUFFER-COPY-SECOND-L TO CORRECT-A
+               MOVE   "INCORRECT VALUE IN BUFFER EXTENSION" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-21-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE STATEMENT AFTER END-READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-21-04.
+           GO TO   SEQ-TEST-RD-21-04.
+       SEQ-DELETE-21-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-21-04-END.
+       SEQ-TEST-RD-21-04.
+           IF END-READ-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    END-READ-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "IV-40, VII-47,4.4.4(14)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-21-04-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PHRASE
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-21-05.
+           GO TO   SEQ-TEST-RD-21-05.
+       SEQ-DELETE-21-05.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-21-05-END.
+       SEQ-TEST-RD-21-05.
+           IF EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH TAKEN BEFORE EOF" TO RE-MARK
+               MOVE   "V11-46,4.4.4(10)" TO ANSI-REFERENCE
+               MOVE   "*" TO DELETE-SW-2
+               PERFORM FAIL.
+       SEQ-TEST-21-05-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     READ A LONG RECORD, 
+      *>     USING READ ... END ... END-READ
+      *> 
+       SEQ-INIT-22.
+           MOVE    1 TO REC-CT.
+           ADD     1 TO XRECORD-NUMBER (1).
+           MOVE   "**********" TO SQ-VS6R2-SECOND-L.
+           MOVE   "LONG" TO BUFFER-COPY-L-OR-S.
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO NOT-EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO END-READ-FLAG.
+           MOVE   "READ LONG END END-READ" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-22" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-22.
+           GO TO   SEQ-TEST-RD-22.
+       SEQ-DELETE-22.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-22-01.
+      *> 
+      *>    EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-22.
+           READ    SQ-VS6
+              END
+                      MOVE   "EXECUTED" TO EOF-FLAG
+           END-READ
+           MOVE   "EXECUTED" TO END-READ-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-22-01.
+       SEQ-DELETE-22-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-22-01-END.
+      *> 
+      *>    CHECK THE FILE STATUS RETURNED
+      *> 
+       SEQ-TEST-RD-22-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS ON READ" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-22-01-END.
+      *> 
+      *>     CHECK THE IDENTITY OF THE RECORD RETURNED
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO   SEQ-DELETE-22-02.
+           GO TO   SEQ-TEST-RD-22-02.
+       SEQ-DELETE-22-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-22-02-END.
+       SEQ-TEST-RD-22-02.
+           IF XRECORD-NUMBER (1) = XRECORD-NUMBER (2)
+               PERFORM PASS
+           ELSE
+               MOVE    XRECORD-NUMBER (2) TO COMPUTED-A
+               MOVE    XRECORD-NUMBER (1) TO CORRECT-A
+               MOVE   "UNEXPECTED RECORD RETURNED" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-22-02-END.
+      *> 
+      *>     CHECK THE RECORD EXTENSION AREA
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL TO SPACE
+               GO TO SEQ-DELETE-22-03.
+           GO TO   SEQ-TEST-RD-22-03.
+       SEQ-DELETE-22-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-22-03-END.
+       SEQ-TEST-RD-22-03.
+           IF SQ-VS6R2-SECOND-L = BUFFER-COPY-SECOND-L
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-VS6R2-SECOND-L TO COMPUTED-A
+               MOVE    BUFFER-COPY-SECOND-L TO CORRECT-A
+               MOVE   "INCORRECT VALUE IN BUFFER EXTENSION" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-22-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE STATEMENT AFTER END-READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-22-04.
+           GO TO   SEQ-TEST-RD-22-04.
+       SEQ-DELETE-22-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-22-04-END.
+       SEQ-TEST-RD-22-04.
+           IF END-READ-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    END-READ-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "IV-40, VII-47,4.4.4(14)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-22-04-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PHRASE
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-22-05.
+           GO TO   SEQ-TEST-RD-22-05.
+       SEQ-DELETE-22-05.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-22-05-END.
+       SEQ-TEST-RD-22-05.
+           IF EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH TAKEN BEFORE EOF" TO RE-MARK
+               MOVE   "V11-46,4.4.4(10)" TO ANSI-REFERENCE
+               MOVE   "*" TO DELETE-SW-2
+               PERFORM FAIL.
+       SEQ-TEST-22-05-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     READ A LONG RECORD, 
+      *>     USING READ ... AT END ... NOT AT END ... END-READ
+      *> 
+       SEQ-INIT-23.
+           MOVE    1 TO REC-CT.
+           ADD     1 TO XRECORD-NUMBER (1).
+           MOVE   "**********" TO SQ-VS6R2-SECOND-L.
+           MOVE   "LONG" TO BUFFER-COPY-L-OR-S.
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO NOT-EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO END-READ-FLAG.
+           MOVE   "READ LONG AT END NAE E-R" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-23" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-23.
+           GO TO   SEQ-TEST-RD-23.
+       SEQ-DELETE-23.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-23-01.
+      *> 
+      *>    EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-23.
+           READ    SQ-VS6
+              AT END
+                      MOVE   "EXECUTED" TO EOF-FLAG
+              NOT AT END
+                      MOVE   "EXECUTED" TO NOT-EOF-FLAG
+           END-READ
+           MOVE   "EXECUTED" TO END-READ-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-23-01.
+       SEQ-DELETE-23-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-23-01-END.
+      *> 
+      *>    CHECK THE FILE STATUS RETURNED
+      *> 
+       SEQ-TEST-RD-23-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS ON READ" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-23-01-END.
+      *> 
+      *>     CHECK THE IDENTITY OF THE RECORD RETURNED
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO   SEQ-DELETE-23-02.
+           GO TO   SEQ-TEST-RD-23-02.
+       SEQ-DELETE-23-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-23-02-END.
+       SEQ-TEST-RD-23-02.
+           IF XRECORD-NUMBER (1) = XRECORD-NUMBER (2)
+               PERFORM PASS
+           ELSE
+               MOVE    XRECORD-NUMBER (2) TO COMPUTED-A
+               MOVE    XRECORD-NUMBER (1) TO CORRECT-A
+               MOVE   "UNEXPECTED RECORD RETURNED" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-23-02-END.
+      *> 
+      *>     CHECK THE RECORD EXTENSION AREA
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL TO SPACE
+               GO TO SEQ-DELETE-23-03.
+           GO TO   SEQ-TEST-RD-23-03.
+       SEQ-DELETE-23-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-23-03-END.
+       SEQ-TEST-RD-23-03.
+           IF SQ-VS6R2-SECOND-L = BUFFER-COPY-SECOND-L
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-VS6R2-SECOND-L TO COMPUTED-A
+               MOVE    BUFFER-COPY-SECOND-L TO CORRECT-A
+               MOVE   "INCORRECT VALUE IN BUFFER EXTENSION" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-23-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE NOT END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-23-04.
+           GO TO   SEQ-TEST-RD-23-04.
+       SEQ-DELETE-23-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-23-04-END.
+       SEQ-TEST-RD-23-04.
+           IF NOT-EOF-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    NOT-EOF-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "VII-46,4.4.4(11)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-23-04-END.
+      *> 
+      *>     CHECK EXECUTION OF THE STATEMENT AFTER END-READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-23-05.
+           GO TO   SEQ-TEST-RD-23-05.
+       SEQ-DELETE-23-05.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-23-05-END.
+       SEQ-TEST-RD-23-05.
+           IF END-READ-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    END-READ-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "IV-40, VII-47,4.4.4(14)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-23-05-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PHRASE
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-23-06.
+           GO TO   SEQ-TEST-RD-23-06.
+       SEQ-DELETE-23-06.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-23-06-END.
+       SEQ-TEST-RD-23-06.
+           IF EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH TAKEN BEFORE EOF" TO RE-MARK
+               MOVE   "V11-46,4.4.4(10)" TO ANSI-REFERENCE
+               MOVE   "*" TO DELETE-SW-2
+               PERFORM FAIL.
+       SEQ-TEST-23-06-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     READ A SHORT RECORD, 
+      *>     USING READ ... END ... NOT AT END ... END-READ
+      *> 
+       SEQ-INIT-24.
+           MOVE    1 TO REC-CT.
+           ADD     1 TO XRECORD-NUMBER (1).
+           MOVE   "**********" TO SQ-VS6R2-SECOND-L.
+           MOVE   "SHORT" TO BUFFER-COPY-L-OR-S.
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO NOT-EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO END-READ-FLAG.
+           MOVE   "READ SHORT END N A R E-R" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-24" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-24.
+           GO TO   SEQ-TEST-RD-24.
+       SEQ-DELETE-24.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-24-01.
+      *> 
+      *>     EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-24.
+           READ    SQ-VS6
+              END
+                      MOVE   "EXECUTED" TO EOF-FLAG
+              NOT AT END
+                      MOVE   "EXECUTED" TO NOT-EOF-FLAG
+           END-READ
+           MOVE   "EXECUTED" TO END-READ-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-24-01.
+      *> 
+      *>     CHECK THE FILE STATUS VALUE
+      *> 
+       SEQ-DELETE-24-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-24-01-END.
+       SEQ-TEST-RD-24-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS ON READ" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-24-01-END.
+      *> 
+      *>     CHECK THE RECORD NUMBER OF THE RECORD READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO   SEQ-DELETE-24-02.
+           GO TO   SEQ-TEST-RD-24-02.
+       SEQ-DELETE-24-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-24-02-END.
+       SEQ-TEST-RD-24-02.
+           IF XRECORD-NUMBER (1) = XRECORD-NUMBER (2)
+               PERFORM PASS
+           ELSE
+               MOVE    XRECORD-NUMBER (2) TO COMPUTED-A
+               MOVE    XRECORD-NUMBER (1) TO CORRECT-A
+               MOVE   "UNEXPECTED RECORD RETURNED" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-24-02-END.
+      *> 
+      *>     CHECK THE EXTENDED PART OF THE RECORD
+      *> 
+           ADD     1 TO REC-CT.
+      *>     IF DELETE-SW NOT = TO SPACE
+      *>         GO TO SEQ-DELETE-24-03.
+      *>     GO TO   SEQ-TEST-RD-24-03.
+       SEQ-DELETE-24-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-24-03-END.
+       SEQ-TEST-RD-24-03.
+           IF SQ-VS6R2-SECOND-L NOT = BUFFER-COPY-SECOND-L
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-VS6R2-SECOND-L TO COMPUTED-A
+               MOVE   "**UNDEFINED**" TO CORRECT-A
+               MOVE   "BUFFER CONTENTS FOR LONG RECORD" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-24-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE NOT END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-24-04.
+           GO TO   SEQ-TEST-RD-24-04.
+       SEQ-DELETE-24-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-24-04-END.
+       SEQ-TEST-RD-24-04.
+           IF NOT-EOF-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    NOT-EOF-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "VII-46,4.4.4(11)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-24-04-END.
+      *> 
+      *> 
+      *>     CHECK EXECUTION OF THE STATEMENT AFTER END-READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-24-05.
+           GO TO   SEQ-TEST-RD-24-05.
+       SEQ-DELETE-24-05.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-24-05-END.
+       SEQ-TEST-RD-24-05.
+           IF END-READ-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    END-READ-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "IV-40, VII-47,4.4.4(14)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-24-05-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-24-06.
+           GO TO   SEQ-TEST-RD-24-06.
+       SEQ-DELETE-24-06.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-24-06-END.
+       SEQ-TEST-RD-24-06.
+           IF EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH TAKEN BEFORE EOF" TO RE-MARK
+               MOVE   "V11-46, 4.4.4(10)" TO ANSI-REFERENCE
+               MOVE   "*" TO DELETE-SW-2
+               PERFORM FAIL.
+       SEQ-TEST-24-06-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     READ A SHORT RECORD, 
+      *>     USING READ ... AT END ... NOT END ... END-READ
+      *> 
+       SEQ-INIT-25.
+           MOVE    1 TO REC-CT.
+           ADD     1 TO XRECORD-NUMBER (1).
+           MOVE   "**********" TO SQ-VS6R2-SECOND-L.
+           MOVE   "SHORT" TO BUFFER-COPY-L-OR-S.
+           ADD     1 TO BUFFER-COPY-RECNO.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO NOT-EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO END-READ-FLAG.
+           MOVE   "READ SHORT A END N E E-R" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-25" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-25.
+           GO TO   SEQ-TEST-RD-25.
+       SEQ-DELETE-25.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-25-01.
+      *> 
+      *>     EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-25.
+           READ    SQ-VS6
+              AT END
+                      MOVE   "EXECUTED" TO EOF-FLAG
+              NOT END
+                      MOVE   "EXECUTED" TO NOT-EOF-FLAG
+           END-READ
+           MOVE   "EXECUTED" TO END-READ-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-25-01.
+      *> 
+      *>     CHECK THE FILE STATUS VALUE
+      *> 
+       SEQ-DELETE-25-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-25-01-END.
+       SEQ-TEST-RD-25-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS ON READ" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-25-01-END.
+      *> 
+      *>     CHECK THE RECORD NUMBER OF THE RECORD READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO   SEQ-DELETE-25-02.
+           GO TO   SEQ-TEST-RD-25-02.
+       SEQ-DELETE-25-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-25-02-END.
+       SEQ-TEST-RD-25-02.
+           IF XRECORD-NUMBER (1) = XRECORD-NUMBER (2)
+               PERFORM PASS
+           ELSE
+               MOVE    XRECORD-NUMBER (2) TO COMPUTED-A
+               MOVE    XRECORD-NUMBER (1) TO CORRECT-A
+               MOVE   "UNEXPECTED RECORD RETURNED" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-25-02-END.
+      *> 
+      *>     CHECK THE EXTENDED PART OF THE RECORD
+      *> 
+           ADD     1 TO REC-CT.
+      *>     IF DELETE-SW NOT = TO SPACE
+      *>         GO TO SEQ-DELETE-25-03.
+      *>     GO TO   SEQ-TEST-RD-25-03.
+       SEQ-DELETE-25-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-25-03-END.
+       SEQ-TEST-RD-25-03.
+           IF SQ-VS6R2-SECOND-L NOT = BUFFER-COPY-SECOND-L
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-VS6R2-SECOND-L TO COMPUTED-A
+               MOVE   "**UNDEFINED**" TO CORRECT-A
+               MOVE   "BUFFER CONTENTS FOR LONG RECORD" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-25-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE NOT END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-25-04.
+           GO TO   SEQ-TEST-RD-25-04.
+       SEQ-DELETE-25-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-25-04-END.
+       SEQ-TEST-RD-25-04.
+           IF NOT-EOF-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    NOT-EOF-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "VII-46,4.4.4(11)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-25-04-END.
+      *> 
+      *> 
+      *>     CHECK EXECUTION OF THE STATEMENT AFTER END-READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-25-05.
+           GO TO   SEQ-TEST-RD-25-05.
+       SEQ-DELETE-25-05.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-25-05-END.
+       SEQ-TEST-RD-25-05.
+           IF END-READ-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    END-READ-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "IV-40, VII-47,4.4.4(14)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-25-05-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-25-06.
+           GO TO   SEQ-TEST-RD-25-06.
+       SEQ-DELETE-25-06.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-25-06-END.
+       SEQ-TEST-RD-25-06.
+           IF EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH TAKEN BEFORE EOF" TO RE-MARK
+               MOVE   "V11-46, 4.4.4(10)" TO ANSI-REFERENCE
+               MOVE   "*" TO DELETE-SW-2
+               PERFORM FAIL.
+       SEQ-TEST-25-06-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     READ AT END OF FILE, RAISING EOF CONDITION
+      *>     USING READ ... END ... NOT END ... END-READ
+      *> 
+       SEQ-INIT-26.
+           MOVE    1 TO REC-CT.
+           MOVE   "**" TO SQ-STATUS.
+           MOVE   "NOT EXECUTED"  TO EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO NOT-EOF-FLAG.
+           MOVE   "NOT EXECUTED"  TO END-READ-FLAG.
+           MOVE   "READ SHORT A END N E E-R" TO FEATURE.
+           MOVE   "SEQ-TEST-RD-26" TO PAR-NAME.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-26.
+           GO TO   SEQ-TEST-RD-26.
+       SEQ-DELETE-26.
+           MOVE   "*" TO DELETE-SW-3.
+           GO TO   SEQ-DELETE-26-01.
+      *> 
+      *>     EXECUTE THE READ STATEMENT
+      *> 
+       SEQ-TEST-RD-26.
+           READ    SQ-VS6
+              END
+                      MOVE   "EXECUTED" TO EOF-FLAG
+              NOT END
+                      MOVE   "EXECUTED" TO NOT-EOF-FLAG
+           END-READ
+           MOVE   "EXECUTED" TO END-READ-FLAG.
+           MOVE    SQ-VS6R1-M-G-120 TO FILE-RECORD-INFO-P1-120 (2).
+           GO TO   SEQ-TEST-RD-26-01.
+      *> 
+      *>     CHECK THE FILE STATUS VALUE
+      *> 
+       SEQ-DELETE-26-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-26-01-END.
+       SEQ-TEST-RD-26-01.
+           IF SQ-STATUS = "10"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "10" TO CORRECT-A
+               MOVE   "I-O STATUS FOR EOF NOT RETURNED" TO RE-MARK
+               MOVE   "VII-3, VII-44,4.4.4(3)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-26-01-END.
+      *> 
+      *> 
+      *>     CHECK EXECUTION OF THE NOT END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-26-02.
+           GO TO   SEQ-TEST-RD-26-02.
+       SEQ-DELETE-26-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-26-02-END.
+       SEQ-TEST-RD-26-02.
+           IF NOT-EOF-FLAG = "NOT EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    NOT-EOF-FLAG TO COMPUTED-A
+               MOVE   "NOT EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH EXECUTED AT EOF" TO RE-MARK
+               MOVE   "VII-46,4.4.4(11)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-26-02-END.
+      *> 
+      *> 
+      *>     CHECK EXECUTION OF THE STATEMENT AFTER END-READ
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-26-03.
+           GO TO   SEQ-TEST-RD-26-03.
+       SEQ-DELETE-26-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-26-03-END.
+       SEQ-TEST-RD-26-03.
+           IF END-READ-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    END-READ-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "NOT END PATH NOT EXECUTED" TO RE-MARK
+               MOVE   "IV-40, VII-47,4.4.4(14)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-26-03-END.
+      *> 
+      *>     CHECK EXECUTION OF THE END PATH
+      *> 
+           ADD     1 TO REC-CT.
+           IF DELETE-SW NOT = SPACE
+               GO TO   SEQ-DELETE-26-04.
+           GO TO   SEQ-TEST-RD-26-04.
+       SEQ-DELETE-26-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-26-04-END.
+       SEQ-TEST-RD-26-04.
+           IF EOF-FLAG = "EXECUTED"
+               PERFORM PASS
+           ELSE
+               MOVE    EOF-FLAG TO COMPUTED-A
+               MOVE   "EXECUTED" TO CORRECT-A
+               MOVE   "AT END BRANCH NOT TAKEN AT EOF" TO RE-MARK
+               MOVE   "V11-46, 4.4.4(10)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-26-04-END.
+           MOVE    SPACE TO DELETE-SW-3.
+      *> 
+      *> 
+      *>     THE END OF THE FILE HAS BEEN REACHED, SO IT CAN BE CLOSED
+      *> 
+       SEQ-INIT-27.
+           MOVE    1 TO REC-CT.
+           MOVE   "CLOSE FILE AFTER READING" TO FEATURE.
+           MOVE   "SEQ-TEST-CL-27" TO PAR-NAME.
+           MOVE   "**" TO SQ-STATUS.
+           IF DELETE-SW NOT EQUAL SPACE
+               GO TO SEQ-DELETE-27.
+           GO TO SEQ-TEST-CL-27.
+       SEQ-DELETE-27.
+           GO TO   SEQ-DELETE-27-01.
+       SEQ-TEST-CL-27.
+           CLOSE   SQ-VS6.
+           GO TO   SEQ-TEST-CL-27-01.
+       SEQ-DELETE-27-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-27-01-END.
+       SEQ-TEST-CL-27-01.
+           IF SQ-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS FROM CLOSE" TO RE-MARK
+               MOVE   "VII-3, VII-38,4.2.4(4)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-27-01-END.
+      *> 
+      *> 
+       TERMINATE-ROUTINE.
+           EXIT.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,SQ106A

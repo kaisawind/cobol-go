@@ -1,0 +1,53 @@
+      *> HEADER,COBOL,NC302M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC302M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF OBSOLETE
+      *> MINIMUM SUBSET NUCLEUS FEATURES.
+       AUTHOR. *>CE DAVID G BAMBER.
+      *>CE Message expected for above statement: OBSOLETE
+       INSTALLATION. *>CE NCC.
+      *>CE Message expected for above statement: OBSOLETE
+       DATE-WRITTEN. *>CE 19TH AUG 1988.
+      *>CE Message expected for above statement: OBSOLETE
+       SECURITY. *>CE NO SECURITY.
+      *>CE Message expected for above statement: OBSOLETE
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083
+           MEMORY SIZE
+           XXXXX068
+           CHARACTERS.
+      *> Message expected for above statement: OBSOLETE
+       
+       
+       DATA DIVISION.
+       PROCEDURE DIVISION.
+       
+       NC302M-CONTROL.
+           PERFORM NC302M-ALTER THRU NC302M-STOP.
+           STOP RUN.
+       
+       NC302M-ALTER.
+           ALTER NC302M-PROC1 TO NC302M-PROC2.
+      *> Message expected for above statement: OBSOLETE
+       
+       NC302M-PROC1.
+           GO TO NC302M-PROC2.
+       
+       NC302M-PROC2.
+           DISPLAY "DUMMY PROCEDURE".
+       
+       
+       
+       
+       NC302M-STOP.
+           STOP "FNC302".
+      *> Message expected for above statement: OBSOLETE
+       
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 7.
+      *> END-OF,NC302M

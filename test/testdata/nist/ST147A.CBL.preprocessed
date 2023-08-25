@@ -1,0 +1,1313 @@
+      *> HEADER,COBOL,ST147A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           ST147A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     OBJECTIVE -
+      *>         ROUTINE ST147A IS A TEST OF THE MERGE STATEMENT USING
+      *>     A NATIVE  COLLATING SEQUENCE AND FIXED LENGTH RECORDS.
+      *> 
+      *>         TWO FILES ARE FIRST CREATED BY THE ROUTINE IN DESCENDING
+      *>     NATIVE ORDER.  THE MERGE STATEMENT IS USED TO MERGE THE TWO
+      *>     FILES AND PRODUCE, IN DESCENDING NATIVE COLLATING
+      *>     SEQUENCE ORDER, 3 OUTPUT FILES FROM A SINGLE "MERGE"
+      *>     STATEMENT.
+      *> 
+      *>     FEATURES TESTED -
+      *>     *   FIXED LENGTH RECORDS
+      *>     *   SAME SORT-MERGE AREA IN THE I-O-CONTROL PARAGRAPH
+      *>     *   QUALIFIED ALPHANUMERIC AND NUMERIC SORT KEYS
+      *>     *   USING FILE-NAME SERIES
+      *> 
+      *>     *   MERGE MERGE-FILE-NAME
+      *>         DESCENDING KEY-1 OF DATA-NAME-1
+      *>         ON DESCENDING KEY KEY-2 OF DATA-NAME-2
+      *>         USING FILE-NAME-2 FILE-NAME-1
+      *>         GIVING FILE-NAME-3, FILE-NAME-4, FILE-NAME-5.
+      *> 
+      *>     FILES USED -
+      *>     *   FILES SQ-FS1 AND SQ-FS2 ON MAGNETIC TAPE OR MASS-STORAGE
+      *>     ARE FIRST CREATED.  THE MERGE STATEMENT
+      *>     USES BOTH OF THESE FILES AND CREATES OUTPUT FILES
+      *>     SQ-FS3, SQ-FS4 AND SQ-FS5.
+      *> 
+      *>         SQ-FS1
+      *>     51 RECORDS
+      *>     FIXED LENGTH RECORDS 132 CHARACTERS
+      *>     BLOCKED 1
+      *>     RESERVE 2 AREAS
+      *> 
+      *>         SQ-FS2
+      *>     51 RECORDS
+      *>     FIXED LENGTH RECORDS 132 CHARACTERS
+      *>     BLOCKED 2
+      *>     RESERVE 4 AREAS
+      *> 
+      *>         SQ-FS3, SQ-FS4 AND SQ-FS5
+      *>     FINAL TOTAL OF 102 RECORDS
+      *>     FIXED LENGTH RECORDS 132 CHARACTERS
+      *>     BLOCKED 3
+      *>     RESERVE 4 AREAS
+      *> 
+      *>         NOTE THAT SQ-FS3 IS THE RESULT OF MERGING SQ-FS1 AND
+      *>     SQ-FS2.  THE RECORDS IN SQ-FS3 SHOULD ALTERNATE BETWEEN
+      *>     SQ-FS1 AND SQ-FS2 BECAUSE THE ALPHANUMERIC KEYS ARE THE SAME
+      *>     FOR BOTH FILES AND THE NUMERIC KEYS WERE MERGED INTO
+      *>     DESCENDING ORDER.  FILES SQ-FS4 AND SQ-FS5 ARE
+      *>     IDENTICAL TO SQ-FS3.
+      *> 
+      *>     X-CARDS USED  -
+      *>     X-XXX014     SQ-FS1
+      *>     X-XXX015     SQ-FS2
+      *>     X-XXX016     SQ-FS3
+      *>     X-XXX018     SQ-FS5
+      *>     X-XXX027     MERGE FILE ST-FS1
+      *>     X-55         SYSTEM PRINTER NAME.
+      *>     X-60         SQ-FS4
+      *>     X-XXX063     NATIVE COLLATING SEQUENCE ASCENDING ORDER-NOTE
+      *>         THAT THE QUOTE CHARACTER IS NOT TO APPEAR IN THE X-64
+      *>         CARD AND THE DOLLAR SIGN $ IS TO APPEAR TWICE WHEREVER
+      *>         THE $ BELONGS IN THE NATIVE COLLATING SEQUENCE).  IF
+      *>         THE NATIVE COLLATING SEQUENCE IS ACTUALLY THE ASCII
+      *>         COLLATING SEQUENCE SEE BELOW FOR A SAMPLE X-64 CARD.....
+      *> 
+      *>     X-63  " $$()*+,./0123456789;<=>ABCDEFGHIJKLMNOPQRSTUVWXYZ".
+      *>     X-69         OPTIONAL VALUE OF CLAUSE
+      *>     X-74         VALUE OF CLAUSE NAME PHRASES
+      *>     X-75         VALUE OF CLAUSE NAME PHRASES
+      *>     X-76         VALUE OF CLAUSE NAME PHRASES
+      *>     X-77         VALUE OF CLAUSE NAME PHRASES
+      *>     X-78         VALUE OF CLAUSE NAME PHRASES
+      *>     X-79         VALUE OF CLAUSE NAME PHRASES
+      *>     X-82         SOURCE COMPUTER NAME.
+      *>     X-83         OBJECT COMPUTER NAME.
+      *> 
+      *> 
+      *>     OPTIONS RECOMMENDED -
+      *>     *   OPT SW6 - X   TO BE USED IF NECESSARY TO DUMP THE
+      *>                       FILES AS THEY ARE CREATED AND READ
+      *>                       DURING TESTS 3 THRU 8, 11 THRU 16, 
+      *>                       AND 19 THRU 24.
+      *> 
+      *>     TEST DESCRIPTIONS -
+      *>     MRG-TEST-001     CHECKS THE CREATION OF SQ-FS1
+      *>     MRG-TEST-002     CHECKS THE CREATION OF SQ-FS2
+      *>     MRG-TEST-003     TESTS RECORDS 1-20 ON MERGE RESULT SQ-FS3
+      *>     MRG-TEST-004     TESTS RECORDS 21-40 ON MERGE RESULT SQ-FS3
+      *>     MRG-TEST-005     TESTS RECORDS 41-60 ON MERGE RESULT SQ-FS3
+      *>     MRG-TEST-006     TESTS RECORDS 61-80 ON MERGE RESULT SQ-FS3
+      *>     MRG-TEST-007     TESTS RECORDS 81-100 ON MERGE RESULT SQ-FS3
+      *>     MRG-TEST-008     TESTS RECORDS 101-102 ON MERGE RESULT SQ-FS3
+      *>     MRG-TEST-009     AN EOF CHECK ON SQ-FS3
+      *>     MRG-TEST-010     CHECK THAT THE NUMERIC KEY ON THE LAST
+      *>                      RECORD ON SQ-FS3 EQUALS 51
+      *>     MRG-TEST-011
+      *>     TO
+      *>     MRG-TEST-018     SAME TESTS ON SQ-FS4
+      *>     MRG-TEST-019
+      *>     TO
+      *>     MRG-TEST-026     SAME TESTS ON SQ-FS5
+      *> 
+      *>     ************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+           SELECT SQ-FS1 ASSIGN
+           XXXXX014
+           ; ORGANIZATION IS SEQUENTIAL
+           ; ACCESS MODE SEQUENTIAL
+           ; RESERVE 2 AREAS.
+           SELECT SQ-FS2 ASSIGN TO
+           XXXXX015
+           ORGANIZATION IS SEQUENTIAL
+           ACCESS MODE IS SEQUENTIAL
+           RESERVE 4 AREAS.
+           SELECT SQ-FS3 ASSIGN TO
+           XXXXX016
+           ORGANIZATION IS SEQUENTIAL
+           ; ACCESS MODE IS SEQUENTIAL
+           RESERVE 4 AREAS.
+           SELECT SQ-FS4 ASSIGN TO
+           XXXXX060
+           ORGANIZATION IS SEQUENTIAL
+           ; ACCESS MODE IS SEQUENTIAL
+           RESERVE 4 AREAS.
+           SELECT SQ-FS5 ASSIGN TO
+           XXXXX018
+           ORGANIZATION IS SEQUENTIAL
+           ; ACCESS MODE IS SEQUENTIAL
+           RESERVE 4 AREAS.
+           SELECT ST-FS1 ASSIGN TO
+           XXXXX027.
+       I-O-CONTROL.
+      *>     SAME SORT-MERGE AREA FOR SQ-FS1, ST-FS1.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       FD  SQ-FS1
+           LABEL RECORDS STANDARD
+           VALUE OF
+           XXXXX074
+           XXXXX075
+           BLOCK CONTAINS 1 RECORDS
+      *>     XXXXX069
+           RECORD CONTAINS 132 CHARACTERS.
+       01  SQ-FS1R1-F-G-132.
+           10 REC-PREAMBLE PIC X(120).
+           10 REST-OF-1.
+           20 KEY-1.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+           20 KEY-2.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+           20 KEY-3.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+       FD  SQ-FS2
+           LABEL RECORD IS STANDARD
+           ; VALUE OF
+           XXXXX074
+           IS
+           XXXXX076
+      *>     XXXXX069
+           ; BLOCK CONTAINS 2 RECORDS
+           ; RECORD CONTAINS 132 CHARACTERS
+           DATA RECORD SQ-FS2R1-F-G-132.
+       01  SQ-FS2R1-F-G-132.
+           10 REC-PRE-2 PIC X(120).
+           10 REST-OF-2.
+           20 KEY-4.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+           20 KEY-5.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+           20 KEY-6.
+               30 ALPHAN-KEY PIC X.
+               30 NUM-KEY PIC 999.
+       FD  SQ-FS3
+           LABEL RECORD IS STANDARD
+           ; VALUE OF
+           XXXXX074
+           IS
+           XXXXX077
+      *>     XXXXX069
+           ; BLOCK CONTAINS 3 RECORDS
+           RECORD CONTAINS 132 CHARACTERS
+           DATA RECORD SQ-FS3R1-F-G-132.
+       01  SQ-FS3R1-F-G-132.
+           10  REC-PRE-3 PIC X(120).
+           10  REST-OF-3.
+           20  KEY-7.
+                30  ALPHAN-KEY PIC X.
+                30  NUM-KEY PIC 999.
+           20  KEY-8.
+                30  ALPHAN-KEY PIC X.
+                30  NUM-KEY PIC 999.
+           20  KEY-9.
+                30  ALPHAN-KEY PIC X.
+                30  NUM-KEY PIC 999.
+       FD  SQ-FS4
+           LABEL RECORD IS STANDARD
+           ; VALUE OF
+           XXXXX074
+           IS
+           XXXXX078
+      *>     XXXXX069
+           ; BLOCK CONTAINS 3 RECORDS
+           RECORD CONTAINS 132 CHARACTERS
+           DATA RECORD SQ-FS4R1-F-G-132.
+       01  SQ-FS4R1-F-G-132.
+           10  REC-PRE-4 PIC X(120).
+           10  REST-OF-4.
+           20  KEY-10.
+                30  ALPHAN-KEY PIC X.
+                30  NUM-KEY PIC 999.
+           20  KEY-11.
+                30  ALPHAN-KEY PIC X.
+                30  NUM-KEY PIC 999.
+           20  KEY-12.
+                30  ALPHAN-KEY PIC X.
+                30  NUM-KEY PIC 999.
+       FD  SQ-FS5
+           LABEL RECORD IS STANDARD
+           ; VALUE OF
+           XXXXX074
+           IS
+           XXXXX079
+      *>     XXXXX069
+           ; BLOCK CONTAINS 3 RECORDS
+           RECORD CONTAINS 132 CHARACTERS
+           DATA RECORD SQ-FS5R1-F-G-132.
+       01  SQ-FS5R1-F-G-132.
+           10  REC-PRE-5 PIC X(120).
+           10  REST-OF-5.
+           20  KEY-13.
+                30  ALPHAN-KEY PIC X.
+                30  NUM-KEY PIC 999.
+           20  KEY-14.
+                30  ALPHAN-KEY PIC X.
+                30  NUM-KEY PIC 999.
+           20  KEY-15.
+                30  ALPHAN-KEY PIC X.
+                30  NUM-KEY PIC 999.
+       SD  ST-FS1
+           RECORD CONTAINS 132 CHARACTERS
+           DATA RECORD IS ST-FS1R1-F-G-132.
+       01  ST-FS1R1-F-G-132.
+           02 FILLER PIC X(120).
+           02 NON-KEY-1.
+               03 A-KEY PIC X.
+               03 N-KEY PIC 999.
+           02 SORT-KEY.
+               03 A-KEY PIC X.
+               03 N-KEY PIC 999.
+           02 NON-KEY-2.
+               03 A-KEY PIC X.
+               03 N-KEY PIC 999.
+       WORKING-STORAGE SECTION.
+       77  WRK-DU-9-0001 PIC 9 VALUE 0.
+       77  WRK-DU-999-0001 PIC 999.
+       77  WRK-DU-999-2 PIC 999 VALUE 001.
+       77  LAST-REC-NUM  PIC 999 VALUE ZERO.
+       01  WRK-XN-0001 PIC X(51) VALUE
+           XXXXX063.
+       01  WRK-XN-O051F-X-0001 REDEFINES WRK-XN-0001.
+           02 CHAR PIC X OCCURS 51 TIMES.
+       01  WRK-XN-2    PIC X(51) VALUE
+           XXXXX063.
+       01  WRK-XN-0051F-X-0002 REDEFINES WRK-XN-2.
+           02 ASCIIS PIC X OCCURS 51 TIMES.
+       01  WRK-XN-O020F-0001.
+           02 COMPU PIC X OCCURS 20 TIMES.
+       01  WRK-XN-X-0001 REDEFINES WRK-XN-O020F-0001.
+           02 FILLER PIC X(20).
+       01  WRK-XN-O120F-1.
+           02 COLLS PIC X OCCURS 120 TIMES.
+       01  WRK-XN-X-2 REDEFINES WRK-XN-O120F-1.
+           02 WRK-XN-0002 PIC X(20).
+           02 WRK-XN-0003 PIC X(20).
+           02 WRK-XN-0004 PIC X(20).
+           02 WRK-XN-0005 PIC X(20).
+           02 WRK-XN-0006 PIC X(20).
+           02 WRK-XN-0007 PIC X(20).
+       01  FILE-RECORD-INFORMATION-REC.
+           03 FILE-RECORD-INFO-SKELETON.
+              05 FILLER                 PICTURE X(48)       VALUE
+                   "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+              05 FILLER                 PICTURE X(46)       VALUE
+                   ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+              05 FILLER                 PICTURE X(26)       VALUE
+                   ",LFIL=000000,ORG=  ,LBLR= ".
+              05 FILLER                 PICTURE X(37)       VALUE
+                   ",RECKEY=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY1=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY2=                             ".
+              05 FILLER                 PICTURE X(7)        VALUE SPACE.
+           03 FILE-RECORD-INFO          OCCURS  10  TIMES.
+              05 FILE-RECORD-INFO-P1-120.
+                 07 FILLER              PIC X(5).
+                 07 XFILE-NAME           PIC X(6).
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-NAME         PIC X(6).
+                 07 FILLER              PIC X(1).
+                 07 REELUNIT-NUMBER     PIC 9(1).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-NUMBER       PIC 9(6).
+                 07 FILLER              PIC X(6).
+                 07 UPDATE-NUMBER       PIC 9(2).
+                 07 FILLER              PIC X(5).
+                 07 ODO-NUMBER          PIC 9(4).
+                 07 FILLER              PIC X(5).
+                 07 XPROGRAM-NAME        PIC X(5).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-LENGTH       PIC 9(6).
+                 07 FILLER              PIC X(7).
+                 07 CHARS-OR-RECORDS    PIC X(2).
+                 07 FILLER              PIC X(1).
+                 07 XBLOCK-SIZE          PIC 9(4).
+                 07 FILLER              PIC X(6).
+                 07 RECORDS-IN-FILE     PIC 9(6).
+                 07 FILLER              PIC X(5).
+                 07 XFILE-ORGANIZATION   PIC X(2).
+                 07 FILLER              PIC X(6).
+                 07 XLABEL-TYPE          PIC X(1).
+              05 FILE-RECORD-INFO-P121-240.
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-KEY          PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY1      PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY2      PIC X(29).
+                 07 FILLER              PIC X(7).
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "ST147A".
+       PROCEDURE DIVISION.
+       DECLARATIVES.
+       SECT-ST209-DEC SECTION.
+           USE AFTER STANDARD ERROR PROCEDURE ON OUTPUT.
+       MRG-WRITE-DEC.
+           MOVE "ERROR ON OUTPUT DECL." TO FEATURE.
+           MOVE "MRG-TEST-DEC" TO PAR-NAME.
+           WRITE   PRINT-REC FROM TEST-RESULTS AFTER ADVANCING 2 LINES.
+           STOP RUN.
+       END DECLARATIVES.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN    OUTPUT PRINT-FILE.
+           MOVE  CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE    ZERO TO REC-SKL-SUB.
+           PERFORM CCVS-INIT-FILE 9 TIMES.
+       CCVS-INIT-FILE.
+           ADD     1 TO REC-SKL-SUB.
+           MOVE    FILE-RECORD-INFO-SKELETON
+                TO FILE-RECORD-INFO (REC-SKL-SUB).
+       CCVS-INIT-EXIT.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO   FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-ST417-001 SECTION.
+       MRG-INIT-001.
+           MOVE "CREATE FILE SQ-FS1" TO FEATURE.
+           OPEN OUTPUT SQ-FS1.
+           MOVE "SQ-FS1" TO XFILE-NAME (1).
+           MOVE "R1-F-G" TO XRECORD-NAME (1).
+           MOVE CCVS-PGM-ID TO XPROGRAM-NAME (1).
+           MOVE 000132 TO XRECORD-LENGTH (1).
+           MOVE "RC" TO CHARS-OR-RECORDS (1).
+           MOVE 0001 TO XBLOCK-SIZE (1).
+           MOVE 000051 TO RECORDS-IN-FILE (1).
+           MOVE "SQ" TO XFILE-ORGANIZATION (1).
+           MOVE "S" TO XLABEL-TYPE (1).
+           MOVE 000001 TO XRECORD-NUMBER (1).
+                   MOVE SPACES TO WRK-XN-O120F-1.
+       MRG-TEST-001.
+           PERFORM MRG-TEST-001-BUILD VARYING WRK-DU-999-0001
+               FROM 51 BY -1 UNTIL WRK-DU-999-0001 IS LESS THAN 1.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF XRECORD-NUMBER (1) IS NOT EQUAL TO 000052
+               PERFORM FAIL MOVE "INCORR. NO. OF RECS." TO RE-MARK
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-001.
+       MRG-TEST-001-BUILD.
+           MOVE CHAR (WRK-DU-999-0001) TO ALPHAN-KEY OF KEY-1
+               ALPHAN-KEY OF KEY-2 ALPHAN-KEY OF KEY-3.
+           MOVE WRK-DU-999-0001 TO NUM-KEY OF KEY-1 NUM-KEY OF KEY-2
+               NUM-KEY OF KEY-3.
+           MOVE FILE-RECORD-INFO-P1-120 (1) TO REC-PREAMBLE.
+           ADD 1 TO XRECORD-NUMBER (1).
+           MOVE ASCIIS (WRK-DU-999-0001) TO COLLS (WRK-DU-999-2).
+           ADD 1 TO WRK-DU-999-2.
+           MOVE ASCIIS (WRK-DU-999-0001) TO COLLS (WRK-DU-999-2).
+           ADD 1 TO WRK-DU-999-2.
+      *>     WRITE PRINT-REC FROM SQ-FS1R1-F-G-132.
+      *>     WRITE PRINT-REC FROM REST-OF-1.
+      *>     MOVE SPACES TO PRINT-REC.
+           WRITE   SQ-FS1R1-F-G-132.
+       MRG-DELETE-001.
+           PERFORM DE-LETE.
+       MRG-WRITE-001.
+           MOVE "MRG-TEST-001" TO PAR-NAME.
+           MOVE "FIRST FILE CREATED" TO COMPUTED-A.
+           MOVE XRECORD-NUMBER (1) TO CORRECT-18V0.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           CLOSE SQ-FS1.
+       MRG-INIT-002.
+           MOVE "CREATE FILE SQ-FS2" TO FEATURE.
+           OPEN OUTPUT SQ-FS2.
+           MOVE  "SQ-FS2" TO XFILE-NAME (1).
+           MOVE 000001 TO XRECORD-NUMBER (1).
+           MOVE 0002 TO XBLOCK-SIZE (1).
+       MRG-TEST-002.
+           PERFORM MRG-TEST-002-BUILD VARYING WRK-DU-999-0001
+               FROM 51 BY -1 UNTIL WRK-DU-999-0001 IS LESS THAN 1.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF XRECORD-NUMBER (1) IS NOT EQUAL TO 52
+               PERFORM FAIL MOVE "INCORR. NO. OF RECS." TO RE-MARK
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-002.
+       MRG-TEST-002-BUILD.
+           MOVE CHAR (WRK-DU-999-0001) TO ALPHAN-KEY OF KEY-4
+               ALPHAN-KEY OF KEY-5 ALPHAN-KEY OF KEY-6.
+           ADD 51 WRK-DU-999-0001 GIVING NUM-KEY OF KEY-4
+               NUM-KEY OF KEY-5 NUM-KEY OF KEY-6.
+           MOVE FILE-RECORD-INFO-P1-120 (1) TO REC-PRE-2.
+           ADD 000001 TO XRECORD-NUMBER (1).
+      *>     WRITE PRINT-REC FROM SQ-FS2R1-F-G-132.
+      *>     WRITE PRINT-REC FROM REST-OF-2.
+      *>     MOVE SPACES TO PRINT-REC.
+           WRITE   SQ-FS2R1-F-G-132.
+       MRG-DELETE-002.
+           PERFORM DE-LETE.
+       MRG-WRITE-002.
+           MOVE "MRG-TEST-002" TO PAR-NAME.
+           MOVE "2ND FILE CREATED" TO COMPUTED-A.
+           MOVE XRECORD-NUMBER (1) TO CORRECT-18V0.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           CLOSE SQ-FS2.
+       MRG-INIT-003.
+      *>     ==-->  MULTIPLE "GIVING" FILES  <--==
+           MOVE   "XI-11 4.1.4 GR (11)" TO ANSI-REFERENCE.
+           MOVE SPACES TO WRK-XN-X-0001.
+           MERGE ST-FS1
+               DESCENDING A-KEY OF SORT-KEY
+               ON DESCENDING KEY N-KEY OF NON-KEY-1
+               USING  SQ-FS2 SQ-FS1
+               GIVING SQ-FS3 SQ-FS4 SQ-FS5.
+       MRG-TEST-003.
+           OPEN INPUT SQ-FS3.
+           PERFORM RD-1 THRU R1-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0002
+               PERFORM FAIL GO TO MRG-FAIL-003
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-003.
+       MRG-DELETE-003.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-003.
+       MRG-FAIL-003.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0002 TO CORRECT-A.
+       MRG-WRITE-003.
+           MOVE "MRG-TEST-003" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-004.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-004.
+           PERFORM RD-1 THRU R1-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0003
+               PERFORM FAIL GO TO MRG-FAIL-004
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-004.
+       MRG-DELETE-004.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-004.
+       MRG-FAIL-004.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0003 TO CORRECT-A.
+       MRG-WRITE-004.
+           MOVE "MRG-TEST-004" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-005.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-005.
+           PERFORM RD-1 THRU R1-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0004
+               PERFORM FAIL GO TO MRG-FAIL-005
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-005.
+       MRG-DELETE-005.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-005.
+       MRG-FAIL-005.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0004 TO CORRECT-A.
+       MRG-WRITE-005.
+           MOVE "MRG-TEST-005" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-006.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-006.
+           PERFORM RD-1 THRU R1-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0005
+               PERFORM FAIL GO TO MRG-FAIL-006
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-006.
+       MRG-DELETE-006.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-006.
+       MRG-FAIL-006.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0005 TO CORRECT-A.
+       MRG-WRITE-006.
+           MOVE "MRG-TEST-006" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-007.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-007.
+           PERFORM RD-1 THRU R1-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0006
+               PERFORM FAIL GO TO MRG-FAIL-007
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-007.
+       MRG-DELETE-007.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-007.
+       MRG-FAIL-007.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0006 TO CORRECT-A.
+       MRG-WRITE-007.
+           MOVE "MRG-TEST-007" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-008.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-008.
+           PERFORM RD-1 THRU R1-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 2.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0007
+               PERFORM FAIL GO TO MRG-FAIL-008
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-008.
+       MRG-DELETE-008.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-008.
+       MRG-FAIL-008.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0007 TO CORRECT-A.
+       MRG-WRITE-008.
+           MOVE "MRG-TEST-008" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+           MOVE    NUM-KEY OF KEY-7 TO LAST-REC-NUM.
+       MRG-TEST-009.
+           IF WRK-DU-9-0001 IS NOT EQUAL TO ZERO
+               GO TO MRG-FAIL-009.
+           READ SQ-FS3 END PERFORM PASS
+               GO TO MRG-WRITE-009.
+           GO TO MRG-FAIL-009.
+       MRG-DELETE-009.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-009.
+       MRG-FAIL-009.
+           MOVE "EOF NOT FOUND" TO RE-MARK.
+           PERFORM FAIL .
+       MRG-WRITE-009.
+           MOVE "MRG-TEST-009" TO PAR-NAME.
+           MOVE "EOF CHECK SQ-FS3" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       MRG-TEST-010.
+           IF LAST-REC-NUM IS NOT EQUAL TO 1
+               PERFORM FAIL GO TO MRG-FAIL-010
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-010.
+       MRG-DELETE-010.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-010.
+       MRG-FAIL-010.
+           MOVE LAST-REC-NUM TO COMPUTED-18V0.
+           MOVE 1 TO CR-18V0.
+       MRG-WRITE-010.
+           MOVE "NUMER. SEQ. CHECK" TO FEATURE.
+           MOVE "MRG-TEST-010" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           CLOSE   SQ-FS3.
+           GO TO   MRG-TEST-011.
+       READ-SQ-FS3 SECTION.
+       RD-1.
+           IF WRK-DU-9-0001 IS NOT EQUAL TO ZERO
+               GO TO R1-EXIT.
+           READ SQ-FS3 AT END GO TO PREMATURE-EOF-1.
+      *>     WRITE PRINT-REC FROM SQ-FS3R1-F-G-132.
+      *>     WRITE PRINT-REC FROM REST-OF-3.
+      *>     MOVE SPACES TO PRINT-REC.
+           MOVE ALPHAN-KEY OF KEY-8 TO COMPU (WRK-DU-999-0001).
+           GO TO R1-EXIT.
+       PREMATURE-EOF-1.
+           MOVE 1 TO WRK-DU-9-0001.
+           MOVE "PREMATURE EOF FOUND" TO RE-MARK.
+       R1-EXIT.
+           EXIT.
+      *> 
+      *> 
+       MRG-TEST-011.
+           OPEN INPUT SQ-FS4.
+           PERFORM RD-2 THRU R2-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0002
+               PERFORM FAIL GO TO MRG-FAIL-011
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-011.
+       MRG-DELETE-011.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-011.
+       MRG-FAIL-011.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0002 TO CORRECT-A.
+       MRG-WRITE-011.
+           MOVE "MRG-TEST-011" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-012.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-012.
+           PERFORM RD-2 THRU R2-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0003
+               PERFORM FAIL GO TO MRG-FAIL-012
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-012.
+       MRG-DELETE-012.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-012.
+       MRG-FAIL-012.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0003 TO CORRECT-A.
+       MRG-WRITE-012.
+           MOVE "MRG-TEST-012" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-013.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-013.
+           PERFORM RD-2 THRU R2-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0004
+               PERFORM FAIL GO TO MRG-FAIL-013
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-013.
+       MRG-DELETE-013.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-013.
+       MRG-FAIL-013.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0004 TO CORRECT-A.
+       MRG-WRITE-013.
+           MOVE "MRG-TEST-013" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-014.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-014.
+           PERFORM RD-2 THRU R2-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0005
+               PERFORM FAIL GO TO MRG-FAIL-014
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-014.
+       MRG-DELETE-014.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-014.
+       MRG-FAIL-014.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0005 TO CORRECT-A.
+       MRG-WRITE-014.
+           MOVE "MRG-TEST-014" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-015.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-015.
+           PERFORM RD-2 THRU R2-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0006
+               PERFORM FAIL GO TO MRG-FAIL-015
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-015.
+       MRG-DELETE-015.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-015.
+       MRG-FAIL-015.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0006 TO CORRECT-A.
+       MRG-WRITE-015.
+           MOVE "MRG-TEST-015" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-016.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-016.
+           PERFORM RD-2 THRU R2-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 2.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0007
+               PERFORM FAIL GO TO MRG-FAIL-016
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-016.
+       MRG-DELETE-016.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-016.
+       MRG-FAIL-016.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0007 TO CORRECT-A.
+       MRG-WRITE-016.
+           MOVE "MRG-TEST-016" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+           MOVE    NUM-KEY OF KEY-10 TO LAST-REC-NUM.
+       MRG-TEST-017.
+           IF WRK-DU-9-0001 IS NOT EQUAL TO ZERO
+               GO TO MRG-FAIL-017.
+           READ SQ-FS4 END PERFORM PASS
+               GO TO MRG-WRITE-017.
+           GO TO MRG-FAIL-017.
+       MRG-DELETE-017.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-017.
+       MRG-FAIL-017.
+           MOVE "EOF NOT FOUND" TO RE-MARK.
+           PERFORM FAIL .
+       MRG-WRITE-017.
+           MOVE "MRG-TEST-017" TO PAR-NAME.
+           MOVE "EOF CHECK SQ-FS4" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       MRG-TEST-018.
+           IF LAST-REC-NUM IS NOT EQUAL TO 1
+               PERFORM FAIL GO TO MRG-FAIL-018
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-018.
+       MRG-DELETE-018.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-018.
+       MRG-FAIL-018.
+           MOVE LAST-REC-NUM TO COMPUTED-18V0.
+           MOVE 1 TO CR-18V0.
+       MRG-WRITE-018.
+           MOVE "NUMER. SEQ. CHECK" TO FEATURE.
+           MOVE "MRG-TEST-018" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           CLOSE   SQ-FS4.
+           GO TO MRG-TEST-019.
+       READ-SQ-FS4 SECTION.
+       RD-2.
+           IF WRK-DU-9-0001 IS NOT EQUAL TO ZERO
+               GO TO R2-EXIT.
+           READ SQ-FS4 AT END GO TO PREMATURE-EOF-2.
+      *>     WRITE PRINT-REC FROM SQ-FS4R1-F-G-132.
+      *>     WRITE PRINT-REC FROM REST-OF-4.
+      *>     MOVE SPACES TO PRINT-REC.
+           MOVE ALPHAN-KEY OF KEY-11 TO COMPU (WRK-DU-999-0001).
+           GO TO R2-EXIT.
+       PREMATURE-EOF-2.
+           MOVE 1 TO WRK-DU-9-0001.
+           MOVE "PREMATURE EOF FOUND" TO RE-MARK.
+       R2-EXIT.
+           EXIT.
+      *> 
+      *> 
+       MRG-TEST-019.
+           OPEN INPUT SQ-FS5.
+           PERFORM RD-3 THRU R3-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0002
+               PERFORM FAIL GO TO MRG-FAIL-019
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-019.
+       MRG-DELETE-019.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-019.
+       MRG-FAIL-019.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0002 TO CORRECT-A.
+       MRG-WRITE-019.
+           MOVE "MRG-TEST-019" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-020.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-020.
+           PERFORM RD-3 THRU R3-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0003
+               PERFORM FAIL GO TO MRG-FAIL-020
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-020.
+       MRG-DELETE-020.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-020.
+       MRG-FAIL-020.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0003 TO CORRECT-A.
+       MRG-WRITE-020.
+           MOVE "MRG-TEST-020" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-021.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-021.
+           PERFORM RD-3 THRU R3-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0004
+               PERFORM FAIL GO TO MRG-FAIL-021
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-021.
+       MRG-DELETE-021.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-021.
+       MRG-FAIL-021.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0004 TO CORRECT-A.
+       MRG-WRITE-021.
+           MOVE "MRG-TEST-021" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-022.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-022.
+           PERFORM RD-3 THRU R3-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0005
+               PERFORM FAIL GO TO MRG-FAIL-022
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-022.
+       MRG-DELETE-022.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-022.
+       MRG-FAIL-022.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0005 TO CORRECT-A.
+       MRG-WRITE-022.
+           MOVE "MRG-TEST-022" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-023.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-023.
+           PERFORM RD-3 THRU R3-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 20.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0006
+               PERFORM FAIL GO TO MRG-FAIL-023
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-023.
+       MRG-DELETE-023.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-023.
+       MRG-FAIL-023.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0006 TO CORRECT-A.
+       MRG-WRITE-023.
+           MOVE "MRG-TEST-023" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+       MRG-INIT-024.
+           MOVE SPACES TO WRK-XN-X-0001.
+       MRG-TEST-024.
+           PERFORM RD-3 THRU R3-EXIT VARYING WRK-DU-999-0001 FROM 1 BY 1
+               UNTIL WRK-DU-999-0001 IS GREATER THAN 2.
+      *>     MOVE    SPACES TO PRINT-REC.
+      *>     WRITE   PRINT-REC.
+           IF WRK-XN-X-0001 IS NOT EQUAL TO WRK-XN-0007
+               PERFORM FAIL GO TO MRG-FAIL-024
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-024.
+       MRG-DELETE-024.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-024.
+       MRG-FAIL-024.
+           MOVE WRK-XN-X-0001 TO COMPUTED-A.
+           MOVE WRK-XN-0007 TO CORRECT-A.
+       MRG-WRITE-024.
+           MOVE "MRG-TEST-024" TO PAR-NAME.
+           MOVE "NATIVE COLL.SEQUENCE " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+           MOVE    NUM-KEY OF KEY-13 TO LAST-REC-NUM.
+       MRG-TEST-025.
+           IF WRK-DU-9-0001 IS NOT EQUAL TO ZERO
+               GO TO MRG-FAIL-025.
+           READ SQ-FS5 END PERFORM PASS
+               GO TO MRG-WRITE-025.
+           GO TO MRG-FAIL-025.
+       MRG-DELETE-025.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-025.
+       MRG-FAIL-025.
+           MOVE "EOF NOT FOUND" TO RE-MARK.
+           PERFORM FAIL .
+       MRG-WRITE-025.
+           MOVE "MRG-TEST-025" TO PAR-NAME.
+           MOVE "EOF CHECK SQ-FS5" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       MRG-TEST-026.
+           IF LAST-REC-NUM IS NOT EQUAL TO 1
+               PERFORM FAIL GO TO MRG-FAIL-026
+               ELSE
+               PERFORM PASS.
+           GO TO MRG-WRITE-026.
+       MRG-DELETE-026.
+           PERFORM DE-LETE.
+           GO TO MRG-WRITE-026.
+       MRG-FAIL-026.
+           MOVE LAST-REC-NUM TO COMPUTED-18V0.
+           MOVE 1 TO CR-18V0.
+       MRG-WRITE-026.
+           MOVE "NUMER. SEQ. CHECK" TO FEATURE.
+           MOVE "MRG-TEST-026" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           CLOSE   SQ-FS5.
+           GO TO CLOSE-FILES.
+       
+       READ-SQ-FS5 SECTION.
+       RD-3.
+           IF WRK-DU-9-0001 IS NOT EQUAL TO ZERO
+               GO TO R3-EXIT.
+           READ SQ-FS5 AT END GO TO PREMATURE-EOF-3.
+      *>     WRITE PRINT-REC FROM SQ-FS5R1-F-G-132.
+      *>     WRITE PRINT-REC FROM REST-OF-5.
+      *>     MOVE SPACES TO PRINT-REC.
+           MOVE ALPHAN-KEY OF KEY-14 TO COMPU (WRK-DU-999-0001).
+           GO TO R3-EXIT.
+       PREMATURE-EOF-3.
+           MOVE 1 TO WRK-DU-9-0001.
+           MOVE "PREMATURE EOF FOUND" TO RE-MARK.
+       R3-EXIT.
+           EXIT.
+      *> 
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,ST147A

@@ -1,0 +1,1128 @@
+      *> HEADER,COBOL,NC208A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC208A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+       
+      *>                                                               *
+      *>     PROGRAM NC208A TESTS FORMATS 1 AND 2 OF QUALIFICATION*
+      *>     USING FORMATS 1 AND 2 OF THE "MOVE" STATEMENT, FORMAT 1 OF*
+      *>     THE "ADD" STATEMENT AND THE FORMAT 2 "MULTIPLY" STATEMENT.*
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  QT1      PICTURE XXXX VALUE SPACE.
+       77  QT2      PICTURE XXXX VALUE SPACE.
+       77  QT3      PICTURE XXXX VALUE SPACE.
+       77  QT4      PICTURE XXXX VALUE SPACE.
+       77  QT5      PICTURE XXXX VALUE SPACE.
+       77  WRK-XN-00001                 PICTURE X.
+       77  WRK-DS-01V00                PICTURE S9.
+       77  WRK-DS-02V00                PICTURE S99.
+       77  WRK-DS-06V06                PICTURE S9(6)V9(6).
+       77  WRK-DS-05V00                PICTURE S9(5).
+       77  AZERO-DS-05V05              PICTURE S9(5)V9(5) VALUE ZERO.
+       77  WRK-DS-09V09                PICTURE S9(9)V9(9).
+       77  WRK-DS-18V00-S REDEFINES WRK-DS-09V09 PICTURE S9(18).
+       77  A18ONES-DS-09V09            PICTURE S9(9)V9(9)
+                                       VALUE 111111111.111111111.
+       77  WRK-DS-18V00       PICTURE S9(18) VALUE 111111111111111111.
+       77  A05ONES-DS-05V00            PICTURE S9(5) VALUE 11111.
+       77  A99-DS-02V00                PICTURE S99   VALUE 99.
+       77  WRK-DS-03V00                PICTURE S999.
+       77  WRK-DS-06V00                PICTURE S9(6).
+       77  WRK-DS-0201P                PICTURE S99P.
+       77  WRK-DS-03V10                PICTURE S9(3)V9(10).
+       77  XRAY                    PICTURE IS X.
+       77  W-1                     PICTURE IS 9.
+       77  W-2                     PICTURE IS 99.
+       77  W-3                     PICTURE IS 999.
+       77  W-4                PICTURE 9  VALUE 0.
+       77  W-6                     PICTURE IS 999    VALUE IS ZERO.
+       77  W-9                     PICTURE 999.
+       77  D-5                PICTURE S999  VALUE -1.
+       77  D-9                PICTURE 9(4)V9(4)  VALUE 111.1189.
+       77  ONE                PICTURE 9  VALUE 1.
+       77  TWO                PICTURE S9  VALUE 2.
+       77  THREE              PICTURE S9  VALUE 3.
+       77  FOUR               PICTURE S9  VALUE 4.
+       77  FIVE               PICTURE S9  VALUE 5.
+       77  SIX                PICTURE S9  VALUE 6.
+       77  SEVEN              PICTURE S9  VALUE 7.
+       77  EIGHT              PICTURE 9  VALUE 8.
+       77  NINE               PICTURE S9  VALUE 9.
+       77  TEN                PICTURE S99  VALUE 10.
+       77  FIFTEEN            PICTURE S99  VALUE 15.
+       77  TWENTY             PICTURE S99  VALUE 20.
+       77  TWENTY-5           PICTURE S99  VALUE 25.
+       01  MOVE54.
+           02 MOVE55 PICTURE X VALUE "W".
+           02 MOVE56 PICTURE X VALUE "X".
+           02 MOVE57.
+               03 MOVE58 PICTURE X VALUE "Y".
+               03 MOVE59 PICTURE X VALUE "Z".
+       01  MOVE60.
+           02 MOVE56 PICTURE X.
+           02 MOVE57.
+               03 MOVE58 PICTURE X.
+               03 MOVE64.
+                   04 MOVE65 PICTURE X VALUE "A".
+       01  SEND-BREAKDOWN.
+           02  SEND-20  PIC X(20).
+           02  SEND-40  PIC X(20).
+           02  SEND-60  PIC X(20).
+       01  RECEIVE-BREAKDOWN.
+           02  RECEIVE-20  PIC X(20).
+           02  RECEIVE-40  PIC X(20).
+           02  RECEIVE-60  PIC X(20).
+       01  GRP-FOR-QUAL-FROM.
+           02  QUAL-TEST-SUB-GRP-1.
+           03  QUAL-TEST-1             PICTURE X(26) VALUE
+           "ABCDEFGHIJKLMNOPQRSTUVWXYZ".
+           03  QUAL-TEST-1-FROM REDEFINES QUAL-TEST-1 PICTURE X(26).
+           03  QUAL-TEST-2             PICTURE S9(10) VALUE +9999999999.
+           03  QUAL-TEST-2-FROM REDEFINES QUAL-TEST-2 PICTURE S9(10).
+           03  QUAL-TEST-3             PICTURE S999  VALUE 2.
+           03  QUAL-TEST-3-FROM REDEFINES QUAL-TEST-3 PICTURE S999.
+           02  QUAL-TEST-SUB-GRP-2.
+           03  QUAL-TEST-4             PICTURE X OCCURS 5 TIMES.
+           03  QUAL-TEST-4-FROM        PICTURE X OCCURS 4 TIMES.
+       01  GRP-FOR-QUAL-TO.
+           02  DUMMY-LEVELZ.
+           03  QUAL-TEST-1             PICTURE X(26).
+           03  QUAL-TEST-1-TO REDEFINES QUAL-TEST-1 PICTURE X(26).
+           03  QUAL-TEST-2             PICTURE S9(10).
+           03  QUAL-TEST-2-TO REDEFINES QUAL-TEST-2 PICTURE S9(10).
+           03  QUAL-TEST-3             PICTURE S999.
+           03  QUAL-TEST-3-TO REDEFINES QUAL-TEST-3 PICTURE S999.
+           02  QUAL-TEST1.
+           03  QUAL-TEST-4             PICTURE X OCCURS 5 TIMES.
+           02  QUAL-TEST2.
+           03  QUAL-TEST-4-TO          PICTURE X OCCURS 4 TIMES.
+       01  GRP-MOVE-CORR-1.
+           09  MOVE-CORR-5              PICTURE 999    VALUE 555.
+           09  MOVE-CORR-3              PICTURE 999    VALUE 333.
+           09  MOVE-CORR-2              PICTURE 999    VALUE 222.
+           09  MOVE-CORR-1              PICTURE 999    VALUE 111.
+           09  FILLER                   PICTURE XXX    VALUE ZEROS.
+           09  MOVE-CORR-4              PICTURE XXX    VALUE "XYZ".
+           09  MOVE-CORR-6              PICTURE XXX    VALUE ALL "6".
+           09  MOVE-CORR-7              PICTURE 999    VALUE 777.
+       01  GRP-MOVE-CORR-R.
+           05  FILLER                   PICTURE XXX.
+           05  MOVE-CORR-1              PICTURE XXX.
+           05  MOVE-CORR-2              PICTURE 999.
+           05  MOVE-CORR-3              PICTURE ZZZ.
+           05  MOVE-CORR-4.
+               06 FILLER                PICTURE 999.
+               06 FILLER                PICTURE XXX.
+       01  GRP-TO-MOVE-CORR.
+           03  GRP-TO-MOVE-CORR-1.
+               05  MOVE-CORR-G1.
+                   06  MOVE-CORR-G2.
+                       09  MOVE-CORR-E1 PICTURE 999    VALUE 111.
+                       09  MOVE-CORR-E2 PICTURE 999    VALUE 222.
+                       09  FILLER       PICTURE 999    VALUE 333.
+                   06  MOVE-CORR-G3.
+                       07  MOVE-CORR-E3 PICTURE XXX    VALUE "123".
+                       07  MOVE-CORR-G4.
+                           08  MOVE-CORR-G5.
+                               09  MOVE-CORR-E4 PICTURE XXX VALUE "ABC".
+                               09  MOVE-CORR-E5 PICTURE 99  VALUE 45.
+       01  GRP-TO-MOVE-CORR-TO.
+           02 MOVE-CORR-G1.
+               04 MOVE-CORR-G2.
+                   05 MOVE-CORR-E1      PICTURE XXX.
+                   05 MOVE-CORR-E2      PICTURE 999    OCCURS 2.
+                   05 FILLER            PICTURE 999.
+               04 MOVE-CORR-G3.
+                   06 MOVE-CORR-E3      PICTURE 999.
+                   06 MOVE-CORR-G4.
+                       07 MOVE-CORR-G5  PICTURE X(5).
+       01  GRP-FOR-MULT-REC-A.
+           03  WRK-DS-01V00-IN-GRP     PICTURE S9   VALUE ZERO.
+           03  WRK-DS-05V00-IN-GRP     PICTURE S9(5)  VALUE ZERO.
+           03  WRK-DS-06V06-IN-GRP     PICTURE S9(6)V9(6)  VALUE ZERO.
+       01  GRP-FOR-MULT-REC-B.
+           03  WRK-DS-03V10-IN-GRP     PICTURE S9(3)V9(10) VALUE ZERO.
+           03  WRK-DS-0201P-IN-GRP     PICTURE S99P        VALUE ZERO.
+           03  WRK-DS-03V00-IN-GRP     PICTURE S999        VALUE ZERO.
+       01  GRP-FOR-MULT-REC-C.
+           03  WRK-DS-02V00-IN-GRP     PICTURE S99  VALUE ZERO.
+           03  WRK-DS-18V00-IN-GRP     PICTURE S9(18) VALUE ZERO.
+           03  WRK-DS-09V09-IN-GRP     PICTURE S9(9)V9(9) VALUE ZERO.
+       01  WRK-DS-09V00                 PICTURE S9(9)  VALUE ZERO.
+       01  CORR-DATA-1.
+           03 XYZ-1                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-2                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-3                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-4                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-5                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-6                PICTURE IS 99     VALUE IS ZERO.
+       01  CORR-DATA-2.
+           03 XYZ-1                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-2                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-3                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-4                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-5                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-6                PICTURE IS 99     VALUE IS ZERO.
+       01  CORR-DATA-3.
+           03 XYZ-4                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-3                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-6                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-5                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-2                PICTURE IS 99     VALUE IS ZERO.
+           03 XYZ-1                PICTURE IS 99     VALUE IS ZERO.
+       01  CORR-DATA-4.
+           03 XYZ-11               PICTURE IS 99.
+           03 XYZ-12               PICTURE IS 99.
+           03 XYZ-13               PICTURE IS 99.
+           03 XYZ-14               PICTURE IS 99.
+           03 XYZ-15               PICTURE IS 99.
+           03 XYZ-16               PICTURE IS 99.
+       01  CORR-DATA-5.
+           03 XYZ-1                PICTURE 99.
+           03 XYZ-2                PICTURE 99.
+           03 XYZ-13               PICTURE IS 99.
+           03 XYZ-14               PICTURE IS 99.
+           03 FILLER               PICTURE IS 99.
+           03 XYZ-11               PICTURE IS 99.
+           03 XYZ-12               PICTURE IS 99.
+       01  CORR-DATA-6.
+           03 XYZ-11               PICTURE IS 99.
+           03 XYZ-12               PICTURE IS 99.
+           03 FILLER               PICTURE IS 99.
+           03 XYZ-1                PICTURE IS 99.
+           03 XYZ-2                PICTURE IS 9(2).
+           03 FILLER               PICTURE IS 99.
+       01  CORR-DATA-7.
+           02 XYZ-1                PICTURE 99V99     VALUE 10.45.
+           02 XYZ-6                PICTURE 999V9     VALUE 100.5.
+           02 XYZ-11               PICTURE 99V9      VALUE ZERO.
+           02 XYZ-2                PICTURE 99V9      VALUE 0.9.
+       01  AN-DATANAMES.
+           02  ANDATA1       PICTURE X     VALUE SPACE.
+           02  ANDATA2       PICTURE XX    VALUE SPACE.
+           02  ANDATA3       PICTURE XXX   VALUE SPACE.
+           02  ANDATA4       PICTURE X(4)  VALUE SPACE.
+           02  ANDATA5       PICTURE X(5)  VALUE SPACE.
+           02  ANDATA6       PICTURE X(6)  VALUE SPACE.
+           02  ANDATA7       PICTURE X(7)  VALUE SPACE.
+           02  ANDATA8       PICTURE X(8)  VALUE SPACE.
+           02  ANDATA9       PICTURE X(9)  VALUE SPACE.
+           02  ANDATA10      PICTURE X(10) VALUE SPACE.
+           02  ANDATA11      PICTURE X(11) VALUE SPACE.
+           02  ANDATA12      PICTURE X(12) VALUE SPACE.
+           02  ANDATA13      PICTURE X(13) VALUE SPACE.
+           02  ANDATA14      PICTURE X(14) VALUE SPACE.
+           02  ANDATA15      PICTURE X(15) VALUE SPACE.
+           02  ANDATA16      PICTURE X(16) VALUE SPACE.
+           02  ANDATA17      PICTURE X(17) VALUE SPACE.
+           02  ANDATA18      PICTURE X(18) VALUE SPACE.
+           02  ANDATA19      PICTURE X(19) VALUE SPACE.
+           02  ANDATA20      PICTURE X(20) VALUE SPACE.
+           02  ANDATA21      PICTURE X(120) VALUE SPACE.
+       01  42-DATANAMES.
+           02  DNAME1   PICTURE 9      VALUE 1        COMPUTATIONAL.
+           02  DNAME2   PICTURE 99     VALUE 01       COMPUTATIONAL.
+           02  DNAME3   PICTURE 999    VALUE 001      COMPUTATIONAL.
+           02  DNAME4   PICTURE 9(4)   VALUE 0001     COMPUTATIONAL.
+           02  DNAME5   PICTURE 9(5)   VALUE 00001    COMPUTATIONAL.
+           02  DNAME6   PICTURE 9(6)   VALUE 000001   COMPUTATIONAL.
+           02  DNAME7   PICTURE 9(7)   VALUE 0000001  COMPUTATIONAL.
+           02  DNAME8   PICTURE 9(8)   VALUE 00000001 COMPUTATIONAL.
+           02  DNAME9   PICTURE 9(9)   VALUE 000000001.
+           02  DNAME10  PICTURE 9(10)   VALUE 0000000001.
+           02  DNAME11  PICTURE 9(11)   VALUE 00000000001.
+           02  DNAME12  PICTURE 9(12)   VALUE 000000000001.
+           02  DNAME13  PICTURE 9(13)   VALUE 0000000000001.
+           02  DNAME14  PICTURE 9(14)   VALUE 00000000000001.
+           02  DNAME15  PICTURE 9(15)   VALUE 000000000000001.
+           02  DNAME16  PICTURE 9(16)   VALUE 0000000000000001.
+           02  DNAME17  PICTURE 9(17)   VALUE 00000000000000001.
+           02  DNAME18  PICTURE 9(18)   VALUE 000000000000000001.
+           02  DNAME19  PICTURE 9      VALUE 1.
+           02  DNAME20  PICTURE 99     VALUE 11.
+           02  DNAME21  PICTURE 999    VALUE 111.
+           02  DNAME22  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME23  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME24  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME25  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME26  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME27  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME28  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME29  PICTURE 9(18)  VALUE ZERO.
+           02  DNAME30   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME31   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME32   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME33   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME34   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME35   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME36   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME37   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME38   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME39   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME40   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME41   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+           02  DNAME42   PICTURE 9(18)  VALUE ZERO COMPUTATIONAL.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC208A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       QUAL-SECTION-1 SECTION.
+       PAR-INIT-F2-1.
+           MOVE "PAR-TEST-F2-1         " TO PAR-NAME.
+           MOVE "IV-20 4.3.8.1 RULE 6" TO ANSI-REFERENCE.
+       PAR-TEST-F2-1.
+           PERFORM PAR-1A OF QUAL-SECTION-1.
+           IF QT1 EQUAL TO "PASS"
+                         PERFORM PASS
+                         GO TO PAR-WRITE-F2-1.
+           GO TO PAR-FAIL-F2-1.
+       PAR-DELETE-F2-1.
+           PERFORM DE-LETE.
+           GO TO PAR-WRITE-F2-1.
+       PAR-FAIL-F2-1.
+           PERFORM FAIL.
+      *>     NOTE
+      *>     PERFORM PARAGRAPH IN SAME SECTION.
+       PAR-WRITE-F2-1.
+           PERFORM PRINT-DETAIL.
+           GO TO PAR-1-EXIT.
+      *> 
+       PAR-1A.
+           MOVE "PASS" TO QT1.
+       PAR-1-EXIT.
+           EXIT.
+      *> 
+       PAR-INIT-F2-2.
+           MOVE "PAR-TEST-F2-2" TO PAR-NAME.
+           MOVE "IV-20 4.3.8.1 RULE 6" TO ANSI-REFERENCE.
+       PAR-TEST-F2-2.
+           PERFORM PAR-2A OF QUAL-SECTION-2.
+           IF QT2 EQUAL TO "PASS"
+                      PERFORM PASS
+                      GO TO PAR-WRITE-F2-2.
+           GO TO PAR-FAIL-F2-2.
+       PAR-DELETE-F2-2.
+           PERFORM DE-LETE.
+           GO TO PAR-WRITE-F2-2.
+       PAR-FAIL-F2-2.
+           PERFORM FAIL.
+      *>     NOTE
+      *>     PERFORM PARAGRAPH IN A DIFFERENT SECTION.
+       PAR-WRITE-F2-2.
+           PERFORM PRINT-DETAIL.
+           GO TO PAR-2-EXIT.
+       PAR-2A.
+           MOVE "FAIL" TO QT2.
+       PAR-2-EXIT.
+           EXIT.
+      *> 
+       PAR-INIT-F2-3.
+           MOVE "PAR-TEST-F2-3" TO PAR-NAME.
+           MOVE "IV-20 4.3.8.1 RULE 6" TO ANSI-REFERENCE.
+       PAR-TEST-F2-3.
+           GO TO PAR-3B IN QUAL-SECTION-1.
+      *>     NOTE
+      *>     GO TO IN SAME SECTION.
+       PAR-3A.
+           MOVE "FAIL" TO QT3.
+           GO TO PAR-3C.
+       PAR-3B.
+           MOVE "PASS" TO QT3.
+       PAR-3C.
+           IF QT3 EQUAL TO "PASS"
+                     PERFORM PASS
+                     GO TO PAR-WRITE-F2-3.
+           GO TO PAR-FAIL-F2-3.
+       PAR-DELETE-F2-3.
+           PERFORM DE-LETE.
+           GO TO PAR-WRITE-F2-3.
+       PAR-FAIL-F2-3.
+           PERFORM FAIL.
+       PAR-WRITE-F2-3.
+           PERFORM PRINT-DETAIL.
+       PAR-3-EXIT.
+           EXIT.
+      *> 
+       PAR-INIT-F2-4.
+           MOVE "PAR-TEST-F2-4" TO PAR-NAME.
+           MOVE "IV-20 4.3.8.1 RULE 6" TO ANSI-REFERENCE.
+       PAR-TEST-F2-4.
+           GO TO PAR-4B IN QUAL-SECTION-2.
+      *>     NOTE
+      *>     GO TO IN DIFFERENT SECTION.
+       PAR-4A.
+           MOVE "FAIL" TO QT4.
+           GO TO PAR-4C.
+       PAR-4B.
+           MOVE "FAIL" TO QT4.
+       PAR-4C.
+           IF QT4 EQUAL TO "PASS"
+                   PERFORM PASS
+                   GO TO PAR-WRITE-F2-4.
+           GO TO PAR-FAIL-F2-4.
+       PAR-DELETE-F2-4.
+           PERFORM DE-LETE.
+           GO TO PAR-WRITE-F2-4.
+       PAR-FAIL-F2-4.
+           PERFORM FAIL.
+       PAR-WRITE-F2-4.
+           PERFORM PRINT-DETAIL.
+       PAR-4-EXIT.
+           PERFORM END-ROUTINE.
+           GO TO QUAL-EXIT.
+       QUAL-SECTION-2 SECTION.
+       PAR-1A.
+           MOVE "FAIL" TO QT1.
+       PAR-2A.
+           MOVE "PASS" TO QT2.
+       PAR-3B.
+           MOVE "FAIL" TO QT3.
+           GO TO PAR-3C OF QUAL-SECTION-1.
+       PAR-3C.
+           PERFORM FAIL.
+      *>     NOTE  THIS PARAGRAPH SHOULD NEVER BE ENTERED.
+           GO TO PAR-INIT-F2-4 IN QUAL-SECTION-1.
+       PAR-4.
+           GO TO QUAL-EXIT.
+      *>     NOTE
+      *>                   IF
+      *>     GO TO DIFFERENT SECTION FAILS END QUALIFICATION TEST.
+       PAR-4B.
+           MOVE "PASS" TO QT4.
+           GO TO PAR-4C IN QUAL-SECTION-1.
+       QUAL-EXIT.
+           EXIT.
+       DATA-NAME-QUAL SECTION.
+       QAL-INIT-F1-1.
+           MOVE "QAL-TEST-F1-1      " TO PAR-NAME.
+           MOVE SPACE TO TEST-RESULTS.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "DATA-NAME QUAL      " TO FEATURE.
+       QAL-TEST-F1-1.
+           MOVE "123456789" TO QUAL-TEST-SUB-GRP-2.
+           MOVE ZERO TO GRP-FOR-QUAL-TO.
+           MOVE 2 TO WRK-DS-01V00.
+           MOVE QUAL-TEST-1 OF GRP-FOR-QUAL-FROM
+               TO QUAL-TEST-1 OF GRP-FOR-QUAL-TO.
+           IF QUAL-TEST-1 OF GRP-FOR-QUAL-TO EQUAL TO
+               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-1.
+           GO TO QAL-FAIL-F1-1.
+       QAL-DELETE-F1-1.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-1.
+       QAL-FAIL-F1-1.
+           MOVE "ABCDEFGGHIJKLMNOPQRSTUVWXYZ" TO SEND-BREAKDOWN
+           MOVE QUAL-TEST-1 OF GRP-FOR-QUAL-TO TO RECEIVE-BREAKDOWN
+           PERFORM FAIL
+           MOVE SEND-20 TO CORRECT-A
+           MOVE RECEIVE-20 TO COMPUTED-A
+           MOVE "1ST 20 POSITIONS OF ANSWERS" TO RE-MARK
+           MOVE TEST-RESULTS TO PRINT-REC.
+           WRITE PRINT-REC
+           MOVE SPACES TO P-OR-F
+           MOVE SEND-40 TO CORRECT-A
+           MOVE RECEIVE-40 TO COMPUTED-A
+           MOVE "QAL-TEST-F1-1      " TO PAR-NAME.
+           MOVE "2ND 20 POSITIONS OF ANSWERS" TO RE-MARK.
+       QAL-WRITE-F1-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-2.
+           MOVE "QAL-TEST-F1-2      " TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "DATA-NAME QUAL      " TO FEATURE.
+           MOVE ZERO TO QUAL-TEST-2-TO.
+       QAL-TEST-F1-2.
+           ADD QUAL-TEST-2 OF GRP-FOR-QUAL-FROM
+               TO QUAL-TEST-2 OF GRP-FOR-QUAL-TO.
+           IF QUAL-TEST-2 OF GRP-FOR-QUAL-TO EQUAL TO 9999999999
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-2.
+           GO TO QAL-FAIL-F1-2.
+       QAL-DELETE-F1-2.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-2.
+       QAL-FAIL-F1-2.
+           MOVE 9999999999 TO CORRECT-18V0.
+           MOVE QUAL-TEST-2 OF GRP-FOR-QUAL-TO TO COMPUTED-18V0.
+           PERFORM FAIL.
+       QAL-WRITE-F1-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-3.
+           MOVE "QAL-TEST-F1-3      " TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "DATA-NAME QUAL      " TO FEATURE.
+       QAL-TEST-F1-3.
+           MULTIPLY QUAL-TEST-3 OF GRP-FOR-QUAL-FROM BY WRK-DS-01V00
+               GIVING QUAL-TEST-3 OF GRP-FOR-QUAL-TO.
+           IF QUAL-TEST-3 OF GRP-FOR-QUAL-TO EQUAL TO 004
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-3.
+           GO TO QAL-FAIL-F1-3.
+       QAL-DELETE-F1-3.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-3.
+       QAL-FAIL-F1-3.
+           MOVE 004 TO CORRECT-N.
+           MOVE QUAL-TEST-3 OF GRP-FOR-QUAL-TO TO COMPUTED-N.
+           PERFORM FAIL.
+       QAL-WRITE-F1-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-4.
+           MOVE "QAL-TEST-F1-4      " TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "DATA-NAME QUAL      " TO FEATURE.
+       QAL-TEST-F1-4.
+           MOVE QUAL-TEST-4 OF GRP-FOR-QUAL-FROM (WRK-DS-01V00)
+               TO QUAL-TEST-4 OF GRP-FOR-QUAL-TO (WRK-DS-01V00).
+           IF QUAL-TEST1  OF GRP-FOR-QUAL-TO EQUAL TO "02000"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-4.
+           GO TO QAL-FAIL-F1-4.
+       QAL-DELETE-F1-4.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-4.
+       QAL-FAIL-F1-4.
+           MOVE "02000" TO CORRECT-A.
+           MOVE QUAL-TEST1  OF GRP-FOR-QUAL-TO TO COMPUTED-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-5.
+           MOVE "QAL-TEST-F1-5      " TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "DATA-NAME QUAL      " TO FEATURE.
+       QAL-TEST-F1-5.
+           MOVE QUAL-TEST-1-FROM IN GRP-FOR-QUAL-FROM TO
+               QUAL-TEST-1-TO IN GRP-FOR-QUAL-TO.
+           IF QUAL-TEST-1-TO IN GRP-FOR-QUAL-TO EQUAL TO
+               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-5.
+           GO TO QAL-FAIL-F1-5.
+       QAL-DELETE-F1-5.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-5.
+       QAL-FAIL-F1-5.
+           MOVE "ABCDEFGHIJKLMNOPQRSTUVWXYZ" TO SEND-BREAKDOWN.
+           MOVE QUAL-TEST-1-TO IN GRP-FOR-QUAL-TO TO RECEIVE-BREAKDOWN.
+           PERFORM FAIL.
+           MOVE SEND-20 TO CORRECT-A.
+           MOVE RECEIVE-20 TO COMPUTED-A.
+           PERFORM QAL-WRITE-F1-5.
+           MOVE SPACES TO P-OR-F.
+           MOVE SEND-40 TO CORRECT-A.
+           MOVE RECEIVE-40 TO COMPUTED-A.
+           MOVE "2ND 20 POSITIONS OF ANSWERS" TO RE-MARK.
+           MOVE TEST-RESULTS TO PRINT-REC.
+           WRITE PRINT-REC.
+       QAL-WRITE-F1-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-6.
+           MOVE "QAL-TEST-F1-6      " TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "DATA-NAME QUAL      " TO FEATURE.
+       QAL-TEST-F1-6.
+           MOVE 0000000000 TO QUAL-TEST-2-TO IN GRP-FOR-QUAL-TO.
+           ADD QUAL-TEST-2-FROM IN GRP-FOR-QUAL-FROM TO
+               QUAL-TEST-2-TO IN GRP-FOR-QUAL-TO.
+           IF QUAL-TEST-2-TO IN GRP-FOR-QUAL-TO EQUAL TO 9999999999
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-6.
+           GO TO QAL-FAIL-F1-6.
+       QAL-DELETE-F1-6.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-6.
+       QAL-FAIL-F1-6.
+           MOVE 9999999999 TO CORRECT-18V0.
+           MOVE QUAL-TEST-2-TO IN GRP-FOR-QUAL-TO TO COMPUTED-18V0.
+           PERFORM FAIL.
+       QAL-WRITE-F1-6.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-7.
+           MOVE "QAL-TEST-F1-7      " TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "DATA-NAME QUAL      " TO FEATURE.
+       QAL-TEST-F1-7.
+           MULTIPLY QUAL-TEST-3-FROM IN GRP-FOR-QUAL-FROM BY
+               WRK-DS-01V00 GIVING QUAL-TEST-3-TO IN GRP-FOR-QUAL-TO.
+           IF QUAL-TEST-3-TO IN GRP-FOR-QUAL-TO EQUAL TO 004
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-7.
+           GO TO QAL-FAIL-F1-7.
+       QAL-DELETE-F1-7.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-7.
+       QAL-FAIL-F1-7.
+           MOVE 004 TO CORRECT-N.
+           MOVE QUAL-TEST-3-TO IN GRP-FOR-QUAL-TO TO COMPUTED-N.
+           PERFORM FAIL.
+       QAL-WRITE-F1-7.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-8.
+           MOVE "QAL-TEST-F1-8      " TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "DATA-NAME QUAL      " TO FEATURE.
+       QAL-TEST-F1-8.
+           MOVE QUAL-TEST-4-FROM IN GRP-FOR-QUAL-FROM (WRK-DS-01V00)
+               TO QUAL-TEST-4-TO IN GRP-FOR-QUAL-TO (WRK-DS-01V00).
+           IF QUAL-TEST2     IN GRP-FOR-QUAL-TO EQUAL TO "0700"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-8.
+           GO TO QAL-FAIL-F1-8.
+       QAL-DELETE-F1-8.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-8.
+       QAL-FAIL-F1-8.
+           MOVE "0700" TO CORRECT-A.
+           MOVE QUAL-TEST2 TO COMPUTED-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-8.
+           PERFORM PRINT-DETAIL.
+           PERFORM END-ROUTINE.
+      *> 
+       MOVE-CORR-ROUTINE SECTION.
+       MOV-INIT-F1-1.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "MOVE CORRESPONDING" TO FEATURE.
+           MOVE THREE TO XYZ-1 OF CORR-DATA-1.
+           MOVE FOUR TO XYZ-2 OF CORR-DATA-1.
+           MOVE TEN TO XYZ-3 OF CORR-DATA-1.
+           MOVE ZERO TO XYZ-4 OF CORR-DATA-1.
+           MOVE 01 TO XYZ-5 OF CORR-DATA-1.
+           MOVE 00 TO XYZ-6 OF CORR-DATA-1.
+       MOV-INIT-F1-1-1.
+           MOVE "MOV-TEST-F1-1-1" TO PAR-NAME.
+       MOV-TEST-F1-1-1.
+           MOVE CORRESPONDING CORR-DATA-1 TO CORR-DATA-2.
+                         IF XYZ-2 OF CORR-DATA-2 EQUAL TO 4
+           PERFORM PASS ELSE
+           GO TO MOV-FAIL-F1-1-1.
+           GO TO MOV-WRITE-F1-1-1.
+       MOV-DELETE-F1-1-1.
+           PERFORM DE-LETE.
+           GO TO MOV-WRITE-F1-1-1.
+       MOV-FAIL-F1-1-1.
+           PERFORM FAIL.
+           MOVE XYZ-2 OF CORR-DATA-2 TO COMPUTED-A.
+           MOVE 04 TO CORRECT-A.
+       MOV-WRITE-F1-1-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MOV-INIT-F1-1-2.
+           MOVE "MOV-TEST-F1-1-2" TO PAR-NAME.
+       MOV-TEST-F1-1-2.
+           IF XYZ-1 OF CORR-DATA-2 EQUAL TO THREE
+                    PERFORM PASS ELSE
+                    GO TO MOV-FAIL-F1-1-2.
+           GO TO MOV-WRITE-F1-1-2.
+       MOV-DELETE-F1-1-2.
+           PERFORM DE-LETE.
+           GO TO MOV-WRITE-F1-1-2.
+       MOV-FAIL-F1-1-2.
+           PERFORM FAIL.
+           MOVE XYZ-1 OF CORR-DATA-2 TO COMPUTED-A.
+           MOVE THREE TO CORRECT-A.
+       MOV-WRITE-F1-1-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MOV-INIT-F1-1-3.
+           MOVE "MOV-TEST-F1-1-3" TO PAR-NAME.
+       MOV-TEST-F1-1-3.
+           IF XYZ-3 OF CORR-DATA-2 EQUAL TO TEN
+                  PERFORM PASS ELSE
+                  GO TO MOV-FAIL-F1-1-3.
+           GO TO MOV-WRITE-F1-1-3.
+       MOV-DELETE-F1-1-3.
+           PERFORM DE-LETE.
+           GO TO MOV-WRITE-F1-1-3.
+       MOV-FAIL-F1-1-3.
+           MOVE XYZ-3 OF CORR-DATA-2 TO COMPUTED-A.
+           MOVE "10" TO CORRECT-A.
+           PERFORM FAIL.
+       MOV-WRITE-F1-1-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MOV-INIT-F1-1-4.
+           MOVE "MOV-TEST-F1-1-4" TO PAR-NAME.
+       MOV-TEST-F1-1-4.
+           IF XYZ-4 OF CORR-DATA-2 EQUAL TO XYZ-4 OF
+           CORR-DATA-1
+                   PERFORM PASS ELSE
+                   GO TO MOV-FAIL-F1-1-4.
+           GO TO MOV-WRITE-F1-1-4.
+       MOV-DELETE-F1-1-4.
+           PERFORM DE-LETE.
+           GO TO MOV-WRITE-F1-1-4.
+       MOV-FAIL-F1-1-4.
+           PERFORM FAIL.
+           MOVE XYZ-4 OF CORR-DATA-2 TO COMPUTED-A.
+           MOVE XYZ-4 OF CORR-DATA-1 TO CORRECT-A.
+       MOV-WRITE-F1-1-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MOV-INIT-F1-1-5.
+           MOVE "MOV-TEST-F1-1-5" TO PAR-NAME.
+       MOV-TEST-F1-1-5.
+           IF XYZ-5 OF CORR-DATA-2 EQUAL TO 01
+                   PERFORM PASS ELSE
+                   GO TO MOV-FAIL-F1-1-5.
+           GO TO MOV-WRITE-F1-1-5.
+       MOV-DELETE-F1-1-5.
+           PERFORM DE-LETE.
+           GO TO MOV-WRITE-F1-1-5.
+       MOV-FAIL-F1-1-5.
+           MOVE XYZ-5 OF CORR-DATA-2 TO COMPUTED-A.
+           MOVE "01" TO CORRECT-A.
+           PERFORM FAIL.
+       MOV-WRITE-F1-1-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MOV-INIT-F1-2.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "MOVE CORRESPONDING" TO FEATURE.
+           MOVE THREE TO XYZ-1 OF CORR-DATA-1.
+           MOVE FOUR TO XYZ-2 OF CORR-DATA-1.
+           MOVE TEN TO XYZ-3 OF CORR-DATA-1.
+           MOVE ZERO TO XYZ-4 OF CORR-DATA-1.
+           MOVE 01 TO XYZ-5 OF CORR-DATA-1.
+           MOVE 00 TO XYZ-6 OF CORR-DATA-1.
+           MOVE CORRESPONDING CORR-DATA-1 TO CORR-DATA-3.
+       MOV-INIT-F1-2-1.
+           MOVE "MOV-TEST-F1-2-1" TO PAR-NAME.
+       MOV-TEST-F1-2-1.
+           IF XYZ-1 OF CORR-DATA-3 EQUAL TO 03
+                  PERFORM PASS ELSE
+                  GO TO MOV-FAIL-F1-2-1.
+           GO TO MOV-WRITE-F1-2-1.
+       MOV-DELETE-F1-2-1.
+           PERFORM DE-LETE.
+           GO TO MOV-WRITE-F1-2-1.
+       MOV-FAIL-F1-2-1.
+           PERFORM FAIL.
+           MOVE XYZ-1 OF CORR-DATA-3 TO COMPUTED-A.
+           MOVE "03" TO CORRECT-A.
+       MOV-WRITE-F1-2-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MOV-INIT-F1-2-2.
+           MOVE "MOV-TEST-F1-2-2" TO PAR-NAME.
+       MOV-TEST-F1-2-2.
+           IF XYZ-3 OF CORR-DATA-3 EQUAL TO 10
+                    PERFORM PASS ELSE
+                    GO TO MOV-FAIL-F1-2-2.
+           GO TO MOV-WRITE-F1-2-2.
+       MOV-DELETE-F1-2-2.
+           PERFORM DE-LETE.
+           GO TO MOV-WRITE-F1-2-2.
+       MOV-FAIL-F1-2-2.
+           PERFORM FAIL.
+           MOVE XYZ-3 OF CORR-DATA-3 TO COMPUTED-A.
+           MOVE "10" TO CORRECT-A.
+       MOV-WRITE-F1-2-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MOV-INIT-F1-3.
+           MOVE "MOV-TEST-F1-3" TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "MOVE CORRESPONDING" TO FEATURE.
+           MOVE ZERO TO CORR-DATA-5.
+           MOVE 123456789012 TO CORR-DATA-3.
+           MOVE CORRESPONDING CORR-DATA-3 TO CORR-DATA-5.
+       MOV-TEST-F1-3.
+           IF XYZ-1 OF CORR-DATA-5 EQUAL TO 12 NEXT
+                   SENTENCE ELSE
+                   GO TO MOV-FAIL-F1-3.
+           IF XYZ-2 OF CORR-DATA-5 EQUAL TO 90 NEXT
+                   SENTENCE ELSE
+                   GO TO MOV-FAIL-F1-3.
+           IF XYZ-13 OF CORR-DATA-5 EQUAL TO 0
+                   PERFORM PASS ELSE
+                   GO TO MOV-FAIL-F1-3.
+           GO TO MOV-WRITE-F1-3.
+       MOV-DELETE-F1-3.
+           PERFORM DE-LETE.
+           GO TO MOV-WRITE-F1-3.
+       MOV-FAIL-F1-3.
+           MOVE CORR-DATA-5 TO COMPUTED-A.
+           MOVE "9012000000000000" TO CORRECT-A.
+           PERFORM FAIL.
+       MOV-WRITE-F1-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MOV-INIT-F1-4.
+           MOVE     "MOV-TEST-F1-4 " TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "MOVE CORRESPONDING" TO FEATURE.
+           MOVE     SPACE TO GRP-MOVE-CORR-R.
+           MOVE     CORRESPONDING GRP-MOVE-CORR-1 TO GRP-MOVE-CORR-R.
+       MOV-TEST-F1-4.
+           IF       GRP-MOVE-CORR-R EQUAL TO "   111222333XYZ   "
+                    PERFORM PASS GO TO MOV-WRITE-F1-4.
+           GO       TO MOVE-FAIL-F1-4.
+       MOV-DELETE-F1-4.
+           PERFORM  DE-LETE.
+           GO       TO MOV-WRITE-F1-4.
+       MOVE-FAIL-F1-4.
+           MOVE     GRP-MOVE-CORR-R TO COMPUTED-A.
+           MOVE     "   111222333XYZ   " TO CORRECT-A.
+           PERFORM  FAIL.
+       MOV-WRITE-F1-4.
+           PERFORM  PRINT-DETAIL.
+      *> 
+       MOV-INIT-F1-5.
+           MOVE     "MOV-TEST-F1-5" TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "MOVE CORRESPONDING" TO FEATURE.
+           MOVE     SPACE TO GRP-TO-MOVE-CORR-TO.
+           MOVE     CORRESPONDING GRP-TO-MOVE-CORR-1 TO
+                    GRP-TO-MOVE-CORR-TO.
+       MOV-TEST-F1-5.
+           IF       GRP-TO-MOVE-CORR-TO EQUAL TO "111         123ABC45"
+                    PERFORM PASS GO TO MOV-WRITE-F1-5.
+           GO       TO MOVE-FAIL-F1-5.
+       MOV-DELETE-F1-5.
+           PERFORM  DE-LETE.
+           GO       TO MOV-WRITE-F1-5.
+       MOVE-FAIL-F1-5.
+           MOVE     GRP-TO-MOVE-CORR-TO TO COMPUTED-A.
+           MOVE     "111         123ABC45" TO CORRECT-A.
+           PERFORM  FAIL.
+       MOV-WRITE-F1-5.
+           PERFORM  PRINT-DETAIL.
+      *> 
+       MOV-INIT-F1-6.
+           MOVE "MOV-TEST-F1-6" TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "MOVE CORRESPONDING" TO FEATURE.
+           MOVE CORRESPONDING MOVE54 TO MOVE60.
+       MOV-TEST-F1-6.
+           IF MOVE60 EQUAL TO "XYA"
+                  PERFORM PASS
+                  GO TO MOV-WRITE-F1-6.
+           GO TO MOV-FAIL-F1-6.
+       MOV-DELETE-F1-6.
+           PERFORM DE-LETE.
+           GO TO  MOV-WRITE-F1-6.
+       MOV-FAIL-F1-6.
+           MOVE MOVE60 TO COMPUTED-A
+           MOVE "XYA" TO CORRECT-A
+           PERFORM FAIL.
+       MOV-WRITE-F1-6.
+           PERFORM PRINT-DETAIL.
+      *> 
+       MOV-INIT-F1-7.
+           MOVE "MOV-TEST-F1-7" TO PAR-NAME.
+           MOVE "IV-18 4.3.8.1" TO ANSI-REFERENCE.
+           MOVE "MOVE CORRESPONDING" TO FEATURE.
+           MOVE "*" TO MOVE56 OF MOVE60 MOVE58 OF MOVE60 MOVE65.
+       MOV-TEST-F1-7.
+           IF MOVE60 EQUAL TO "***"
+                  PERFORM PASS
+                  GO TO MOV-WRITE-F1-7.
+           GO TO MOV-FAIL-F1-7.
+       MOV-DELETE-F1-7.
+           PERFORM DE-LETE.
+           GO TO MOV-WRITE-F1-7.
+       MOV-FAIL-F1-7.
+           MOVE MOVE60 TO COMPUTED-A
+           MOVE "***" TO CORRECT-A
+           PERFORM FAIL.
+       MOV-WRITE-F1-7.
+           PERFORM PRINT-DETAIL.
+           PERFORM END-ROUTINE.
+       NUMERIC-OPERAND-LIMITS-TESTS SECTION.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC208A

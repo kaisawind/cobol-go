@@ -1,0 +1,41 @@
+      *> HEADER,COBOL,SG401M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SG401M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF LEVEL 2
+      *> FEATURES OF THE SEGMENTATION MODULE.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083
+           SEGMENT-LIMIT IS 18.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       DATA DIVISION.
+       PROCEDURE DIVISION.
+       
+       NUMBER1 SECTION 18.
+       
+       SG401M-CONTROL.
+           EXIT.
+       
+       NUMBER2 SECTION 19.
+       
+       SG401M-DUMMY.
+           DISPLAY "THIS IS A DUMMY PARAGRAPH".
+       
+       NUMBER3 SECTION 18.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       SG401M-DUMMY2.
+           DISPLAY "THIS IS A DUMMY PARAGRAPH TOO!".
+       
+       
+      *>  A MESSAGE IS EXPECTED FOR THE EXISTENCE OF TWO SECTIONS
+      *>  WITH THE SAME SECTION NUMBER THAT ARE NOT
+      *>  "PHYSICALLY CONTIGUOUS IN THE SOURCE PROGRAM".
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 2.
+      *> END-OF,SG401M

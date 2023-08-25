@@ -1,0 +1,1491 @@
+      *> HEADER,COBOL,NC116A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC116A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC116A TESTS THE USE OF THE SIGN CLAUSE
+      *>     USING THE "IF" AND "MOVE" STATEMENTS.  ALL COMBINATIONS
+      *>     OF THE SIGN CLAUSE PHRASES ARE TESTED USING DATA ITEMS OF
+      *>     VARIOUS LENGTHS.
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+      *> =======================
+       01  TEST-17-DATA  SIGN TRAILING.
+         03  TEST-17-A          PIC S9(4).
+         03  TEST-17-B          PIC S9(4).
+         03  TEST-17-GROUP SIGN LEADING SEPARATE.
+           05  TEST-17-C        PIC S9(4).
+           05  FILLER           REDEFINES TEST-17-C.
+             07  TEST-17-C-SIGN PIC X.
+             07  FILLER         PIC X(4).
+       
+       01  TEST-18-DATA  SIGN TRAILING.
+         03  TEST-18-A          PIC S9(4).
+         03  TEST-18-B          PIC S9(4)  SIGN LEADING SEPARATE.
+         03  TEST-18-BX         REDEFINES TEST-18-B.
+           05  TEST-18-B-SIGN   PIC X.
+           05  FILLER           PIC X(4).
+         03  TEST-18-C          PIC S9(4).
+       01  DS-LS-5  PICTURE S99999
+               SIGN IS LEADING SEPARATE CHARACTER
+               VALUE +91275.
+       01  GRP-001 REDEFINES DS-LS-5.
+           02  TEST1-AN-1 PICTURE X.
+           02  TEST1-AN-5 PICTURE X(5).
+       01  DS-LS-4 PICTURE S9999
+               SIGN IS LEADING SEPARATE CHARACTER
+               VALUE -9127.
+       01  GRP-002 REDEFINES DS-LS-4.
+           02  TEST1N-AN-1 PICTURE X.
+           02  TEST1N-AN-4 PICTURE X(4).
+       01  DS-TS-5  PICTURE S99999
+               SIGN IS TRAILING SEPARATE CHARACTER
+               VALUE +80361.
+       01  GRP-003 REDEFINES DS-TS-5.
+           02  TEST2-AN-5 PICTURE X(5).
+           02  TEST2-AN-1 PICTURE X.
+       01  DS-TS-4 PICTURE S9999
+               SIGN IS TRAILING SEPARATE CHARACTER
+               VALUE -8036.
+       01  GRP-004 REDEFINES DS-TS-4.
+           02  TEST2N-AN-4 PICTURE X(4).
+           02  TEST2N-AN-1 PICTURE X.
+       01  DS-L-5  PICTURE S99999  VALUE +91275
+               SIGN IS LEADING.
+       01  GRP-005 REDEFINES DS-L-5.
+           02  TEST3-AN-1  PICTURE X.
+           02  TEST3-AN-4  PICTURE X(4).
+       01  DS-L-4  PICTURE S9999   VALUE -9127
+               SIGN IS LEADING.
+       01  GRP-006 REDEFINES DS-L-4.
+           02  TEST3N-AN-1 PICTURE X.
+           02  TEST3N-AN-3 PICTURE XXX.
+       01  DS-T-5  PICTURE S99999  VALUE +83621
+               SIGN IS TRAILING.
+       01  GRP-007 REDEFINES DS-T-5.
+           02  TEST4-AN-4  PICTURE X(4).
+           02  TEST4-AN-1  PICTURE X.
+       01  DS-T-4  PICTURE S9999   VALUE -3621
+               SIGN IS TRAILING.
+       01  GRP-008 REDEFINES DS-T-4.
+           02  TEST4N-AN-3 PICTURE XXX.
+           02  TEST4N-AN-1 PICTURE X.
+       01  DU-005  PICTURE 9(5) VALUE ZERO.
+       01  DS-005  PICTURE S9(5) VALUE 0.
+       01  CU-005  PICTURE 9(5)  USAGE COMPUTATIONAL  VALUE 0.
+       01  CS-005  PICTURE S9(5)  USAGE COMPUTATIONAL  VALUE 0.
+       01  WRK-DS-LS-5 PICTURE S99999   VALUE ZERO
+               SIGN LEADING SEPARATE.
+       01  GRP-09 REDEFINES WRK-DS-LS-5 PICTURE X(6).
+       01  WRK-DS-TS-5 PICTURE S99999  VALUE ZERO
+               SIGN TRAILING SEPARATE.
+       01  GRP-10 REDEFINES WRK-DS-TS-5 PICTURE X(6).
+       01  WRK-DS-L-5 PICTURE S99999   VALUE ZERO
+               SIGN LEADING.
+       01  WRK-DS-T-5 PICTURE S99999   VALUE ZERO
+               SIGN TRAILING.
+       01  AN-006  PICTURE X(6) VALUE SPACE.
+       01  DS-L-00008         PIC S9(8) SIGN LEADING VALUE +01234567.
+       01  AN-00008-X-1 REDEFINES DS-L-00008      PIC X(8).
+       01  DS-T-00008         PIC S9(8) SIGN TRAILING VALUE -01234567.
+       01  AN-00008-X-2 REDEFINES DS-T-00008      PIC X(8).
+       01  DS-T-00008-1       PIC S9(8) SIGN TRAILING VALUE +01234567.
+       01  AN-00008-X-5 REDEFINES DS-T-00008-1     PIC X(8).
+       01  DS-LS-00008        PIC S9(8)
+                              SIGN IS LEADING SEPARATE CHARACTER
+                              VALUE -07654321.
+       01  AN-00009-X-3 REDEFINES DS-LS-00008     PIC X(9).
+       01  DS-LS-00008-1      PIC S9(8)
+                              SIGN IS LEADING SEPARATE CHARACTER
+                              VALUE +07654321.
+       01  AN-00009-X-6 REDEFINES DS-LS-00008-1   PIC X(9).
+       01  DS-TS-00008        PIC S9(8)
+                              SIGN TRAILING SEPARATE
+                              VALUE +07654321.
+       01  AN-00009-X-4 REDEFINES DS-TS-00008     PIC X(9).
+       01  CS-00007-1         PIC S9(7) COMPUTATIONAL VALUE +1234567.
+       01  CU-00007-1         PIC  9(7) COMPUTATIONAL VALUE  1234567.
+       01  DS-00007-1         PIC S9(7) DISPLAY       VALUE +1234567.
+       01  DU-00007-1         PIC  9(7) DISPLAY       VALUE  1234567.
+       01  CS-00007-2         PIC S9(7) COMPUTATIONAL VALUE -1234567.
+       01  CU-00007-2        PIC  9(7) COMPUTATIONAL VALUE  1234567.
+       01  DS-00007-2         PIC S9(7) DISPLAY       VALUE -1234567.
+       01  DU-00007-2         PIC  9(7) DISPLAY       VALUE  1234567.
+       01  CS-00007-3         PIC S9(7) COMPUTATIONAL VALUE -7654321.
+       01  CU-00007-3         PIC  9(7) COMPUTATIONAL VALUE  7654321.
+       01  DS-00007-3         PIC S9(7) DISPLAY       VALUE -7654321.
+       01  DU-00007-3         PIC  9(7) DISPLAY       VALUE  7654321.
+       01  CS-00007-4         PIC S9(7) COMPUTATIONAL VALUE +7654321.
+       01  CU-00007-4         PIC  9(7) COMPUTATIONAL VALUE  7654321.
+       01  DS-00007-4         PIC S9(7) DISPLAY       VALUE +7654321.
+       01  DU-00007-4         PIC  9(7) DISPLAY       VALUE  7654321.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC116A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC116A-001 SECTION.
+       SIG-INIT-GF-1.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-1" TO PAR-NAME.
+           MOVE 1 TO REC-CT.
+           MOVE "SIGN LEADING SEPARATE" TO FEATURE.
+           MOVE "LEADING SIGN EQUAL PLUS" TO RE-MARK.
+       SIG-TEST-GF-1-1.
+      *>         THIS TEST CHECKS THE SIGN AND THE NUMERIC CHARACTERS
+      *>     OF AN ITEM DEFINED AS SIGN IS LEADING SEPARATE CHARACTER.
+           IF TEST1-AN-1 EQUAL TO "+"
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-1-1.
+           GO TO SIG-FAIL-GF-1-1.
+       SIG-DELETE-GF-1-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-2.
+       SIG-FAIL-GF-1-1.
+           PERFORM FAIL.
+           MOVE "+" TO CORRECT-A.
+           MOVE TEST1-AN-1 TO COMPUTED-A.
+       SIG-WRTE-GF-1-1.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-1-2.
+           IF TEST1-AN-5 EQUAL TO "91275"
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-1-2.
+       SIG-FAIL-GF-1-2.
+           PERFORM FAIL.
+           MOVE "NUMERIC CHARACTERS" TO RE-MARK.
+           MOVE "91275" TO CORRECT-A.
+           MOVE TEST1-AN-5 TO COMPUTED-A.
+       SIG-WRTE-GF-1-2.
+           MOVE 2 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-1-3.
+           IF TEST1N-AN-1 NOT EQUAL TO  "-"
+               GO TO SIG-FAIL-GF-1-3.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-1-3.
+       SIG-FAIL-GF-1-3.
+           PERFORM FAIL.
+           MOVE "-" TO CORRECT-A.
+           MOVE TEST1N-AN-1 TO COMPUTED-A.
+       SIG-WRTE-GF-1-3.
+           MOVE 3 TO REC-CT.
+           MOVE "LEADING SIGN EQUAL MINUS" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-1-4.
+           IF TEST1N-AN-4 NOT EQUAL TO "9127"
+               GO TO SIG-FAIL-GF-1-4.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-1-4.
+       SIG-FAIL-GF-1-4.
+           PERFORM FAIL.
+           MOVE "NUMERIC CHARACTERS" TO RE-MARK.
+           MOVE "9127" TO CORRECT-A.
+           MOVE TEST1N-AN-4 TO COMPUTED-A.
+       SIG-WRTE-GF-1-4.
+           MOVE 4 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-2.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-2" TO PAR-NAME.
+           MOVE 1 TO REC-CT.
+           MOVE "SIGN TRLNG SEPARATE" TO FEATURE.
+           MOVE "TRAILING SIGN EQUAL PLUS" TO RE-MARK.
+      *>         THIS TEST CHECKS THE SIGN AND THE NUMERIC CHARACTERS
+      *>     OF AN ITEM DEFINED AS SIGN IS TRAILING SEPARATE CHARACTER.
+       SIG-TEST-GF-2-1.
+           IF TEST2-AN-1 EQUAL TO "+"
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-2-1.
+           GO TO SIG-FAIL-GF-2-1.
+       SIG-DELETE-GF-2-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-3.
+       SIG-FAIL-GF-2-1.
+           PERFORM FAIL.
+           MOVE "+" TO CORRECT-A.
+           MOVE TEST2-AN-1 TO COMPUTED-A.
+       SIG-WRTE-GF-2-1.
+           PERFORM PRINT-DETAIL.
+       SIGNTEST-GF-2-2.
+           IF TEST2-AN-5 EQUAL TO "80361"
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-2-2.
+           GO TO SIG-FAIL-GF-2-2.
+       SIG-FAIL-GF-2-2.
+           PERFORM FAIL.
+           MOVE "80361" TO CORRECT-A.
+           MOVE TEST2-AN-5 TO COMPUTED-A.
+           MOVE "NUMERIC CHARACTERS" TO RE-MARK.
+       SIG-WRTE-GF-2-2.
+           MOVE 2 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-2-3.
+           IF TEST2N-AN-1 NOT EQUAL TO "-"
+               GO TO SIG-FAIL-GF-2-3.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-2-3.
+       SIG-FAIL-GF-2-3.
+           PERFORM FAIL.
+           MOVE "-" TO CORRECT-A.
+           MOVE TEST2N-AN-1 TO COMPUTED-A.
+       SIG-WRTE-GF-2-3.
+           MOVE 3 TO REC-CT.
+           MOVE "TRAILING SIGN EQUAL MINUS" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-2-4.
+           IF TEST2N-AN-4 NOT EQUAL TO "8036"
+               GO TO SIG-FAIL-GF-2-4.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-2-4.
+       SIG-FAIL-GF-2-4.
+           PERFORM FAIL.
+           MOVE "8036" TO CORRECT-A.
+           MOVE TEST2N-AN-4 TO COMPUTED-A.
+           MOVE "NUMERIC CHARACTERS" TO RE-MARK.
+       SIG-WRTE-GF-2-4.
+           MOVE 4 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-3.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-3" TO PAR-NAME.
+           MOVE "SIGN LEADING" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           MOVE "POSITIVE NUMERIC ITEM" TO RE-MARK.
+      *>         THIS TEST CHECKS ALL BUT THE LEADING CHARACTER OF AN
+      *>     ITEM DEFINED AS SIGN IS LEADING. (NOT SEPARATE CHAR.)
+       SIG-TEST-GF-3-1.
+           IF TEST3-AN-4 EQUAL TO "1275"
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-3-1.
+           GO TO SIG-FAIL-GF-3-1.
+       SIG-DELETE-GF-3-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-4.
+       SIG-FAIL-GF-3-1.
+           PERFORM FAIL.
+           MOVE "1275" TO CORRECT-A.
+           MOVE TEST3-AN-4 TO COMPUTED-A.
+       SIG-WRTE-GF-3-1.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-3-2.
+           IF TEST3N-AN-3 NOT EQUAL TO "127"
+               GO TO SIG-FAIL-GF-3-2.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-3-2.
+       SIG-DELETE-GF-3-2.
+           PERFORM DE-LETE.
+       SIG-FAIL-GF-3-2.
+           PERFORM FAIL.
+           MOVE "127" TO CORRECT-A.
+           MOVE TEST3N-AN-3 TO COMPUTED-A.
+       SIG-WRTE-GF-3-2.
+           MOVE 2 TO REC-CT.
+           MOVE "NEGATIVE NUMERIC ITEM" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-4.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-4" TO PAR-NAME.
+           MOVE "SIGN TRAILING" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           MOVE "POSITIVE NUMERIC ITEM" TO RE-MARK.
+      *>         THIS TEST CHECKS ALL BUT THE TRAILING CHARACTER OF AN
+      *>     ITEM DEFINED AS SIGN IS TRAILING. (NOT SEPARATE CHAR.)
+       SIG-TEST-GF-4-1.
+           IF TEST4-AN-4 EQUAL TO "8362"
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-4-1.
+           GO TO SIG-FAIL-GF-4-1.
+       SIG-DELETE-GF-4-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-5.
+       SIG-FAIL-GF-4-1.
+           PERFORM FAIL.
+           MOVE "8362" TO CORRECT-A.
+           MOVE TEST4-AN-4 TO COMPUTED-A.
+       SIG-WRTE-GF-4-1.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-4-2.
+           IF TEST4N-AN-3 NOT EQUAL TO "362"
+               GO TO SIG-FAIL-GF-4-2.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-4-2.
+       SIG-DELETE-GF-4-2.
+           PERFORM DE-LETE.
+       SIG-FAIL-GF-4-2.
+           PERFORM FAIL.
+           MOVE "362" TO CORRECT-A.
+           MOVE TEST4N-AN-3 TO COMPUTED-A.
+       SIG-WRTE-GF-4-2.
+           MOVE 2 TO REC-CT.
+           MOVE "NEGATIVE NUMERIC ITEM" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-5.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-5" TO PAR-NAME.
+           MOVE "COMPARE SIGNED ITEMS" TO FEATURE.
+           MOVE "LEADING SIGN" TO RE-MARK.
+           MOVE 1 TO REC-CT.
+      *>         THIS SERIES OF TESTS COMPARE A SIGNED DISPLAY ITEM WITH
+      *>     LEADING SIGN TO FOUR SIGNED AND UNSIGNED COMPUTATIONAL AND
+      *>     DISPLAY ITEMS.
+       SIG-TEST-GF-5-1.
+           IF DS-L-00008 EQUAL TO CS-00007-1
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-5-1.
+           GO TO SIG-FAIL-GF-5-1.
+       SIG-DELETE-GF-5-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-6.
+       SIG-FAIL-GF-5-1.
+           PERFORM FAIL.
+           MOVE AN-00008-X-1 TO COMPUTED-A.
+           MOVE CS-00007-1 TO CORRECT-18V0.
+       SIG-WRITE-GF-5-1.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-5-2.
+           MOVE 2 TO REC-CT.
+           IF DS-L-00008 EQUAL TO CU-00007-1
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-5-2.
+       SIG-FAIL-GF-5-2.
+           PERFORM FAIL.
+           MOVE AN-00008-X-1 TO COMPUTED-A.
+           MOVE CU-00007-1 TO CORRECT-18V0.
+       SIG-WRITE-GF-5-2.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-5-3.
+           MOVE 3 TO REC-CT.
+           IF DS-L-00008 EQUAL TO DS-00007-1
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-5-3.
+       SIG-FAIL-GF-5-3.
+           PERFORM FAIL.
+           MOVE AN-00008-X-1 TO COMPUTED-A.
+           MOVE DS-00007-1 TO CORRECT-18V0.
+       SIG-WRITE-GF-5-3.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-5-4.
+           MOVE 4 TO REC-CT.
+           IF DS-L-00008 EQUAL TO DU-00007-1
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-5-4.
+       SIG-FAIL-GF-5-4.
+           PERFORM FAIL.
+           MOVE AN-00008-X-1 TO COMPUTED-A.
+           MOVE DU-00007-1 TO CORRECT-18V0.
+       SIG-WRITE-GF-5-4.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-6.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-6" TO PAR-NAME.
+           MOVE "COMPARE SIGNED ITEMS" TO FEATURE.
+           MOVE "TRAILING SIGN" TO RE-MARK.
+      *>         THIS SERIES OF TESTS COMPARE A SIGNED DISPLAY ITEM WITH
+      *>     TRAILING SIGN TO FOUR SIGNED AND UNSIGNED COMPUTATIONAL AND
+      *>     DISPLAY ITEMS.
+       SIG-TEST-GF-6-1.
+           MOVE 1 TO REC-CT.
+           IF DS-T-00008 EQUAL TO CS-00007-2
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-6-1.
+           GO TO SIG-FAIL-GF-6-1.
+       SIG-DELETE-GF-6-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-7.
+       SIG-FAIL-GF-6-1.
+           PERFORM FAIL.
+           MOVE AN-00008-X-2 TO COMPUTED-A.
+           MOVE CS-00007-2 TO CORRECT-18V0.
+       SIG-WRITE-GF-6-1.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-6-2.
+           MOVE 2 TO REC-CT.
+           IF DS-T-00008-1 EQUAL TO CU-00007-2
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-6-2.
+       SIG-FAIL-GF-6-2.
+           PERFORM FAIL.
+           MOVE AN-00008-X-5 TO COMPUTED-A.
+           MOVE CU-00007-2 TO CORRECT-18V0.
+       SIG-WRITE-GF-6-2.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-6-3.
+           MOVE 3 TO REC-CT.
+           IF DS-T-00008 EQUAL TO DS-00007-2
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-6-3.
+       SIG-FAIL-GF-6-3.
+           PERFORM FAIL.
+           MOVE AN-00008-X-2 TO COMPUTED-A.
+           MOVE DS-00007-2 TO CORRECT-18V0.
+       SIG-WRITE-GF-6-3.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-6-4.
+           MOVE 4 TO REC-CT.
+           IF DS-T-00008-1 EQUAL TO DU-00007-2
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-6-4.
+       SIG-FAIL-GF-6-4.
+           PERFORM FAIL.
+           MOVE AN-00008-X-5 TO COMPUTED-A.
+           MOVE DU-00007-2  TO CORRECT-18V0.
+       SIG-WRITE-GF-6-4.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-7.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-7" TO PAR-NAME.
+           MOVE "COMPARE SIGNED ITEMS" TO FEATURE.
+           MOVE "LEADING SIGN SEPARATE CHARACTER" TO RE-MARK.
+      *>         THIS SERIES OF TESTS COMPARE A SIGNED DISPLAY ITEM WITH
+      *>     LEADING SIGN AND SEPARATE CHARACTER TO FOUR SIGNED AND
+      *>     UNSIGNED COMPUTATIONAL AND DISPLAY ITEMS.
+       SIG-TEST-GF-7-1.
+           MOVE 1 TO REC-CT.
+           IF DS-LS-00008 EQUAL TO CS-00007-3
+                    PERFORM PASS
+               GO TO SIG-WRITE-GF-7-1.
+           GO TO SIG-FAIL-GF-7-1.
+       SIG-DELETE-GF-7-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-8.
+       SIG-FAIL-GF-7-1.
+           PERFORM FAIL.
+           MOVE AN-00009-X-3 TO COMPUTED-A.
+           MOVE CS-00007-3 TO CORRECT-18V0.
+       SIG-WRITE-GF-7-1.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-7-2.
+           MOVE 2 TO REC-CT.
+           IF DS-LS-00008-1 EQUAL TO CU-00007-3
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-7-2.
+       SIG-FAIL-GF-7-2.
+           PERFORM FAIL.
+           MOVE AN-00009-X-6 TO COMPUTED-A.
+           MOVE CU-00007-3 TO CORRECT-18V0.
+       SIG-WRITE-GF-7-2.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-7-3.
+           MOVE 3 TO REC-CT.
+           IF DS-LS-00008 EQUAL TO DS-00007-3
+                    PERFORM PASS.
+                    GO TO SIG-WRITE-GF-7-3.
+       SIG-FAIL-GF-7-3.
+           PERFORM FAIL.
+           MOVE AN-00009-X-3 TO COMPUTED-A.
+           MOVE DS-00007-3 TO CORRECT-18V0.
+       SIG-WRITE-GF-7-3.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-7-4.
+           MOVE 4 TO REC-CT.
+           IF DS-LS-00008-1 EQUAL TO DU-00007-3
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-7-4.
+       SIG-FAIL-GF-7-4.
+           PERFORM FAIL.
+           MOVE AN-00009-X-6 TO COMPUTED-A.
+           MOVE DU-00007-3 TO CORRECT-18V0.
+       SIG-WRITE-GF-7-4.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-8.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-8" TO PAR-NAME.
+           MOVE "COMPARE SIGN ITEMS" TO FEATURE.
+           MOVE "TRAILING SIGN SEPARATE CHARACTR" TO RE-MARK.
+      *>         THIS SERIES OF TESTS COMPARE A SIGNED DISPLAY ITEM WITH
+      *>     TRAILING SIGN AND SEPARATE CHARACTER TO FOUR SIGNED AND
+      *>     UNSIGNED COMPUTATIONAL AND DISPLAY ITEMS.
+       SIG-TEST-GF-8-1.
+           MOVE 1 TO REC-CT.
+           IF DS-TS-00008 EQUAL TO CS-00007-4
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-8-1.
+           GO TO SIG-FAIL-GF-8-1.
+       SIG-DELETE-GF-8-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-9.
+       SIG-FAIL-GF-8-1.
+           PERFORM FAIL.
+           MOVE AN-00009-X-4 TO COMPUTED-A.
+           MOVE CS-00007-4 TO CORRECT-18V0.
+       SIG-WRITE-GF-8-1.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-8-2.
+           MOVE 2 TO REC-CT.
+           IF DS-TS-00008 EQUAL TO CU-00007-4
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-8-2.
+       SIG-FAIL-GF-8-2.
+           PERFORM FAIL.
+           MOVE AN-00009-X-4 TO COMPUTED-A.
+           MOVE CU-00007-4 TO CORRECT-18V0.
+       SIG-WRITE-GF-8-2.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-8-3.
+           MOVE 3 TO REC-CT.
+           IF DS-TS-00008 EQUAL TO DS-00007-4
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-8-3.
+       SIG-FAIL-GF-8-3.
+           PERFORM FAIL.
+           MOVE AN-00009-X-4 TO COMPUTED-A.
+           MOVE DS-00007-4 TO CORRECT-18V0.
+       SIG-WRITE-GF-8-3.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-8-4.
+           MOVE 4 TO REC-CT.
+           IF DS-TS-00008 EQUAL TO DU-00007-4
+                    PERFORM PASS
+                    GO TO SIG-WRITE-GF-8-4.
+       SIG-FAIL-GF-8-4.
+           PERFORM FAIL.
+           MOVE AN-00009-X-4 TO COMPUTED-A.
+           MOVE DU-00007-4 TO CORRECT-18V0.
+       SIG-WRITE-GF-8-4.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-9.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-9" TO PAR-NAME.
+           MOVE "SENDING ITEM DS-LS" TO FEATURE.
+           MOVE 1 TO REC-CT.
+      *>         THIS TEST MOVES A NUMERIC ITEM WITH SIGN IS LEADING
+      *>     SEPARATE CHARACTER TO UNSIGNED DISPLAY, SIGNED DISPLAY, 
+      *>     UNSIGNED COMPUTATIONAL AND SIGNED COMPUTATIONAL ITEMS.
+       SIG-TEST-GF-9-1.
+           MOVE DS-LS-5 TO DU-005.
+           IF DU-005 EQUAL TO 91275
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-9-1.
+           GO TO SIG-FAIL-GF-9-1.
+       SIG-DELETE-GF-9-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-10.
+       SIG-FAIL-GF-9-1.
+           PERFORM FAIL.
+           MOVE DU-005 TO COMPUTED-18V0.
+           MOVE 91275 TO CORRECT-18V0.
+           MOVE "MOVE DS-LS-5 TO DU-005" TO RE-MARK.
+       SIG-WRTE-GF-9-1.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-9-2.
+           MOVE DS-LS-5 TO DS-005.
+           IF DS-005 EQUAL TO +91275
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-9-2.
+       SIG-FAIL-GF-9-2.
+           PERFORM FAIL.
+           MOVE DS-005 TO COMPUTED-18V0.
+           MOVE +91275 TO CORRECT-18V0.
+           MOVE "MOVE DS-LS-5 TO DS-005" TO RE-MARK.
+       SIG-WRTE-GF-9-2.
+           MOVE 2 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-9-3.
+           MOVE DS-LS-5 TO CU-005.
+           IF CU-005 EQUAL TO 91275
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-9-3.
+       SIG-FAIL-GF-9-3.
+           PERFORM FAIL.
+           MOVE CU-005 TO COMPUTED-18V0.
+           MOVE 91275 TO CORRECT-18V0.
+           MOVE "MOVE DS-LS-5 TO CU-005" TO RE-MARK.
+       SIG-WRTE-GF-9-3.
+           MOVE 3 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-9-4.
+           MOVE DS-LS-5 TO CS-005.
+           IF CS-005 EQUAL TO +91275
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-9-4.
+       SIG-FAIL-GF-9-4.
+           PERFORM FAIL.
+           MOVE CS-005 TO COMPUTED-18V0.
+           MOVE +91275 TO CORRECT-18V0.
+           MOVE "MOVE DS-LS-5 TO CS-005" TO RE-MARK.
+       SIG-WRTE-GF-9-4.
+           MOVE 4 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-10.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-10" TO PAR-NAME.
+           MOVE "SENDING ITEM DS-TS-4" TO FEATURE.
+      *>         THIS TEST MOVES A NUMERIC ITEM WITH SIGN IS TRAILING
+      *>     SEPARATE CHARACTER TO UNSIGNED DISPLAY, SIGNED DISPLAY, 
+      *>     UNSIGNED COMPUTATIONAL AND SIGNED COMPUTATIONAL ITEMS.
+       SIG-TEST-GF-10-1.
+           MOVE DS-TS-4 TO DU-005.
+           IF DU-005 NOT EQUAL TO 08036
+               GO TO SIG-FAIL-GF-10-1.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-10-1.
+       SIG-DELETE-GF-10-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-11.
+       SIG-FAIL-GF-10-1.
+           PERFORM FAIL.
+           MOVE DU-005 TO COMPUTED-18V0.
+           MOVE 08036 TO CORRECT-18V0.
+           MOVE "MOVE DS-TS-4 TO DU-005" TO RE-MARK.
+       SIG-WRTE-GF-10-1.
+           MOVE 1 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-10-2.
+           MOVE DS-TS-4 TO DS-005.
+           IF DS-005 NOT EQUAL TO -08036
+               GO TO SIG-FAIL-GF-10-2.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-10-2.
+       SIG-FAIL-GF-10-2.
+           PERFORM FAIL.
+           MOVE DS-005 TO COMPUTED-18V0.
+           MOVE -08036 TO CORRECT-18V0.
+           MOVE "MOVE DS-TS-4 TO DS-005" TO RE-MARK.
+       SIG-WRTE-GF-10-2.
+           MOVE 2 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-10-3.
+           MOVE DS-TS-4 TO CU-005.
+           IF CU-005 NOT EQUAL TO 08036
+               GO TO SIG-FAIL-GF-10-3.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-10-3.
+       SIG-FAIL-GF-10-3.
+           PERFORM FAIL.
+           MOVE CU-005 TO COMPUTED-18V0.
+           MOVE 08036 TO CORRECT-18V0.
+           MOVE "MOVE DS-TS-4 TO CU-005" TO RE-MARK.
+       SIG-WRTE-GF-10-3.
+           MOVE 3 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-10-4.
+           MOVE DS-TS-4 TO CS-005.
+           IF CS-005 NOT EQUAL TO -08036
+               GO TO SIG-FAIL-GF-10-4.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-10-4.
+       SIG-FAIL-GF-10-4.
+           PERFORM FAIL.
+           MOVE CS-005 TO COMPUTED-18V0.
+           MOVE -08036 TO CORRECT-18V0.
+           MOVE "MOVE DS-TS-4 TO CS-005" TO RE-MARK.
+       SIG-WRTE-GF-10-4.
+           MOVE 4 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-11.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-11" TO PAR-NAME.
+           MOVE "SIGN SEPARATE ITEMS" TO FEATURE.
+      *>         THIS TEST CONTAINS MOVE STATEMENTS WHERE BOTH THE
+      *>     SENDING AND RECEIVING ITEM HAVE SEPARATE SIGN CHARACTERS.
+       SIG-TEST-GF-11-1.
+           MOVE DS-LS-4 TO WRK-DS-LS-5.
+           IF GRP-09 EQUAL TO "-09127"
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-11-1.
+           GO TO SIG-FAIL-GF-11-1.
+       SIG-DELETE-GF-11-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-12.
+       SIG-FAIL-GF-11-1.
+           PERFORM FAIL.
+           MOVE GRP-09 TO COMPUTED-A.
+           MOVE "-09127" TO CORRECT-A.
+           MOVE "MOVE DS-LS-4 TO WRK-DS-LS-5" TO RE-MARK.
+       SIG-WRTE-GF-11-1.
+           MOVE 1 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-11-2.
+           MOVE DS-LS-4 TO WRK-DS-TS-5.
+           IF GRP-10 NOT EQUAL TO "09127-"
+               GO TO SIG-FAIL-GF-11-2.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-11-2.
+       SIG-FAIL-GF-11-2.
+           PERFORM FAIL.
+           MOVE GRP-10 TO COMPUTED-A.
+           MOVE "09127-" TO CORRECT-A.
+           MOVE "MOVE DS-LS-4 TO WRK-DS-TS-S" TO RE-MARK.
+       SIG-WRTE-GF-11-2.
+           MOVE 2 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-11-3.
+           MOVE DS-TS-5 TO WRK-DS-LS-5.
+           IF GRP-09 EQUAL TO "+80361"
+               PERFORM PASS
+               GO TO SIG-WRTE-GF-11-3.
+       SIG-FAIL-GF-11-3.
+           PERFORM FAIL.
+           MOVE GRP-09 TO COMPUTED-A.
+           MOVE "+80361" TO CORRECT-A.
+           MOVE "MOVE DS-TS-5 TO WRK-DS-LS-5" TO RE-MARK.
+       SIG-WRTE-GF-11-3.
+           MOVE 3 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-11-4.
+           MOVE DS-TS-5 TO WRK-DS-TS-5.
+           IF GRP-10 NOT EQUAL TO "80361+"
+               GO TO SIG-FAIL-GF-11-4.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-11-4.
+       SIG-FAIL-GF-11-4.
+           PERFORM FAIL.
+           MOVE GRP-10 TO COMPUTED-A.
+           MOVE "80361+" TO CORRECT-A.
+           MOVE "MOVE DS-TS-5 TO WRK-DS-TS-5" TO RE-MARK.
+       SIG-WRTE-GF-11-4.
+           MOVE 4 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-12.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-12" TO PAR-NAME.
+           MOVE "SIGN CLAUSE ITEMS" TO FEATURE.
+      *>         THIS TEST CONTAINS MOVE STATEMENTS WITH A SIGN IS
+      *>     SEPARATE SENDING ITEM AND SIGN CLAUSE RECEIVING ITEMS, 
+      *>     BUT RECEIVING ITEMS SIGNS ARE NOT SEPARATE.
+       SIG-TEST-GF-12-1.
+           MOVE DS-LS-5 TO WRK-DS-L-5.
+           IF WRK-DS-L-5 NOT EQUAL TO +91275
+               GO TO SIG-FAIL-GF-12-1.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-12-1.
+       SIG-DELETE-GF-12-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-13.
+       SIG-FAIL-GF-12-1.
+           PERFORM FAIL.
+           MOVE WRK-DS-L-5 TO COMPUTED-18V0.
+           MOVE "+91275" TO CORRECT-A.
+           MOVE "MOVE DS-LS-5 TO WRK-DS-L-5" TO RE-MARK.
+       SIG-WRTE-GF-12-1.
+           MOVE 1 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-12-2.
+           MOVE DS-LS-5 TO WRK-DS-T-5.
+           IF WRK-DS-T-5 NOT EQUAL TO +91275
+               GO TO SIG-FAIL-GF-12-2.
+           PERFORM PASS.
+           GO TO SIG-WRTE-GF-12-2.
+       SIG-FAIL-GF-12-2.
+           PERFORM FAIL.
+           MOVE "+91275" TO CORRECT-A.
+           MOVE WRK-DS-T-5 TO COMPUTED-18V0.
+           MOVE "MOVE DS-LS-5 TO WRK-DS-T-5" TO RE-MARK.
+       SIG-WRTE-GF-12-2.
+           MOVE 2 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-12-3.
+           MOVE DS-TS-5 TO WRK-DS-L-5.
+           IF WRK-DS-L-5 NOT EQUAL TO +80361
+               GO TO SIG-FAIL-GF-12-3.
+           PERFORM PASS.
+           GO TO SIG-WRITE-GF-12-3.
+       SIG-FAIL-GF-12-3.
+           PERFORM FAIL.
+           MOVE "+80361" TO CORRECT-A.
+           MOVE WRK-DS-L-5 TO COMPUTED-18V0.
+           MOVE "MOVE DS-TS-5 TO WRK-DS-L-5" TO RE-MARK.
+       SIG-WRITE-GF-12-3.
+           MOVE 3 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-12-4.
+           MOVE DS-TS-5 TO WRK-DS-T-5.
+           IF WRK-DS-T-5 NOT EQUAL TO +80361
+               GO TO SIG-FAIL-GF-12-4.
+           PERFORM PASS.
+           GO TO SIG-WRITE-GF-12-4.
+       SIG-FAIL-GF-12-4.
+           PERFORM FAIL.
+           MOVE "+80361" TO CORRECT-A.
+           MOVE WRK-DS-T-5 TO COMPUTED-18V0.
+           MOVE "MOVE DS-TS-5 TO WRK-DS-T-5" TO RE-MARK.
+       SIG-WRITE-GF-12-4.
+           MOVE 4 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-13.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-13" TO PAR-NAME.
+      *>         THIS TEST CONTAINS MOVE STATEMENTS WITH A SIGN IS
+      *>     SEPARATE RECEIVING ITEM AND SENDING ITEMS WITH A SIGN
+      *>     CLAUSE BUT THE SIGN IS NOT SEPARATE.
+           MOVE ZERO TO WRK-DS-LS-5.
+           MOVE ZERO TO WRK-DS-TS-5.
+       SIG-TEST-GF-13-1.
+           MOVE DS-L-5 TO WRK-DS-LS-5.
+           IF GRP-09 EQUAL TO "+91275"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-13-1.
+           GO TO SIG-FAIL-GF-13-1.
+       SIG-DELETE-GF-13-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-14.
+       SIG-FAIL-GF-13-1.
+           PERFORM FAIL.
+           MOVE GRP-09 TO COMPUTED-A.
+           MOVE "+91275" TO CORRECT-A.
+           MOVE "MOVE DS-L-5 TO WRK-DS-LS-5" TO RE-MARK.
+       SIG-WRITE-GF-13-1.
+           MOVE 1 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-13-2.
+           MOVE DS-T-4 TO WRK-DS-LS-5.
+           IF GRP-09 EQUAL TO "-03621"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-13-2.
+       SIG-FAIL-GF-13-2.
+           PERFORM FAIL.
+           MOVE GRP-09 TO COMPUTED-A.
+           MOVE "-03621" TO CORRECT-A.
+           MOVE "MOVE DS-T-4 TO WRK-DS-LS-5" TO RE-MARK.
+       SIG-WRITE-GF-13-2.
+           MOVE 2 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-13-3.
+           MOVE DS-L-5 TO WRK-DS-TS-5.
+           IF GRP-10 EQUAL TO "91275+"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-13-3.
+       SIG-FAIL-GF-13-3.
+           PERFORM FAIL.
+           MOVE GRP-10 TO COMPUTED-A.
+           MOVE "91275+" TO CORRECT-A.
+           MOVE "MOVE DS-L-5 TO WRK-DS-TS-5" TO RE-MARK.
+       SIG-WRITE-GF-13-3.
+           MOVE 3 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-13-4.
+           MOVE DS-T-4 TO WRK-DS-TS-5.
+           IF GRP-10 EQUAL TO "03621-"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-13-4.
+       SIG-FAIL-GF-13-4.
+           PERFORM FAIL.
+           MOVE GRP-10 TO COMPUTED-A.
+           MOVE "03621-" TO CORRECT-A.
+           MOVE "MOVE DS-T-4 TO WRK-DS-TS-5" TO RE-MARK.
+       SIG-WRITE-GF-13-4.
+           MOVE 4 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-14.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-14" TO PAR-NAME.
+           MOVE "SIGNED NUM. TO ALPHA" TO FEATURE.
+      *>         THIS TEST CONTAINS MOVE STATEMENTS WITH A SIGNED
+      *>     NUMERIC SENDING ITEM AND ALPHANUMERIC RECEIVING ITEM.
+      *>     THE OPERATIONAL SIGN SHOULD NOT BE MOVED AND SPACE
+      *>     FILLING ON THE RIGHT SHOULD OCCUR.
+       SIG-TEST-GF-14-1.
+           MOVE DS-LS-5 TO AN-006.
+           IF AN-006 EQUAL TO "91275 "
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-14-1.
+           GO TO SIG-FAIL-GF-14-1.
+       SIG-DELETE-GF-14-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-15.
+       SIG-FAIL-GF-14-1.
+           PERFORM FAIL.
+           MOVE AN-006 TO COMPUTED-A.
+           MOVE "91275 " TO CORRECT-A.
+           MOVE "MOVE DS-LS-5 TO AN-006" TO RE-MARK.
+       SIG-WRITE-GF-14-1.
+           MOVE 1 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-14-2.
+           MOVE SPACE TO AN-006.
+           MOVE DS-TS-4 TO AN-006.
+           IF AN-006 NOT EQUAL TO "8036  "
+               GO TO SIG-FAIL-GF-14-2.
+           PERFORM PASS.
+           GO TO SIG-WRITE-GF-14-2.
+       SIG-FAIL-GF-14-2.
+           PERFORM FAIL.
+           MOVE AN-006 TO COMPUTED-A.
+           MOVE "8036  " TO CORRECT-A.
+           MOVE "MOVE DS-TS-4 TO AN-006" TO RE-MARK.
+       SIG-WRITE-GF-14-2.
+           MOVE 2 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-14-3.
+           MOVE SPACE TO AN-006.
+           MOVE DS-L-4 TO AN-006.
+           IF AN-006 EQUAL TO "9127  "
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-14-3.
+       SIG-FAIL-GF-14-3.
+           PERFORM FAIL.
+           MOVE AN-006 TO COMPUTED-A.
+           MOVE "9127  " TO CORRECT-A.
+           MOVE "MOVE DS-L-4 TO AN-006" TO RE-MARK.
+       SIG-WRITE-GF-14-3.
+           MOVE 3 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-14-4.
+           MOVE SPACE TO AN-006.
+           MOVE DS-T-5 TO AN-006.
+           IF AN-006 NOT EQUAL TO "83621 "
+               GO TO SIG-FAIL-GF-14-4.
+           PERFORM PASS.
+           GO TO SIG-WRITE-GF-14-4.
+       SIG-FAIL-GF-14-4.
+           PERFORM FAIL.
+           MOVE AN-006 TO COMPUTED-A.
+           MOVE "83621 " TO CORRECT-A.
+           MOVE "MOVE DS-T-5 TO AN-006" TO RE-MARK.
+       SIG-WRITE-GF-14-4.
+           MOVE 4 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-15.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-15" TO PAR-NAME.
+           MOVE 15759 TO DU-005 CU-005.
+           MOVE -15759 TO DS-005 CS-005.
+      *>         THIS TEST MOVES SIGNED AND UNSIGNED DISPLAY ITEMS, 
+      *>     SIGNED AND UNSIGNED COMPUTATIONAL ITEMS, AND SIGNED AND
+      *>     UNSIGNED NUMERIC LITERALS TO A NUMERIC ITEM WITH SIGN
+      *>     LEADING SEPARATE.
+           MOVE "RECEIVING ITEM DS-LS" TO FEATURE.
+       SIG-TEST-GF-15-1.
+           MOVE SPACE TO GRP-09.
+           MOVE DU-005 TO WRK-DS-LS-5.
+           IF GRP-09 EQUAL TO "+15759"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-15-1.
+           GO TO SIG-FAIL-GF-15-1.
+       SIG-DELETE-GF-15-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-16.
+       SIG-FAIL-GF-15-1.
+           PERFORM FAIL.
+           MOVE GRP-09 TO COMPUTED-A.
+           MOVE "+15759" TO CORRECT-A.
+           MOVE "MOVE DU-005 TO WRK-DS-LS-5" TO RE-MARK.
+       SIG-WRITE-GF-15-1.
+           MOVE 1 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-15-2.
+           MOVE SPACE TO GRP-09.
+           MOVE CU-005 TO WRK-DS-LS-5.
+           IF GRP-09 NOT EQUAL TO "+15759"
+               GO TO SIG-FAIL-GF-15-2.
+           PERFORM PASS
+           GO TO SIG-WRITE-GF-15-2.
+       SIG-FAIL-GF-15-2.
+           PERFORM FAIL.
+           MOVE GRP-09 TO COMPUTED-A.
+           MOVE "+15759" TO CORRECT-A.
+           MOVE "MOVE CU-005 TO WRK-DS-LS-5" TO RE-MARK.
+       SIG-WRITE-GF-15-2.
+           MOVE 2 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-15-3.
+           MOVE SPACE TO GRP-09.
+           MOVE DS-005 TO WRK-DS-LS-5.
+           IF GRP-09 EQUAL TO "-15759"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-15-3.
+       SIG-FAIL-GF-15-3.
+           PERFORM FAIL.
+           MOVE GRP-09 TO COMPUTED-A.
+           MOVE "-15759" TO CORRECT-A.
+           MOVE "MOVE DS-005 TO WRK-DS-LS-5" TO RE-MARK.
+       SIG-WRITE-GF-15-3.
+           MOVE 3 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-15-4.
+           MOVE SPACE TO GRP-09.
+           MOVE CS-005 TO WRK-DS-LS-5.
+           IF GRP-09 NOT EQUAL TO "-15759"
+               GO TO SIG-FAIL-GF-15-4.
+           PERFORM PASS.
+           GO TO SIG-WRITE-GF-15-4.
+       SIG-FAIL-GF-15-4.
+           PERFORM FAIL.
+           MOVE GRP-09 TO COMPUTED-A.
+           MOVE "-15759" TO CORRECT-A.
+           MOVE "MOVE CS-005 TO WRK-DS-LS-5" TO RE-MARK.
+       SIG-WRITE-GF-15-4.
+           MOVE 4 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-15-5.
+           MOVE SPACE TO GRP-09.
+           MOVE 15759 TO WRK-DS-LS-5.
+           IF GRP-09 EQUAL TO "+15759"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-15-5.
+       SIG-FAIL-GF-15-5.
+           PERFORM FAIL.
+           MOVE "+15759" TO CORRECT-A.
+           MOVE GRP-09 TO COMPUTED-A.
+           MOVE "MOVE 15759 TO WRK-DS-LS-5" TO RE-MARK.
+       SIG-WRITE-GF-15-5.
+           MOVE 5 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-15-6.
+           MOVE SPACE TO GRP-09.
+           MOVE -15759 TO WRK-DS-LS-5.
+           IF GRP-09 NOT EQUAL TO "-15759"
+               GO TO SIG-FAIL-GF-15-6.
+           PERFORM PASS.
+           GO TO SIG-WRITE-GF-15-6.
+       SIG-FAIL-GF-15-6.
+           PERFORM FAIL.
+           MOVE GRP-09 TO COMPUTED-A.
+           MOVE "-15759" TO CORRECT-A.
+           MOVE "MOVE -15759 TO WRK-DS-LS-5" TO RE-MARK.
+       SIG-WRITE-GF-15-6.
+           MOVE 6 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-INIT-GF-16.
+           MOVE "VI-42 5.12.4"  TO ANSI-REFERENCE.
+           MOVE "SIG-TEST-GF-16" TO PAR-NAME.
+           MOVE "RECEIVING ITEM DS-TS" TO FEATURE.
+      *>         THIS TEST MOVES SIGNED AND UNSIGNED DISPLAY ITEMS, 
+      *>     SIGNED AND UNSIGNED COMPUTATIONAL ITEMS, AND SIGNED AND
+      *>     UNSIGNED NUMERIC LITERALS TO A NUMERIC ITEM WITH SIGN
+      *>     TRAILING SEPARATE CLAUSE.
+           MOVE SPACE TO GRP-10.
+           MOVE DU-005 TO WRK-DS-TS-5.
+       SIG-TEST-GF-16-1.
+           IF GRP-10 EQUAL TO "15759+"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-16-1.
+           GO TO SIG-FAIL-GF-16-1.
+       SIG-DELETE-GF-16-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   SIG-INIT-GF-17.
+       SIG-FAIL-GF-16-1.
+           PERFORM FAIL.
+           MOVE GRP-10 TO COMPUTED-A.
+           MOVE "15759+" TO CORRECT-A.
+           MOVE "MOVE DU-005 TO WRK-DS-TS-5" TO RE-MARK.
+       SIG-WRITE-GF-16-1.
+           MOVE 1 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-16-2.
+           MOVE SPACE TO GRP-10.
+           MOVE CU-005 TO WRK-DS-TS-5.
+           IF GRP-10 NOT EQUAL TO "15759+"
+               GO TO SIG-FAIL-GF-16-2.
+           PERFORM PASS.
+           GO TO SIG-WRITE-GF-16-2.
+       SIG-FAIL-GF-16-2.
+           PERFORM FAIL.
+           MOVE GRP-10 TO COMPUTED-A.
+           MOVE "15759+" TO CORRECT-A.
+           MOVE "MOVE CU-005 TO WRK-DS-TS-5" TO RE-MARK.
+       SIG-WRITE-GF-16-2.
+           MOVE 2 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-16-3.
+           MOVE SPACE TO GRP-10.
+           MOVE DS-005 TO WRK-DS-TS-5.
+           IF GRP-10 EQUAL TO "15759-"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-16-3.
+       SIG-FAIL-GF-16-3.
+           PERFORM FAIL.
+           MOVE GRP-10 TO COMPUTED-A.
+           MOVE "15759-" TO CORRECT-A.
+           MOVE "MOVE DS-005 TO WRK-DS-TS-5" TO RE-MARK.
+       SIG-WRITE-GF-16-3.
+           MOVE 3 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-16-4.
+           MOVE SPACE TO GRP-10.
+           MOVE CS-005 TO WRK-DS-TS-5.
+           IF GRP-10 NOT EQUAL TO "15759-"
+               GO TO SIG-FAIL-GF-16-4.
+           PERFORM PASS.
+           GO TO SIG-WRITE-GF-16-4.
+       SIG-FAIL-GF-16-4.
+           PERFORM FAIL.
+           MOVE GRP-10 TO COMPUTED-A.
+           MOVE "15759-" TO CORRECT-A.
+           MOVE "MOVE CS-005 TO WRK-DS-TS-5" TO RE-MARK.
+       SIG-WRITE-GF-16-4.
+           MOVE 4 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-16-5.
+           MOVE SPACE TO GRP-10.
+           MOVE 15759 TO WRK-DS-TS-5.
+           IF GRP-10 EQUAL TO "15759+"
+               PERFORM PASS
+               GO TO SIG-WRITE-GF-16-5.
+       SIG-FAIL-GF-16-5.
+           PERFORM FAIL.
+           MOVE GRP-10 TO COMPUTED-A.
+           MOVE "15759+" TO CORRECT-A.
+           MOVE "MOVE 15759 TO WRK-DS-TS-5" TO RE-MARK.
+       SIG-WRITE-GF-16-5.
+           MOVE 5 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+       SIG-TEST-GF-16-6.
+           MOVE SPACE TO GRP-10.
+           MOVE -15759 TO WRK-DS-TS-5.
+           IF GRP-10 NOT EQUAL TO "15759-"
+              GO TO SIG-FAIL-GF-16-6.
+           PERFORM PASS.
+           GO TO SIG-WRITE-GF-16-6.
+       SIG-FAIL-GF-16-6.
+           PERFORM FAIL.
+           MOVE GRP-10 TO COMPUTED-A.
+           MOVE "15759-" TO CORRECT-A.
+           MOVE "MOVE -15759 TO WRK-DS-TS-5" TO RE-MARK.
+       SIG-WRITE-GF-16-6.
+           MOVE 6 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+      *> 
+       SIG-INIT-GF-17.
+           MOVE   "VI-42 5.12.4 GR2"  TO ANSI-REFERENCE.
+           MOVE   "SIG-TEST-GF-17" TO PAR-NAME.
+           MOVE   "PRECEDENCE OF SUBORDINATE SIGN CLAUSE" TO FEATURE.
+           MOVE    1234 TO TEST-17-C.
+           MOVE    0 TO REC-CT.
+       SIG-TEST-GF-17.
+           IF      TEST-17-C-SIGN = "+"
+                   PERFORM PASS
+                   GO TO   SIG-WRITE-GF-17
+           ELSE
+                   GO TO   SIG-FAIL-GF-17.
+       SIG-DELETE-GF-17.
+           PERFORM DE-LETE.
+           GO TO   SIG-WRITE-GF-17.
+       SIG-FAIL-GF-17.
+           PERFORM FAIL.
+           MOVE   "POSITIVE SIGN EXPECTED" TO RE-MARK.
+           MOVE   "+"             TO CORRECT-X.
+           MOVE    TEST-17-C-SIGN TO COMPUTED-X.
+       SIG-WRITE-GF-17.
+           PERFORM PRINT-DETAIL.
+      *> 
+       SIG-INIT-GF-18.
+           MOVE   "VI-42 5.12.4 GR3"  TO ANSI-REFERENCE.
+           MOVE   "SIG-TEST-GF-18" TO PAR-NAME.
+           MOVE   "PRECEDENCE OF SUBORDINATE SIGN CLAUSE" TO FEATURE.
+           MOVE    1234 TO TEST-18-B.
+           MOVE    0 TO REC-CT.
+       SIG-TEST-GF-18.
+           IF      TEST-18-B-SIGN = "+"
+                   PERFORM PASS
+                   GO TO   SIG-WRITE-GF-18
+           ELSE
+                   GO TO   SIG-FAIL-GF-18.
+       SIG-DELETE-GF-18.
+           PERFORM DE-LETE.
+           GO TO   SIG-WRITE-GF-18.
+       SIG-FAIL-GF-18.
+           PERFORM FAIL.
+           MOVE   "POSITIVE SIGN EXPECTED" TO RE-MARK.
+           MOVE   "+"             TO CORRECT-X.
+           MOVE    TEST-18-B-SIGN TO COMPUTED-X.
+       SIG-WRITE-GF-18.
+           PERFORM PRINT-DETAIL.
+      *> 
+       TERMINATE-ROUTINE.
+           EXIT.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC116A

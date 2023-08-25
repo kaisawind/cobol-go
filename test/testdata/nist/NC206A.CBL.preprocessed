@@ -1,0 +1,1693 @@
+      *> HEADER,COBOL,NC206A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+           NC206A.
+      *>                                                               *
+      *>     PROGRAM NC206A TESTS THE ACCESSING OF ELEMENTARY ITEMS    *
+      *>     USING FORMAT 1 QUALIFICATION WITH UP TO 5 LEVELS OF       *
+      *>     QUALIFIERS.  SINGLE DIMENSION TABLES ARE ALSO ACCESSES    *
+      *>     USING SUBSCRIPTS QUALIFIED TO ONE LEVEL.                  *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  MAX-NAME-1        PICTURE S9(18) VALUE +1.
+       01  TABLE-LEVEL-5A.
+           02  TABLE-LEVEL-4A.
+               03  TABLE-LEVEL-3A.
+                   04  TABLE-LEVEL-2A.
+                       05  TABLE-LEVEL-1A.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4A3A2A1A0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4A3A2A1A0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4A3A2A1A0C".
+                         06 TBL-LEVEL-0D PIC X(12) VALUE "5A4A3A2A1A0D".
+                       05  TABLE-LEVEL-1B.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4A3A2A1B0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4A3A2A1B0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4A3A2A1B0C".
+                   04  TABLE-LEVEL-2B.
+                       05  TABLE-LEVEL-1A.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4A3A2B1A0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4A3A2B1A0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4A3A2B1A0C".
+                       05  TABLE-LEVEL-1B.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4A3A2B1B0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4A3A2B1B0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4A3A2B1B0C".
+               03  TABLE-LEVEL-3B.
+                   04  TABLE-LEVEL-2A.
+                       05  TABLE-LEVEL-1A.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4A3B2A1A0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4A3B2A1A0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4A3B2A1A0C".
+                       05  TABLE-LEVEL-1B.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4A3B2A1B0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4A3B2A1B0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4A3B2A1B0C".
+                   04  TABLE-LEVEL-2B.
+                       05  TABLE-LEVEL-1A.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4A3B2B1A0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4A3B2B1A0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4A3B2B1A0C".
+                       05  TABLE-LEVEL-1B.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4A3B2B1B0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4A3B2B1B0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4A3B2B1B0C".
+           02  TABLE-LEVEL-4B.
+               03  TABLE-LEVEL-3A.
+                   04  TABLE-LEVEL-2A.
+                       05  TABLE-LEVEL-1A.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4B3A2A1A0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4B3A2A1A0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4B3A2A1A0C".
+                       05  TABLE-LEVEL-1B.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4B3A2A1B0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4B3A2A1B0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4B3A2A1B0C".
+                   04  TABLE-LEVEL-2B.
+                       05  TABLE-LEVEL-1A.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4B3A2B1A0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4B3A2B1A0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4B3A2B1A0C".
+                       05  TABLE-LEVEL-1B.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4B3A2B1B0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4B3A2B1B0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4B3A2B1B0C".
+               03  TABLE-LEVEL-3B.
+                   04  TABLE-LEVEL-2A.
+                       05  TABLE-LEVEL-1A.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4B3B2A1A0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4B3B2A1A0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4B3B2A1A0C".
+                       05  TABLE-LEVEL-1B.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4B3B2A1B0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4B3B2A1B0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4B3B2A1B0C".
+                   04  TABLE-LEVEL-2B.
+                       05  TABLE-LEVEL-1A.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4B3B2B1A0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4B3B2B1A0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4B3B2B1A0C".
+                       05  TABLE-LEVEL-1B.
+                         06 TBL-LEVEL-0A PIC X(12) VALUE "5A4B3B2B1B0A".
+                         06 TBL-LEVEL-0B PIC X(12) VALUE "5A4B3B2B1B0B".
+                         06 TBL-LEVEL-0C PIC X(12) VALUE "5A4B3B2B1B0C".
+       01  TABLE-LEVEL-5B.
+           02  TABLE-LEVEL-4A.
+               03  TABLE-LEVEL-3A.
+                   04  TABLE-LEVEL-2A.
+                   05  TABLE-LEVEL-1A.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   05  TABLE-LEVEL-1B.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   04  TABLE-LEVEL-2B.
+                   05  TABLE-LEVEL-1A.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   05  TABLE-LEVEL-1B.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+               03  TABLE-LEVEL-3B.
+                   04  TABLE-LEVEL-2A.
+                   05  TABLE-LEVEL-1A.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   05  TABLE-LEVEL-1B.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   04  TABLE-LEVEL-2B.
+                   05  TABLE-LEVEL-1A.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   05  TABLE-LEVEL-1B.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+           02  TABLE-LEVEL-4B.
+               03  TABLE-LEVEL-3A.
+                   04  TABLE-LEVEL-2A.
+                   05  TABLE-LEVEL-1A.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   05  TABLE-LEVEL-1B.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   04  TABLE-LEVEL-2B.
+                   05  TABLE-LEVEL-1A.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   05  TABLE-LEVEL-1B.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+               03  TABLE-LEVEL-3B.
+                   04  TABLE-LEVEL-2A.
+                   05  TABLE-LEVEL-1A.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   05  TABLE-LEVEL-1B.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   04  TABLE-LEVEL-2B.
+                   05  TABLE-LEVEL-1A.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+                   05  TABLE-LEVEL-1B.
+                       06  TBL-LEVEL-0A  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0B  PIC X VALUE SPACE.
+                       06  TBL-LEVEL-0C  PIC X VALUE SPACE.
+       01  QUAL-SUB-TABLE.
+           02  AX.
+               03  AX-1 OCCURS 5 TIMES.
+                    04  AX-2 PIC X.
+                    04  AX-3 PIC X.
+           02  BX.
+               03  AX-1 OCCURS 2 TIMES.
+                    04  AX-2 PIC 9.
+                    04  AX-3 PIC 9.
+           02  CX.
+               03  CX-SUB PIC 9 VALUE 2.
+           02  DX.
+               03  CX-SUB USAGE IS INDEX.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC206A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC206A-001 SECTION.
+       NC-06-001.
+      *>     5 LEVELS OF QUALIFICATION ARE USED IN ORDER TO MAKE THE
+      *>     IDENTIFIERS UNIQUE. SEE THE 01 WORKING-STORAGE ENTRIES
+      *>     CALLED TABLE-LEVEL-5A AND TABLE-LEVEL-5B.
+       QAL-INIT-F1-1.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-1 " TO PAR-NAME.
+       QAL-TEST-F1-1.
+           IF TBL-LEVEL-0A OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2A1A0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-1.
+           GO TO QAL-FAIL-F1-1.
+       QAL-DELETE-F1-1.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-1.
+       QAL-FAIL-F1-1.
+           MOVE TBL-LEVEL-0A OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2A1A0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-2.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-2 " TO PAR-NAME.
+       QAL-TEST-F1-2.
+           IF TBL-LEVEL-0A IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A IN TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2A1B0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-2.
+           GO TO QAL-FAIL-F1-2.
+       QAL-DELETE-F1-2.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-2.
+       QAL-FAIL-F1-2.
+           MOVE TBL-LEVEL-0A IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2A1B0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-3.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-3" TO PAR-NAME.
+       QAL-TEST-F1-3.
+           IF TBL-LEVEL-0A IN TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2B1A0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-3.
+           GO TO QAL-FAIL-F1-3.
+       QAL-DELETE-F1-3.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-3.
+       QAL-FAIL-F1-3.
+           MOVE TBL-LEVEL-0A IN TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2B1A0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-4.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-4 " TO PAR-NAME.
+       QAL-TEST-F1-4.
+           IF TBL-LEVEL-0A OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2B1B0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-4.
+           GO TO QAL-FAIL-F1-4.
+       QAL-DELETE-F1-4.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-4.
+       QAL-FAIL-F1-4.
+           MOVE TBL-LEVEL-0A OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2B1B0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-4.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-5.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-5 " TO PAR-NAME.
+       QAL-TEST-F1-5.
+           IF TBL-LEVEL-0A OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2A1A0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-5.
+           GO TO QAL-FAIL-F1-5.
+       QAL-DELETE-F1-5.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-5.
+       QAL-FAIL-F1-5.
+           MOVE TBL-LEVEL-0A OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2A1A0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-5.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-6.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-6 " TO PAR-NAME.
+       QAL-TEST-F1-6.
+           IF TBL-LEVEL-0A OF TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2A1B0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-6.
+           GO TO QAL-FAIL-F1-6.
+       QAL-DELETE-F1-6.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-6.
+       QAL-FAIL-F1-6.
+           MOVE TBL-LEVEL-0A OF TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2A1B0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-6.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-7.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-7 " TO PAR-NAME.
+       QAL-TEST-F1-7.
+           IF TBL-LEVEL-0A OF TABLE-LEVEL-1A OF TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2B1A0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-7.
+           GO TO QAL-FAIL-F1-7.
+       QAL-DELETE-F1-7.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-7.
+       QAL-FAIL-F1-7.
+           MOVE TBL-LEVEL-0A OF TABLE-LEVEL-1A OF TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2B1A0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-7.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-8.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-8 " TO PAR-NAME.
+       QAL-TEST-F1-8.
+           IF TBL-LEVEL-0A IN TABLE-LEVEL-1B IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2B1B0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-8.
+           GO TO QAL-FAIL-F1-8.
+       QAL-DELETE-F1-8.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-8.
+       QAL-FAIL-F1-8.
+           MOVE TBL-LEVEL-0A IN TABLE-LEVEL-1B IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2B1B0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-8.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-9.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-9 " TO PAR-NAME.
+       QAL-TEST-F1-9.
+           IF TBL-LEVEL-0A OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2A1A0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-9.
+           GO TO QAL-FAIL-F1-9.
+       QAL-DELETE-F1-9.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-9.
+       QAL-FAIL-F1-9.
+           MOVE TBL-LEVEL-0A OF TABLE-LEVEL-1A OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3A2A1A0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-9.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-10.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-10 " TO PAR-NAME.
+       QAL-TEST-F1-10.
+           IF TBL-LEVEL-0A IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2A1B0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-10.
+           GO TO QAL-FAIL-F1-10.
+       QAL-DELETE-F1-10.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-10.
+       QAL-FAIL-F1-10.
+           MOVE TBL-LEVEL-0A IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3A2A1B0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-10.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-11.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-11 " TO PAR-NAME.
+       QAL-TEST-F1-11.
+           IF TBL-LEVEL-0A IN TABLE-LEVEL-1A OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2B1A0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-11.
+           GO TO QAL-FAIL-F1-11.
+       QAL-DELETE-F1-11.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-11.
+       QAL-FAIL-F1-11.
+           MOVE "5A4B3A2B1A0A" TO CORRECT-A.
+           MOVE TBL-LEVEL-0A IN TABLE-LEVEL-1A OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-11.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-12.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-12 " TO PAR-NAME.
+       QAL-TEST-F1-12.
+           IF TBL-LEVEL-0A OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2B1B0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-12.
+           GO TO QAL-FAIL-F1-12.
+       QAL-DELETE-F1-12.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-12.
+       QAL-FAIL-F1-12.
+           MOVE TBL-LEVEL-0A OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3A2B1B0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-12.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-13.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-13 " TO PAR-NAME.
+       QAL-TEST-F1-13.
+           IF TBL-LEVEL-0A OF TABLE-LEVEL-1A OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2A1A0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-13.
+           GO TO QAL-FAIL-F1-13.
+       QAL-DELETE-F1-13.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-13.
+       QAL-FAIL-F1-13.
+           MOVE TBL-LEVEL-0A OF TABLE-LEVEL-1A OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A
+               TO COMPUTED-A.
+           MOVE "5A4B3B2A1A0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-13.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-14.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-14 " TO PAR-NAME.
+       QAL-TEST-F1-14.
+           IF TBL-LEVEL-0A IN TABLE-LEVEL-1B IN TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2A1B0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-14.
+           GO TO QAL-FAIL-F1-14.
+       QAL-DELETE-F1-14.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-14.
+       QAL-FAIL-F1-14.
+           MOVE TBL-LEVEL-0A IN TABLE-LEVEL-1B IN TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3B2A1B0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-14.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-15.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-15 " TO PAR-NAME.
+       QAL-TEST-F1-15.
+           IF TBL-LEVEL-0A OF TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4B IN TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2B1A0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-15.
+           GO TO QAL-FAIL-F1-15.
+       QAL-DELETE-F1-15.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-15.
+       QAL-FAIL-F1-15.
+           MOVE "5A4B3B2B1A0A" TO CORRECT-A.
+           MOVE TBL-LEVEL-0A OF TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4B IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-15.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-16.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-16 " TO PAR-NAME.
+       QAL-TEST-F1-16.
+           IF TBL-LEVEL-0A IN TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2B1B0A"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-16.
+           GO TO QAL-FAIL-F1-16.
+       QAL-DELETE-F1-16.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-16.
+       QAL-FAIL-F1-16.
+           MOVE TBL-LEVEL-0A IN TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3B2B1B0A" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-16.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-17.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-17" TO PAR-NAME.
+       QAL-TEST-F1-17.
+           IF TBL-LEVEL-0B OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2A1A0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-17.
+           GO TO QAL-FAIL-F1-17.
+       QAL-DELETE-F1-17.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-17.
+       QAL-FAIL-F1-17.
+           MOVE TBL-LEVEL-0B OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2A1A0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-17.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-18.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-18" TO PAR-NAME.
+       QAL-TEST-F1-18.
+           IF TBL-LEVEL-0B IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A IN TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2A1B0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-18.
+           GO TO QAL-FAIL-F1-18.
+       QAL-DELETE-F1-18.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-18.
+       QAL-FAIL-F1-18.
+           MOVE TBL-LEVEL-0B IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2A1B0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-18.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-19.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-19" TO PAR-NAME.
+       QAL-TEST-F1-19.
+           IF TBL-LEVEL-0B IN TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2B1A0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-19.
+           GO TO QAL-FAIL-F1-19.
+       QAL-DELETE-F1-19.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-19.
+       QAL-FAIL-F1-19.
+           MOVE TBL-LEVEL-0B IN TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2B1A0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-19.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-20.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-20" TO PAR-NAME.
+       QAL-TEST-F1-20.
+           IF TBL-LEVEL-0B OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2B1B0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-20.
+           GO TO QAL-FAIL-F1-20.
+       QAL-DELETE-F1-20.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-20.
+       QAL-FAIL-F1-20.
+           MOVE TBL-LEVEL-0B OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2B1B0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-20.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-21.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-21" TO PAR-NAME.
+       QAL-TEST-F1-21.
+           IF TBL-LEVEL-0B OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2A1A0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-21.
+           GO TO QAL-FAIL-F1-21.
+       QAL-DELETE-F1-21.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-21.
+       QAL-FAIL-F1-21.
+           MOVE TBL-LEVEL-0B OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2A1A0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-21.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-22.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-22" TO PAR-NAME.
+       QAL-TEST-F1-22.
+           IF TBL-LEVEL-0B OF TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2A1B0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-22.
+           GO TO QAL-FAIL-F1-22.
+       QAL-DELETE-F1-22.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-22.
+       QAL-FAIL-F1-22.
+           MOVE TBL-LEVEL-0B OF TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2A1B0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-22.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-23.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-23" TO PAR-NAME.
+       QAL-TEST-F1-23.
+           IF TBL-LEVEL-0B OF TABLE-LEVEL-1A OF TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2B1A0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-23.
+           MOVE TBL-LEVEL-0B OF TABLE-LEVEL-1A OF TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2B1A0B" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO QAL-WRITE-F1-23.
+       QAL-DELETE-F1-23.
+           PERFORM DE-LETE.
+       QAL-WRITE-F1-23.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-24.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-24" TO PAR-NAME.
+       QAL-TEST-F1-24.
+           IF TBL-LEVEL-0B IN TABLE-LEVEL-1B IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2B1B0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-24.
+           GO TO QAL-FAIL-F1-24.
+       QAL-DELETE-F1-24.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-24.
+       QAL-FAIL-F1-24.
+           MOVE TBL-LEVEL-0B IN TABLE-LEVEL-1B IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2B1B0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-24.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-25.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-25" TO PAR-NAME.
+       QAL-TEST-F1-25.
+           IF TBL-LEVEL-0B OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2A1A0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-25.
+           GO TO QAL-FAIL-F1-25.
+       QAL-DELETE-F1-25.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-25.
+       QAL-FAIL-F1-25.
+           MOVE TBL-LEVEL-0B OF TABLE-LEVEL-1A OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3A2A1A0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-25.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-26.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-26" TO PAR-NAME.
+       QAL-TEST-F1-26.
+           IF TBL-LEVEL-0B IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2A1B0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-26.
+           GO TO QAL-FAIL-F1-26.
+       QAL-DELETE-F1-26.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-26.
+       QAL-FAIL-F1-26.
+           MOVE TBL-LEVEL-0B IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3A2A1B0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-26.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-27.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-27" TO PAR-NAME.
+       QAL-TEST-F1-27.
+           IF TBL-LEVEL-0B IN TABLE-LEVEL-1A OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2B1A0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-27.
+           GO TO QAL-FAIL-F1-27.
+       QAL-DELETE-F1-27.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-27.
+       QAL-FAIL-F1-27.
+           MOVE "5A4B3A2B1A0B" TO CORRECT-A.
+           MOVE TBL-LEVEL-0B IN TABLE-LEVEL-1A OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-27.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-28.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-28" TO PAR-NAME.
+       QAL-TEST-F1-28.
+           IF TBL-LEVEL-0B OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2B1B0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-28.
+           GO TO QAL-FAIL-F1-28.
+       QAL-DELETE-F1-28.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-28.
+       QAL-FAIL-F1-28.
+           MOVE TBL-LEVEL-0B OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3A2B1B0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-28.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-29.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-29" TO PAR-NAME.
+       QAL-TEST-F1-29.
+           IF TBL-LEVEL-0B OF TABLE-LEVEL-1A OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2A1A0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-29.
+           GO TO QAL-FAIL-F1-29.
+       QAL-DELETE-F1-29.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-29.
+       QAL-FAIL-F1-29.
+           MOVE TBL-LEVEL-0B OF TABLE-LEVEL-1A OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A
+               TO COMPUTED-A.
+           MOVE "5A4B3B2A1A0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-29.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-30.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-30" TO PAR-NAME.
+       QAL-TEST-F1-30.
+           IF TBL-LEVEL-0B IN TABLE-LEVEL-1B IN TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2A1B0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-30.
+           GO TO QAL-FAIL-F1-30.
+       QAL-DELETE-F1-30.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-30.
+       QAL-FAIL-F1-30.
+           MOVE TBL-LEVEL-0B IN TABLE-LEVEL-1B IN TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3B2A1B0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-30.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-31.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-31" TO PAR-NAME.
+       QAL-TEST-F1-31.
+           IF TBL-LEVEL-0B OF TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4B IN TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2B1A0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-31.
+           GO TO QAL-FAIL-F1-31.
+       QAL-DELETE-F1-31.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-31.
+       QAL-FAIL-F1-31.
+           MOVE "5A4B3B2B1A0B" TO CORRECT-A.
+           MOVE TBL-LEVEL-0B OF TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4B IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-31.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-32.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-32" TO PAR-NAME.
+       QAL-TEST-F1-32.
+           IF TBL-LEVEL-0B IN TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2B1B0B"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-32.
+           GO TO QAL-FAIL-F1-32.
+       QAL-DELETE-F1-32.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-32.
+       QAL-FAIL-F1-32.
+           MOVE TBL-LEVEL-0B IN TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3B2B1B0B" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-32.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-33.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-33" TO PAR-NAME.
+       QAL-TEST-F1-33.
+           IF TBL-LEVEL-0C OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2A1A0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-33.
+           GO TO QAL-FAIL-F1-33.
+       QAL-DELETE-F1-33.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-33.
+       QAL-FAIL-F1-33.
+           MOVE TBL-LEVEL-0C OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2A1A0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-33.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-34.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-34" TO PAR-NAME.
+       QAL-TEST-F1-34.
+           IF TBL-LEVEL-0C IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A IN TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2A1B0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-34.
+           GO TO QAL-FAIL-F1-34.
+       QAL-DELETE-F1-34.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-34.
+       QAL-FAIL-F1-34.
+           MOVE TBL-LEVEL-0C IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2A1B0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-34.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-35.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-35" TO PAR-NAME.
+       QAL-TEST-F1-35.
+           IF TBL-LEVEL-0C IN TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2B1A0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-35.
+           GO TO QAL-FAIL-F1-35.
+       QAL-DELETE-F1-35.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-35.
+       QAL-FAIL-F1-35.
+           MOVE TBL-LEVEL-0C IN TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2B1A0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-35.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-36.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-36" TO PAR-NAME.
+       QAL-TEST-F1-36.
+           IF TBL-LEVEL-0C OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3A2B1B0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-36.
+           GO TO QAL-FAIL-F1-36.
+       QAL-DELETE-F1-36.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-36.
+       QAL-FAIL-F1-36.
+           MOVE TBL-LEVEL-0C OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3A2B1B0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-36.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-37.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-37" TO PAR-NAME.
+       QAL-TEST-F1-37.
+           IF TBL-LEVEL-0C OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2A1A0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-37.
+           GO TO QAL-FAIL-F1-37.
+       QAL-DELETE-F1-37.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-37.
+       QAL-FAIL-F1-37.
+           MOVE TBL-LEVEL-0C OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2A1A0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-37.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-38.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-38" TO PAR-NAME.
+       QAL-TEST-F1-38.
+           IF TBL-LEVEL-0C OF TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2A1B0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-38.
+           GO TO QAL-FAIL-F1-38.
+       QAL-DELETE-F1-38.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-38.
+       QAL-FAIL-F1-38.
+           MOVE TBL-LEVEL-0C OF TABLE-LEVEL-1B OF TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2A1B0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-38.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-39.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-39" TO PAR-NAME.
+       QAL-TEST-F1-39.
+           IF TBL-LEVEL-0C OF TABLE-LEVEL-1A OF TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2B1A0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-39.
+           GO TO QAL-FAIL-F1-39.
+       QAL-DELETE-F1-39.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-39.
+       QAL-FAIL-F1-39.
+           MOVE TBL-LEVEL-0C OF TABLE-LEVEL-1A OF TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2B1A0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-39.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-40.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-40" TO PAR-NAME.
+       QAL-TEST-F1-40.
+           IF TBL-LEVEL-0C IN TABLE-LEVEL-1B IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A EQUAL
+               TO "5A4A3B2B1B0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-40.
+           GO TO QAL-FAIL-F1-40.
+       QAL-DELETE-F1-40.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-40.
+       QAL-FAIL-F1-40.
+           MOVE TBL-LEVEL-0C IN TABLE-LEVEL-1B IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4A OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4A3B2B1B0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-40.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-41.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-41" TO PAR-NAME.
+       QAL-TEST-F1-41.
+           IF TBL-LEVEL-0C OF TABLE-LEVEL-1A IN TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2A1A0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-41.
+           GO TO QAL-FAIL-F1-41.
+       QAL-DELETE-F1-41.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-41.
+       QAL-FAIL-F1-41.
+           MOVE TBL-LEVEL-0C OF TABLE-LEVEL-1A OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3A2A1A0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-41.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-42.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-42" TO PAR-NAME.
+       QAL-TEST-F1-42.
+           IF TBL-LEVEL-0C IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2A1B0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-42.
+           GO TO QAL-FAIL-F1-42.
+       QAL-DELETE-F1-42.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-42.
+       QAL-FAIL-F1-42.
+           MOVE TBL-LEVEL-0C IN TABLE-LEVEL-1B OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3A2A1B0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-42.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-43.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-43" TO PAR-NAME.
+       QAL-TEST-F1-43.
+           IF TBL-LEVEL-0C IN TABLE-LEVEL-1A OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2B1A0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-43.
+           GO TO QAL-FAIL-F1-43.
+       QAL-DELETE-F1-43.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-43.
+       QAL-FAIL-F1-43.
+           MOVE "5A4B3A2B1A0C" TO CORRECT-A.
+           MOVE TBL-LEVEL-0C IN TABLE-LEVEL-1A OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-43.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-44.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-44" TO PAR-NAME.
+       QAL-TEST-F1-44.
+           IF TBL-LEVEL-0C OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3A2B1B0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-44.
+           GO TO QAL-FAIL-F1-44.
+       QAL-DELETE-F1-44.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-44.
+       QAL-FAIL-F1-44.
+           MOVE TBL-LEVEL-0C OF TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3A IN TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3A2B1B0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-44.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-45.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-45" TO PAR-NAME.
+       QAL-TEST-F1-45.
+           IF TBL-LEVEL-0C OF TABLE-LEVEL-1A OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2A1A0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-45.
+           GO TO QAL-FAIL-F1-45.
+       QAL-DELETE-F1-45.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-45.
+       QAL-FAIL-F1-45.
+           MOVE TBL-LEVEL-0C OF TABLE-LEVEL-1A OF TABLE-LEVEL-2A OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A
+               TO COMPUTED-A.
+           MOVE "5A4B3B2A1A0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-45.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-46.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-46" TO PAR-NAME.
+       QAL-TEST-F1-46.
+           IF TBL-LEVEL-0C IN TABLE-LEVEL-1B IN TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2A1B0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-46.
+           GO TO QAL-FAIL-F1-46.
+       QAL-DELETE-F1-46.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-46.
+       QAL-FAIL-F1-46.
+           MOVE TBL-LEVEL-0C IN TABLE-LEVEL-1B IN TABLE-LEVEL-2A IN
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3B2A1B0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-46.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-47.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-47" TO PAR-NAME.
+       QAL-TEST-F1-47.
+           IF TBL-LEVEL-0C OF TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4B IN TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2B1A0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-47.
+           GO TO QAL-FAIL-F1-47.
+       QAL-DELETE-F1-47.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-47.
+       QAL-FAIL-F1-47.
+           MOVE "5A4B3B2B1A0C" TO CORRECT-A.
+           MOVE TBL-LEVEL-0C OF TABLE-LEVEL-1A IN TABLE-LEVEL-2B IN
+               TABLE-LEVEL-3B IN TABLE-LEVEL-4B IN TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-47.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-48.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-48" TO PAR-NAME.
+       QAL-TEST-F1-48.
+           IF TBL-LEVEL-0C IN TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A EQUAL
+               TO "5A4B3B2B1B0C"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-48.
+           GO TO QAL-FAIL-F1-48.
+       QAL-DELETE-F1-48.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-48.
+       QAL-FAIL-F1-48.
+           MOVE TBL-LEVEL-0C IN TABLE-LEVEL-1B OF TABLE-LEVEL-2B OF
+               TABLE-LEVEL-3B OF TABLE-LEVEL-4B OF TABLE-LEVEL-5A TO
+               COMPUTED-A.
+           MOVE "5A4B3B2B1B0C" TO CORRECT-A.
+           PERFORM FAIL.
+       QAL-WRITE-F1-48.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QAL-INIT-F1-49.
+           MOVE "IV-19 4.3.8.1"  TO ANSI-REFERENCE.
+           MOVE "QUAL LIMITS "   TO FEATURE.
+           MOVE "QAL-TEST-F1-49" TO PAR-NAME.
+       QAL-TEST-F1-49.
+           IF TBL-LEVEL-0D EQUAL TO "5A4A3A2A1A0D"
+               PERFORM PASS
+               GO TO QAL-WRITE-F1-49.
+           GO TO QAL-FAIL-F1-49.
+       QAL-DELETE-F1-49.
+           PERFORM DE-LETE.
+           GO TO QAL-WRITE-F1-49.
+       QAL-FAIL-F1-49.
+           MOVE "5A4A3A2A1A0D" TO CORRECT-A.
+           MOVE TBL-LEVEL-0D IN TABLE-LEVEL-5A TO COMPUTED-A.
+      *>     NOTE  TBL-LEVEL-0D IS UNIQUE AND NEED NOT BE QUALIFIED
+      *>          HOWEVER, REFERENCE IS MADE TO IT BOTH QUALIFIED AND
+      *>          UNQUALIFIED TO INSURE THE ABILITY TO DO SO.
+           PERFORM FAIL.
+       QAL-WRITE-F1-49.
+           PERFORM PRINT-DETAIL.
+      *> 
+           PERFORM END-ROUTINE.
+      *> 
+       SUB-INIT-F1-0.
+           PERFORM END-ROUTINE.
+           MOVE "AA1122DD33" TO AX.
+           MOVE "IV-19 4.3.8.1"    TO ANSI-REFERENCE.
+           MOVE "QUALIFIED SUBSCRIPTS" TO FEATURE.
+      *> 
+       SUB-INIT-F1-1.
+           MOVE "SUB-TEST-F1-1" TO PAR-NAME.
+       SUB-TEST-F1-1.
+           IF AX-2 IN AX (CX-SUB OF CX) EQUAL TO "1"
+               PERFORM PASS
+               GO TO SUB-WRITE-F1-1.
+           GO TO SUB-FAIL-F1-1.
+       SUB-DELETE-F1-1.
+           PERFORM DE-LETE.
+           GO TO SUB-WRITE-F1-1.
+       SUB-FAIL-F1-1.
+           MOVE AX-2 IN AX (CX-SUB OF CX) TO COMPUTED-A.
+           MOVE 1 TO CORRECT-A.
+           PERFORM FAIL.
+       SUB-WRITE-F1-1.
+           PERFORM PRINT-DETAIL.
+      *> 
+       SUB-INIT-F1-2.
+           MOVE "SUB-TEST-F1-2" TO PAR-NAME.
+           MOVE "IV-19 4.3.8.1"    TO ANSI-REFERENCE.
+           MOVE "QUALIFIED SUBSCRIPTS" TO FEATURE.
+           MOVE 4 TO CX.
+           MOVE "DD" TO CORRECT-A.
+       SUB-TEST-F1-2.
+           MOVE AX-1 OF AX (CX-SUB OF CX) TO COMPUTED-A.
+           IF COMPUTED-A EQUAL TO CORRECT-A
+               PERFORM PASS
+               MOVE SPACE TO COMPUTED-A CORRECT-A
+               GO TO   SUB-WRITE-F1-2.
+           GO TO SUB-FAIL-F1-2.
+       SUB-DELETE-F1-2.
+           PERFORM DE-LETE.
+           GO TO SUB-WRITE-F1-2.
+       SUB-FAIL-F1-2.
+           PERFORM FAIL.
+       SUB-WRITE-F1-2.
+           PERFORM PRINT-DETAIL.
+      *> 
+       SUB-INIT-F1-3.
+           MOVE "SUB-TEST-F1-3" TO PAR-NAME.
+           MOVE "IV-19 4.3.8.1"    TO ANSI-REFERENCE.
+           MOVE "QUALIFIED SUBSCRIPTS" TO FEATURE.
+           MOVE 5 TO CX.
+           MOVE 5 TO AX-3 OF BX (1)  AX-2 OF BX (1).
+           MOVE AX-1 IN BX (1) TO AX-1 OF AX (CX-SUB OF CX).
+       SUB-TEST-F1-3.
+           IF AX-1 OF BX (1) EQUAL TO AX-1 IN AX (CX-SUB IN CX)
+               PERFORM PASS
+               GO TO SUB-WRITE-F1-3.
+           GO TO SUB-FAIL-F1-3.
+       SUB-DELETE-F1-3.
+           PERFORM DE-LETE.
+           GO TO SUB-WRITE-F1-3.
+       SUB-FAIL-F1-3.
+           MOVE AX-1 OF BX (1) TO COMPUTED-A.
+           MOVE AX-1 IN AX (CX-SUB IN CX) TO CORRECT-A.
+           PERFORM FAIL.
+           MOVE "UNEQUAL COMPARISON" TO RE-MARK.
+       SUB-WRITE-F1-3.
+           PERFORM PRINT-DETAIL.
+      *> 
+       SUB-INIT-F1-4.
+           MOVE "IV-19 4.3.8.1"    TO ANSI-REFERENCE.
+           MOVE "QUALIFIED SUBSCRIPTS" TO FEATURE.
+           MOVE "SUB-TEST-F1-4" TO PAR-NAME.
+           MOVE 1 TO CX.
+           MOVE 11 TO AX-1 OF BX (CX-SUB IN CX).
+           ADD AX-3 IN BX (CX-SUB OF CX) TO AX-2 IN BX (CX-SUB IN CX).
+       SUB-TEST-F1-4.
+           IF AX-2 IN BX (CX-SUB IN CX) EQUAL TO AX-2 IN AX (3)
+               PERFORM PASS
+               GO TO SUB-WRITE-F1-4.
+           GO TO SUB-FAIL-F1-4.
+       SUB-DELETE-F1-4.
+           PERFORM DE-LETE.
+           GO TO SUB-WRITE-F1-4.
+       SUB-FAIL-F1-4.
+           MOVE AX-2 IN BX (CX-SUB IN CX) TO COMPUTED-A.
+           MOVE AX-2 IN AX (3) TO CORRECT-A.
+           MOVE "UNEQUAL COMPARISON" TO RE-MARK.
+           PERFORM FAIL.
+       SUB-WRITE-F1-4.
+           PERFORM PRINT-DETAIL.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC206A

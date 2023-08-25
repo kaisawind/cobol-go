@@ -1,0 +1,884 @@
+      *> HEADER,COBOL,IF126A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IF126A.
+       
+      *> **********************************************************
+      *>                                                          *
+      *>  This program forms part of the CCVS85 COBOL Test Suite. *
+      *>  It contains tests for the Intrinsic Function            *
+      *>  NUMVAL-C.                                               *
+      *>                                                          *
+      *>                                                          *
+      *> **********************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+      *> **********************************************************
+      *>  Variables specific to the Intrinsic Function Test IF126A*
+      *> **********************************************************
+       01  A                   PIC X(1)       VALUE "4".
+       01  B                   PIC X(5)       VALUE "203".
+       01  C                   PIC X(4)       VALUE ".429".
+       01  D                   PIC X(7)       VALUE "928.344".
+       01  E                   PIC X(9)       VALUE "-042.3240".
+       01  F                   PIC X(7)       VALUE " 23.000".
+       01  G                   PIC X(8)       VALUE "-92924.3".
+       01  H                   PIC X(6)       VALUE "93.21+".
+       01  I                   PIC X(9)       VALUE " 92.92  -".
+       01  J                   PIC X(9)       VALUE "8,848.934".
+       01  K                   PIC X(12)      VALUE "4,825,293.92".
+       01  L                   PIC X(12)      VALUE " - 5,555.55 ".
+       01  M                   PIC X(9)       VALUE "5,555.55-".
+       01  N                   PIC X(13)      VALUE " 77,777.77 + ".
+       01  O                   PIC X(3)       VALUE "$33".
+       01  P                   PIC X(5)       VALUE "$0.11".
+       01  Q                   PIC X(9)       VALUE "$4,000.00".
+       01  R                   PIC X(14)      VALUE "$1,000,000.50".
+       01  S                   PIC X(14)       VALUE " $ 3,900.21".
+       01  T                   PIC X(14)       VALUE " + $ 9,000.99".
+       01  U                   PIC X(15)       VALUE " $ 3,890.20 + ".
+       01  TEMP                PIC S9(7)V9(5).
+       
+      *> 
+      *> *********************************************************
+      *> 
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "IF126A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT.
+           MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+      *> *******************************************************
+      *>                                                       *
+      *>     Intrinsic Function Tests       IF126A - NUMVAL-C  *
+      *>                                                       *
+      *> *******************************************************
+       SECT-IF126A SECTION.
+       F-NUMVALC-INFO.
+           MOVE     "See ref. A-59 2.30" TO ANSI-REFERENCE.
+           MOVE     "NUMVAL-C Function"     TO FEATURE.
+      *> ****************TEST (a) ******************************
+       F-NUMVALC-01.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-01.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("9").
+           IF TEMP = 9 THEN
+                              PERFORM PASS
+           ELSE
+                              MOVE 9 TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-01.
+       F-NUMVALC-DELETE-01.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-01.
+       F-NUMVALC-WRITE-01.
+           MOVE "F-NUMVALC-01" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (b) *******************************
+       F-NUMVALC-02.
+           MOVE 77  TO TEMP.
+       F-NUMVALC-TEST-02.
+           EVALUATE FUNCTION NUMVAL-C (B)
+                    ALSO ( TEMP + 96 ) * 2
+           WHEN     203
+                    ALSO 346
+              PERFORM PASS
+              GO TO F-NUMVALC-WRITE-02.
+           PERFORM FAIL.
+           GO TO    F-NUMVALC-WRITE-02.
+       F-NUMVALC-DELETE-02.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-02.
+       F-NUMVALC-WRITE-02.
+           MOVE "F-NUMVALC-02" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (c) ******************************
+       F-NUMVALC-TEST-03.
+           IF FUNCTION NUMVAL-C ("92,483") = 92483 THEN
+                              PERFORM PASS
+           ELSE
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-03.
+       F-NUMVALC-DELETE-03.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-03.
+       F-NUMVALC-WRITE-03.
+           MOVE "F-NUMVALC-03" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (d) ******************************
+       F-NUMVALC-04.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-04.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (C).
+           IF (TEMP >= 0.428991) AND
+              (TEMP <= 0.429009)
+                              PERFORM PASS
+           ELSE
+                              MOVE  0.429  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-04.
+       F-NUMVALC-DELETE-04.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-04.
+       F-NUMVALC-WRITE-04.
+           MOVE "F-NUMVALC-04" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (e) ******************************
+       F-NUMVALC-05.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-05.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("385.93").
+           IF (TEMP >= 385.922) AND
+              (TEMP <= 385.938)
+                              PERFORM PASS
+           ELSE
+                              MOVE  385.93  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-05.
+       F-NUMVALC-DELETE-05.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-05.
+       F-NUMVALC-WRITE-05.
+           MOVE "F-NUMVALC-05" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (f) ******************************
+       F-NUMVALC-06.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-06.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (J).
+           IF (TEMP >= 8848.76) AND
+              (TEMP <= 8849.11)
+                              PERFORM PASS
+           ELSE
+                              MOVE  8848.934  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-06.
+       F-NUMVALC-DELETE-06.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-06.
+       F-NUMVALC-WRITE-06.
+           MOVE "F-NUMVALC-06" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (g) ******************************
+       F-NUMVALC-07.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-07.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("+394.2  ").
+           IF (TEMP >= 394.192) AND
+              (TEMP <= 394.208)
+                              PERFORM PASS
+           ELSE
+                              MOVE  394.2  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-07.
+       F-NUMVALC-DELETE-07.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-07.
+       F-NUMVALC-WRITE-07.
+           MOVE "F-NUMVALC-07" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (h) ******************************
+       F-NUMVALC-08.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-08.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("  939.83").
+           IF (TEMP >= 939.811) AND
+              (TEMP <= 939.849)
+                              PERFORM PASS
+           ELSE
+                              MOVE  939.83  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-08.
+       F-NUMVALC-DELETE-08.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-08.
+       F-NUMVALC-WRITE-08.
+           MOVE "F-NUMVALC-08" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (i) ******************************
+       F-NUMVALC-09.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-09.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("  -  4929.0323").
+           IF (TEMP >= -4929.1309) AND
+              (TEMP <= -4928.9337)
+                              PERFORM PASS
+           ELSE
+                              MOVE  -4929.0323  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-09.
+       F-NUMVALC-DELETE-09.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-09.
+       F-NUMVALC-WRITE-09.
+           MOVE "F-NUMVALC-09" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (j) ******************************
+       F-NUMVALC-10.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-10.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (K).
+           IF (TEMP >= 4825197.41) AND
+              (TEMP <= 4825390.43)
+                              PERFORM PASS
+           ELSE
+                              MOVE  4825293.92  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-10.
+       F-NUMVALC-DELETE-10.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-10.
+       F-NUMVALC-WRITE-10.
+           MOVE "F-NUMVALC-10" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (k) ******************************
+       F-NUMVALC-11.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-11.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (L).
+           IF (TEMP >= -5555.66) AND
+              (TEMP <= -5555.44)
+                              PERFORM PASS
+           ELSE
+                              MOVE  -5555.55  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-11.
+       F-NUMVALC-DELETE-11.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-11.
+       F-NUMVALC-WRITE-11.
+           MOVE "F-NUMVALC-11" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (l) ******************************
+       F-NUMVALC-12.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-12.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("82.9312+").
+           IF (TEMP >= 82.9295) AND
+              (TEMP <= 82.9329)
+                              PERFORM PASS
+           ELSE
+                              MOVE  82.9312  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-12.
+       F-NUMVALC-DELETE-12.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-12.
+       F-NUMVALC-WRITE-12.
+           MOVE "F-NUMVALC-12" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (m) ******************************
+       F-NUMVALC-13.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-13.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (M).
+           IF (TEMP >= -5555.66) AND
+              (TEMP <= -5555.44)
+                              PERFORM PASS
+           ELSE
+                              MOVE  -5555.55  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-13.
+       F-NUMVALC-DELETE-13.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-13.
+       F-NUMVALC-WRITE-13.
+           MOVE "F-NUMVALC-13" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (n) ******************************
+       F-NUMVALC-14.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-14.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("  200.0002  -  ").
+           IF (TEMP >= -200.0042) AND
+              (TEMP <= -199.9962)
+                              PERFORM PASS
+           ELSE
+                              MOVE  -200.0002  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-14.
+       F-NUMVALC-DELETE-14.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-14.
+       F-NUMVALC-WRITE-14.
+           MOVE "F-NUMVALC-14" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (o) ******************************
+       F-NUMVALC-15.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-15.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (N).
+           IF (TEMP >= 77776.21) AND
+              (TEMP <= 77779.33)
+                              PERFORM PASS
+           ELSE
+                              MOVE  77777.77  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-15.
+       F-NUMVALC-DELETE-15.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-15.
+       F-NUMVALC-WRITE-15.
+           MOVE "F-NUMVALC-15" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (p) ******************************
+       F-NUMVALC-16.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-16.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("$5", "$").
+           IF TEMP = 5 THEN
+                              PERFORM PASS
+           ELSE
+                              MOVE  5  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-16.
+       F-NUMVALC-DELETE-16.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-16.
+       F-NUMVALC-WRITE-16.
+           MOVE "F-NUMVALC-16" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (q) ******************************
+       F-NUMVALC-17.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-17.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (O, "$").
+           IF TEMP = 33 THEN
+                              PERFORM PASS
+           ELSE
+                              MOVE  33  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-17.
+       F-NUMVALC-DELETE-17.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-17.
+       F-NUMVALC-WRITE-17.
+           MOVE "F-NUMVALC-17" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (r) ******************************
+       F-NUMVALC-18.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-18.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("$93,021", "$").
+           IF TEMP = 93021 THEN
+                              PERFORM PASS
+           ELSE
+                              MOVE  93021  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-18.
+       F-NUMVALC-DELETE-18.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-18.
+       F-NUMVALC-WRITE-18.
+           MOVE "F-NUMVALC-18" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (t) ******************************
+       F-NUMVALC-20.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-20.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("$924.93", "$").
+           IF (TEMP >= 924.912) AND
+              (TEMP <= 924.948)
+                              PERFORM PASS
+           ELSE
+                              MOVE  924.93  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-20.
+       F-NUMVALC-DELETE-20.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-20.
+       F-NUMVALC-WRITE-20.
+           MOVE "F-NUMVALC-20" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (u) ******************************
+       F-NUMVALC-21.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-21.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (Q, "$").
+           IF TEMP = 4000 THEN
+                              PERFORM PASS
+           ELSE
+                              MOVE  4000  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-21.
+       F-NUMVALC-DELETE-21.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-21.
+       F-NUMVALC-WRITE-21.
+           MOVE "F-NUMVALC-21" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (v) ******************************
+       F-NUMVALC-22.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-22.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("-$34.03", "$").
+           IF (TEMP >= -34.0307) AND
+              (TEMP <= -34.0293)
+                              PERFORM PASS
+           ELSE
+                              MOVE  -34.03  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-22.
+       F-NUMVALC-DELETE-22.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-22.
+       F-NUMVALC-WRITE-22.
+           MOVE "F-NUMVALC-22" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (w) ******************************
+       F-NUMVALC-23.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-23.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (R, "$").
+           IF (TEMP >= 999980.5) AND
+              (TEMP <= 1000020.5)
+                              PERFORM PASS
+           ELSE
+                              MOVE  1000000.5  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-23.
+       F-NUMVALC-DELETE-23.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-23.
+       F-NUMVALC-WRITE-23.
+           MOVE "F-NUMVALC-23" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (x) ******************************
+       F-NUMVALC-24.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-24.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("  $  89.01", "$").
+           IF (TEMP >= 89.0082) AND
+              (TEMP <= 89.0118)
+                              PERFORM PASS
+           ELSE
+                              MOVE  89.01  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-24.
+       F-NUMVALC-DELETE-24.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-24.
+       F-NUMVALC-WRITE-24.
+           MOVE "F-NUMVALC-24" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (y) ******************************
+       F-NUMVALC-25.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-25.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (S, "$").
+           IF (TEMP >= 3900.13) AND
+              (TEMP <= 3900.29)
+                              PERFORM PASS
+           ELSE
+                              MOVE  3900.21  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-25.
+       F-NUMVALC-DELETE-25.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-25.
+       F-NUMVALC-WRITE-25.
+           MOVE "F-NUMVALC-25" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (z) ******************************
+       F-NUMVALC-26.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-26.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("- $ 890.21", "$").
+           IF (TEMP >= -890.228) AND
+              (TEMP <= -890.192)
+                              PERFORM PASS
+           ELSE
+                              MOVE  -890.21  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-26.
+       F-NUMVALC-DELETE-26.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-26.
+       F-NUMVALC-WRITE-26.
+           MOVE "F-NUMVALC-26" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (aa) ******************************
+       F-NUMVALC-27.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-27.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (T, "$").
+           IF (TEMP >= 9000.81) AND
+              (TEMP <= 9001.17)
+                              PERFORM PASS
+           ELSE
+                              MOVE  9000.99  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-27.
+       F-NUMVALC-DELETE-27.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-27.
+       F-NUMVALC-WRITE-27.
+           MOVE "F-NUMVALC-27" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (bb) ******************************
+       F-NUMVALC-28.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-28.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("  $  90.54 -  ", "$").
+           IF (TEMP >= -90.5418) AND
+              (TEMP <= -90.5382)
+                              PERFORM PASS
+           ELSE
+                              MOVE  -90.54  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-28.
+       F-NUMVALC-DELETE-28.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-28.
+       F-NUMVALC-WRITE-28.
+           MOVE "F-NUMVALC-28" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (cc) ******************************
+       F-NUMVALC-29.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-29.
+           COMPUTE TEMP = FUNCTION NUMVAL-C (U, "$").
+           IF (TEMP >= 3890.12) AND
+              (TEMP <= 3890.28)
+                              PERFORM PASS
+           ELSE
+                              MOVE  3890.2  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-29.
+       F-NUMVALC-DELETE-29.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-29.
+       F-NUMVALC-WRITE-29.
+           MOVE "F-NUMVALC-29" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (dd) ******************************
+       F-NUMVALC-30.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-30.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("90") + 10.
+           IF TEMP = 100 THEN
+                              PERFORM PASS
+           ELSE
+                              MOVE  100  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-30.
+       F-NUMVALC-DELETE-30.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-30.
+       F-NUMVALC-WRITE-30.
+           MOVE "F-NUMVALC-30" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ****************TEST (ee) ******************************
+       F-NUMVALC-31.
+           MOVE ZERO TO TEMP.
+       F-NUMVALC-TEST-31.
+           COMPUTE TEMP = FUNCTION NUMVAL-C ("2") +
+                          FUNCTION NUMVAL-C ("8").
+           IF TEMP = 10 THEN
+                              PERFORM PASS
+           ELSE
+                              MOVE  10  TO CORRECT-N
+                              MOVE TEMP TO COMPUTED-N
+                              PERFORM FAIL.
+           GO TO F-NUMVALC-WRITE-31.
+       F-NUMVALC-DELETE-31.
+           PERFORM  DE-LETE.
+           GO TO    F-NUMVALC-WRITE-31.
+       F-NUMVALC-WRITE-31.
+           MOVE "F-NUMVALC-31" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> ******************END OF TESTS**************************
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,IF126A

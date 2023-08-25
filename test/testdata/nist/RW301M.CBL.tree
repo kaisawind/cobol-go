@@ -1,0 +1,232 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n            
+					(programName 
+						(cobolWord RW301M)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       )))) 
+				(environmentDivisionBody 
+					(inputOutputSection INPUT-OUTPUT SECTION .\n        
+						(inputOutputSectionParagraph 
+							(fileControlParagraph FILE-CONTROL .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord TFIL))) 
+									(fileControlClause 
+										(assignClause ASSIGN 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX001))))) 
+									(fileControlClause 
+										(organizationClause ORGANIZATION IS SEQUENTIAL)) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS SEQUENTIAL))) .\n       \n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord TFIL2))) 
+									(fileControlClause 
+										(assignClause ASSIGN 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX002))))) 
+									(fileControlClause 
+										(organizationClause ORGANIZATION IS SEQUENTIAL)) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS SEQUENTIAL))) .\n       \n       \n       )) 
+						(inputOutputSectionParagraph 
+							(ioControlParagraph I-O-CONTROL .\n            
+								(ioControlClause 
+									(multipleFileClause MULTIPLE FILE TAPE CONTAINS 
+										(multipleFilePosition 
+											(fileName 
+												(cobolWord TFIL2))))) .\n       \n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(fileSection FILE SECTION .\n        
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord TFIL)) 
+							(fileDescriptionEntryClause 
+								(labelRecordsClause LABEL RECORDS STANDARD)) 
+							(fileDescriptionEntryClause 
+								(valueOfClause VALUE OF 
+									(valuePair 
+										(systemName 
+											(cobolWord XXXXX074)) IS 
+										(qualifiedDataName 
+											(qualifiedDataNameFormat1 
+												(dataName 
+													(cobolWord XXXXX075))))))) .\n       \n       \n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord FREC)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord RKEY)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 9)) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 8)) 
+											(pictureChars )))) .\n       \n       ))) 
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord TFIL2)) 
+							(fileDescriptionEntryClause 
+								(reportClause REPORT IS 
+									(reportName 
+										(qualifiedDataName 
+											(qualifiedDataNameFormat1 
+												(dataName 
+													(cobolWord RFIL2))))))) .\n      ))) 
+				(dataDivisionSection 
+					(workingStorageSection WORKING-STORAGE SECTION .\n       \n        
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord VARIABLES)) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 03 
+								(dataName 
+									(cobolWord VKEY)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 8)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal 
+												(figurativeConstant ZERO))))) .\n       \n       )))) 
+				(dataDivisionSection 
+					(reportSection REPORT SECTION .\n       
+						(reportDescription 
+							(reportDescriptionEntry RD 
+								(reportName 
+									(qualifiedDataName 
+										(qualifiedDataNameFormat1 
+											(dataName 
+												(cobolWord RFIL2))))) .\n      ) 
+							(reportGroupDescriptionEntry 
+								(reportGroupDescriptionEntryFormat1 
+									(integerLiteral 01) 
+									(dataName 
+										(cobolWord RREC)) 
+									(reportGroupTypeClause TYPE IS 
+										(reportGroupTypeDetail DETAIL)) .\n      )) 
+							(reportGroupDescriptionEntry 
+								(reportGroupDescriptionEntryFormat3 
+									(integerLiteral 02) 
+									(reportGroupPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 9)) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 8)) 
+											(pictureChars )))) 
+									(reportGroupSourceClause SOURCE IS 
+										(identifier 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord RKEY)))))) 
+									(reportGroupColumnNumberClause COLUMN NUMBER IS 
+										(integerLiteral 1)) 
+									(reportGroupLineNumberClause LINE NUMBER IS 
+										(reportGroupLineNumberPlus PLUS 
+											(integerLiteral 1))) .\n      )))))) 
+			(procedureDivision PROCEDURE DIVISION .\n       \n        
+				(procedureDivisionBody 
+					(paragraphs 
+						(paragraph 
+							(paragraphName 
+								(cobolWord RW301M-CONTROL)) .\n            
+							(sentence 
+								(statement 
+									(openStatement OPEN 
+										(openInputStatement INPUT 
+											(openInput 
+												(fileName 
+													(cobolWord TFIL)))))) .\n           ) 
+							(sentence 
+								(statement 
+									(readStatement READ 
+										(fileName 
+											(cobolWord TFIL)) 
+										(atEndPhrase AT END 
+											(statement 
+												(goToStatement GO TO 
+													(goToStatementSimple 
+														(procedureName 
+															(paragraphName 
+																(cobolWord RW301M-END))))))))) .\n           ) 
+							(sentence 
+								(statement 
+									(openStatement OPEN 
+										(openOutputStatement OUTPUT 
+											(openOutput 
+												(fileName 
+													(cobolWord TFIL2)))))) .\n           ) 
+							(sentence 
+								(statement 
+									(initiateStatement INITIATE 
+										(reportName 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord RFIL2))))))) .\n      ) 
+							(sentence 
+								(statement 
+									(generateStatement GENERATE 
+										(reportName 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord RREC))))))) .\n      ) 
+							(sentence 
+								(statement 
+									(terminateStatement TERMINATE 
+										(reportName 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord RFIL2))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord RW301M-END)) .\n            
+							(sentence 
+								(statement 
+									(closeStatement CLOSE 
+										(closeFile 
+											(fileName 
+												(cobolWord TFIL))) 
+										(closeFile 
+											(fileName 
+												(cobolWord TFIL2))))) .\n           ) 
+							(sentence 
+								(statement 
+									(stopStatement STOP RUN)) .\n       \n       \n      ))))))) <EOF>)

@@ -1,0 +1,2135 @@
+      *> HEADER,COBOL,NC177A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC177A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC177A TESTS FORMAT 2 OF THE ADD STATEMENT.
+      *>     VARIOUS COMBINATINS OF DATA-ITEMS AND ALL
+      *>     OPTIONAL PHRASES ARE TESTED.
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  SIZE-ERR                     PICTURE X  VALUE SPACE.
+       77  SIZE-ERR2                    PICTURE X  VALUE SPACE.
+       77  SIZE-ERR3                    PICTURE X  VALUE SPACE.
+       77  SIZE-ERR4                    PICTURE X  VALUE SPACE.
+       77  A17TWOS-DS-17V00             PICTURE S9(17)
+                                        VALUE 22222222222222222.
+       77  A18ONES-DS-18V00             PICTURE S9(18)
+                                        VALUE 111111111111111111.
+       77  WRK-DS-10V00                 PICTURE S9(10).
+       77  A10ONES-DS-10V00             PICTURE S9(10)
+                                        VALUE 1111111111.
+       77  A05ONES-DS-05V00             PICTURE S9(5)
+                                        VALUE 11111.
+       77  A02ONES-DS-02V00             PICTURE S99
+                                        VALUE 11.
+       77  WRK-DS-09V09                 PICTURE S9(9)V9(9).
+       77  WRK-DS-18V00 REDEFINES WRK-DS-09V09
+                                        PICTURE S9(18).
+       77  A06THREES-DS-03V03           PICTURE S999V999
+                                        VALUE 333.333.
+       77  A12THREES-DS-06V06           PICTURE S9(6)V9(6)
+                                        VALUE 333333.333333.
+       77  WRK-DS-06V06                 PICTURE S9(6)V9(6).
+       77  WRK-DS-12V00-S REDEFINES WRK-DS-06V06
+                                        PICTURE S9(12).
+       77  A05ONES-DS-00V05             PICTURE SV9(5)
+                                        VALUE .11111.
+       77  WRK-DS-05V00                 PICTURE S9(5).
+       77  WRK-DS-02V00                 PICTURE S99.
+       77  A12ONES-DS-12V00             PICTURE S9(12)
+                                        VALUE 111111111111.
+       77  WRK-DS-03V10                 PICTURE S999V9(10).
+       77  WRK-DS-13V00-S REDEFINES WRK-DS-03V10
+                                        PICTURE S9(13).
+       77  A99-DS-02V00                 PICTURE S99
+                                        VALUE 99.
+       77  A03ONES-DS-02V01             PICTURE S99V9
+                                        VALUE 11.1.
+       77  A06ONES-DS-03V03             PICTURE S999V999
+                                        VALUE 111.111.
+       77  A08TWOS-DS-02V06             PICTURE S99V9(6)
+                                        VALUE 22.222222.
+       77  A01ONE-DS-P0801              PICTURE SP(8)9
+                                        VALUE .000000001.
+       77  WRK-CS-18V00                 PICTURE S9(18) COMPUTATIONAL.
+       77  A18ONES-CS-18V00             PICTURE S9(18) COMPUTATIONAL
+                                        VALUE 111111111111111111.
+       77  WRK-CS-02V02                 PICTURE S99V99 COMPUTATIONAL.
+       77  A99-CS-02V00                 PICTURE S99 COMPUTATIONAL
+                                        VALUE 99.
+       77  WRK-DS-0201P                 PICTURE S99P.
+       77  WRK-DS-06V00                 PICTURE S9(6).
+       77  AZERO-DS-05V05               PICTURE S9(5)V9(5)
+                                        VALUE ZERO.
+       77  NDATA-DS-09V09               PICTURE S9(9)V9(9)
+                                        VALUE +012345678.876543210.
+       77  XDATA-XN-00018               PICTURE X(18)
+                                        VALUE "00ABCDEFGHI  4321 ".
+       77  WRK-XN-00018                 PICTURE X(18).
+       77  WRK-XN-00001                 PICTURE X.
+       77  ADD-12    PICTURE PP9        VALUE .001.
+       77  ADD-13    PICTURE 9PP        VALUE 100.
+       77  ADD-14    PICTURE 999V999.
+       77  WRK-CU-18V00      PICTURE 9(18) VALUE ZERO COMPUTATIONAL.
+       01  WRK-DU-1V0-1 PIC 9 VALUE ZERO.
+       01  WRK-DU-1V1-1 PIC 9V9 VALUE 1.1.
+       01  WRK-DU-1V1-2 PIC 9V9 VALUE 2.4.
+       01  WRK-DU-1V3-1 PIC 9V999 VALUE 1.001.
+       01  WRK-DU-1V3-2 PIC 9V999 VALUE 1.001.
+       01  WRK-DU-1V5-1 PIC 9V9(5).
+       01  WRK-DU-1V17-1 PIC 9V9(17) VALUE 3.14159265358979323.
+       01  WRK-DU-2P6-1 PIC 99P(6) VALUE 99000000.
+       01  WRK-DU-2V0-1 PIC 99.
+       01  WRK-DU-2V0-2 PIC 99.
+       01  WRK-DU-2V0-3 PIC 99.
+       01  WRK-DU-2V1-1 PIC 99V9.
+       01  WRK-DU-2V1-2 PIC 99V9.
+       01  WRK-DU-2V1-3 PIC 99V9.
+       77  A18EIGHTS-CS-18V00 PICTURE S9(18) VALUE -888888888888888888
+                   COMPUTATIONAL.
+       77  A14TWOS-CS-18V00  PICTURE S9(18) VALUE -000022222222222222
+                   COMPUTATIONAL.
+       77  A12THREES-CU-18V00 PICTURE 9(18) VALUE 000000333333333333
+                   COMPUTATIONAL.
+       77  A16FOURS-CS-18V00 PICTURE S9(18) VALUE 004444444444444444
+                   COMPUTATIONAL.
+       77  A18FIVES-CS-18V00 PICTURE S9(18) VALUE -555555555555555555
+                   COMPUTATIONAL.
+       77  A18SIXES-CS-18V00 PICTURE S9(18) VALUE 666666666666666666
+                   COMPUTATIONAL.
+       77  A12SEVENS-CU-18V00 PICTURE 9(18) VALUE 000000777777777777
+                   COMPUTATIONAL.
+       77  WRK-DU-18V00      PICTURE 9(18) VALUE ZERO.
+       77  A18THREES-CS-18V00 PICTURE S9(18) VALUE -333333333333333333
+                   COMPUTATIONAL.
+       77  WRK-CS-03V00 PICTURE S999 COMPUTATIONAL SYNCHRONIZED RIGHT.
+       01  SUBTRACT-DATA.
+           02  SUBTR-1    PICTURE 9         VALUE 1.
+           02  SUBTR-2    PICTURE S99       VALUE 99.
+           02  SUBTR-3    PICTURE S9V99     VALUE -1.
+           02  SUBTR-4    PICTURE SPP9      VALUE .001.
+           02  SUBTR-5    PICTURE S9PP      VALUE 100.
+           02  SUBTR-6    PICTURE 9  VALUE 1.
+           02  SUBTR-7    PICTURE S99  VALUE 99.
+           02  SUBTR-8    PICTURE S9V99  VALUE -9.99.
+           02  SUBTR-10    PICTURE S999  VALUE 100.
+           02  SUBTR-11   PICTURE S999V999.
+       01  N-3                                PICTURE IS 99999.
+       01  N-4                                PICTURE IS 9(5)
+           VALUE IS 52800.
+       01  N-5                                PICTURE IS S9(9)V99
+           VALUE IS 000000001.00.
+       01  N-7                                PICTURE IS S9(7)V9(4)
+           VALUE IS 0000001.0000.
+       01  X-8 REDEFINES N-7                  PICTURE IS X(11).
+       01  N-10                               PICTURE IS S99999V
+           VALUE IS -00001.
+       01  N-11                               PICTURE IS 9 VALUE IS 9.
+       01  N-12                               PICTURE IS 9 VALUE IS 9.
+       01  N-13                               PICTURE IS 9(5)
+           VALUE IS 99999.
+       01  N-14                               PICTURE IS 9 VALUE IS 1.
+       01  N-15                               PICTURE IS 9(16).
+       01  N-16                               PICTURE IS S999999V99
+           VALUE IS 5.90.
+       01  N-17                               PICTURE IS S9(3)V99
+           VALUE IS +3.6.
+       01  N-18                               PICTURE IS S9(10)
+           VALUE IS -5.
+       01  N-19                               PICTURE IS $9.00.
+       01  N-20                               PICTURE IS S9(9)
+           VALUE IS -999999999.
+       01  N-21                               PICTURE IS 9 VALUE IS 5.
+       01  N-22                               PICTURE IS 999V99
+           VALUE IS 005.55.
+       01  N-23                               PICTURE IS $$$.99CR.
+       01  N-25                               PICTURE IS 9 VALUE IS 1.
+       01  N-26               PICTURE 9(5).
+       01  N-27                               PICTURE IS 9999V9
+           VALUE IS 9999.9.
+       01  N-28                               PICTURE IS $9999.00.
+       01  N-40                               PICTURE IS 9(7)
+           VALUE IS 7777777.
+       01  N-41                               PICTURE IS 9(7)
+           VALUE IS 1111111.
+       01  N-42                               PICTURE IS 9(3)P(4).
+       01  TRUNC-DATA.
+           02 N-43  PICTURE S9V9 VALUE +1.6.
+           02 N-44  PICTURE S9V9 VALUE -1.6.
+           02 N-45  PICTURE S9.
+       01  MINUS-NAMES.
+           02  MINUS-NAME1 PICTURE S9(18) VALUE -999999999999999999.
+           02  MINUS-NAME2 PICTURE S9(18) VALUE -999999999999999999.
+           02  EVEN-NAME1  PICTURE S9(18) VALUE +1.
+           02  PLUS-NAME1  PICTURE S9(18) VALUE +999999999999999999.
+           02  PLUS-NAME2  PICTURE S9(18) VALUE +999999999999999999.
+           02  MINUS-NAME3 PICTURE SV9(18) VALUE -.999999999999999999.
+           02  MINUS-NAME4 PICTURE SV9(18) VALUE -.999999999999999999.
+           02  EVEN-NAME2  PICTURE SV9(18)  VALUE +.1.
+           02  PLUS-NAME3  PICTURE SV9(18) VALUE +.999999999999999999.
+           02  PLUS-NAME4  PICTURE SV9(18) VALUE +.999999999999999999.
+           02  WHOLE-FIELD   PICTURE S9(18).
+           02  DECMAL-FIELD  PICTURE SV9(18).
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC177A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC177A-001 SECTION.
+       ADD-INIT-F2-1.
+           MOVE "ADD GIVING" TO FEATURE.
+           MOVE "VI-74 6.6.4 GR2" TO ANSI-REFERENCE.
+       ADD-TEST-F2-1.
+           ADD      1 N-14 GIVING N-15.
+           IF       N-15 EQUAL TO 2
+                    PERFORM PASS
+                    GO TO ADD-WRITE-F2-1.
+           GO TO    ADD-FAIL-F2-1.
+       ADD-DELETE-F2-1.
+           PERFORM  DE-LETE.
+           GO TO    ADD-WRITE-F2-1.
+       ADD-FAIL-F2-1.
+           MOVE     N-15 TO COMPUTED-N.
+           MOVE     2 TO CORRECT-N.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-1.
+           MOVE "ADD-TEST-F2-1 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-TEST-F2-2.
+           ADD      N-16 N-4 GIVING N-3 ROUNDED.
+           IF       N-3 EQUAL TO 52806
+                    PERFORM PASS
+                    GO TO ADD-WRITE-F2-2.
+           GO TO    ADD-FAIL-F2-2.
+       ADD-DELETE-F2-2.
+           PERFORM  DE-LETE.
+           GO TO    ADD-WRITE-F2-2.
+       ADD-FAIL-F2-2.
+           MOVE     N-3 TO COMPUTED-N.
+           MOVE     52806 TO CORRECT-N.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-2.
+           MOVE "ADD-TEST-F2-2 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+           MOVE     52806 TO N-3.
+       ADD-TEST-F2-3-1.
+           ADD      N-13 1 GIVING N-3 ON SIZE ERROR
+                    PERFORM PASS
+                    GO TO ADD-WRITE-F2-3-1.
+      *>     NOTE WHEN SIZE ERROR CONDITION OCCURS, VALUE OF
+      *>     N-3  SHOULD NOT BE CHANGED.
+           GO TO    ADD-FAIL-F2-3-1.
+       ADD-DELETE-F2-3-1.
+           PERFORM  DE-LETE.
+           GO TO    ADD-WRITE-F2-3-1.
+       ADD-FAIL-F2-3-1.
+           MOVE     N-3 TO COMPUTED-N.
+           MOVE "ON SIZE ERROR NOT EXECUTED" TO RE-MARK.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-3-1.
+           MOVE "ADD-TEST-F2-3-1 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-TEST-F2-3-2.
+           IF      N-3 NOT = 52806
+                   MOVE    N-3   TO COMPUTED-N
+                   MOVE    42806 TO CORRECT-N
+                   MOVE   "ON SIZE ERROR NOT EXECUTED" TO RE-MARK
+                   MOVE   "ADD-TEST-F2-3-2 " TO PAR-NAME
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-4-1.
+           ADD      1.6 N-13 GIVING N-3 ROUNDED ON SIZE ERROR
+                    PERFORM PASS
+                    GO TO ADD-WRITE-F2-4-1.
+           GO TO    ADD-FAIL-F2-4-1.
+       ADD-DELETE-F2-4-1.
+           PERFORM  DE-LETE.
+           GO TO    ADD-WRITE-F2-4-1.
+       ADD-FAIL-F2-4-1.
+           MOVE     N-3 TO COMPUTED-N.
+           MOVE "ON SIZE ERROR NOT EXECUTED" TO RE-MARK.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-4-1.
+           MOVE "ADD-TEST-F2-4-1 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-TEST-F2-4-2.
+           IF       N-3 EQUAL TO 52806
+                    PERFORM PASS
+                    GO TO ADD-WRITE-F2-4-2.
+           GO TO    ADD-FAIL-F2-4-2.
+       ADD-DELETE-F2-4-2.
+           PERFORM  DE-LETE.
+           GO TO    ADD-WRITE-F2-4-2.
+       ADD-FAIL-F2-4-2.
+           MOVE     N-3 TO COMPUTED-N.
+           MOVE     52806 TO CORRECT-N.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-4-2.
+           MOVE "ADD-TEST-F2-4-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-INIT-F2-5.
+           MOVE "  GIVING" TO FEATURE.
+       ADD-TEST-F2-5.
+           MOVE     ZERO TO WRK-DS-09V09.
+           ADD      A06THREES-DS-03V03
+                    A12THREES-DS-06V06 GIVING WRK-DS-09V09.
+           IF       WRK-DS-09V09 EQUAL TO 000333666.666333000
+                    PERFORM PASS GO TO ADD-WRITE-F2-5.
+           GO       TO ADD-FAIL-F2-5.
+       ADD-DELETE-F2-5.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-5.
+       ADD-FAIL-F2-5.
+           MOVE     WRK-DS-09V09 TO COMPUTED-N.
+           MOVE     000333666.666333000 TO CORRECT-N.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-5.
+           MOVE     "ADD-TEST-F2-5" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-TEST-F2-6.
+           MOVE     ZERO TO WRK-DS-06V06.
+           ADD      A05ONES-DS-05V00
+                    A05ONES-DS-00V05
+                    A12THREES-DS-06V06
+                    A06THREES-DS-03V03 GIVING WRK-DS-06V06.
+           IF       WRK-DS-06V06 EQUAL TO 344777.777443
+                    PERFORM PASS GO TO ADD-WRITE-F2-6.
+           GO       TO ADD-FAIL-F2-6.
+       ADD-DELETE-F2-6.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-6.
+       ADD-FAIL-F2-6.
+           MOVE     WRK-DS-06V06 TO COMPUTED-N.
+           MOVE     344777.777443 TO CORRECT-N.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-6.
+           MOVE     "ADD-TEST-F2-6" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-7.
+           MOVE     ZERO TO WRK-DS-06V00.
+           ADD      A05ONES-DS-00V05
+                    A12THREES-DS-06V06
+                    A05ONES-DS-00V05 GIVING WRK-DS-06V00 ROUNDED.
+           IF      WRK-DS-06V00 EQUAL TO 333334
+           PERFORM PASS GO TO ADD-WRITE-F2-7.
+           GO      TO ADD-FAIL-F2-7.
+       ADD-DELETE-F2-7.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-7.
+       ADD-FAIL-F2-7.
+           MOVE     WRK-DS-06V00 TO COMPUTED-N.
+           MOVE    333334 TO CORRECT-N.
+           PERFORM FAIL.
+       ADD-WRITE-F2-7.
+           MOVE     "ADD-TEST-F2-7" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-INIT-F2-8-1.
+           MOVE     ZERO TO WRK-DS-10V00.
+       ADD-TEST-F2-8-1.
+           ADD      A12ONES-DS-12V00
+                    ZERO GIVING WRK-DS-10V00 ON SIZE ERROR
+                    PERFORM PASS GO TO ADD-WRITE-F2-8-1.
+           GO       TO ADD-FAIL-F2-8-1.
+       ADD-DELETE-F2-8-1.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-8-1.
+       ADD-FAIL-F2-8-1.
+           MOVE     "ON SIZE ERROR NOT EXECUTED" TO RE-MARK.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-8-1.
+           MOVE     "ADD-TEST-F2-8-1" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-TEST-F2-8-2.
+           IF       WRK-DS-10V00 EQUAL TO ZERO
+                    PERFORM PASS GO TO ADD-WRITE-F2-8-2.
+      *>     NOTE     THIS TEST DEPENDS UPON THE RESULT OF ADD-TEST-F2-8-1
+           GO       TO ADD-FAIL-F2-8-2.
+       ADD-DELETE-F2-8-2.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-8-2.
+       ADD-FAIL-F2-8-2.
+           MOVE    "WRONGLY AFFECTED BY SIZE ERROR" TO RE-MARK.
+           MOVE     WRK-DS-10V00 TO COMPUTED-14V4.
+           MOVE     ZERO TO CORRECT-14V4.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-8-2.
+           MOVE     "ADD-TEST-F2-8-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-TEST-F2-9-1.
+           MOVE     ZERO TO WRK-DS-05V00
+           ADD      33333
+                    A06THREES-DS-03V03
+                    A12THREES-DS-06V06
+                    GIVING WRK-DS-05V00 ROUNDED ON SIZE ERROR
+                    PERFORM PASS GO TO ADD-WRITE-F2-9-1.
+           GO       TO ADD-FAIL-F2-9-1.
+       ADD-DELETE-F2-9-1.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-9-1.
+       ADD-FAIL-F2-9-1.
+           MOVE     "ON SIZE ERROR NOT EXECUTED" TO RE-MARK.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-9-1.
+           MOVE     "ADD-TEST-F2-9-1" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-TEST-F2-9-2.
+           IF       WRK-DS-05V00 EQUAL TO ZERO
+                    PERFORM PASS GO TO ADD-WRITE-F2-9-2.
+           GO       TO ADD-FAIL-F2-9-2.
+      *>     NOTE: THIS TEST DEPENDS UPON THE RESULT OF ADD-TEST-F2-9-1
+       ADD-DELETE-F2-9-2.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-9-2.
+       ADD-FAIL-F2-9-2.
+           MOVE    "WRONGLY AFFECTED BY SIZE ERROR" TO RE-MARK.
+           MOVE     WRK-DS-05V00 TO COMPUTED-N.
+           MOVE     ZERO TO CORRECT-N.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-9-2.
+           MOVE     "ADD-TEST-F2-9-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-INIT-F2-10.
+           MOVE     ZERO TO WRK-DS-06V06.
+       ADD-TEST-F2-10-1.
+           ADD      A12THREES-DS-06V06
+                    333333
+                    A06THREES-DS-03V03
+                    GIVING WRK-DS-06V06 ROUNDED ON SIZE ERROR
+                    GO TO ADD-FAIL-F2-10-1.
+           PERFORM  PASS.
+           GO       TO ADD-WRITE-F2-10-1.
+       ADD-DELETE-F2-10-1.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-10-1.
+       ADD-FAIL-F2-10-1.
+           MOVE     "SIZE ERR SHOULD NOT EXECUTE" TO RE-MARK.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-10-1.
+           MOVE     "ADD-TEST-F2-10-1" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-TEST-F2-10-2.
+           IF       WRK-DS-06V06 EQUAL TO 666999.666333
+                    PERFORM PASS GO TO ADD-WRITE-F2-10-2.
+      *>     NOTE: THIS TEST DEPENDS UPON THE RESULT OF ADD-TEST-F2-10-1
+           GO       TO ADD-FAIL-F2-10-2.
+       ADD-DELETE-F2-10-2.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-10-2.
+       ADD-FAIL-F2-10-2.
+           MOVE     WRK-DS-06V06 TO COMPUTED-N.
+           MOVE     666999.666333 TO CORRECT-N.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-10-2.
+           MOVE     "ADD-TEST-F2-10-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-INIT-F2-11.
+           MOVE "  SERIES" TO FEATURE.
+       ADD-TEST-F2-11.
+           MOVE     ZERO TO WRK-DS-03V10.
+           ADD      A99-DS-02V00
+                    A03ONES-DS-02V01
+                    A06ONES-DS-03V03
+                    A08TWOS-DS-02V06
+                    -1.1111111
+                    +.11111111
+                    A01ONE-DS-P0801 GIVING WRK-DS-03V10.
+           IF       WRK-DS-03V10 EQUAL TO 242.4332220110
+                    PERFORM PASS GO TO ADD-WRITE-F2-11.
+           GO       TO ADD-FAIL-F2-11.
+       ADD-DELETE-F2-11.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-11.
+       ADD-FAIL-F2-11.
+           MOVE     WRK-DS-03V10 TO COMPUTED-4V14.
+           MOVE     242.4332220110 TO CORRECT-4V14.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-11.
+           MOVE     "ADD-TEST-F2-11" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-TEST-F2-12.
+           MOVE     ZERO TO WRK-DS-03V10.
+           ADD      A01ONE-DS-P0801
+                    +.11111111
+                    -1.1111111
+                    A08TWOS-DS-02V06
+                    A06ONES-DS-03V03
+                    A03ONES-DS-02V01
+                    A99-DS-02V00 GIVING WRK-DS-03V10.
+           IF       WRK-DS-03V10 EQUAL TO 242.4332220110
+                    PERFORM PASS GO TO ADD-WRITE-F2-12.
+           GO       TO ADD-FAIL-F2-12.
+       ADD-DELETE-F2-12.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-12.
+       ADD-FAIL-F2-12.
+           MOVE     WRK-DS-03V10 TO COMPUTED-4V14.
+           MOVE     242.4332220110 TO CORRECT-4V14.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-12.
+           MOVE     "ADD-TEST-F2-12" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-TEST-F2-13.
+           MOVE     ZERO TO WRK-DS-03V10.
+           ADD      A08TWOS-DS-02V06
+                    A99-DS-02V00
+                    -1.1111111
+                    A03ONES-DS-02V01
+                    A01ONE-DS-P0801
+                    +.11111111
+                    A06ONES-DS-03V03 GIVING WRK-DS-03V10.
+           IF       WRK-DS-03V10 EQUAL TO 242.4332220110
+                    PERFORM PASS GO TO ADD-WRITE-F2-13.
+           GO       TO ADD-FAIL-F2-13.
+       ADD-DELETE-F2-13.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-13.
+       ADD-FAIL-F2-13.
+           MOVE     WRK-DS-03V10 TO COMPUTED-4V14.
+           MOVE     242.4332220110 TO CORRECT-4V14.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-13.
+           MOVE     "ADD-TEST-F2-13" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       ADD-TEST-F2-14.
+           ADD ADD-12 ADD-13 GIVING ADD-14.
+           IF       ADD-14 EQUAL TO 100.001
+                    PERFORM PASS GO TO ADD-WRITE-F2-14.
+           GO       TO ADD-FAIL-F2-14.
+       ADD-DELETE-F2-14.
+           PERFORM DE-LETE.
+           GO       TO ADD-WRITE-F2-14.
+       ADD-FAIL-F2-14.
+           MOVE     ADD-14  TO COMPUTED-N.
+           MOVE     100.001   TO CORRECT-N.
+           PERFORM FAIL.
+       ADD-WRITE-F2-14.
+           MOVE     "ADD-TEST-F2-14" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-15-1.
+           MOVE SPACE TO SIZE-ERR.
+           ADD MINUS-NAME1 MINUS-NAME2 -34 -1 PLUS-NAME1
+               PLUS-NAME2 EVEN-NAME1 35  GIVING WHOLE-FIELD
+               ON SIZE ERROR  MOVE "1" TO SIZE-ERR.
+           IF WHOLE-FIELD EQUAL TO +1
+               PERFORM PASS
+               GO TO ADD-WRITE-F2-15-1.
+           MOVE WHOLE-FIELD TO COMPUTED-18V0.
+           MOVE +1 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO ADD-WRITE-F2-15-1.
+       ADD-DELETE-F2-15-1.
+           PERFORM DE-LETE.
+       ADD-WRITE-F2-15-1.
+           MOVE "ADD-TEST-F2-15-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-15-2.
+           IF SIZE-ERR EQUAL TO "1"
+               PERFORM FAIL
+               MOVE SPACE TO CORRECT-A
+               MOVE 1 TO COMPUTED-A
+               MOVE    "SIZE ERROR SHOULD NOT BE EXECUTED" TO RE-MARK
+               GO TO ADD-WRITE-F2-15-2.
+           PERFORM PASS.
+           GO TO ADD-WRITE-F2-15-2.
+       ADD-DELETE-F2-15-2.
+           PERFORM DE-LETE.
+       ADD-WRITE-F2-15-2.
+           MOVE "ADD-TEST-F2-15-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-16-1.
+           MOVE SPACE TO SIZE-ERR.
+           ADD MINUS-NAME3 MINUS-NAME4 -.34 -.01 PLUS-NAME3
+               PLUS-NAME4 EVEN-NAME2 .35  GIVING DECMAL-FIELD
+               ON SIZE ERROR  MOVE "1" TO SIZE-ERR.
+           IF DECMAL-FIELD EQUAL TO +.1
+               PERFORM PASS
+               GO TO ADD-WRITE-F2-16-1.
+           MOVE DECMAL-FIELD TO COMPUTED-0V18.
+           MOVE +.1 TO CORRECT-0V18.
+           PERFORM FAIL.
+           GO TO ADD-WRITE-F2-16-1.
+       ADD-DELETE-F2-16-1.
+           PERFORM DE-LETE.
+       ADD-WRITE-F2-16-1.
+           MOVE "ADD-TEST-F2-16-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-16-2.
+           IF SIZE-ERR EQUAL TO "1"
+               PERFORM FAIL
+               MOVE SPACE TO CORRECT-A
+               MOVE 1 TO COMPUTED-A
+               MOVE "SIZE ERROR PRECEDING TEST  " TO RE-MARK
+               GO TO ADD-WRITE-F2-16-2.
+           PERFORM PASS.
+           GO TO ADD-WRITE-F2-16-2.
+       ADD-DELETE-F2-16-2.
+           PERFORM DE-LETE.
+       ADD-WRITE-F2-16-2.
+           MOVE "ADD-TEST-F2-16-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-17.
+           MOVE ZERO TO WRK-CS-18V00.
+           ADD A18ONES-CS-18V00  A18ONES-DS-18V00 GIVING WRK-CS-18V00.
+           IF WRK-CS-18V00 EQUAL TO 222222222222222222
+               PERFORM PASS
+               GO TO ADD-WRITE-F2-17.
+           MOVE 222222222222222222 TO CORRECT-18V0.
+           MOVE WRK-CS-18V00 TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO ADD-WRITE-F2-17.
+       ADD-DELETE-F2-17.
+           PERFORM DE-LETE.
+       ADD-WRITE-F2-17.
+           MOVE "ADD-TEST-F2-17 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-18.
+           MOVE ZERO TO WRK-CS-18V00.
+           ADD A18FIVES-CS-18V00  A18SIXES-CS-18V00 GIVING
+                   WRK-CS-18V00.
+           IF WRK-CS-18V00 EQUAL TO 111111111111111111
+               PERFORM PASS
+               GO TO ADD-WRITE-F2-18.
+           MOVE 111111111111111111 TO CORRECT-18V0.
+           MOVE WRK-CS-18V00 TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO ADD-WRITE-F2-18.
+       ADD-DELETE-F2-18.
+           PERFORM DE-LETE.
+       ADD-WRITE-F2-18.
+           MOVE "ADD-TEST-F2-18 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-19.
+           MOVE ZERO TO WRK-DS-18V00.
+           ADD A18SIXES-CS-18V00  A12SEVENS-CU-18V00 GIVING
+                   WRK-DS-18V00.
+           IF WRK-DS-18V00 EQUAL TO 666667444444444443
+               PERFORM PASS
+               GO TO ADD-WRITE-F2-19.
+           MOVE 666667444444444443 TO CORRECT-18V0.
+           MOVE WRK-DS-18V00 TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO ADD-WRITE-F2-19.
+       ADD-DELETE-F2-19.
+           PERFORM DE-LETE.
+       ADD-WRITE-F2-19.
+           MOVE "ADD-TEST-F2-19 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-20.
+           MOVE ZERO TO WRK-CS-18V00.
+           ADD A14TWOS-CS-18V00  A12THREES-CU-18V00 GIVING
+                   WRK-CS-18V00 ROUNDED.
+           IF WRK-CS-18V00 EQUAL TO -000021888888888889
+               PERFORM PASS
+               GO TO ADD-WRITE-F2-20.
+           MOVE -000021888888888889 TO CORRECT-18V0.
+           MOVE WRK-CS-18V00 TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO ADD-WRITE-F2-20.
+       ADD-DELETE-F2-20.
+           PERFORM DE-LETE.
+       ADD-WRITE-F2-20.
+           MOVE "ADD-TEST-F2-20 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-21.
+           MOVE ZERO TO WRK-CS-18V00.
+           ADD A14TWOS-CS-18V00  A14TWOS-CS-18V00
+                   GIVING WRK-CS-18V00.
+           IF WRK-CS-18V00 EQUAL TO -000044444444444444
+               PERFORM PASS
+               GO TO ADD-WRITE-F2-21.
+           MOVE -000044444444444444 TO CORRECT-18V0.
+           MOVE WRK-CS-18V00 TO COMPUTED-18V0.
+           PERFORM FAIL.
+           GO TO ADD-WRITE-F2-21.
+       ADD-DELETE-F2-21.
+           PERFORM DE-LETE.
+       ADD-WRITE-F2-21.
+           MOVE "ADD-TEST-F2-21 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       ADD-TEST-F2-22.
+           MOVE ZERO TO WRK-DU-18V00.
+           ADD A14TWOS-CS-18V00  A18FIVES-CS-18V00 GIVING
+                   WRK-DU-18V00.
+           IF WRK-DU-18V00 EQUAL TO 555577777777777777
+               PERFORM PASS
+               GO TO ADD-WRITE-F2-22.
+           MOVE WRK-DU-18V00 TO COMPUTED-18V0.
+           MOVE 555577777777777777 TO CORRECT-18V0.
+           PERFORM FAIL.
+           GO TO ADD-WRITE-F2-22.
+       ADD-DELETE-F2-22.
+           PERFORM DE-LETE.
+       ADD-WRITE-F2-22.
+           MOVE "ADD-TEST-F2-22 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-23.
+      *>     ==-->  NEW SIZE ERROR TESTS  <--==
+           MOVE   "VI-67 6.4.2" TO ANSI-REFERENCE.
+           MOVE     ZERO TO WRK-DS-10V00.
+       ADD-TEST-F2-23.
+           ADD      A12ONES-DS-12V00
+                    ZERO GIVING WRK-DS-10V00
+                    NOT ON SIZE ERROR
+                    MOVE "NOT ON SIZE ERROR SHOULD NOT BE EXECUTED"
+                         TO RE-MARK
+                    PERFORM FAIL GO TO ADD-WRITE-F2-23.
+           GO       TO ADD-PASS-F2-23.
+       ADD-DELETE-F2-23.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-23.
+       ADD-PASS-F2-23.
+           PERFORM  PASS.
+       ADD-WRITE-F2-23.
+           MOVE     "ADD-TEST-F2-23" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-24.
+      *>     ==-->  NEW SIZE ERROR TESTS  <--==
+           MOVE   "VI-67 6.4.2" TO ANSI-REFERENCE.
+           MOVE     ZERO TO WRK-DS-06V06.
+       ADD-TEST-F2-24.
+           ADD      A12THREES-DS-06V06
+                    333333
+                    A06THREES-DS-03V03
+                    GIVING WRK-DS-06V06 ROUNDED
+                    NOT ON SIZE ERROR
+                    PERFORM PASS
+                    GO TO   ADD-WRITE-F2-24.
+           GO TO    ADD-FAIL-F2-24.
+       ADD-DELETE-F2-24.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-24.
+       ADD-FAIL-F2-24.
+           MOVE   "NOT ON SIZE ERROR SHOULD HAVE EXECUTED" TO RE-MARK.
+           PERFORM FAIL.
+       ADD-WRITE-F2-24.
+           MOVE     "ADD-TEST-F2-24" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-25.
+      *>     ==-->  NEW SIZE ERROR TESTS  <--==
+           MOVE   "VI-67 6.4.2" TO ANSI-REFERENCE.
+           MOVE     ZERO TO WRK-DS-10V00.
+       ADD-TEST-F2-25.
+           ADD      A12ONES-DS-12V00
+                    ZERO GIVING WRK-DS-10V00
+                    ON SIZE ERROR
+                    GO TO ADD-PASS-F2-25
+                    NOT ON SIZE ERROR
+                    MOVE "NOT ON SIZE ERROR SHOULD NOT BE EXECUTED"
+                         TO RE-MARK
+                    PERFORM FAIL GO TO ADD-WRITE-F2-25.
+       ADD-DELETE-F2-25.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-25.
+       ADD-PASS-F2-25.
+           PERFORM  PASS.
+       ADD-WRITE-F2-25.
+           MOVE     "ADD-TEST-F2-25" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-26.
+      *>     ==-->  NEW SIZE ERROR TESTS  <--==
+           MOVE   "VI-67 6.4.2" TO ANSI-REFERENCE.
+           MOVE     ZERO TO WRK-DS-06V06.
+       ADD-TEST-F2-26.
+           ADD      A12THREES-DS-06V06
+                    333333
+                    A06THREES-DS-03V03
+                    GIVING WRK-DS-06V06 ROUNDED
+                    ON SIZE ERROR
+                    GO TO    ADD-FAIL-F2-26
+                    NOT ON SIZE ERROR
+                    PERFORM PASS
+                    GO TO   ADD-WRITE-F2-26.
+       ADD-DELETE-F2-26.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-26.
+       ADD-FAIL-F2-26.
+           MOVE   "NOT ON SIZE ERROR SHOULD HAVE EXECUTED" TO RE-MARK.
+           PERFORM FAIL.
+       ADD-WRITE-F2-26.
+           MOVE     "ADD-TEST-F2-26" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-27.
+      *>     ==-->  NEW SIZE ERROR TESTS  <--==
+           MOVE   "VI-74 6.6.4 GR2" TO ANSI-REFERENCE.
+           MOVE   "ADD-TEST-F2-27" TO PAR-NAME.
+           MOVE    1    TO REC-CT.
+           MOVE    1.1  TO WRK-DU-1V1-1.
+           MOVE    2.3  TO WRK-DU-1V1-2.
+           MOVE    ZERO TO WRK-DU-2V0-1.
+           MOVE    ZERO TO WRK-DU-2V1-1.
+           MOVE    ZERO TO WRK-DU-2V0-2.
+           MOVE    ZERO TO WRK-DU-2V1-2.
+           MOVE    ZERO TO WRK-DU-2V0-3.
+           MOVE    ZERO TO WRK-DU-2V1-3.
+       ADD-GIVING-TEST-F2-27-0.
+           ADD WRK-DU-1V1-1 6 WRK-DU-1V1-2 GIVING WRK-DU-2V1-1
+               WRK-DU-2V0-1 ROUNDED WRK-DU-2V1-2 WRK-DU-2V0-2 ROUNDED
+               WRK-DU-2V1-3 WRK-DU-2V0-3.
+           GO TO ADD-TEST-F2-27-1.
+       ADD-DELETE-F2-27.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-28.
+       ADD-TEST-F2-27-1.
+           IF WRK-DU-2V1-1 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-1 TO COMPUTED-N MOVE 9.4
+               TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-27-2.
+           IF WRK-DU-2V0-1 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-1 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-ADD-TEST-F2-27-3.
+           IF WRK-DU-2V1-2 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-2 TO COMPUTED-N MOVE 9.4
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-27-4.
+           IF WRK-DU-2V0-2 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-2 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-27-5.
+           IF WRK-DU-2V1-3 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-3 TO COMPUTED-N MOVE 9.4
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-27-6.
+           IF WRK-DU-2V0-3 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-3 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-28.
+      *>     ==-->  NEW SIZE ERROR TESTS  <--==
+      *>     ==-->      SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.2"    TO ANSI-REFERENCE.
+           MOVE    1     TO REC-CT.
+           MOVE    1.1   TO WRK-DU-1V1-1.
+           MOVE    2.3   TO WRK-DU-1V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-1.
+           MOVE    ZERO  TO WRK-DU-2V1-1.
+           MOVE    ZERO  TO WRK-DU-2V0-2.
+           MOVE    ZERO  TO WRK-DU-2V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-3.
+           MOVE    ZERO  TO WRK-DU-2V1-3.
+           MOVE    SPACE TO SIZE-ERR2.
+       ADD-GIVING-TEST-F2-28-0.
+           ADD     A17TWOS-DS-17V00
+                   WRK-DU-1V1-1
+                   6
+                   WRK-DU-1V1-2
+            GIVING WRK-DU-2V1-1
+               WRK-DU-2V0-1 ROUNDED WRK-DU-2V1-2 WRK-DU-2V0-2 ROUNDED
+               WRK-DU-2V1-3 WRK-DU-2V0-3
+               ON SIZE ERROR
+                  MOVE "A" TO SIZE-ERR2.
+           GO TO  ADD-TEST-F2-28-1.
+       ADD-DELETE-F2-28.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-29.
+       ADD-TEST-F2-28-1.
+           MOVE   "ADD-TEST-F2-28-1" TO PAR-NAME.
+           IF WRK-DU-2V1-1 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-1 TO COMPUTED-N MOVE ZERO
+               TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-28-2.
+           MOVE   "ADD-TEST-F2-28-2" TO PAR-NAME.
+           IF WRK-DU-2V0-1 = ZERO  PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-1 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-ADD-TEST-F2-28-3.
+           MOVE   "ADD-TEST-F2-28-3" TO PAR-NAME.
+           IF WRK-DU-2V1-2 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-2 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-28-4.
+           MOVE   "ADD-TEST-F2-28-4" TO PAR-NAME.
+           IF WRK-DU-2V0-2 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-2 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-28-5.
+           MOVE   "ADD-TEST-F2-28-5" TO PAR-NAME.
+           IF WRK-DU-2V1-3 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-3 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-28-6.
+           MOVE   "ADD-TEST-F2-28-6" TO PAR-NAME.
+           IF WRK-DU-2V0-3 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-3 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-28-7.
+           MOVE   "ADD-TEST-F2-28-7" TO PAR-NAME.
+           IF      SIZE-ERR2 = "A"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   MOVE   "A"        TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-29.
+      *>     ==-->  NEW SIZE ERROR TESTS  <--==
+      *>     ==-->   NO SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.2" TO ANSI-REFERENCE.
+           MOVE    1     TO REC-CT.
+           MOVE    1.1   TO WRK-DU-1V1-1.
+           MOVE    2.3   TO WRK-DU-1V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-1.
+           MOVE    ZERO  TO WRK-DU-2V1-1.
+           MOVE    ZERO  TO WRK-DU-2V0-2.
+           MOVE    ZERO  TO WRK-DU-2V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-3.
+           MOVE    ZERO  TO WRK-DU-2V1-3.
+           MOVE    SPACE TO SIZE-ERR2.
+       ADD-GIVING-TEST-F2-29-0.
+           ADD WRK-DU-1V1-1 6 WRK-DU-1V1-2 GIVING WRK-DU-2V1-1
+               WRK-DU-2V0-1 ROUNDED WRK-DU-2V1-2 WRK-DU-2V0-2 ROUNDED
+               WRK-DU-2V1-3 WRK-DU-2V0-3
+               ON SIZE ERROR
+                  MOVE "A" TO SIZE-ERR2.
+           GO TO  ADD-TEST-F2-29-1.
+       ADD-DELETE-F2-29.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-30.
+       ADD-TEST-F2-29-1.
+           MOVE   "ADD-TEST-F2-29-1" TO PAR-NAME.
+           IF WRK-DU-2V1-1 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-1 TO COMPUTED-N MOVE 9.4
+               TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-29-2.
+           MOVE   "ADD-TEST-F2-29-2" TO PAR-NAME.
+           IF WRK-DU-2V0-1 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-1 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-ADD-TEST-F2-29-3.
+           MOVE   "ADD-TEST-F2-29-3" TO PAR-NAME.
+           IF WRK-DU-2V1-2 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-2 TO COMPUTED-N MOVE 9.4
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-29-4.
+           MOVE   "ADD-TEST-F2-29-4" TO PAR-NAME.
+           IF WRK-DU-2V0-2 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-2 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-29-5.
+           MOVE   "ADD-TEST-F2-29-5" TO PAR-NAME.
+           IF WRK-DU-2V1-3 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-3 TO COMPUTED-N MOVE 9.4
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-29-6.
+           MOVE   "ADD-TEST-F2-29-6" TO PAR-NAME.
+           IF WRK-DU-2V0-3 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-3 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-29-7.
+           MOVE   "ADD-TEST-F2-29-7" TO PAR-NAME.
+           IF      SIZE-ERR2 = SPACE
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "ON SIZE ERROR SHOULD NOT BE EXECUTED"
+                        TO RE-MARK
+                   MOVE    SPACE     TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-30.
+      *>     ==-->  NEW SIZE ERROR TESTS  <--==
+      *>     ==-->      SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.2"    TO ANSI-REFERENCE.
+           MOVE    1     TO REC-CT.
+           MOVE    1.1   TO WRK-DU-1V1-1.
+           MOVE    2.3   TO WRK-DU-1V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-1.
+           MOVE    ZERO  TO WRK-DU-2V1-1.
+           MOVE    ZERO  TO WRK-DU-2V0-2.
+           MOVE    ZERO  TO WRK-DU-2V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-3.
+           MOVE    ZERO  TO WRK-DU-2V1-3.
+           MOVE    SPACE TO SIZE-ERR2.
+       ADD-GIVING-TEST-F2-30-0.
+           ADD     A17TWOS-DS-17V00
+                   WRK-DU-1V1-1
+                   6
+                   WRK-DU-1V1-2
+            GIVING WRK-DU-2V1-1
+               WRK-DU-2V0-1 ROUNDED WRK-DU-2V1-2 WRK-DU-2V0-2 ROUNDED
+               WRK-DU-2V1-3 WRK-DU-2V0-3
+            NOT ON SIZE ERROR
+                   MOVE "A" TO SIZE-ERR2.
+           GO TO   ADD-TEST-F2-30-1.
+       ADD-DELETE-F2-30.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-31.
+       ADD-TEST-F2-30-1.
+           MOVE   "ADD-TEST-F2-30-1" TO PAR-NAME.
+           IF WRK-DU-2V1-1 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-1 TO COMPUTED-N MOVE ZERO
+               TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-30-2.
+           MOVE   "ADD-TEST-F2-30-2" TO PAR-NAME.
+           IF WRK-DU-2V0-1 = ZERO  PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-1 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-ADD-TEST-F2-30-3.
+           MOVE   "ADD-TEST-F2-30-3" TO PAR-NAME.
+           IF WRK-DU-2V1-2 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-2 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-30-4.
+           MOVE   "ADD-TEST-F2-30-4" TO PAR-NAME.
+           IF WRK-DU-2V0-2 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-2 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-30-5.
+           MOVE   "ADD-TEST-F2-30-5" TO PAR-NAME.
+           IF WRK-DU-2V1-3 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-3 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-30-6.
+           MOVE   "ADD-TEST-F2-30-6" TO PAR-NAME.
+           IF WRK-DU-2V0-3 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-3 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-30-7.
+           MOVE   "ADD-TEST-F2-30-7" TO PAR-NAME.
+           IF      SIZE-ERR2 = SPACE
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "NOT ON SIZE ERROR SHOULD NOT BE EXECUTED"
+                        TO RE-MARK
+                   MOVE    SPACE     TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-31.
+      *>     ==-->  NEW SIZE ERROR TESTS  <--==
+      *>     ==-->   NO SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.2" TO ANSI-REFERENCE.
+           MOVE    1     TO REC-CT.
+           MOVE    1.1   TO WRK-DU-1V1-1.
+           MOVE    2.3   TO WRK-DU-1V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-1.
+           MOVE    ZERO  TO WRK-DU-2V1-1.
+           MOVE    ZERO  TO WRK-DU-2V0-2.
+           MOVE    ZERO  TO WRK-DU-2V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-3.
+           MOVE    ZERO  TO WRK-DU-2V1-3.
+           MOVE    SPACE TO SIZE-ERR2.
+       ADD-GIVING-TEST-F2-31-0.
+           ADD WRK-DU-1V1-1 6 WRK-DU-1V1-2 GIVING WRK-DU-2V1-1
+               WRK-DU-2V0-1 ROUNDED WRK-DU-2V1-2 WRK-DU-2V0-2 ROUNDED
+               WRK-DU-2V1-3 WRK-DU-2V0-3
+            NOT ON SIZE ERROR
+                   MOVE "A" TO SIZE-ERR2.
+           GO TO   ADD-TEST-F2-31-1.
+       ADD-DELETE-F2-31.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-32.
+       ADD-TEST-F2-31-1.
+           MOVE   "ADD-TEST-F2-31-1" TO PAR-NAME.
+           IF WRK-DU-2V1-1 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-1 TO COMPUTED-N MOVE 9.4
+               TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-31-2.
+           MOVE   "ADD-TEST-F2-31-2" TO PAR-NAME.
+           IF WRK-DU-2V0-1 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-1 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-ADD-TEST-F2-31-3.
+           MOVE   "ADD-TEST-F2-31-3" TO PAR-NAME.
+           IF WRK-DU-2V1-2 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-2 TO COMPUTED-N MOVE 9.4
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-31-4.
+           MOVE   "ADD-TEST-F2-31-4" TO PAR-NAME.
+           IF WRK-DU-2V0-2 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-2 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-31-5.
+           MOVE   "ADD-TEST-F2-31-5" TO PAR-NAME.
+           IF WRK-DU-2V1-3 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-3 TO COMPUTED-N MOVE 9.4
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-31-6.
+           MOVE   "ADD-TEST-F2-31-6" TO PAR-NAME.
+           IF WRK-DU-2V0-3 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-3 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-31-7.
+           MOVE   "ADD-TEST-F2-31-7" TO PAR-NAME.
+           IF      SIZE-ERR2 = "A"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "NOT ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   MOVE   "A"        TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-32.
+      *>     ==-->  NEW SIZE ERROR TESTS  <--==
+      *>     ==-->      SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.2"    TO ANSI-REFERENCE.
+           MOVE    1     TO REC-CT.
+           MOVE    1.1   TO WRK-DU-1V1-1.
+           MOVE    2.3   TO WRK-DU-1V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-1.
+           MOVE    ZERO  TO WRK-DU-2V1-1.
+           MOVE    ZERO  TO WRK-DU-2V0-2.
+           MOVE    ZERO  TO WRK-DU-2V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-3.
+           MOVE    ZERO  TO WRK-DU-2V1-3.
+           MOVE    SPACE TO SIZE-ERR2.
+       ADD-GIVING-TEST-F2-32-0.
+           ADD     A17TWOS-DS-17V00
+                   WRK-DU-1V1-1
+                   6
+                   WRK-DU-1V1-2
+            GIVING WRK-DU-2V1-1
+               WRK-DU-2V0-1 ROUNDED WRK-DU-2V1-2 WRK-DU-2V0-2 ROUNDED
+               WRK-DU-2V1-3 WRK-DU-2V0-3
+                ON SIZE ERROR
+                   MOVE "A" TO SIZE-ERR2
+            NOT ON SIZE ERROR
+                   MOVE "B" TO SIZE-ERR2.
+           GO TO   ADD-TEST-F2-32-1.
+       ADD-DELETE-F2-32.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-33.
+       ADD-TEST-F2-32-1.
+           MOVE   "ADD-TEST-F2-32-1" TO PAR-NAME.
+           IF WRK-DU-2V1-1 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-1 TO COMPUTED-N MOVE ZERO
+               TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-32-2.
+           MOVE   "ADD-TEST-F2-32-2" TO PAR-NAME.
+           IF WRK-DU-2V0-1 = ZERO  PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-1 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-ADD-TEST-F2-32-3.
+           MOVE   "ADD-TEST-F2-32-3" TO PAR-NAME.
+           IF WRK-DU-2V1-2 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-2 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-32-4.
+           MOVE   "ADD-TEST-F2-32-4" TO PAR-NAME.
+           IF WRK-DU-2V0-2 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-2 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-32-5.
+           MOVE   "ADD-TEST-F2-32-5" TO PAR-NAME.
+           IF WRK-DU-2V1-3 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-3 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-32-6.
+           MOVE   "ADD-TEST-F2-32-6" TO PAR-NAME.
+           IF WRK-DU-2V0-3 = ZERO PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-3 TO COMPUTED-N MOVE ZERO
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-32-7.
+           MOVE   "ADD-TEST-F2-32-7" TO PAR-NAME.
+           IF      SIZE-ERR2 = "A"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   MOVE   "A"        TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-33.
+      *>     ==-->  NEW SIZE ERROR TESTS  <--==
+      *>     ==-->   NO SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.2" TO ANSI-REFERENCE.
+           MOVE    1     TO REC-CT.
+           MOVE    1.1   TO WRK-DU-1V1-1.
+           MOVE    2.3   TO WRK-DU-1V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-1.
+           MOVE    ZERO  TO WRK-DU-2V1-1.
+           MOVE    ZERO  TO WRK-DU-2V0-2.
+           MOVE    ZERO  TO WRK-DU-2V1-2.
+           MOVE    ZERO  TO WRK-DU-2V0-3.
+           MOVE    ZERO  TO WRK-DU-2V1-3.
+           MOVE    SPACE TO SIZE-ERR2.
+       ADD-GIVING-TEST-F2-33-0.
+           ADD WRK-DU-1V1-1 6 WRK-DU-1V1-2 GIVING WRK-DU-2V1-1
+               WRK-DU-2V0-1 ROUNDED WRK-DU-2V1-2 WRK-DU-2V0-2 ROUNDED
+               WRK-DU-2V1-3 WRK-DU-2V0-3
+                ON SIZE ERROR
+                   MOVE "A" TO SIZE-ERR2
+            NOT ON SIZE ERROR
+                   MOVE "B" TO SIZE-ERR2.
+           GO TO   ADD-TEST-F2-33-1.
+       ADD-DELETE-F2-33.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-34.
+       ADD-TEST-F2-33-1.
+           MOVE   "ADD-TEST-F2-33-1" TO PAR-NAME.
+           IF WRK-DU-2V1-1 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-1 TO COMPUTED-N MOVE 9.4
+               TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-33-2.
+           MOVE   "ADD-TEST-F2-33-2" TO PAR-NAME.
+           IF WRK-DU-2V0-1 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-1 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-ADD-TEST-F2-33-3.
+           MOVE   "ADD-TEST-F2-33-3" TO PAR-NAME.
+           IF WRK-DU-2V1-2 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-2 TO COMPUTED-N MOVE 9.4
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-33-4.
+           MOVE   "ADD-TEST-F2-33-4" TO PAR-NAME.
+           IF WRK-DU-2V0-2 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-2 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-33-5.
+           MOVE   "ADD-TEST-F2-33-5" TO PAR-NAME.
+           IF WRK-DU-2V1-3 = 9.4 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V1-3 TO COMPUTED-N MOVE 9.4
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-33-6.
+           MOVE   "ADD-TEST-F2-33-6" TO PAR-NAME.
+           IF WRK-DU-2V0-3 = 9 PERFORM PASS PERFORM PRINT-DETAIL
+           ELSE
+           PERFORM FAIL MOVE WRK-DU-2V0-3 TO COMPUTED-N MOVE 9
+           TO CORRECT-N PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       ADD-TEST-F2-33-7.
+           MOVE   "ADD-TEST-F2-33-7" TO PAR-NAME.
+           IF      SIZE-ERR2 = "B"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "NOT ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   MOVE   "B"        TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-34.
+      *>     ==-->EXPLICIT SCOPE TERMINATOR<--==
+      *>     ==-->      SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.3" TO ANSI-REFERENCE.
+           MOVE   "ADD-TEST-F2-34" TO PAR-NAME.
+           MOVE    ZERO  TO WRK-DS-10V00.
+           MOVE    1     TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001.
+           MOVE    SPACE TO SIZE-ERR2.
+           MOVE    SPACE TO SIZE-ERR3.
+           MOVE    SPACE TO SIZE-ERR4.
+       ADD-TEST-F2-34-0.
+           ADD     A12ONES-DS-12V00
+                   ZERO
+            GIVING WRK-DS-10V00
+                ON SIZE ERROR
+                   MOVE "A" TO SIZE-ERR2
+                   MOVE "B" TO SIZE-ERR3
+                   MOVE "C" TO SIZE-ERR4
+           END-ADD
+           MOVE   "1" TO WRK-XN-00001.
+           GO TO   ADD-TEST-F2-34-1.
+       ADD-DELETE-F2-34.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-35.
+       ADD-TEST-F2-34-1.
+           MOVE   "ADD-TEST-F2-34-1" TO PAR-NAME.
+           IF      SIZE-ERR2 = "A"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "A"        TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   MOVE   "ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-34-2.
+           MOVE   "ADD-TEST-F2-34-2" TO PAR-NAME.
+           IF      SIZE-ERR3 = "B"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "B"        TO CORRECT-X
+                   MOVE    SIZE-ERR3 TO COMPUTED-X
+                   MOVE   "ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-34-3.
+           MOVE   "ADD-TEST-F2-34-3" TO PAR-NAME.
+           IF      SIZE-ERR4 = "C"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "C"        TO CORRECT-X
+                   MOVE    SIZE-ERR4 TO COMPUTED-X
+                   MOVE   "ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-34-4.
+           MOVE   "ADD-TEST-F2-34-4" TO PAR-NAME.
+           IF      WRK-XN-00001 = "1"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "1"           TO CORRECT-X
+                   MOVE    WRK-XN-00001 TO COMPUTED-X
+                   MOVE   "SCOPE TERMINATOR IGNORED" TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-34-5.
+           MOVE   "ADD-TEST-F2-34-5" TO PAR-NAME.
+           IF      WRK-DS-10V00  = ZERO
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE    ZERO         TO CORRECT-N
+                   MOVE    WRK-DS-10V00 TO COMPUTED-N
+                   MOVE   "WRONGLY AFFECTED BY SIZE ERROR"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-35.
+      *>     ==-->EXPLICIT SCOPE TERMINATOR<--==
+      *>     ==-->   NO SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.3" TO ANSI-REFERENCE.
+           MOVE   "ADD-TEST-F2-35" TO PAR-NAME.
+           MOVE    1     TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001.
+           MOVE    SPACE TO SIZE-ERR2.
+           MOVE    SPACE TO SIZE-ERR3.
+           MOVE    SPACE TO SIZE-ERR4.
+           MOVE     ZERO TO WRK-DS-06V06.
+       ADD-TEST-F2-35-0.
+           ADD     A12THREES-DS-06V06
+                   333333
+                   A06THREES-DS-03V03
+            GIVING WRK-DS-06V06 ROUNDED
+                ON SIZE ERROR
+                   MOVE "A" TO SIZE-ERR2
+                   MOVE "B" TO SIZE-ERR3
+                   MOVE "C" TO SIZE-ERR4
+           END-ADD
+           MOVE   "1" TO WRK-XN-00001.
+           GO TO   ADD-TEST-F2-35-1.
+       ADD-DELETE-F2-35.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-36.
+       ADD-TEST-F2-35-1.
+           MOVE   "ADD-TEST-F2-35-1" TO PAR-NAME.
+           IF      SIZE-ERR2 = SPACE
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE    SPACE     TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   MOVE   "ON SIZE ERROR SHOULD NOT BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-35-2.
+           MOVE   "ADD-TEST-F2-35-2" TO PAR-NAME.
+           IF      SIZE-ERR3 = SPACE
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE    SPACE     TO CORRECT-X
+                   MOVE    SIZE-ERR3 TO COMPUTED-X
+                   MOVE   "ON SIZE ERROR SHOULD NOT BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-35-3.
+           MOVE   "ADD-TEST-F2-35-3" TO PAR-NAME.
+           IF      SIZE-ERR4 = SPACE
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "C"        TO CORRECT-X
+                   MOVE    SIZE-ERR4 TO COMPUTED-X
+                   MOVE   "ON SIZE ERROR SHOULD NOT BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-35-4.
+           MOVE   "ADD-TEST-F2-35-4" TO PAR-NAME.
+           IF      WRK-XN-00001 = "1"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "1"           TO CORRECT-X
+                   MOVE    WRK-XN-00001 TO COMPUTED-X
+                   MOVE   "SCOPE TERMINATOR IGNORED" TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-35-5.
+           MOVE   "ADD-TEST-F2-35-5" TO PAR-NAME.
+           IF      WRK-DS-06V06 = 666999.666333
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE    666999.666333 TO CORRECT-N
+                   MOVE    WRK-DS-06V06  TO COMPUTED-N
+                   MOVE   "WRONGLY AFFECTED BY SIZE ERROR"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-36.
+      *>     ==-->EXPLICIT SCOPE TERMINATOR<--==
+      *>     ==-->      SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.3" TO ANSI-REFERENCE.
+           MOVE   "ADD-TEST-F2-36" TO PAR-NAME.
+           MOVE    ZERO  TO WRK-DS-10V00.
+           MOVE    1     TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001.
+           MOVE    SPACE TO SIZE-ERR2.
+           MOVE    SPACE TO SIZE-ERR3.
+           MOVE    SPACE TO SIZE-ERR4.
+       ADD-TEST-F2-36-0.
+           ADD     A12ONES-DS-12V00
+                   ZERO
+            GIVING WRK-DS-10V00
+            NOT ON SIZE ERROR
+                   MOVE "A" TO SIZE-ERR2
+                   MOVE "B" TO SIZE-ERR3
+                   MOVE "C" TO SIZE-ERR4
+           END-ADD
+           MOVE   "1" TO WRK-XN-00001.
+           GO TO   ADD-TEST-F2-36-1.
+       ADD-DELETE-F2-36.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-37.
+       ADD-TEST-F2-36-1.
+           MOVE   "ADD-TEST-F2-36-1" TO PAR-NAME.
+           IF      SIZE-ERR2 = SPACE
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE    SPACE     TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   MOVE   "NOT ON SIZE ERROR SHOULD NOT BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-36-2.
+           MOVE   "ADD-TEST-F2-36-2" TO PAR-NAME.
+           IF      SIZE-ERR3 = SPACE
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE    SPACE     TO CORRECT-X
+                   MOVE    SIZE-ERR3 TO COMPUTED-X
+                   MOVE   "NOT ON SIZE ERROR SHOULD NOT BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-36-3.
+           MOVE   "ADD-TEST-F2-36-3" TO PAR-NAME.
+           IF      SIZE-ERR4 = SPACE
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE    SPACE     TO CORRECT-X
+                   MOVE    SIZE-ERR4 TO COMPUTED-X
+                   MOVE   "NOT ON SIZE ERROR SHOULD NOT BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-36-4.
+           MOVE   "ADD-TEST-F2-36-4" TO PAR-NAME.
+           IF      WRK-XN-00001 = "1"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "1"           TO CORRECT-X
+                   MOVE    WRK-XN-00001 TO COMPUTED-X
+                   MOVE   "SCOPE TERMINATOR IGNORED" TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-36-5.
+           MOVE   "ADD-TEST-F2-36-5" TO PAR-NAME.
+           IF      WRK-DS-10V00 = ZERO
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE    ZERO         TO CORRECT-N
+                   MOVE    WRK-DS-10V00 TO COMPUTED-N
+                   MOVE   "WRONGLY AFFECTED BY SIZE ERROR"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-37.
+      *>     ==-->EXPLICIT SCOPE TERMINATOR<--==
+      *>     ==-->   NO SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.3" TO ANSI-REFERENCE.
+           MOVE   "ADD-TEST-F2-37" TO PAR-NAME.
+           MOVE    1     TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001.
+           MOVE    SPACE TO SIZE-ERR2.
+           MOVE    SPACE TO SIZE-ERR3.
+           MOVE    SPACE TO SIZE-ERR4.
+           MOVE     ZERO TO WRK-DS-06V06.
+       ADD-TEST-F2-37-0.
+           ADD     A12THREES-DS-06V06
+                   333333
+                   A06THREES-DS-03V03
+            GIVING WRK-DS-06V06 ROUNDED
+            NOT ON SIZE ERROR
+                   MOVE "A" TO SIZE-ERR2
+                   MOVE "B" TO SIZE-ERR3
+                   MOVE "C" TO SIZE-ERR4
+           END-ADD
+           MOVE   "1" TO WRK-XN-00001.
+           GO TO   ADD-TEST-F2-37-1.
+       ADD-DELETE-F2-37.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-38.
+       ADD-TEST-F2-37-1.
+           MOVE   "ADD-TEST-F2-37-1" TO PAR-NAME.
+           IF      SIZE-ERR2 = "A"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "A"        TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   MOVE   "NOT ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-37-2.
+           MOVE   "ADD-TEST-F2-37-2" TO PAR-NAME.
+           IF      SIZE-ERR3 = "B"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "B"        TO CORRECT-X
+                   MOVE    SIZE-ERR3 TO COMPUTED-X
+                   MOVE   "NOT ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-37-3.
+           MOVE   "ADD-TEST-F2-37-3" TO PAR-NAME
+           IF      SIZE-ERR4 = "C"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "C"        TO CORRECT-X
+                   MOVE    SIZE-ERR4 TO COMPUTED-X
+                   MOVE   "NOT ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-37-4.
+           MOVE   "ADD-TEST-F2-37-4" TO PAR-NAME.
+           IF      WRK-XN-00001 = "1"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "1"           TO CORRECT-X
+                   MOVE    WRK-XN-00001 TO COMPUTED-X
+                   MOVE   "SCOPE TERMINATOR IGNORED" TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-37-5.
+           MOVE   "ADD-TEST-F2-37-5" TO PAR-NAME.
+           IF      WRK-DS-06V06 = 666999.666333
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE    666999.666333 TO CORRECT-N
+                   MOVE    WRK-DS-06V06  TO COMPUTED-N
+                   MOVE   "WRONGLY AFFECTED BY SIZE ERROR"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-38.
+      *>     ==-->EXPLICIT SCOPE TERMINATOR<--==
+      *>     ==-->      SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.3" TO ANSI-REFERENCE.
+           MOVE   "ADD-TEST-F2-38" TO PAR-NAME.
+           MOVE    ZERO  TO WRK-DS-10V00.
+           MOVE    1     TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001.
+           MOVE    SPACE TO SIZE-ERR2.
+           MOVE    SPACE TO SIZE-ERR3.
+           MOVE    SPACE TO SIZE-ERR4.
+       ADD-TEST-F2-38-0.
+           ADD     A12ONES-DS-12V00
+                   ZERO
+            GIVING WRK-DS-10V00
+                ON SIZE ERROR
+                   MOVE "A" TO SIZE-ERR2
+            NOT ON SIZE ERROR
+                   MOVE "X" TO SIZE-ERR2
+           END-ADD
+           MOVE   "1" TO WRK-XN-00001.
+           GO TO   ADD-TEST-F2-38-1.
+       ADD-DELETE-F2-38.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-39.
+       ADD-TEST-F2-38-1.
+           MOVE   "ADD-TEST-F2-38-1" TO PAR-NAME.
+           IF      SIZE-ERR2 = "A"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "A"        TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   MOVE   "ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-38-2.
+           MOVE   "ADD-TEST-F2-38-2" TO PAR-NAME.
+           IF      WRK-XN-00001 = "1"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "1"           TO CORRECT-X
+                   MOVE    WRK-XN-00001 TO COMPUTED-X
+                   MOVE   "SCOPE TERMINATOR IGNORED" TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-38-3.
+           MOVE   "ADD-TEST-F2-38-3" TO PAR-NAME.
+           IF      WRK-DS-10V00 = ZERO
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE    ZERO         TO CORRECT-N
+                   MOVE    WRK-DS-10V00 TO COMPUTED-N
+                   MOVE   "WRONGLY AFFECTED BY SIZE ERROR"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-39.
+      *>     ==-->EXPLICIT SCOPE TERMINATOR<--==
+      *>     ==-->    NO SIZE ERROR        <--==
+           MOVE   "VI-67 6.4.3" TO ANSI-REFERENCE.
+           MOVE   "ADD-TEST-F2-39" TO PAR-NAME.
+           MOVE    1     TO REC-CT.
+           MOVE    SPACE TO WRK-XN-00001.
+           MOVE    SPACE TO SIZE-ERR2.
+           MOVE    SPACE TO SIZE-ERR3.
+           MOVE    SPACE TO SIZE-ERR4.
+           MOVE     ZERO TO WRK-DS-06V06.
+       ADD-TEST-F2-39-0.
+           ADD     A12THREES-DS-06V06
+                   333333
+                   A06THREES-DS-03V03
+            GIVING WRK-DS-06V06 ROUNDED
+                ON SIZE ERROR
+                   MOVE "1" TO SIZE-ERR2
+            NOT ON SIZE ERROR
+                   MOVE "A" TO SIZE-ERR2
+           END-ADD
+           MOVE   "1" TO WRK-XN-00001.
+           GO TO   ADD-TEST-F2-39-1.
+       ADD-DELETE-F2-39.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   ADD-INIT-F2-40.
+       ADD-TEST-F2-39-1.
+           MOVE   "ADD-TEST-F2-39-1" TO PAR-NAME.
+           IF      SIZE-ERR2 = "A"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "A"        TO CORRECT-X
+                   MOVE    SIZE-ERR2 TO COMPUTED-X
+                   MOVE   "NOT ON SIZE ERROR SHOULD BE EXECUTED"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-39-2.
+           MOVE   "ADD-TEST-F2-39-2" TO PAR-NAME.
+           IF      WRK-XN-00001 = "1"
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE   "1"           TO CORRECT-X
+                   MOVE    WRK-XN-00001 TO COMPUTED-X
+                   MOVE   "SCOPE TERMINATOR IGNORED" TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+           ADD     1 TO REC-CT.
+       ADD-TEST-F2-39-3.
+           MOVE   "ADD-TEST-F2-39-3" TO PAR-NAME.
+           IF      WRK-DS-06V06 = 666999.666333
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE    666999.666333 TO CORRECT-N
+                   MOVE    WRK-DS-06V06  TO COMPUTED-N
+                   MOVE   "WRONGLY AFFECTED BY SIZE ERROR"
+                        TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-40.
+           MOVE   "VI-73 6.6.2" TO ANSI-REFERENCE.
+      *>     ==-->  OPTIONAL WORD "TO"  <--==
+           MOVE     ZERO TO WRK-DS-09V09.
+       ADD-TEST-F2-40-0.
+           ADD      A06THREES-DS-03V03
+                 TO A12THREES-DS-06V06 GIVING WRK-DS-09V09.
+       ADD-TEST-F2-40-1.
+           IF       WRK-DS-09V09 EQUAL TO 000333666.666333000
+                    PERFORM PASS GO TO ADD-WRITE-F2-40.
+           GO       TO ADD-FAIL-F2-40.
+       ADD-DELETE-F2-40.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-40.
+       ADD-FAIL-F2-40.
+           MOVE     WRK-DS-09V09 TO COMPUTED-N.
+           MOVE     000333666.666333000 TO CORRECT-N.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-40.
+           MOVE     "ADD-TEST-F2-40" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+       ADD-INIT-F2-41.
+           MOVE   "VI-73 6.6.2" TO ANSI-REFERENCE.
+      *>     ==-->  OPTIONAL WORD "TO"  <--==
+           MOVE     ZERO TO WRK-DS-06V06.
+       ADD-TEST-F2-41-0.
+           ADD      A05ONES-DS-05V00
+                    A05ONES-DS-00V05
+                    A12THREES-DS-06V06
+                TO  A06THREES-DS-03V03 GIVING WRK-DS-06V06.
+       ADD-TEST-F2-41-1.
+           IF       WRK-DS-06V06 EQUAL TO 344777.777443
+                    PERFORM PASS GO TO ADD-WRITE-F2-41.
+           GO       TO ADD-FAIL-F2-41.
+       ADD-DELETE-F2-41.
+           PERFORM  DE-LETE.
+           GO       TO ADD-WRITE-F2-41.
+       ADD-FAIL-F2-41.
+           MOVE     WRK-DS-06V06 TO COMPUTED-N.
+           MOVE     344777.777443 TO CORRECT-N.
+           PERFORM  FAIL.
+       ADD-WRITE-F2-41.
+           MOVE     "ADD-TEST-F2-41" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC177A

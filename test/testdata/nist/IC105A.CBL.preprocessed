@@ -1,0 +1,66 @@
+      *> HEADER,COBOL,IC103A,SUBRTN,IC105A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC105A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>         THE SUBPROGRAM IC105 HAS TWO OPERANDS IN THE
+      *>     PROCEDURE DIVISION HEADER AND THE ROUTINE CONTAINS
+      *>     FOUR EXIT PROGRAM STATEMENTS.  THE CALLING PROGRAM
+      *>     IS IC103.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       LINKAGE SECTION.
+       77  DN1 PICTURE 999.
+       77  DN2 PICTURE S99 COMPUTATIONAL.
+       PROCEDURE DIVISION  USING DN1 DN2.
+      *>         THIS SUBPROGRAM CONTANS FOUR EXIT PROGRAM STATEMENTS.
+      *>     REFERENCE  X3.23-1974, SECTION XII, 3.4.
+       SECT-IC105-0001 SECTION.
+       EXIT-TEST-001.
+           IF DN1 IS NOT EQUAL TO 1
+                GO TO EXIT-TEST-002.
+           MOVE 1 TO DN2.
+       EXIT-STATEMENT-001.
+           EXIT PROGRAM.
+       EXIT-TEST-002.
+           IF DN1 IS NOT EQUAL TO 2
+                GO TO EXIT-TEST-003.
+           MOVE 2 TO DN2.
+       EXIT-STATEMENT-002.
+           EXIT PROGRAM.
+       EXIT-TEST-003.
+           IF DN1 NOT EQUAL TO 3
+                GO TO EXIT-TEST-004.
+           MOVE 3 TO DN2.
+       EXIT-STATEMENT-003.
+           EXIT PROGRAM.
+       EXIT-TEST-004.
+           MOVE 4 TO DN2.
+           GO TO EXIT-STATEMENT-004.
+       EXTRANEOUS-PARAGRAPH.
+      *>         THIS PARAGRAPH IS NEVER EXECUTED.
+           MOVE 5 TO DN2.
+       EXIT-STATEMENT-004.
+           EXIT PROGRAM.
+      *> END-OF,IC105A

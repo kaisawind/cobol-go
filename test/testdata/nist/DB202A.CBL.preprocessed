@@ -1,0 +1,841 @@
+      *> HEADER,COBOL,DB202A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           DB202A.
+       AUTHOR.
+      *>CE     FEDERAL COMPILER TESTING CENTER.
+       INSTALLATION.
+      *>CE     GENERAL SERVICES ADMINISTRATION
+      *>CE      AUTOMATED DATA AND TELECOMMUNICATION SERVICE.
+      *>CE     SOFTWARE DEVELOPMENT OFFICE.
+      *>CE     5203 LEESBURG PIKE  SUITE 1100
+      *>CE     FALLS CHURCH VIRGINIA 22041.
+      *>CE 
+      *>CE     PHONE   (703) 756-6153
+      *>CE 
+      *>CE     " HIGH       ".
+       DATE-WRITTEN.
+      *>CE     CCVS-74 VERSION 4.0 - 1980 JULY 1.
+      *>CE     CREATION DATE     /    VALIDATION DATE
+      *>CE     "4.2 ".
+       SECURITY.
+      *>CE     NONE.
+      *>CE 
+      *>CE     *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+      *>CE 
+      *>CE                        PROGRAM ABSTRACT
+      *>CE 
+      *>CE     DB202A TESTS THE CPABILITY OF THE DEBUG MODULE TO HANDLE
+      *>CE     DEBUGGING PROCEDURES WHICH ARE MONITORING I-O FUNCTIONS
+      *>CE     OF THE SEQUENTIAL I-O MODULE.  THIS PROGRAM IS TO BE
+      *>CE     COMPILED AND EXECUTED WITH BOTH COMPILE AND OBJECT TIME
+      *>CE     DEBUGGING SWITCHES ON.  THE DEBUGGING PROCEDURES SHOULD
+      *>CE     BE INCLUDED IN COMPILATION AND GENERATE CODE.
+      *>CE 
+      *>CE     DURING EXECUTION, A SEQUENTIAL FILE IS CREATED CONTAINING
+      *>CE     80-CHARACTER RECORDS.  THE FILE US THEN READ.  EXECUTION
+      *>CE     OF "OPEN", "READ", AND "WRITE" FUNCTION SHOULD TRIGGER THE
+      *>CE     APPROPRIATE DEBUGGING PROCEDURES.
+      *>CE 
+      *>CE 
+      *>CE 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082
+           WITH DEBUGGING MODE.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+           SELECT SEQ-FILE ASSIGN TO
+           XXXXX014.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE
+           LABEL RECORDS
+           XXXXX084
+           DATA RECORD IS PRINT-REC DUMMY-RECORD.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       FD  SEQ-FILE
+           VALUE OF
+           XXXXX074
+      *>       XXXXX074  REPLACE WITH IMPLEMENTOR NAME (*OPT C ONLY)
+           IS
+           XXXXX075
+      *>       XXXXX075  REPLACE WITH VALUE CLAUSE OBJECT (*OPT C ONLY)
+      *>     XXXXX069
+      *>       XXXXX069  REPLACE WITH ADDITIONAL INFO (*OPT G ONLY)
+           LABEL RECORDS ARE STANDARD.
+       01  SEQ-REC-1 PIC X(120).
+       01  SEQ-REC-2 PIC X(120).
+       01  SEQ-REC-3 PIC X(120).
+       WORKING-STORAGE SECTION.
+       01  ITEM-1.
+           02  KEY-1 PIC 99.
+           02  LINE-1 PIC X(6).
+           02  NAME-1 PIC X(30).
+           02  UNQUAL-NAME-1 PIC X(30).
+           02  CONTENTS-1 PIC X(120).
+           02  CONTENTS-REC PIC X(120).
+       01  FILE-RECORD-INFORMATION-REC.
+           03 FILE-RECORD-INFO-SKELETON.
+              05 FILLER                 PICTURE X(48)       VALUE
+                   "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+              05 FILLER                 PICTURE X(46)       VALUE
+                   ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+              05 FILLER                 PICTURE X(26)       VALUE
+                   ",LFIL=000000,ORG=  ,LBLR= ".
+              05 FILLER                 PICTURE X(37)       VALUE
+                   ",RECKEY=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY1=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY2=                             ".
+              05 FILLER                 PICTURE X(7)        VALUE SPACE.
+           03 FILE-RECORD-INFO          OCCURS  10  TIMES.
+              05 FILE-RECORD-INFO-P1-120.
+                 07 FILLER              PIC X(5).
+                 07 XFILE-NAME           PIC X(6).
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-NAME         PIC X(6).
+                 07 FILLER              PIC X(1).
+                 07 REELUNIT-NUMBER     PIC 9(1).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-NUMBER       PIC 9(6).
+                 07 FILLER              PIC X(6).
+                 07 UPDATE-NUMBER       PIC 9(2).
+                 07 FILLER              PIC X(5).
+                 07 ODO-NUMBER          PIC 9(4).
+                 07 FILLER              PIC X(5).
+                 07 XPROGRAM-NAME        PIC X(5).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-LENGTH       PIC 9(6).
+                 07 FILLER              PIC X(7).
+                 07 CHARS-OR-RECORDS    PIC X(2).
+                 07 FILLER              PIC X(1).
+                 07 XBLOCK-SIZE          PIC 9(4).
+                 07 FILLER              PIC X(6).
+                 07 RECORDS-IN-FILE     PIC 9(6).
+                 07 FILLER              PIC X(5).
+                 07 XFILE-ORGANIZATION   PIC X(2).
+                 07 FILLER              PIC X(6).
+                 07 XLABEL-TYPE          PIC X(1).
+              05 FILE-RECORD-INFO-P121-240.
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-KEY          PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY1      PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY2      PIC X(29).
+                 07 FILLER              PIC X(7).
+       01  TEST-RESULTS.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 FEATURE                   PICTURE X(20) VALUE SPACE.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 P-OR-F                    PICTURE X(5) VALUE SPACE.
+           02 FILLER                    PICTURE X  VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER PICTURE X(12) VALUE SPACE.
+             03  PARDOT-X PICTURE X  VALUE SPACE.
+             03 DOTVALUE PICTURE 99  VALUE ZERO.
+             03 FILLER PIC X(5) VALUE SPACE.
+           02 FILLER PIC X(10) VALUE SPACE.
+           02 RE-MARK PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A                PICTURE X(20) VALUE SPACE.
+           03 COMPUTED-N REDEFINES COMPUTED-A PICTURE -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A  PICTURE -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A  PICTURE -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A  PICTURE -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                   PICTURE -9(18).
+               04 FILLER                          PICTURE X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                 PICTURE X(20) VALUE SPACE.
+           03 CORRECT-N REDEFINES CORRECT-A PICTURE -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A    PICTURE -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A    PICTURE -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A    PICTURE -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                    PICTURE -9(18).
+               04 FILLER                          PICTURE X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER PICTURE IS X(99) VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                  REMARKS".
+           02 FILLER PICTURE IS X(20) VALUE IS SPACE.
+       01  CCVS-C-2.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(6) VALUE IS "TESTED".
+           02 FILLER PICTURE IS X(15) VALUE IS SPACE.
+           02 FILLER PICTURE IS X(4) VALUE IS "FAIL".
+           02 FILLER PICTURE IS X(94) VALUE IS SPACE.
+       01  REC-SKL-SUB PICTURE 9(2) VALUE ZERO.
+       01  REC-CT PICTURE 99 VALUE ZERO.
+       01  DELETE-CNT                   PICTURE 999  VALUE ZERO.
+       01  ERROR-COUNTER PICTURE IS 999 VALUE IS ZERO.
+       01  INSPECT-COUNTER PIC 999 VALUE ZERO.
+       01  PASS-COUNTER PIC 999 VALUE ZERO.
+       01  TOTAL-ERROR PIC 999 VALUE ZERO.
+       01  ERROR-HOLD PIC 999 VALUE ZERO.
+       01  DUMMY-HOLD PIC X(120) VALUE SPACE.
+       01  RECORD-COUNT PIC 9(5) VALUE ZERO.
+       01  CCVS-H-1.
+           02  FILLER   PICTURE X(27)  VALUE SPACE.
+           02 FILLER PICTURE X(67) VALUE
+           " FEDERAL COMPILER TESTING CENTER COBOL COMPILER VALIDATION   SYSTEM".
+           02  FILLER     PICTURE X(26)  VALUE SPACE.
+       01  CCVS-H-2.
+           02 FILLER PICTURE X(52) VALUE IS
+           "CCVS74 NCC  COPY, NOT FOR DISTRIBUTION.".
+           02 FILLER PICTURE IS X(19) VALUE IS "TEST RESULTS SET-  ".
+           02 TEST-ID PICTURE IS X(9).
+           02 FILLER PICTURE IS X(40) VALUE IS SPACE.
+       01  CCVS-H-3.
+           02  FILLER PICTURE X(34) VALUE
+           " FOR OFFICIAL USE ONLY    ".
+           02  FILLER PICTURE X(58) VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER PICTURE X(28) VALUE
+           "  COPYRIGHT   1974 ".
+       01  CCVS-E-1.
+           02 FILLER PICTURE IS X(52) VALUE IS SPACE.
+           02 FILLER PICTURE IS X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN PICTURE IS X(9).
+           02 FILLER PICTURE X(45) VALUE IS
+           " NTIS DISTRIBUTION COBOL 74".
+       01  CCVS-E-2.
+           02  FILLER                   PICTURE X(31)  VALUE
+           SPACE.
+           02  FILLER                   PICTURE X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL PICTURE IS XXX VALUE IS SPACE.
+               03 FILLER PICTURE IS X VALUE IS SPACE.
+               03 ENDER-DESC PIC X(44) VALUE "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER PICTURE X(22) VALUE
+           " FOR OFFICIAL USE ONLY".
+           02  FILLER PICTURE X(12) VALUE SPACE.
+           02  FILLER PICTURE X(58) VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER PICTURE X(13) VALUE SPACE.
+           02 FILLER PIC X(15) VALUE " COPYRIGHT 1974".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1 PIC XXX VALUE SPACE.
+           02 FILLER PIC XXXX VALUE " OF ".
+           02 CCVS-E-4-2 PIC XXX VALUE SPACE.
+           02 FILLER PIC X(40) VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER PIC X(30) VALUE "        *** INFORMATION  ***".
+           02 INFO-TEXT.
+           04 FILLER PIC X(20) VALUE SPACE.
+           04 XXCOMPUTED PIC X(20).
+           04 FILLER PIC X(5) VALUE SPACE.
+           04 XXCORRECT PIC X(20).
+       01  HYPHEN-LINE.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(65) VALUE IS "*****************************************************************".
+           02 FILLER PICTURE IS X(54) VALUE IS "******************************************************".
+       01  CCVS-PGM-ID PIC X(6) VALUE
+           "DB202A".
+       PROCEDURE DIVISION.
+       DECLARATIVES.
+       FILENAME-PROC SECTION.
+           USE FOR DEBUGGING ON SEQ-FILE.
+       FILENAME-1.
+           MOVE 1 TO KEY-1.
+       DB-COMMON.
+           MOVE DEBUG-LINE TO LINE-1.
+           MOVE DEBUG-NAME TO NAME-1 UNQUAL-NAME-1.
+           MOVE DEBUG-CONTENTS TO CONTENTS-1.
+           INSPECT UNQUAL-NAME-1 REPLACING CHARACTERS BY SPACES
+               AFTER INITIAL SPACE.
+       WRITE-PROC SECTION.
+           USE FOR DEBUGGING ON ALL REFERENCES OF SEQ-REC-1  SEQ-REC-2.
+       WRITE-1.
+           ADD 1 TO KEY-1.
+           PERFORM DB-COMMON.
+           MOVE SEQ-REC-3 TO CONTENTS-REC.
+       END DECLARATIVES.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-CNT.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+           MOVE CCVS-H-3 TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-CNT TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-CNT IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-CNT TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           GO TO FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       BEGIN-DB202A-TEST SECTION.
+       OPEN-TEST-1-INIT.
+           MOVE SPACES TO ITEM-1.
+           MOVE 0 TO KEY-1.
+           MOVE "OPEN-TEST-1" TO PAR-NAME.
+           MOVE "DEBUG OPEN FILENAME" TO FEATURE.
+      *> *****************************************************************
+      *>     THE DEBUG-LINE (INSPT) TEST NAMED IN THE OUTPUT REPORT AS   *
+      *>     "OPEN-TEST-1A" SHOULD POINT TO THE EXECUTABLE STATEMENT     *
+      *>     WHICH FOLLOWS THIS COMMENT SET AND WHICH READS, "OPEN       *
+      *>     OUTPUT SEQ-FILE.".                                          *
+      *> *****************************************************************
+       OPEN-TEST-1.
+           OPEN OUTPUT SEQ-FILE.
+           IF KEY-1 IS EQUAL TO 1
+               PERFORM PASS
+               MOVE "DEBUG PROC EXECUTED" TO RE-MARK
+               PERFORM GEN-WRITE
+               GO TO OPEN-TEST-1A
+           ELSE PERFORM FAIL
+               MOVE "DEBUG PROC NOT EXECUTED" TO RE-MARK
+               PERFORM GEN-WRITE
+               PERFORM DELETE-OPEN-TEST-1-SUBTESTS
+               GO TO WRITE-TEST-1-INIT.
+       OPEN-TEST-1-DELETE.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           PERFORM DELETE-OPEN-TEST-1-SUBTESTS.
+           GO TO WRITE-TEST-1-INIT.
+       DELETE-OPEN-TEST-1-SUBTESTS.
+           MOVE "OPEN-TEST-1A" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           MOVE "OPEN-TEST-1B" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           MOVE "OPEN-TEST-1C" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+       OPEN-TEST-1A.
+           MOVE "OPEN-TEST-1A" TO PAR-NAME.
+           MOVE "DEBUG-LINE; SEE NEXT LINE" TO RE-MARK.
+           MOVE "<===  DEBUG-LINE" TO CORRECT-A.
+           MOVE LINE-1 TO COMPUTED-A.
+           PERFORM INSPT.
+           PERFORM GEN-WRITE.
+       OPEN-TEST-1B.
+           MOVE "OPEN-TEST-1B" TO PAR-NAME.
+           IF UNQUAL-NAME-1 IS EQUAL TO "SEQ-FILE"
+               PERFORM PASS
+           ELSE  PERFORM FAIL
+               MOVE NAME-1 TO COMPUTED-A
+           MOVE "SEQ-FILE" TO CORRECT-A.
+           MOVE "DEBUG-NAME" TO RE-MARK.
+           PERFORM GEN-WRITE.
+       OPEN-TEST-1C.
+           MOVE "OPEN-TEST-1C" TO PAR-NAME.
+           IF CONTENTS-1 IS EQUAL TO SPACES
+               PERFORM PASS
+           ELSE PERFORM FAIL
+               MOVE CONTENTS-1 TO COMPUTED-A
+               MOVE "(SPACES)" TO CORRECT-A.
+           MOVE "DEBUG-CONTENTS" TO RE-MARK.
+           PERFORM GEN-WRITE.
+       WRITE-TEST-1-INIT.
+           MOVE "WRITE-TEST-1" TO PAR-NAME.
+           MOVE SPACES TO ITEM-1.
+           MOVE 0 TO KEY-1.
+           MOVE "DEBUG WRITE/ALL REF" TO FEATURE.
+           MOVE FILE-RECORD-INFO-SKELETON TO FILE-RECORD-INFO (1).
+           MOVE "SEQ-FI" TO XFILE-NAME (1).
+           MOVE "REC-1" TO XRECORD-NAME (1).
+           MOVE ".XXX." TO XPROGRAM-NAME (1).
+           MOVE 120 TO XRECORD-LENGTH (1).
+           MOVE "RC" TO CHARS-OR-RECORDS (1).
+           MOVE 1 TO XBLOCK-SIZE (1).
+           MOVE 30 TO RECORDS-IN-FILE (1).
+           MOVE "SQ" TO XFILE-ORGANIZATION (1).
+           MOVE "S" TO XLABEL-TYPE (1).
+       WRITE-TEST-1.
+           PERFORM WRITE-REC-1  10  TIMES.
+           IF KEY-1 IS EQUAL TO 10
+               PERFORM PASS
+               MOVE "DEBUG PROC EXECUTED 10 TIMES" TO RE-MARK
+           ELSE PERFORM FAIL
+               MOVE "NO. TIMES DEBUG PROC EXECUTED" TO RE-MARK
+               MOVE KEY-1 TO COMPUTED-18V0
+               MOVE 10 TO CORRECT-18V0.
+           PERFORM GEN-WRITE.
+           IF KEY-1 IS EQUAL TO 0
+               PERFORM DELETE-WRITE-TEST-1-SUBTESTS
+               GO TO WRITE-TEST-2-INIT
+           ELSE  GO TO WRITE-TEST-1A.
+       WRITE-TEST-1-DELETE.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           PERFORM DELETE-WRITE-TEST-1-SUBTESTS
+           GO TO WRITE-TEST-2-INIT.
+       DELETE-WRITE-TEST-1-SUBTESTS.
+           MOVE "WRITE-TEST-1A" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           MOVE "WRITE-TEST-1B" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           MOVE "WRITE-TEST-1C" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           MOVE "WRITE-TEST-1D" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+       WRITE-REC-1.
+           MOVE SPACES TO SEQ-REC-3.
+           ADD 1 TO XRECORD-NUMBER (1).
+      *> *****************************************************************
+      *>     THE DEBUG-LINE (INSPT) TEST NAMED IN THE OUTPUT REPORT AS   *
+      *>     "WRITE-TEST-1A" SHOULD POINT TO THE EXECUTABLE STATEMENT    *
+      *>     WHICH FOLLOWS THIS COMMENT SET AND WHICH READS,             *
+      *>     "WRITE SEQ-REC-1 FROM FILE-RECORD-INFO-P1-120 (1).".        *
+      *> *****************************************************************
+           WRITE SEQ-REC-1 FROM FILE-RECORD-INFO-P1-120 (1).
+       WRITE-TEST-1A.
+           MOVE "WRITE-TEST-1A" TO PAR-NAME.
+           MOVE "DEBUG-LINE; SEE NEXT LINE" TO RE-MARK.
+           MOVE "<===  DEBUG-LINE" TO CORRECT-A.
+           MOVE LINE-1 TO COMPUTED-A.
+           PERFORM INSPT.
+           PERFORM GEN-WRITE.
+       WRITE-TEST-1B.
+           MOVE "WRITE-TEST-1B" TO PAR-NAME.
+           IF UNQUAL-NAME-1 IS EQUAL TO "SEQ-REC-1"
+               PERFORM PASS
+           ELSE  PERFORM FAIL
+               MOVE "SEQ-REC-1" TO CORRECT-A
+               MOVE NAME-1 TO COMPUTED-A.
+           MOVE "DEBUG-NAME" TO RE-MARK.
+           PERFORM GEN-WRITE.
+       WRITE-TEST-1C.
+           MOVE "WRITE-TEST-1C" TO PAR-NAME.
+           IF CONTENTS-REC IS EQUAL TO FILE-RECORD-INFO-P1-120 (1)
+               PERFORM PASS
+               MOVE "PROC EXECUTED AT PROPER TIME" TO RE-MARK
+               PERFORM GEN-WRITE
+               GO TO WRITE-TEST-1D
+           ELSE  PERFORM FAIL
+               MOVE "PROC NOT EXEC BETW MOVE / WRITE" TO RE-MARK
+               MOVE "1ST LINE = REC AREA" TO COMPUTED-A
+               MOVE "2ND LINE = FROM FLD" TO CORRECT-A
+               PERFORM GEN-WRITE.
+           MOVE CONTENTS-REC TO PRINT-REC.
+           PERFORM WRITE-LINE.
+           MOVE FILE-RECORD-INFO-P1-120 (1) TO PRINT-REC.
+           PERFORM WRITE-LINE.
+       WRITE-TEST-1D.
+           MOVE "WRITE-TEST-1D" TO PAR-NAME.
+           MOVE "DEBUG-CONTENTS" TO RE-MARK.
+           IF CONTENTS-1 IS EQUAL TO FILE-RECORD-INFO-P1-120 (1)
+               PERFORM PASS
+               PERFORM GEN-WRITE
+               GO TO WRITE-TEST-2-INIT
+           ELSE  PERFORM FAIL
+               MOVE "SEE 1ST LINE FOLLOW" TO COMPUTED-A
+               MOVE "SEE 2ND LINE FOLLOW" TO CORRECT-A
+               PERFORM GEN-WRITE.
+           MOVE CONTENTS-1 TO PRINT-REC.
+           PERFORM WRITE-LINE.
+           MOVE FILE-RECORD-INFO-P1-120 (1) TO PRINT-REC.
+           PERFORM WRITE-LINE.
+       WRITE-TEST-2-INIT.
+           MOVE "WRITE-TEST-2" TO PAR-NAME.
+           MOVE SPACES TO ITEM-1.
+           MOVE 0 TO KEY-1.
+           MOVE "DEBUG WRITE/NOT ALL" TO FEATURE.
+           MOVE 10 TO XRECORD-NUMBER (1).
+           MOVE "REC-2" TO XRECORD-NAME (1).
+       WRITE-TEST-2.
+           PERFORM WRITE-REC-2 10 TIMES.
+           IF KEY-1 IS EQUAL TO 10
+               PERFORM PASS
+               MOVE "DEBUG PROC EXECUTED 10 TIMES" TO RE-MARK
+           ELSE  PERFORM FAIL
+               MOVE "NO. TIMES DEBUG PROC EXECUTED" TO RE-MARK
+               MOVE KEY-1 TO COMPUTED-18V0
+               MOVE 10 TO CORRECT-18V0.
+           PERFORM GEN-WRITE.
+           IF KEY-1 IS EQUAL TO 0
+               PERFORM DELETE-WRITE-TEST-2-SUBTESTS
+               GO TO WRITE-TEST-3-INIT
+           ELSE GO TO WRITE-TEST-2A.
+       WRITE-TEST-2-DELETE.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           PERFORM DELETE-WRITE-TEST-2-SUBTESTS
+           GO TO WRITE-TEST-3-INIT.
+       DELETE-WRITE-TEST-2-SUBTESTS.
+           MOVE "WRITE-TEST-2A" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           MOVE "WRITE-TEST-2B" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           MOVE "WRITE-TEST-2C" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+       WRITE-REC-2.
+           MOVE SPACES TO SEQ-REC-3.
+           ADD 1 TO XRECORD-NUMBER (1).
+           WRITE SEQ-REC-2 FROM FILE-RECORD-INFO-P1-120 (1).
+       WRITE-TEST-2A.
+           MOVE "WRITE-TEST-2A" TO PAR-NAME.
+           IF UNQUAL-NAME-1 IS EQUAL TO "SEQ-REC-2"
+               PERFORM PASS
+           ELSE  PERFORM FAIL
+               MOVE "SEQ-REC-2" TO CORRECT-A
+               MOVE NAME-1 TO COMPUTED-A.
+           MOVE "DEBUG-NAME" TO RE-MARK.
+           PERFORM GEN-WRITE.
+       WRITE-TEST-2B.
+           MOVE "WRITE-TEST-2B" TO PAR-NAME.
+           IF CONTENTS-REC IS EQUAL TO FILE-RECORD-INFO-P1-120 (1)
+               PERFORM PASS
+               MOVE "PROC EXECUTED AT PROPER TIME" TO RE-MARK
+               PERFORM GEN-WRITE
+               GO TO WRITE-TEST-2C
+           ELSE  PERFORM FAIL
+               MOVE "PROC NOT EXEC BTWN MOVE / WRITE" TO RE-MARK
+               MOVE "1ST LINE = REC AREA" TO COMPUTED-A
+               MOVE "2ND LINE = FROM FLD" TO CORRECT-A
+               PERFORM GEN-WRITE.
+           MOVE CONTENTS-REC TO PRINT-REC.
+           PERFORM WRITE-LINE.
+           MOVE FILE-RECORD-INFO-P1-120 (1) TO PRINT-REC.
+           PERFORM WRITE-LINE.
+       WRITE-TEST-2C.
+           MOVE "WRITE-TEST-2C" TO PAR-NAME.
+           MOVE "DEBUG-CONTENTS" TO RE-MARK.
+           IF CONTENTS-1 IS EQUAL TO FILE-RECORD-INFO-P1-120 (1)
+               PERFORM PASS
+               PERFORM GEN-WRITE
+               GO TO WRITE-TEST-3-INIT
+           ELSE  PERFORM FAIL
+               MOVE "SEE 1ST LINE FOLLOW" TO COMPUTED-A
+               MOVE "SEE 2ND LINE FOLLOW" TO CORRECT-A
+               PERFORM GEN-WRITE.
+           MOVE CONTENTS-1 TO PRINT-REC.
+           PERFORM WRITE-LINE.
+           MOVE FILE-RECORD-INFO-P1-120 (1) TO PRINT-REC.
+           PERFORM WRITE-LINE.
+       WRITE-TEST-3-INIT.
+           MOVE SPACES TO ITEM-1
+           MOVE 0 TO KEY-1
+           MOVE "WRITE/NO DEBUG PROC" TO FEATURE.
+           MOVE "WRITE-TEST-3" TO PAR-NAME.
+           MOVE "REC-3" TO XRECORD-NAME (1)
+           MOVE 20 TO XRECORD-NUMBER (1).
+       WRITE-TEST-3.
+           PERFORM WRITE-REC-3 10 TIMES.
+           IF KEY-1 IS EQUAL TO 0
+               PERFORM PASS
+               MOVE  "DEBUG PROC NOT EXECUTED" TO RE-MARK
+           ELSE  PERFORM FAIL
+               MOVE "NO. TIMES DEBUG PROC EXECUTED" TO RE-MARK
+               MOVE KEY-1 TO COMPUTED-18V0
+               MOVE 0 TO CORRECT-18V0.
+               PERFORM GEN-WRITE.
+           GO TO CLOSE-TEST-1-INIT.
+       WRITE-TEST-3-DELETE.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           GO TO CLOSE-TEST-1-INIT.
+       WRITE-REC-3.
+           MOVE SPACES TO SEQ-REC-3.
+           ADD 1 TO XRECORD-NUMBER (1).
+           WRITE SEQ-REC-3 FROM FILE-RECORD-INFO-P1-120 (1).
+       CLOSE-TEST-1-INIT.
+           MOVE SPACES TO ITEM-1.
+           MOVE 0 TO KEY-1.
+           MOVE "CLOSE-TEST-1" TO PAR-NAME.
+           MOVE "DEBUG CLOSE FILENAME" TO FEATURE.
+      *> *****************************************************************
+      *>     THE DEBUG-LINE (INSPT) TEST NAMED IN THE OUTPUT REPORT AS   *
+      *>     "CLOSE-TEST-1A" SHOULD POINT TO THE EXECUTABLE STATEMENT    *
+      *>     WHICH FOLLOWS THIS COMMENT SET AND WHICH READS,             *
+      *>     "CLOSE SEQ-FILE.".                                          *
+      *> *****************************************************************
+       CLOSE-TEST-1.
+           CLOSE SEQ-FILE.
+           IF KEY-1 IS EQUAL TO 1
+               PERFORM PASS
+               MOVE "DEBUG PROC EXECUTED" TO RE-MARK
+               PERFORM GEN-WRITE
+               GO TO CLOSE-TEST-1A
+           ELSE PERFORM  FAIL
+               MOVE "DEBUG PROC NOT EXECUTED" TO RE-MARK
+               PERFORM GEN-WRITE
+               PERFORM DELETE-CLOSE-TEST-1-SUBTESTS
+               GO TO OPEN-TEST-2-INIT.
+       CLOSE-TEST-1-DELETE.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           PERFORM DELETE-CLOSE-TEST-1-SUBTESTS.
+           GO TO OPEN-TEST-2-INIT.
+       DELETE-CLOSE-TEST-1-SUBTESTS.
+           MOVE "CLOSE-TEST-1A" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           MOVE "CLOSE-TEST-1B" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           MOVE "CLOSE-TEST-1C" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+       CLOSE-TEST-1A.
+           MOVE "CLOSE-TEST-1A" TO PAR-NAME.
+           MOVE "DEBUG-LINE; SEE NEXT LINE" TO RE-MARK.
+           MOVE "<===  DEBUG-LINE" TO CORRECT-A.
+           MOVE LINE-1 TO COMPUTED-A.
+           PERFORM INSPT.
+           PERFORM GEN-WRITE.
+       CLOSE-TEST-1B.
+           MOVE "CLOSE-TEST-1B" TO PAR-NAME.
+           IF UNQUAL-NAME-1 IS EQUAL TO "SEQ-FILE"
+               PERFORM PASS
+           ELSE  PERFORM FAIL
+               MOVE NAME-1 TO COMPUTED-A
+               MOVE "SEQ-FILE" TO CORRECT-A.
+           MOVE "DEBUG-NAME" TO RE-MARK.
+           PERFORM GEN-WRITE.
+       CLOSE-TEST-1C.
+           MOVE "OPEN-TEST-1C" TO PAR-NAME.
+           IF CONTENTS-1 IS EQUAL TO SPACES
+               PERFORM PASS
+           ELSE PERFORM FAIL
+               MOVE CONTENTS-1 TO COMPUTED-A
+               MOVE "(SPACES)" TO CORRECT-A.
+           MOVE "DEBUG-CONTENTS" TO RE-MARK.
+           PERFORM GEN-WRITE.
+       OPEN-TEST-2-INIT.
+           MOVE SPACES TO ITEM-1.
+           MOVE 0 TO KEY-1.
+           MOVE "OPEN-TEST-2" TO PAR-NAME.
+           MOVE "DEBUG OPEN FILENAME" TO FEATURE.
+       OPEN-TEST-2.
+           OPEN INPUT SEQ-FILE.
+           IF KEY-1 IS EQUAL TO 1
+               PERFORM PASS
+               MOVE "DEBUG PROC EXECUTED" TO RE-MARK
+           ELSE PERFORM FAIL
+               MOVE "DEBUG PROC NOT EXECUTED" TO RE-MARK.
+           PERFORM GEN-WRITE.
+           GO TO READ-TEST-1-INIT.
+       OPEN-TEST-2-DELETE.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+       READ-TEST-1-INIT.
+           MOVE SPACES TO ITEM-1.
+           MOVE 0 TO KEY-1.
+           MOVE "READ-TEST-1" TO PAR-NAME.
+           MOVE "DEBUG READ FILENAME" TO FEATURE.
+      *> *****************************************************************
+      *>     THE DEBUG-LINE (INSPT) TEST NAMED IN THE OUTPUT REPORT AS   *
+      *>     "READ-TEST-1A" SHOULD POINT TO THE EXECUTABLE STATEMENT     *
+      *>     WHICH FOLLOWS THIS COMMENT SET AND WHICH READS, "READ       *
+      *>     SEQ-FILE AT END PERFORM READ-TEST-1-DELETE GO TO            *
+      *>     READ-TEST-2.".                                              *
+      *> *****************************************************************
+       READ-TEST-1.
+           READ SEQ-FILE  AT END
+               PERFORM READ-TEST-1-DELETE
+               GO TO READ-TEST-2.
+           IF KEY-1 IS EQUAL TO 1
+               PERFORM PASS
+               MOVE "DEBUG PROC EXECUTED" TO RE-MARK
+               PERFORM GEN-WRITE
+               GO TO READ-TEST-1A
+           ELSE  PERFORM FAIL
+               MOVE "DEBUG PROC NOT EXECUTED" TO RE-MARK
+               PERFORM GEN-WRITE
+               PERFORM DELETE-READ-TEST-1-SUBTESTS
+                GO TO READ-TEST-2-INIT.
+       READ-TEST-1-DELETE.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           PERFORM DELETE-READ-TEST-1-SUBTESTS.
+       READ-TEST-1-DELETE-A.
+           GO TO READ-TEST-2-DELETE.
+       DELETE-READ-TEST-1-SUBTESTS.
+           MOVE "READ-TEST-1A" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           MOVE "READ-TEST-1B" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           MOVE "READ-TEST-1C" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+       READ-TEST-1A.
+           MOVE "READ-TEST-1A" TO PAR-NAME.
+           MOVE "DEBUG-LINE; SEE NEXT LINE" TO RE-MARK.
+           MOVE "<===  DEBUG-LINE" TO CORRECT-A.
+           MOVE LINE-1 TO COMPUTED-A.
+           PERFORM INSPT.
+           PERFORM GEN-WRITE.
+       READ-TEST-1B.
+           MOVE "READ-TEST-1B" TO PAR-NAME.
+           IF UNQUAL-NAME-1 IS EQUAL TO "SEQ-FILE"
+               PERFORM PASS
+           ELSE PERFORM FAIL
+               MOVE "SEQ-FILE" TO CORRECT-A
+               MOVE NAME-1 TO COMPUTED-A.
+           MOVE "DEBUG-NAME" TO RE-MARK.
+           PERFORM GEN-WRITE.
+       READ-TEST-1C.
+           MOVE "DEBUG-CONTENTS" TO RE-MARK.
+           MOVE "READ-TEST-1C" TO PAR-NAME.
+           IF CONTENTS-1 IS EQUAL TO SEQ-REC-3
+               PERFORM PASS
+               PERFORM GEN-WRITE
+               GO TO READ-TEST-2-INIT
+           ELSE PERFORM FAIL
+               MOVE "SEE 1ST LINE FOLLOW" TO COMPUTED-A
+               MOVE "SEE 2ND LINE FOLLOW" TO CORRECT-A
+               PERFORM GEN-WRITE.
+           MOVE CONTENTS-1 TO PRINT-REC.
+           PERFORM WRITE-LINE.
+           MOVE SEQ-REC-3 TO PRINT-REC.
+           PERFORM WRITE-LINE.
+       READ-TEST-2-INIT.
+           MOVE SPACES TO ITEM-1.
+           MOVE 0 TO KEY-1.
+           READ SEQ-FILE  AT END GO TO READ-TEST-2.
+           GO TO READ-TEST-2-INIT.
+       READ-TEST-2-DELETE.
+           MOVE "DEBUG READ AT END" TO FEATURE.
+           MOVE "READ-TEST-2" TO PAR-NAME.
+           PERFORM DE-LETE.
+           PERFORM GEN-WRITE.
+           GO TO CLOSE-SEQ-FILE.
+       READ-TEST-2.
+           MOVE "DEBUG READ AT END" TO FEATURE.
+           MOVE "READ-TEST-2" TO PAR-NAME.
+           IF KEY-1 IS EQUAL TO 0
+               PERFORM PASS
+               MOVE "DEBUG PROC NOT EXECUTED" TO RE-MARK
+           ELSE  PERFORM FAIL
+               MOVE "DEBUG PROC WAS EXECUTED" TO RE-MARK.
+       GEN-WRITE.
+           PERFORM PRINT-DETAIL.
+       CLOSE-SEQ-FILE.
+           CLOSE SEQ-FILE.
+      *> TAPE-DUMP SECTION.
+      *> OPEN-FILE.
+      *>     OPEN INPUT SEQ-FILE.
+      *> READ-FILE.
+      *>     READ SEQ-FILE AT END GO TO CLOSE-FILE.
+      *>     MOVE SEQ-REC-3 TO PRINT-REC.
+      *>     PERFORM WRITE-LINE.
+      *>     GO TO READ-FILE.
+      *> CLOSE-FILE.
+      *>     CLOSE SEQ-FILE.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,DB202A

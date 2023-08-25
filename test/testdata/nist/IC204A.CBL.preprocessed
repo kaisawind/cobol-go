@@ -1,0 +1,75 @@
+      *> HEADER,COBOL,IC203A,SUBRTN,IC204A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC204A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>         THE SUBPROGRAM IC204 HAS TWO VARIABLES IN WORKING-
+      *>     STORAGE WHICH ARE INITIALIZED BY A VALUE STATEMENT.  THE
+      *>     DATA CONTENTS OF THESE VARIABLES ARE MODIFIED DURING
+      *>     EXECUTION OF THE SUBPROGRAM.  INDICATORS ARE SET FOR
+      *>     VARIABLES IN THE LINKAGE SECTION WHICH RELATE HOW MANY
+      *>     TIMES THE SUBPROGRAM HAS BEEN CALLED SINCE IT WAS
+      *>     INITIALIZED, AND WHETHER OR NOT THE SUBPROGRAM IS IN
+      *>     ITS INITIAL STATE.
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  WS1  PICTURE 99 VALUE ZERO.
+       77  WS2 PICTURE X(5)   VALUE "FIRST".
+       LINKAGE SECTION.
+       77  SUB-DN1 PICTURE S999.
+       01  SUB-TABLE-1.
+           02  SUB-DN2 PIC XXX.
+           02  SUB-DN3 PIC 99.
+           02  SUB-DN4 PIC X(5).
+       PROCEDURE DIVISION USING SUB-TABLE-1, SUB-DN1.
+       SECT-IC204-0001 SECTION.
+       CNCL-TEST-01.
+           ADD 1 TO WS1.
+           MOVE WS1 TO SUB-DN1.
+       CNCL-TEST-02.
+           MOVE "NO" TO SUB-DN2.
+           IF WS2 EQUAL TO "FIRST"
+               MOVE SPACE TO WS2
+               MOVE "YES" TO SUB-DN2.
+       CNCL-TEST-03.
+           MOVE SPACE TO SUB-DN4.
+           IF WS1 EQUAL TO SUB-DN3
+               MOVE "EQUAL" TO SUB-DN4.
+       IC204-EXIT.
+           EXIT PROGRAM.
+      *>         THE PARAMETER SUB-DN3 IS SET IN THE CALLING PROGRAM
+      *>     EQUAL TO THE NUMBER OF TIMES THE SUBPROGRAM HAS BEEN
+      *>     CALLED SINCE BEING INITIALIZED, EITHER BY THE FIRST CALL
+      *>     OR THE FIRST CALL AFTER A CANCEL STATEMENT.
+      *> END-OF,IC204A

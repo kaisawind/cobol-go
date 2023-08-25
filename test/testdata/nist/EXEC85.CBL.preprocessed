@@ -1,0 +1,2260 @@
+      *>   VERSION 4.0   01 OCT 1992 0032
+       IDENTIFICATION DIVISION.
+       
+       PROGRAM-ID.
+           EXEC85.
+       INSTALLATION.
+      *>CE     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>CE     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+       ENVIRONMENT DIVISION.
+       
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+       CONFIGURATION SECTION.
+       
+       SPECIAL-NAMES.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT  OPTIONAL POPULATION-FILE
+           ASSIGN TO
+           XXXXX001.
+           SELECT  SOURCE-COBOL-PROGRAMS
+           ASSIGN TO
+           XXXXX002
+           ORGANIZATION SEQUENTIAL.
+           SELECT  UPDATED-POPULATION-FILE
+           ASSIGN TO
+           XXXXX003.
+           SELECT  PRINT-FILE
+           ASSIGN TO
+           XXXXX055.
+           SELECT  CONTROL-CARD-FILE
+           ASSIGN TO
+           XXXXX058.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  POPULATION-FILE.
+      *>     RECORD CONTAINS 2400 CHARACTERS.
+       01  SOURCE-IN-2400.
+           02 SOURCE-IN                    PIC X(80).
+      *>                                               OCCURS 30.
+       FD  CONTROL-CARD-FILE.
+       01  CONTROL-RECORD                  PIC X(80).
+       FD  PRINT-FILE.
+       01  PRINT-REC.
+         05        FILLER                  PIC X.
+         05        PRINT-DATA              PIC X(131).
+       FD  SOURCE-COBOL-PROGRAMS
+           BLOCK CONTAINS 1 RECORDS.
+       01  CT-OUT.
+           02 FILLER PIC X(72).
+           02 FILLER PIC X(8).
+       FD  UPDATED-POPULATION-FILE
+           RECORD CONTAINS 2400 CHARACTERS.
+       01  UPDATED-SOURCE-OUT-2400.
+           02 UD-SOURCE-OUT                PIC X(80)  OCCURS 30.
+       
+       WORKING-STORAGE SECTION.
+       
+       01  FILLER                          PIC X(40)  VALUE
+                  "NEWEXEC WORKING-STORAGE STARTS HERE ==->".
+       01  BLOCK-TYPE                      PIC X(5).
+       01  SUB1                            PIC S9(3)  COMP.
+       01  SUB2                            PIC S9(3)  COMP.
+       01  SUB3                            PIC S9(3)  COMP.
+       01  SUB4                            PIC S9(3)  COMP.
+       01  SUB5                            PIC S9(3)  COMP.
+       01  SUB6                            PIC S9(3)  COMP.
+       01  SUB7                            PIC S9(3)  COMP.
+       01  WA-ERR-IND                      PIC 9 VALUE ZEROES.
+       01  WA-FIRST-IND                    PIC 9 VALUE ZEROES.
+       01  WA-ZCARD-TABLE.
+         05        WA-ZCARD                OCCURS 10
+                                           PIC X(60).
+       01  WA-TOP-OF-PAGE-LINE.
+         05        FILLER                  PIC X(4)   VALUE SPACES.
+         05        WA-VERSION.
+           07      WA-VERSION-TEXT         PIC X(22)  VALUE
+                  "CCVS85 VERSION NUMBER ".
+           07      WA-VERSION-NUM          PIC X(3) VALUE SPACES.
+         05        WA-RELEASE.
+           07      WA-RELEASE-TEXT         PIC X(14)  VALUE
+                  ", RELEASED ON ".
+           07      WA-VERSION-DATE         PIC X(11) VALUE SPACES.
+         05        FILLER                  PIC X(4)   VALUE SPACES.
+         05        WA-COMPANY-AND-COMPILER PIC X(30) VALUE SPACES.
+         05        FILLER                  PIC X(5)   VALUE SPACES.
+         05        WA-DATE                 PIC XXBXXBXX.
+         05        FILLER                  PIC X(4)   VALUE SPACES.
+         05        FILLER                  PIC X(5)   VALUE "PAGE ".
+         05        WA-PAGE-CT              PIC Z(5)9.
+       
+       01  WA-ACCT-LINE-1.
+         05        FILLER                  PIC X(19)  VALUE
+                  " ** END OF PROGRAM ".
+         05        WA-CURRENT-PROG         PIC X(6).
+         05        FILLER                  PIC X(32)  VALUE
+                  " FOUND,  COBOL LINES PROCESSED: ".
+         05        WA-LINES-COBOL          PIC Z(5)9.
+       01  WA-ACCT-LINE-2.
+         05        FILLER                  PIC X(19)  VALUE
+                  " ** LINES INSERTED ".
+         05        WA-LINES-INSERTED       PIC Z(5)9.
+         05        FILLER                  PIC X(19)  VALUE
+                  " ** LINES REPLACED ".
+         05        WA-LINES-REPLACED       PIC Z(5)9.
+         05        FILLER                  PIC X(19)  VALUE
+                  " ** LINES DELETED  ".
+         05        WA-LINES-DELETED        PIC Z(5)9.
+       01  WA-ACCT-LINE-3.
+         05        FILLER                  PIC X(18)  VALUE
+                  " ** OPTIONAL CODE ".
+         05        WA-OPTIONAL-CODE        PIC X(8).
+         05        WA-CODE-REMOVED         PIC Z(5)9.
+         05        WA-CODE-KILLED          PIC X(21)  VALUE
+                  " ** COMMENTS DELETED ".
+         05        WA-COMMENTS-DEL         PIC Z(5)9.
+       01  WA-FINAL-LINE-1.
+         05        FILLER                  PIC X(34)  VALUE
+                  " ** END OF POPULATION FILE REACHED".
+         05        FILLER                  PIC X(27)  VALUE
+                  " NUMBER OF PROGRAMS FOUND: ".
+         05        WA-PROGS-FOUND          PIC Z(5)9.
+       01  WA-FINAL-LINE-2.
+         05        FILLER                  PIC X(47)  VALUE
+                  " ** NUMBER OF PROGRAMS WRITTEN TO SOURCE FILE: ".
+         05        WA-SOURCE-PROGS         PIC Z(5)9.
+       01  WA-FINAL-LINE-3.
+         05        FILLER                  PIC X(48)  VALUE
+                  " ** NUMBER OF PROGRAMS WRITTEN TO NEW POPULATION".
+         05        FILLER                  PIC X(7)   VALUE " FILE: ".
+         05        WA-NEWPOP-PROGS         PIC Z(5)9.
+       01  WB-CONTROL-DATA.
+         05        WB-FILL                 PIC X(80).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-3                    PIC X(3).
+           10      FILLER                  PIC X(77).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-4                    PIC X(4).
+           10      WB-NN                   PIC 99.
+           10      FILLER                  PIC X.
+           10      WB-X                    PIC X.
+           10      FILLER                  PIC X(72).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-6                    PIC X(6).
+           10      FILLER                  PIC X(74).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-7                    PIC X(7).
+           10      FILLER                  PIC X(73).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-8                    PIC X(8).
+           10      FILLER                  PIC X(72).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-9                    PIC X(9).
+           10      FILLER                  PIC X(71).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-10                   PIC X(10).
+           10      FILLER                  PIC X(70).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-11                   PIC X(11).
+           10      FILLER                  PIC X(69).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-12                   PIC X(12).
+           10      FILLER                  PIC X.
+           10      WB-PROG                 PIC X(5).
+           10      FILLER                  PIC X(62).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-13                   PIC X(13).
+           10      FILLER                  PIC X(67).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-14                   PIC X(14).
+           10      FILLER                  PIC X.
+           10      WB-MODULE               PIC XX.
+           10      FILLER                  PIC X.
+           10      WB-LEVEL                PIC X.
+           10      FILLER                  PIC X(61).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-15                   PIC X(15).
+           10      FILLER                  PIC X(65).
+         05        FILLER                  REDEFINES  WB-FILL.
+           10      WB-16                   PIC X(16).
+           10      FILLER                  PIC X(64).
+         05        WB-X-CARD               REDEFINES  WB-FILL.
+           10      WB-X-HYPHEN             PIC XX.
+           10      WB-X-CARD-NUM           PIC 9(3).
+           10      WB-PROG-POS.
+             15    WB-PROG-POS-NUM         PIC 99.
+           10      FILLER                  PIC X.
+           10      WB-SUBS-TEXT            PIC X(60).
+           10      FILLER                  PIC X(12).
+         05        WB-START-CARD           REDEFINES  WB-FILL.
+           10      WB-STAR-START           PIC X(6).
+           10      FILLER                  PIC X.
+           10      WB-UPDATE-PROG          PIC X(6).
+           10      FILLER                  PIC X.
+           10      WB-RENUMBER             PIC X.
+           10      FILLER                  PIC X(65).
+         05        WB-LINE-UPDATE          REDEFINES  WB-FILL.
+           10      WB-SEQ-1                PIC X(6).
+           10      WB-COBOL-LINE           PIC X(74).
+           10      FILLER                  REDEFINES  WB-COBOL-LINE.
+             15    WB-COL-7                PIC X.
+             15    FILLER                  PIC X(73).
+           10      FILLER                  REDEFINES  WB-COBOL-LINE.
+             15    WB-CHAR                 PIC X.
+             15    WB-SEQ-2                PIC X(6).
+      *> 
+       01  WC-CURRENT-POP-RECORD.
+         05        WC-1.
+           10      WC-END-OF-POPFILE       PIC X(16).
+           10      FILLER                  PIC X(64).
+         05        WC-HEADER               REDEFINES WC-1.
+           10      WC-STAR-HEADER          PIC X(7).
+           10      FILLER                  PIC X.
+           10      WC-COBOL                PIC X(5).
+           10      FILLER                  PIC X.
+           10      WC-PROG-ID.
+            12     WC-PROG-ID-1-5.
+             15    WC-PROG-ID-1-4.
+              18   WC-MODULE               PIC XX.
+              18   WC-LEVEL                PIC X.
+              18   FILLER                  PIC X.
+             15    FILLER                  PIC X.
+            12     WC-PROG-ID-6            PIC X.
+           10      FILLER                  PIC X.
+           10      WC-SUBPRG               PIC X(6).
+           10      FILLER                  PIC X.
+           10      WC-PROG2ID.
+            12     WC-PROG2ID-1-5          PIC X(5).
+            12     FILLER                  PIC X.
+           10      FILLER                  PIC X(46).
+         05        FILLER                  REDEFINES WC-1.
+           10      WC-1-72.
+             15    WC-6.
+               20  WC-STAR                 PIC X.
+               20  FILLER                  PIC X(5).
+             15    FILLER                  REDEFINES  WC-6.
+               20  WC-1-5                  PIC X(5).
+               20  FILLER                  PIC X.
+             15    WC-COL-7                PIC X.
+             15    WC-COL-8                PIC X.
+             15    FILLER                  PIC X(3).
+             15    WC-SUB-DATA.
+               20  WC-12-15                PIC X(4).
+               20  FILLER                  PIC X.
+               20  WC-17-19                PIC 9(3).
+               20  WC-20                   PIC X.
+               20  FILLER                  PIC X(52).
+           10      WC-73-80                PIC X(8).
+       
+       01  WD-SOURCE-REC.
+         05        WD-1.
+           10      FILLER                  PIC X(6).
+           10      WD-HEADER               PIC X(74).
+       
+       01  WE-PRINT-DATA.
+         05        WE-COBOL-LINE           PIC X(80).
+         05        FILLER                  PIC X      VALUE SPACE.
+         05        WE-X-CARD               PIC X(9).
+         05        FILLER                  PIC XX     VALUE SPACES.
+         05        WE-CHANGE-TYPE          PIC X(12).
+       
+       01  WF-PROGRAM-SELECTED-TABLE.
+         05        WF-PROGRAM-SELECTED     PIC X(5)   OCCURS 50.
+       
+       01  WG-MODULE-SELECTED-TABLE.
+         05        FILLER                             OCCURS 10.
+           10      WG-MODULE-SELECTED      PIC XX.
+           10      WG-MODULE-LEVEL         PIC X.
+       
+       01  WV-PRINT-MISCELLANEOUS.
+         05        WV-OPTION-HEADING       PIC X(25)  VALUE
+                  " OPTION SWITCH SETTINGS -".
+         05        WV-OPT-1                PIC X(40)  VALUE
+               " 0                 1                   2".
+         05        WV-OPT-2                PIC X(52)  VALUE
+               " 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6".
+         05        WV-OPT-SWITCHES.
+           10      FILLER                  PIC X      VALUE SPACE.
+           10      FILLER                  OCCURS 26.
+             15    WV-OPT                  PIC X.
+             15    FILLER                  PIC X.
+       01  WX-X-CARD-TABLE.
+         05        WX-X-CARD               OCCURS 200.
+           10      WX-X-CHAR               PIC X
+                                           OCCURS 60.
+       01  WX-PROG-POS-TABLE.
+         05        WX-PROG-POS             OCCURS 200
+                                           PIC 99.
+       01  WY-SWITCHES.
+         05        WY-OPTION-SWITCHES.
+           10      WY-OPT-SW-1             PIC X.
+           10      WY-OPT-SW-2             PIC X.
+           10      WY-OPT-SW-3             PIC X.
+           10      WY-OPT-SW-4             PIC X.
+           10      WY-OPT-SW-5             PIC X.
+           10      WY-OPT-SW-6             PIC X.
+           10      WY-OPT-SW-7             PIC X.
+           10      WY-OPT-SW-8             PIC X.
+           10      WY-OPT-SW-9             PIC X.
+           10      WY-OPT-SW-10            PIC X.
+           10      WY-OPT-SW-11            PIC X.
+           10      WY-OPT-SW-12            PIC X.
+           10      WY-OPT-SW-13            PIC X.
+           10      WY-OPT-SW-14            PIC X.
+           10      WY-OPT-SW-15            PIC X.
+           10      WY-OPT-SW-16            PIC X.
+           10      WY-OPT-SW-17            PIC X.
+           10      WY-OPT-SW-18            PIC X.
+           10      WY-OPT-SW-19            PIC X.
+           10      WY-OPT-SW-20            PIC X.
+           10      WY-OPT-SW-21            PIC X.
+           10      WY-OPT-SW-22            PIC X.
+           10      WY-OPT-SW-23            PIC X.
+           10      WY-OPT-SW-24            PIC X.
+           10      WY-OPT-SW-25            PIC X.
+           10      WY-OPT-SW-26            PIC X.
+         05        FILLER                  REDEFINES WY-OPTION-SWITCHES.
+           10      WY-OPT-SW               PIC X
+                                           OCCURS 26.
+         05        WY-PRINT-SWITCHES.
+           10      WY-EXTRACT-ALL          PIC X.
+           10      WY-EXTRACT-AUTO         PIC X.
+           10      WY-EXTRACT-MAN          PIC X.
+           10      WY-KILL-DELETIONS       PIC X.
+           10      WY-LIST-NO-UPDATES      PIC X.
+           10      WY-LIST-X-CARDS         PIC X.
+           10      WY-LIST-PROGRAMS        PIC X.
+           10      WY-LIST-COMPACT         PIC X.
+           10      WY-NO-DATA              PIC X.
+           10      WY-NO-LIBRARY           PIC X.
+           10      WY-NO-SOURCE            PIC X.
+           10      WY-REMOVE-COMMENTS      PIC X.
+           10      WY-NEW-POP              PIC X.
+           10      WY-SELECT-PROG          PIC X.
+           10      WY-SELECT-MODULE        PIC X.
+           10      WY-SELECT-LEVEL         PIC X.
+       
+       01  WZ-MISCELLANEOUS.
+         05        WZ-PROGRAM-SELECTED     PIC X.
+         05        WZ-END-OF-POPFILE       PIC X.
+         05        WZ-FULL-STOP            PIC X.
+         05        WZ-DONT-READ-POPFILE    PIC X.
+         05        WZ-UPDATE-THIS-PROG     PIC X.
+         05        WZ-REPLACE-FLAG         PIC X.
+         05        WZ-LINE-UPDATE          PIC X.
+         05        WZ-RESEQUENCE-THIS      PIC X.
+         05        WZ-RESEQUENCE-NEXT      PIC X.
+         05        WZ-END-OF-UPDATES       PIC X.
+         05        WZ-OPTIONAL-SELECTED    PIC X.
+         05        WZ-DELETE-FLAG          PIC X.
+         05        WZ-NOT-THIS-COMMENT     PIC X.
+         05        WZ-CURRENT-HEADER       PIC X(5).
+         05        WZ-INVALID-DATA.
+           10      FILLER                  PIC X(20).
+           10      WZ-ERROR-MESSAGE        PIC X(60).
+         05        WZ-CURRENT-UPD-PROG.
+           10      WZ-UPD-PROG-CHAR        PIC X.
+           10      FILLER                  PIC X(5).
+         05        WZ-CURRENT-MAIN-PROG.
+           10      WZ-MAIN-PROG-CHAR       PIC X      OCCURS 6.
+         05        WZ-PROG-BREAK.
+           10      WZ-1CHAR                PIC X      OCCURS 6.
+         05        WZ-CURRENT-POP-PROG.
+           10      FILLER                  PIC X(5).
+           10      WZ-PROG-ID-6            PIC X.
+         05        WZ-MAIN-PROG-FLAG       PIC X.
+         05        WZ-LINES-COBOL          PIC 9(6).
+         05        WZ-LINES-INSERTED       PIC 9(6).
+         05        WZ-LINES-REPLACED       PIC 9(6).
+         05        WZ-LINES-DELETED        PIC 9(6).
+         05        WZ-COMMENTS-DELETED     PIC 9(6).
+         05        WZ-CODE-REMOVED         PIC 9(6).
+         05        WZ-SOURCE-PROGS         PIC 9(6).
+         05        WZ-NEWPOP-PROGS         PIC 9(6).
+         05        WZ-PROGS-FOUND          PIC 9(6).
+         05        WZ-COMMENTS-DEL         PIC 9(6).
+         05        WZ-SEQ-NO               PIC 9(6).
+         05        WZ-SAVE-POP-RECORD.
+           10      WZ-SAVE-SEQ             PIC X(6).
+           10      FILLER                  PIC X(5).
+           10      WZ-SAVE-12-20.
+             15    WZ-SAVE-12-15           PIC X(4).
+             15    FILLER                  PIC X(5).
+           10      FILLER                  PIC X(60).
+         05        WZ-PAGE-CT              PIC 9(6).
+         05        WZ-LINE-CT              PIC 9(6).
+         05        WZ-MODULE               PIC XX.
+         05        WZ-LEVEL                PIC X.
+         05        WZ-PRINT-HOLD           PIC X(132).
+         05        WZ-X-CARD.
+           10      WZ-X-CHAR               PIC X
+                                           OCCURS 60.
+         05        WZ-WITHIN-DELETE-SERIES-FLAG  PIC X.
+       01  WZ-VERSION-CARD.
+           10  FILLER                      PIC X(55) VALUE
+           "CCVS85  VERSION 4.2   01 OCT 1992 0032                 ".
+       01  WZ-VERSION-CONTROL REDEFINES WZ-VERSION-CARD.
+           10      FILLER                  PIC X(16).
+           10      WZ-VERSION-NUM          PIC X(3).
+           10      FILLER                  PIC X(3).
+           10      WZ-VERSION-DATE         PIC X(11).
+       
+      *> 
+       PROCEDURE DIVISION.
+      *> ==================
+      *> 
+       A10-MAIN SECTION.
+      *> ================
+      *> 
+      *> ***************************************************************
+      *>     THIS IS THE HIGHEST LEVEL CONTROL MODULE                  *
+      *>                                                               *
+      *> ***************************************************************
+       A10-1-MAIN.
+           PERFORM B10-INITIALISE.
+       
+           PERFORM C10-PROCESS-MONITOR.
+       
+           PERFORM D10-MERGE-UPDATE-CARDS.
+       
+           PERFORM E10-TERMINATE.
+       
+       A10-EXIT.
+           EXIT.
+       
+      *> 
+       B10-INITIALISE SECTION.
+      *> ======================
+      *> 
+      *> ***************************************************************
+      *>  THIS SECTION INITIALIZES THE OPTION SWITCH AND X-CARD FIELDS *
+      *>  PRIOR TO READING IN CONTROL CARD FILE.                       *
+      *>                                                               *
+      *>                                                               *
+      *>                                                               *
+      *>                                                               *
+      *> ***************************************************************
+       B10-1-INIT-OPTION-SWITCHES.
+           MOVE    SPACES  TO WZ-MISCELLANEOUS.
+           MOVE    SPACES  TO WF-PROGRAM-SELECTED-TABLE.
+           MOVE    SPACES  TO WG-MODULE-SELECTED-TABLE.
+           MOVE    SPACES  TO WY-SWITCHES.
+           MOVE    "A"     TO WY-OPT-SW-1.
+           MOVE    "E"     TO WY-OPT-SW-2.
+           MOVE    "H"     TO WY-OPT-SW-3.
+           MOVE    "L"     TO WY-OPT-SW-4.
+           MOVE    "Y"     TO WY-OPT-SW-7.
+           MOVE    "T"     TO WY-OPT-SW-11.
+       
+       B10-2-INIT-X-CARDS.
+           MOVE    ZERO TO SUB1.
+           MOVE    ZERO TO SUB6.
+           MOVE    ZERO TO SUB7.
+           MOVE    1    TO SUB5.
+           PERFORM B20-INIT-X-CARDS 200 TIMES.
+           MOVE   "    OMITTED" TO WX-X-CARD (84).
+           MOVE    ZERO TO WZ-LINES-COBOL.
+           MOVE    ZERO TO WZ-LINES-INSERTED.
+           MOVE    ZERO TO WZ-LINES-REPLACED.
+           MOVE    ZERO TO WZ-LINES-DELETED.
+           MOVE    ZERO TO WZ-COMMENTS-DELETED.
+           MOVE    ZERO TO WZ-CODE-REMOVED.
+           MOVE    ZERO TO WZ-SOURCE-PROGS.
+           MOVE    ZERO TO WZ-NEWPOP-PROGS.
+           MOVE    ZERO TO WZ-PROGS-FOUND.
+           MOVE    ZERO TO WZ-COMMENTS-DEL.
+           MOVE    ZERO TO WZ-SEQ-NO.
+           MOVE    ZERO TO WZ-PAGE-CT.
+           MOVE    ZERO TO WZ-LINE-CT.
+           ACCEPT WA-DATE FROM DATE.
+       B10-EXIT.
+           EXIT.
+       
+       
+       
+       
+       B20-INIT-X-CARDS SECTION.
+      *> ========================
+       B20-1-INIT.
+           ADD     1 TO SUB1.
+           MOVE   "**** X-CARD UNDEFINED ****" TO WX-X-CARD (SUB1).
+           MOVE    ZERO TO WX-PROG-POS (SUB1).
+       
+       B20-EXIT.
+           EXIT.
+      *> 
+       C10-PROCESS-MONITOR SECTION.
+      *> ===========================
+       
+      *> ***************************************************************
+      *>     THIS SECTION PROCESSES THE RECORDS COMMENCING WITH "*"    *
+      *>     AND "X-" (THE MONITOR PART OF THE INPUT FILE ) AND READS  *
+      *>     THE FIRST "*START" UPDATE RECORD.                         *
+      *>                                                               *
+      *>     PERFORMED BY    A10-MAIN                                  *
+      *>     PERFORMS        C20-PROCESS-STAR-CARDS                    *
+      *>                     C30-CHECK-COMBINATIONS                    *
+      *>                     C40-PROCESS-X-CARDS                       *
+      *> ***************************************************************
+       C10-1-OPEN-FILES.
+           OPEN    OUTPUT  PRINT-FILE.
+           MOVE    SPACES TO PRINT-REC.
+           OPEN    INPUT   CONTROL-CARD-FILE.
+           READ    CONTROL-CARD-FILE INTO  WB-CONTROL-DATA
+                   AT END  MOVE "CONTROL-CARD-FILE IS EMPTY"
+                        TO PRINT-DATA
+                   PERFORM  X20-PRINT-DETAIL
+                   STOP RUN.
+           PERFORM C20-PROCESS-STAR-CARDS
+                   UNTIL   WB-X-HYPHEN = "X-".
+           PERFORM C30-CHECK-COMBINATIONS.
+           PERFORM C40-PROCESS-X-CARDS
+                   UNTIL   WB-12 = "*END-MONITOR".
+       
+           PERFORM C50-PRINT-OPTIONS.
+       
+       C10-10-GET-FIRST-START-CARD.
+           READ    CONTROL-CARD-FILE INTO  WB-CONTROL-DATA
+                   AT END  MOVE "NO BEGIN-UPDATE CARD FOUND"
+                        TO PRINT-DATA
+                   PERFORM  X20-PRINT-DETAIL
+                   STOP RUN.
+           IF WB-13 NOT = "*BEGIN-UPDATE"
+                   MOVE "*BEGIN-UPDATE CARD MISSING"
+                        TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+           READ    CONTROL-CARD-FILE INTO  WB-CONTROL-DATA
+                   AT END  MOVE "NO END-UPDATE CARD FOUND"
+                        TO PRINT-DATA
+                   PERFORM  X20-PRINT-DETAIL
+                   STOP RUN.
+           IF      WB-11 = "*END-UPDATE"
+                   MOVE   "Y" TO WZ-END-OF-UPDATES
+                   GO TO   C10-EXIT.
+           IF      WB-STAR-START = "*START"
+                   PERFORM C60-START-CARD.
+       
+       C10-EXIT.
+           EXIT.
+      *> 
+       C20-PROCESS-STAR-CARDS SECTION.
+      *> ==============================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION PROCESSES THE INPUT PARAMETER FILE RECORDS   *
+      *>     WHICH START WITH AN ASTERISK IN COLUMN 1 AND SETS VARIOUS *
+      *>     FLAGS WHICH CONTROL THE WAY THIS EXECUTIVE ROUTINE WORKS. *
+      *>                                                               *
+      *>     PERFORMED BY  C10-PROCESS-MONITOR                         *
+      *>     PERFORMS      C25-SET-FLAGS                               *
+      *> ***************************************************************
+       C20-1-UPDATE-CHECK.
+           IF      WB-13 = "*BEGIN-UPDATE"
+                   MOVE    WB-13 TO WZ-INVALID-DATA
+                   MOVE   "ENCOUNTERED BEFORE *END-MONITOR CARD"
+                        TO WZ-ERROR-MESSAGE
+                   MOVE    WZ-INVALID-DATA TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+       
+           IF      WB-6  = "*START"
+                   MOVE    WB-6  TO WZ-INVALID-DATA
+                   MOVE   "ENCOUNTERED BEFORE *END-MONITOR CARD"
+                        TO WZ-ERROR-MESSAGE
+                   MOVE    WZ-INVALID-DATA TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+       
+           IF      WB-11 = "*END-UPDATE"
+                   MOVE    WB-11 TO WZ-INVALID-DATA
+                   MOVE   "ENCOUNTERED BEFORE *END-MONITOR CARD"
+                        TO WZ-ERROR-MESSAGE
+                   MOVE    WZ-INVALID-DATA TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+       
+           PERFORM C25-SET-FLAGS.
+       
+       C20-EXIT.
+           EXIT.
+       
+      *> 
+       C25-SET-FLAGS SECTION.
+      *> =====================
+       C25-1.
+           MOVE    WB-CONTROL-DATA TO PRINT-DATA.
+           PERFORM X20-PRINT-DETAIL.
+           IF      WB-12 = "*EXTRACT-ALL"
+                   MOVE   "Y" TO WY-EXTRACT-ALL.
+           IF      WB-13 = "*EXTRACT-AUTO"
+                   MOVE   "Y" TO WY-EXTRACT-AUTO.
+           IF      WB-12 = "*EXTRACT-MAN"
+                   MOVE   "Y" TO WY-EXTRACT-MAN.
+           IF      WB-15 = "*KILL-DELETIONS"
+                   MOVE   "Y" TO WY-KILL-DELETIONS.
+           IF      WB-16 = "*LIST NO-UPDATES"
+                   MOVE   "Y" TO WY-LIST-NO-UPDATES.
+           IF      WB-13 = "*LIST X-CARDS"
+                   MOVE   "Y" TO WY-LIST-X-CARDS.
+           IF      WB-14 = "*LIST PROGRAMS"
+                   MOVE   "Y" TO WY-LIST-PROGRAMS.
+           IF      WB-13 = "*LIST COMPACT"
+                   MOVE   "Y" TO WY-LIST-COMPACT.
+           IF      WB-8  = "*NO-DATA"
+                   MOVE   "Y" TO WY-NO-DATA.
+           IF      WB-11 = "*NO-LIBRARY"
+                   MOVE   "Y" TO WY-NO-LIBRARY.
+           IF      WB-10 = "*NO-SOURCE"
+                   MOVE   "Y" TO WY-NO-SOURCE.
+           IF      WB-16 = "*REMOVE-COMMENTS"
+                   MOVE   "Y" TO WY-REMOVE-COMMENTS.
+           IF      WB-8  = "*NEW-POP"
+                   MOVE   "Y" TO WY-NEW-POP.
+           IF      WB-4  = "*OPT"
+                   MOVE   WB-X TO WY-OPT-SW (WB-NN).
+           IF      WB-14 = "*SELECT-MODULE"
+                   IF      WB-MODULE = SPACE
+                           MOVE  "SELECTED MODULE NOT SPECIFIED"
+                               TO PRINT-DATA
+                           PERFORM X20-PRINT-DETAIL
+                           STOP RUN.
+       
+           IF      WB-14 = "*SELECT-MODULE"
+                   ADD     1 TO SUB6
+                   IF      SUB6 > 10
+                           MOVE   "MORE THAN 10 MODULES SELECTED"
+                                TO PRINT-DATA
+                           PERFORM X20-PRINT-DETAIL
+                           STOP RUN
+                   ELSE
+                           MOVE   "Y" TO WY-SELECT-MODULE
+                           MOVE    WB-MODULE
+                                TO WG-MODULE-SELECTED (SUB6)
+                           MOVE    WB-LEVEL  TO WG-MODULE-LEVEL (SUB6).
+           IF      WB-12 = "*SELECT-PROG"
+                   ADD     1 TO SUB7
+                   IF      SUB7 > 50
+                           MOVE   "MORE THAN 50 RECORDS SELECTED"
+                                TO PRINT-DATA
+                           PERFORM X20-PRINT-DETAIL
+                           STOP RUN
+                   ELSE
+                           MOVE   "Y" TO WY-SELECT-PROG
+                           MOVE    WB-PROG
+                                TO WF-PROGRAM-SELECTED (SUB7).
+       
+       C25-10-READ-FILE.
+           MOVE    SPACES TO WB-CONTROL-DATA.
+           READ    CONTROL-CARD-FILE INTO  WB-CONTROL-DATA
+                   AT END  MOVE "*END-MONITOR NOT ENCOUNTERED"
+                        TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+       C25-EXIT.
+           EXIT.
+      *> 
+       C30-CHECK-COMBINATIONS SECTION.
+      *> ==============================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION CHECKS FOR ANY INVALID COMBINATIONS OF       *
+      *>     CARDS INPUT WITH AN ASTERISK IN COLUMN 1.                 *
+      *>                                                               *
+      *>     PERFORMED BY  C10-PROCESS-MONITOR                         *
+      *>     PERFORMS      NONE                                        *
+      *> ***************************************************************
+       C30-1-SELECTION-CHECK.
+           IF      WY-EXTRACT-ALL = SPACE
+                   GO TO   C30-10.
+           IF      WY-EXTRACT-AUTO = "Y"
+                   MOVE   "ALL AND AUTO PROGRAMS SELECTED"
+                        TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+       
+       C30-10.
+           IF      WY-EXTRACT-ALL = SPACE
+                   GO TO   C30-20.
+           IF      WY-EXTRACT-MAN = "Y"
+                   MOVE   "ALL AND MANUAL PROGRAMS SELECTED"
+                        TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+       
+       C30-20.
+           IF      WY-LIST-PROGRAMS = SPACE
+                   GO TO   C30-30.
+           IF      WY-LIST-NO-UPDATES = SPACE
+                   MOVE   "BOTH UPDATES AND PROGRAMS SELECTED"
+                        TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+       
+       C30-30.
+           IF      WY-EXTRACT-AUTO = SPACE
+                   GO TO   C30-40-CHECK-FOR-NEW-FILE.
+           IF      WY-EXTRACT-MAN  = "Y"
+                   MOVE   "AUTO AND MANUAL PROGRAMS SELECTED"
+                        TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+       
+       C30-40-CHECK-FOR-NEW-FILE.
+           IF      WY-NO-SOURCE = SPACE
+                   GO TO   C30-50.
+           IF      WY-NEW-POP   = "Y"
+                   GO TO   C30-50.
+           MOVE   "NO SOURCE OR UPDATED POPFILE SELECTED" TO PRINT-DATA.
+           PERFORM X20-PRINT-DETAIL
+           STOP RUN.
+       
+       C30-50.
+           IF      WY-EXTRACT-ALL = "Y"
+                   GO TO   C30-55.
+           IF      WY-EXTRACT-MAN = "Y"
+                   GO TO   C30-55.
+           IF      WY-EXTRACT-AUTO = SPACE
+                   GO TO   C30-60.
+       C30-55.
+           IF      WY-SELECT-PROG = "Y"
+                   MOVE  "SINGLE PROGRAM SELECTED WITH ALL/AUTO/MANUAL"
+                        TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+           IF      WY-SELECT-MODULE = "Y"
+                   MOVE  "SINGLE MODULE SELECTED WITH ALL/AUTO/MANUAL"
+                        TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+       
+       C30-60.
+           IF      WY-SELECT-PROG = SPACE
+                   GO TO   C30-70.
+           IF      WY-SELECT-MODULE = "Y"
+                   MOVE  "SINGLE MODULE AND SINGLE PROGRAM SELECTED"
+                        TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   STOP RUN.
+       
+       
+       C30-70.
+           IF      WY-EXTRACT-ALL = SPACE
+              IF      WY-EXTRACT-AUTO = SPACE
+                   IF      WY-EXTRACT-MAN = SPACE
+                       IF      WY-SELECT-PROG = SPACE
+                           IF      WY-SELECT-MODULE = SPACE
+                                   MOVE   "NO PROGRAMS SELECTED"
+                                        TO PRINT-DATA
+                                   PERFORM X20-PRINT-DETAIL
+                                   STOP RUN.
+       
+       C30-EXIT.
+           EXIT.
+      *> 
+       C40-PROCESS-X-CARDS SECTION.
+      *> ===========================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION PROCESSES THE INPUT PARAMETER FILE RECORDS   *
+      *>     WHICH START WITH AN "X" IN COLUMN 1 AND SETS A TABLE WHICH*
+      *>     CONTAINS TEXT TO BE SUBSTITUTED BY THIS EXECUTIVE ROUTINE.*
+      *>                                                               *
+      *>     PERFORMED BY  C10-PROCESS-MONITOR                         *
+      *>     PERFORMS      NONE                                        *
+      *> ***************************************************************
+       C40-1-PROCESS-CARD.
+           IF      WB-X-HYPHEN NOT = "X-"
+                   MOVE   "INVALID X-CARD:" TO WZ-INVALID-DATA
+                   MOVE    WB-CONTROL-DATA  TO WZ-ERROR-MESSAGE
+                   MOVE    WZ-INVALID-DATA TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   GO TO   C40-90-READ-FILE.
+       
+           IF      WB-X-CARD-NUM > 200
+                   MOVE   "INVALID X-CARD:" TO WZ-INVALID-DATA
+                   MOVE    WB-CONTROL-DATA  TO WZ-ERROR-MESSAGE
+                   MOVE    WZ-INVALID-DATA  TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   GO TO   C40-90-READ-FILE.
+       
+       C40-20-MOVE-DATA.
+           MOVE    WB-SUBS-TEXT TO WX-X-CARD (WB-X-CARD-NUM).
+           IF      WB-PROG-POS = SPACES
+                   GO TO   C40-30-MOVE-DATA.
+           IF      WB-PROG-POS-NUM < 55
+                   MOVE   WB-PROG-POS-NUM
+                       TO WX-PROG-POS (WB-X-CARD-NUM).
+       
+       C40-30-MOVE-DATA.
+           MOVE    WB-CONTROL-DATA TO PRINT-DATA.
+           PERFORM X20-PRINT-DETAIL.
+       
+       C40-90-READ-FILE.
+           READ    CONTROL-CARD-FILE INTO  WB-CONTROL-DATA
+                   AT END  MOVE
+           "*BEGIN-UPDATE AND *END-UPDATE CARDS NOT ENCOUNTERED"
+                        TO PRINT-DATA
+                   PERFORM  X20-PRINT-DETAIL
+                   STOP RUN.
+       
+       C40-EXIT.
+           EXIT.
+       
+      *> 
+       C50-PRINT-OPTIONS SECTION.
+      *> =========================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION PRINTS DETAILS OF THE PROCESSING OPTIONS     *
+      *>     SELECTED BY THE VARIOUS CONTROL CARDS INPUT               *
+      *>                                                               *
+      *>     PERFORMED BY  C10-PROCESS-MONITOR                         *
+      *>     PERFORMS      NONE                                        *
+      *> ***************************************************************
+       C50-1-PRINT-OPTION-SWITCHES.
+           WRITE   PRINT-REC FROM WV-OPTION-HEADING AFTER PAGE.
+           WRITE   PRINT-REC FROM WV-OPT-1          AFTER 1.
+           WRITE   PRINT-REC FROM WV-OPT-2          AFTER 1.
+           MOVE    SPACES TO WV-OPT-SWITCHES.
+           MOVE    ZERO   TO SUB1.
+           PERFORM C50-4 26 TIMES.
+           GO TO   C50-5.
+       C50-4.
+      *>     PERFORM 26 TIMES
+                   ADD     1 TO SUB1
+                   MOVE    WY-OPT-SW (SUB1) TO WV-OPT (SUB1).
+      *>     END-PERFORM.
+       C50-5.
+           WRITE   PRINT-REC FROM WV-OPT-SWITCHES AFTER 1.
+       
+       C50-20-LISTING-OPTIONS.
+           IF      WY-LIST-NO-UPDATES = "Y"
+                   MOVE   "UPDATES WILL NOT BE REPORTED" TO PRINT-DATA
+           ELSE
+                   MOVE   "UPDATES WILL BE REPORTED"     TO PRINT-DATA.
+           WRITE   PRINT-REC AFTER 3.
+       
+           IF      WY-LIST-X-CARDS = "Y"
+                   MOVE   "X-CARD SUBSTITUTIONS WILL BE SHOWN"
+                        TO PRINT-DATA
+           ELSE
+                   MOVE   "X-CARD SUBSTITUTIONS WILL NOT BE SHOWN"
+                        TO PRINT-DATA.
+           WRITE   PRINT-REC AFTER 1.
+       
+           IF      WY-LIST-PROGRAMS = "Y"
+                   MOVE   "PROGRAM LISTINGS WILL BE PRINTED"
+                        TO PRINT-DATA
+           ELSE
+                   MOVE   "PROGRAM LISTINGS WILL NOT BE PRINTED"
+                        TO PRINT-DATA.
+           WRITE   PRINT-REC AFTER 1.
+       
+           IF      WY-LIST-COMPACT = "Y"
+                   MOVE   "REPORT WILL BE COMPRESSED" TO PRINT-DATA
+           ELSE
+                   MOVE   "REPORT WILL BE EXPANDED"   TO PRINT-DATA.
+           WRITE   PRINT-REC AFTER 1.
+       
+           IF      WY-NO-SOURCE = "Y"
+                   MOVE   "SOURCE FILE WILL BE SUPPRESSED" TO PRINT-DATA
+           ELSE
+                   MOVE   "SOURCE FILE WILL BE CREATED" TO PRINT-DATA.
+           WRITE   PRINT-REC AFTER 1.
+       
+           IF      WY-NEW-POP = "Y"
+                   MOVE   "NEW POPULATION FILE WILL BE CREATED"
+                        TO PRINT-DATA
+           ELSE
+                   MOVE   "NEW POPULATION FILE WILL BE SUPPRESSED"
+                        TO PRINT-DATA.
+           WRITE   PRINT-REC AFTER 1.
+       
+       
+       C50-30.
+           IF      WY-NO-LIBRARY = "Y"
+                   MOVE "LIBRARY NOT SELECTED"
+                        TO PRINT-DATA
+           ELSE
+                   MOVE "LIBRARY FILES WILL BE SELECTED"
+                        TO PRINT-DATA.
+           WRITE   PRINT-REC AFTER 1.
+       
+       C50-35.
+           IF      WY-NO-DATA = "Y"
+                   MOVE   "DATA BLOCKS WILL BE IGNORED"
+                        TO PRINT-DATA
+           ELSE
+                   MOVE   "DATA BLOCKS WILL BE SENT TO SOURCE FILE"
+                        TO PRINT-DATA.
+           WRITE   PRINT-REC AFTER 1.
+       
+       C50-40.
+           IF      WY-EXTRACT-ALL = "Y"
+                   MOVE   "ALL PROGRAMS SELECTED"     TO PRINT-DATA.
+           IF      WY-EXTRACT-AUTO = "Y"
+                   MOVE   "ALL AUTOMATIC PROGRAMS SELECTED"
+                        TO PRINT-DATA.
+           IF      WY-EXTRACT-MAN = "Y"
+                   MOVE   "ALL MANUAL PROGRAMS SELECTED"
+                        TO PRINT-DATA.
+           IF      WY-SELECT-PROG = "Y"
+                   MOVE   "SEPARATE PROGRAMS SELECTED"
+                        TO PRINT-DATA.
+           IF      WY-SELECT-MODULE = "Y"
+                   MOVE   "SEPARATE MODULES SELECTED"
+                        TO PRINT-DATA.
+           WRITE   PRINT-REC AFTER 1.
+       
+           IF      WY-REMOVE-COMMENTS = "Y"
+                   MOVE   "COMMENT LINES WILL BE REMOVED"
+                        TO PRINT-DATA
+           ELSE
+                   MOVE   "COMMENT LINES WILL BE RETAINED"
+                        TO PRINT-DATA.
+           WRITE   PRINT-REC AFTER 1.
+       
+       
+           IF      WY-KILL-DELETIONS = "Y"
+                   MOVE   "UNUSED OPTIONAL CODE WILL BE REMOVED"
+                        TO PRINT-DATA
+           ELSE
+                   MOVE   "UNUSED OPTIONAL CODE WILL BE CONVERTED TO COMMENTS AND RETAINED"
+                        TO PRINT-DATA.
+           WRITE   PRINT-REC AFTER 1.
+       
+       C50-EXIT.
+           EXIT.
+       
+      *> 
+       C60-START-CARD SECTION.
+      *> ======================
+      *> 
+      *> ***************************************************************
+      *>     WHEN A "*START" CARD IS READ THIS SECTION INITIALISES     *
+      *>     VARIOUS FIELDS AND SETS CERTAIN FLAGS.                    *
+      *>                                                               *
+      *>     PERFORMED BY    C10-PROCESS-MONITOR                       *
+      *>                     D62-SERIES-UPDATE                         *
+      *>                     D67-LINE-UPDATE                           *
+      *>                     D68-LINE-EQUAL                            *
+      *>                     D69-LINE-BLANK-OR-LESS                    *
+      *>                     D40-ANY-UPDATES
+      *>     PERFORMS        NONE                                      *
+      *> ***************************************************************
+       C60-1.
+       
+           MOVE    WB-UPDATE-PROG TO WZ-CURRENT-UPD-PROG.
+       
+           IF      WZ-CURRENT-UPD-PROG = WZ-CURRENT-POP-PROG
+                   MOVE   "Y"    TO WZ-UPDATE-THIS-PROG
+           ELSE
+                   MOVE    SPACE TO WZ-UPDATE-THIS-PROG.
+       
+       C60-EXIT.
+           EXIT.
+      *> 
+       D10-MERGE-UPDATE-CARDS SECTION.
+      *> ==============================
+      *> 
+      *> ***************************************************************
+      *>     THIS IS THE MAIN CONTROL SECTION FOR THE PROCESSING OF    *
+      *>     THE POPULATION FILE.  IT OBTAINS THE HEADER FOR THE FIRST *
+      *>     AUDIT ROUTINE IN THE POPFILE AND PROCESSES ALL RECORDS.   *
+      *>                                                               *
+      *>     PERFORMED BY    A10-MAIN                                  *
+      *>     PERFORMS        D11-GET-NEXT-PROGRAM                      *
+      *>                     D15-END-OF-POPFILE                        *
+      *>                     D20-PROCESS-POPFILE                       *
+      *> ***************************************************************
+       D10-1-OPEN-FILES.
+           IF      WY-NEW-POP = "Y"
+                   OPEN    OUTPUT UPDATED-POPULATION-FILE.
+       
+           IF      WY-NO-SOURCE = SPACE
+                   OPEN    OUTPUT SOURCE-COBOL-PROGRAMS.
+       
+           OPEN    INPUT   POPULATION-FILE.
+           PERFORM D10-20-GET-VERSION.
+           MOVE WZ-VERSION-CARD TO PRINT-DATA.
+           PERFORM X20-PRINT-DETAIL.
+       
+       D10-10-GET-HEADER.
+           PERFORM D11-GET-NEXT-PROGRAM.
+       
+           PERFORM D20-PROCESS-POPFILE
+                   UNTIL   WZ-END-OF-POPFILE = "Y".
+       
+           PERFORM D15-END-OF-POPFILE.
+       
+       D10-EXIT.
+           EXIT.
+      *> 
+       D10-20-GET-VERSION SECTION.
+      *> ============================
+      *> 
+       D10-20-INIT-VER.
+           MOVE WZ-VERSION-NUM TO WA-VERSION-NUM.
+           MOVE WZ-VERSION-DATE TO WA-VERSION-DATE.
+       
+       D10-20-EXIT.
+           EXIT.
+      *> 
+       D11-GET-NEXT-PROGRAM SECTION.
+      *> ============================
+      *> 
+      *> ***************************************************************
+      *>     PERFORMED BY    D10-MERGE-UPDATE-CARDS                    *
+      *>                     D30-PROCESS-HEADER                        *
+      *> ***************************************************************
+       D11-1-READ-POPFILE.
+           MOVE SPACES  TO WC-STAR-HEADER.
+       
+           PERFORM X30-READ-POPFILE
+                   UNTIL   WC-STAR-HEADER = "*HEADER".
+       D11-TEST-END.
+           IF      WZ-END-OF-POPFILE = "Y"
+                   GO TO   D11-EXIT.
+       
+           IF      WC-COBOL NOT = "COBOL"
+                   IF      WC-COBOL = "CLBRY"
+                           IF      WY-NO-LIBRARY = "Y"
+                                   GO TO   D11-1-READ-POPFILE
+                           ELSE
+                                   NEXT SENTENCE
+                    ELSE
+                           IF      WC-COBOL = "DATA*"
+                                   IF    WY-NO-DATA = "Y"
+                                         GO TO D11-1-READ-POPFILE
+                                   ELSE
+                                         NEXT SENTENCE
+                           ELSE
+                                   GO TO   D11-1-READ-POPFILE.
+       
+       D11-EXIT.
+           EXIT.
+      *> 
+       D15-END-OF-POPFILE SECTION.
+      *> ==========================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION PRINTS END OF RUN ACCOUNTING INFORMATION AND *
+      *>     FLAGS ANY OUTSTANDING *UPDATE RECORDS AS UNUSED.          *
+      *>                                                               *
+      *>     PERFORMED BY           D10-MERGE-UPDATE-CARD              *
+      *>     PERFORMS               D16-FLAG-UNUSED-UPDATES            *
+      *>                            X20-PRINT-DETAIL                   *
+      *> ***************************************************************
+       D15-1-SET-UP-FIELDS.
+           MOVE    WZ-PROGS-FOUND  TO WA-PROGS-FOUND.
+           MOVE    WA-FINAL-LINE-1 TO PRINT-DATA.
+           PERFORM X20-PRINT-DETAIL.
+       
+           IF      WY-NO-SOURCE = SPACE
+                   MOVE    WZ-SOURCE-PROGS TO WA-SOURCE-PROGS
+                   MOVE    WA-FINAL-LINE-2 TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL.
+       
+           IF      WY-NEW-POP = "Y"
+                   MOVE    WZ-NEWPOP-PROGS TO WA-NEWPOP-PROGS
+                   MOVE    WA-FINAL-LINE-3 TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL.
+       
+           IF      WZ-END-OF-UPDATES = SPACE
+                   READ    CONTROL-CARD-FILE INTO  WB-CONTROL-DATA
+                           AT END  MOVE "Y" TO WZ-END-OF-UPDATES.
+       
+           PERFORM D16-FLAG-UNUSED-UPDATES
+             UNTIL WZ-END-OF-UPDATES = "Y".
+       
+           IF WY-SELECT-PROG = "Y" AND
+             WF-PROGRAM-SELECTED-TABLE NOT = SPACES
+             MOVE "SOME PROGRAMS NOT FOUND" TO PRINT-DATA
+             PERFORM X20-PRINT-DETAIL
+             PERFORM VARYING SUB7 FROM 1 BY 1 UNTIL SUB7 > 50
+               IF WF-PROGRAM-SELECTED (SUB7) NOT = SPACE
+                    MOVE WF-PROGRAM-SELECTED (SUB7) TO PRINT-DATA
+                    PERFORM X20-PRINT-DETAIL
+                    END-IF
+               END-PERFORM.
+       
+       D15-EXIT.
+           EXIT.
+       
+       
+       
+       
+       D16-FLAG-UNUSED-UPDATES SECTION.
+      *> ===============================
+       D16-1-PRINT-UPDATES.
+           MOVE    WB-CONTROL-DATA TO PRINT-DATA.
+           PERFORM X20-PRINT-DETAIL.
+           READ    CONTROL-CARD-FILE INTO  WB-CONTROL-DATA
+                   AT END  MOVE "Y" TO WZ-END-OF-UPDATES.
+       
+       D16-EXIT.
+           EXIT.
+       
+       
+      *> 
+       D20-PROCESS-POPFILE SECTION.
+      *> ===========================
+      *> 
+      *> ***************************************************************
+      *>     THIS IS THE MAIN CONTROL SECTION FOR POPULATION FILE      *
+      *>     PROCESSING.                                               *
+      *>                                                               *
+      *>     PERFORMED BY    D10-MERGE-UPDATE-CARDS                    *
+      *>     PERFORMS        D25-PRINT-REPORT                          *
+      *>                     D30-PROCESS-HEADER                        *
+      *>                     D90-PROCESS-END-OF                        *
+      *>                     X10-WRITE-UPDATED-POPFILE                 *
+      *>                     X30-READ-POPFILE                          *
+      *>                     X40-WRITE-SOURCE-FILE                     *
+      *> ***************************************************************
+       D20-1-CHECK-RECORD-TYPE.
+           MOVE    SPACE TO WZ-NOT-THIS-COMMENT.
+           MOVE    SPACE TO WZ-LINE-UPDATE.
+           MOVE    SPACE TO WZ-REPLACE-FLAG.
+      *>     MOVE   "Y"    TO WZ-UPDATE-THIS-PROG.
+           MOVE    SPACE TO WZ-OPTIONAL-SELECTED.
+           MOVE    SPACE TO WZ-DELETE-FLAG.
+       
+           IF      WC-STAR-HEADER = "*HEADER"
+                   MOVE    SPACE  TO WZ-PROGRAM-SELECTED
+                   PERFORM D30-PROCESS-HEADER
+                           UNTIL  WZ-PROGRAM-SELECTED = "Y"
+           ELSE
+                   IF      WC-STAR-HEADER = "*END-OF"
+                           PERFORM D90-PROCESS-END-OF
+                   ELSE
+                           PERFORM D50-PROCESS-COBOL-LINE.
+       
+           PERFORM D25-PRINT-REPORT.
+       
+       D20-10-SOURCE-CHECK.
+           IF      WY-NO-SOURCE        = "Y"
+                   GO TO   D20-20-UPDATED-POP-CHECK.
+           IF      WZ-DELETE-FLAG      = "Y"
+                   GO TO   D20-20-UPDATED-POP-CHECK.
+           IF      WZ-NOT-THIS-COMMENT = "Y"
+                   GO TO   D20-20-UPDATED-POP-CHECK.
+      *>     IF      WZ-UPDATE-THIS-PROG =  SPACE
+      *>             GO TO   D20-30-READ-FILE.
+       
+           IF      WZ-END-OF-POPFILE NOT = "Y"
+                   PERFORM X40-WRITE-SOURCE-FILE.
+       
+       D20-20-UPDATED-POP-CHECK.
+           IF      WY-NEW-POP = "Y"
+                   PERFORM X10-WRITE-UPDATED-POPFILE.
+                   MOVE WZ-SAVE-POP-RECORD TO WC-CURRENT-POP-RECORD.
+       
+       D20-30-READ-FILE.
+           IF      WZ-END-OF-POPFILE = "Y"
+                   GO TO   D20-EXIT.
+           IF      WB-SEQ-1 = SPACES
+                   MOVE    WZ-SAVE-SEQ TO WC-6
+                   GO TO   D20-EXIT.
+           PERFORM X30-READ-POPFILE.
+       
+       D20-EXIT.
+           EXIT.
+       
+      *> 
+       D25-PRINT-REPORT SECTION.
+      *> ========================
+      *> 
+      *> ***************************************************************
+      *>     DEPENDING ON THE PRINT OPTIONS SELECTED, THIS SECTION     *
+      *>     PRINTS EITHER THE EXTRACTED PROGRAMS OR ANY UPDATES AND   *
+      *>     X-CARD SUBSTITUTIONS MADE.                                *
+      *>                                                               *
+      *>     PERFORMED BY    D20-PROCESS-POPFILE                       *
+      *>     PERFORMS        X20-PRINT-DETAIL                          *
+      *>                     D27-PRINT-UPDATES                         *
+      *> ***************************************************************
+       D25-1-CHECK-LIST-PROGRAMS.
+           IF      WY-LIST-PROGRAMS = "Y"
+                   MOVE    WC-CURRENT-POP-RECORD TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   GO TO   D25-EXIT.
+       
+       D25-10-UPDATES-CHECK.
+           IF      WY-LIST-NO-UPDATES = SPACE
+                   IF      WZ-LINE-UPDATE = "Y"
+                           PERFORM D27-PRINT-UPDATES
+                           GO TO   D25-EXIT.
+       
+       D25-20-X-CARD-CHECK.
+           IF      WY-LIST-X-CARDS = "Y"
+                   IF      WZ-SAVE-12-15 = "XXXX"
+                           MOVE    WZ-SAVE-12-20 TO WE-X-CARD
+                           MOVE   "SUBSTITUTION" TO WE-CHANGE-TYPE
+                           MOVE    WC-CURRENT-POP-RECORD
+                                                 TO WE-COBOL-LINE
+                           MOVE    WE-PRINT-DATA TO PRINT-DATA
+                           PERFORM X20-PRINT-DETAIL.
+       
+       D25-EXIT.
+           EXIT.
+       
+       
+       
+      *> 
+       D27-PRINT-UPDATES SECTION.
+      *> =========================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION WILL PRINT THE ORIGINAL POPULATION FILE      *
+      *>     RECORD (IF "*LIST NO-UPDATES" HAS NOT BEEN SPECIFIED) AND,*
+      *>     IF A REPLACEMENT, THE NEW IMAGE OR, IF AN INSERTION, JUST *
+      *>     THE NEW LINE OF CODE.                                     *
+      *>                                                               *
+      *>     PERFORMED BY    D25-PRINT-REPORT                          *
+      *>     PERFORMS        X20-PRINT-DETAIL                          *
+      *> ***************************************************************
+       D27-1-PRINT-REPLACEMENTS.
+           IF      WZ-REPLACE-FLAG = "Y"
+                   MOVE    WZ-SAVE-POP-RECORD  TO WE-COBOL-LINE
+                   MOVE    SPACES              TO WE-X-CARD
+                   MOVE   "ORIGINAL"           TO WE-CHANGE-TYPE
+                   MOVE    WE-PRINT-DATA       TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   MOVE   "REPLACEMENT"        TO WE-CHANGE-TYPE
+                   MOVE    SPACES              TO WE-X-CARD
+                   MOVE    WC-CURRENT-POP-RECORD  TO WE-COBOL-LINE
+                   MOVE    WE-PRINT-DATA       TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   GO TO   D27-EXIT.
+       
+       D27-10-PRINT-NEW-DATA.
+           IF      WZ-DONT-READ-POPFILE = "Y"
+                   MOVE    WC-CURRENT-POP-RECORD TO WE-COBOL-LINE
+                   MOVE    WE-PRINT-DATA         TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL
+                   GO TO   D27-EXIT.
+       
+       D27-20-PRINT-DELETIONS.
+           IF      WZ-DELETE-FLAG = "Y"
+                   MOVE    WZ-SAVE-POP-RECORD  TO WE-COBOL-LINE
+                   MOVE    WE-PRINT-DATA       TO PRINT-DATA
+                   PERFORM X20-PRINT-DETAIL.
+       
+       D27-EXIT.
+           EXIT.
+       
+      *> 
+       D30-PROCESS-HEADER SECTION.
+      *> ==========================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION PROCESSES ANY "*HEADER" RECORDS.             *
+      *>                                                               *
+      *>     PERFORMED BY    D20-PROCESS-POPFILE                       *
+      *>     PERFORMS        D90-PROCESS-END-OF                        *
+      *>                     D11-GET-NEXT-PROGRAM                      *
+      *>                     D31-PROCESS-DATA-HEADER                   *
+      *>                     D32-PROCESS-COBOL-HEADER                  *
+      *>                     D40-ANY-UPDATES                           *
+      *>                     X10-WRITE-UPDATED-POPFILE                 *
+      *>                     D43-PROGRAM-SELECTED                      *
+      *> ***************************************************************
+       D30-1-CHECK-HEADER-TYPE.
+           MOVE    WC-COBOL TO BLOCK-TYPE
+           IF      WC-COBOL = "CLBRY"
+           AND WY-NO-LIBRARY NOT = "Y"
+                   MOVE WC-HEADER TO PRINT-DATA
+                   MOVE WC-PROG-ID TO WZ-CURRENT-MAIN-PROG
+                                      WZ-CURRENT-POP-PROG
+      *> ****************************************************************
+      *>  NOTE FOLLOWING CHANGES                                      ***
+      *> ****************************************************************
+      *>             PERFORM D36-INITIALISE-PROGRAM-TOTALS
+                   MOVE   "Y" TO WZ-PROGRAM-SELECTED
+                   PERFORM D34-PROGRAM-SELECTED.
+       
+           IF      WC-COBOL = "DATA*"
+                   PERFORM D31-PROCESS-DATA-HEADER.
+       
+           IF      WC-COBOL = "COBOL"
+                   ADD     1 TO WZ-PROGS-FOUND
+                   PERFORM D32-PROCESS-COBOL-HEADER.
+       
+           IF      WZ-PROGRAM-SELECTED = "Y"
+                   GO TO   D30-20-HEADER-SELECTED.
+       
+           PERFORM D11-GET-NEXT-PROGRAM.
+           IF      WZ-END-OF-POPFILE = "Y"
+                   MOVE    "Y" TO WZ-PROGRAM-SELECTED
+                   GO TO    D30-EXIT
+           ELSE
+                   GO TO    D30-1-CHECK-HEADER-TYPE.
+       
+       D30-20-HEADER-SELECTED.
+           MOVE    WC-COBOL TO WZ-CURRENT-HEADER.
+           IF      WZ-END-OF-UPDATES = SPACE
+                   PERFORM D40-ANY-UPDATES.
+       
+       D30-EXIT.
+           EXIT.
+      *> 
+       D31-PROCESS-DATA-HEADER SECTION.
+      *> ===============================
+      *> 
+       D31-1-CHECK-FOR-DATA-SELECTED.
+           IF      WY-NO-DATA = "Y"
+                   GO TO   D31-EXIT.
+       
+           IF      WZ-PROG-ID-6 = "M"
+                   GO TO   D31-30-MANUAL-CHECK.
+       
+       D31-20-AUTO-CHECK.
+           IF      WY-EXTRACT-MAN = SPACE
+                   MOVE   "Y"        TO WZ-PROGRAM-SELECTED
+           ELSE
+                   GO TO   D31-EXIT.
+       
+       D31-30-MANUAL-CHECK.
+           IF      WY-EXTRACT-AUTO = SPACE
+                   MOVE   "Y"        TO WZ-PROGRAM-SELECTED.
+       
+       
+       D31-EXIT.
+           EXIT.
+       
+      *> 
+       D32-PROCESS-COBOL-HEADER SECTION.
+      *> ================================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION CHECKS TO SEE IF THE CURRENT HEADER IS       *
+      *>     IS WITHIN THE RANGE SPECIFIED BY THE "*EXTRACT" OR        *
+      *>     "*SELECT" RECORDS OF THE INPUT CONTROL-FILE.              *
+      *>                                                               *
+      *>     PERFORMED BY    D30-PROCESS-HEADER                        *
+      *>     PERFORMS        D33-MODULE-CHECK                          *
+      *>                     D34-PROGRAM-SELECTED                      *
+      *> ***************************************************************
+      *>                                                               *
+      *> ***************************************************************
+      *>   IF PROGRAM DOES NOT END WITH '5','A','B' OR 'M' IT          *
+      *>   SHOULD HAVE A SPACE CHARACTER FOR POSITION 6.               *
+      *> ***************************************************************
+      *>                                                               *
+       D32-0-CHECK-A-OR-M.
+           IF WC-PROG-ID-6 = "A"
+              GO TO D32-1-CHECK-FOR-ALL-SELECTED.
+           IF WC-PROG-ID-6 = "B"
+              GO TO D32-1-CHECK-FOR-ALL-SELECTED.
+           IF WC-PROG-ID-6 = "M"
+              GO TO D32-1-CHECK-FOR-ALL-SELECTED.
+           IF WC-PROG-ID-6 = "5"
+              GO TO D32-1-CHECK-FOR-ALL-SELECTED.
+           MOVE SPACE TO WC-PROG-ID-6.
+       D32-1-CHECK-FOR-ALL-SELECTED.
+           IF      WY-EXTRACT-ALL = "Y"
+                   MOVE   "Y" TO WZ-PROGRAM-SELECTED
+                   MOVE    WC-PROG-ID TO WZ-CURRENT-POP-PROG
+                   GO TO   D32-50-CHECK-IF-SELECTED.
+       
+       D32-10-MANUAL-CHECK.
+           IF      WY-EXTRACT-MAN = "Y"
+                   IF      WC-PROG-ID-6 = "M"
+                           MOVE   "Y" TO WZ-PROGRAM-SELECTED
+                           MOVE    WC-PROG-ID TO WZ-CURRENT-POP-PROG
+                           GO TO   D32-50-CHECK-IF-SELECTED.
+       
+       D32-20-AUTO-CHECK.
+           IF      WY-EXTRACT-AUTO = "Y"
+                   IF      WC-PROG-ID-6 = "A" OR "B"
+                           MOVE   "Y" TO WZ-PROGRAM-SELECTED
+                           MOVE    WC-PROG-ID TO WZ-CURRENT-POP-PROG
+                           GO TO   D32-50-CHECK-IF-SELECTED.
+       
+       D32-30-MODULE-CHECK.
+           IF      WY-SELECT-MODULE = "Y"
+      *> THE FOLLOWING CHECK ASSUMES THAT THE FILES ON THE POPFILE
+      *> ARE IN ORDER!
+                   IF WG-MODULE-SELECTED-TABLE = SPACES
+                      MOVE "Y" TO WZ-END-OF-POPFILE
+                   ELSE
+                   MOVE    1 TO SUB6
+                   PERFORM D33-MODULE-CHECK
+                   GO TO   D32-50-CHECK-IF-SELECTED.
+       
+           MOVE    1 TO SUB7.
+       D32-40-PROGRAM-CHECK.
+           IF      WY-SELECT-PROG = "Y"
+                   IF WF-PROGRAM-SELECTED-TABLE = SPACES
+                           MOVE "Y" TO WZ-END-OF-POPFILE
+                   ELSE
+                   IF      WC-PROG-ID-1-5 = WF-PROGRAM-SELECTED (SUB7)
+                           MOVE SPACE TO WF-PROGRAM-SELECTED (SUB7)
+                           MOVE   "Y" TO WZ-PROGRAM-SELECTED
+                           MOVE    WC-PROG-ID TO WZ-CURRENT-POP-PROG
+                           GO TO   D32-50-CHECK-IF-SELECTED
+                   ELSE
+                           IF      SUB7  < 50
+                                   ADD     1 TO SUB7
+                                   GO TO   D32-40-PROGRAM-CHECK
+                           ELSE
+                                IF WC-SUBPRG = "SUBPRG" OR "SUBRTN"
+                                   MOVE 1 TO SUB7
+                                   PERFORM 50 TIMES
+                                      IF WC-PROG2ID-1-5 =
+                                        WF-PROGRAM-SELECTED (SUB7)
+                                        MOVE SPACE TO
+                                           WF-PROGRAM-SELECTED (SUB7)
+                                        MOVE "Y" TO
+                                           WZ-PROGRAM-SELECTED
+                                        MOVE WC-PROG2ID TO
+                                           WZ-CURRENT-POP-PROG
+                                        GO D32-50-CHECK-IF-SELECTED
+                                        END-IF
+                                   ADD 1 TO SUB7
+                                   END-PERFORM.
+       
+       D32-50-CHECK-IF-SELECTED.
+           IF      WZ-PROGRAM-SELECTED = "Y"
+                   PERFORM D34-PROGRAM-SELECTED.
+       
+       D32-EXIT.
+           EXIT.
+      *> 
+       D33-MODULE-CHECK SECTION.
+      *> ========================
+      *> 
+      *> ***************************************************************
+      *>     IF ONE OR MORE MODULES HAVE BEEN SELECTED, THIS SECTION   *
+      *>     CHECKS THAT THE CURRENT POPULATION FILE PROGRAM IS FROM   *
+      *>     A SELECTED MODULE (AND LEVEL, IF LEVEL SELECTED).         *
+      *>                                                               *
+      *>     PERFORMED BY    D32-PROCESS-COBOL-HEADER                  *
+      *>     PERFORMS        NONE                                      *
+      *> ***************************************************************
+       D33-1-MODULE-CHECK.
+           IF      WC-MODULE = WG-MODULE-SELECTED (SUB6)
+                   GO TO D33-10-CHECK-MODULE-LEVEL.
+           IF      WC-MODULE > WG-MODULE-SELECTED (SUB6) AND
+      *> THE FOLLOWING CHECK MAKES SURE SOME FILES GET OFF
+                   WZ-SOURCE-PROGS NOT = 0
+                   MOVE SPACE TO WG-MODULE-SELECTED (SUB6)
+                   MOVE SPACE TO WG-MODULE-LEVEL (SUB6)
+                   IF      SUB6  < 10
+                           ADD     1 TO SUB6
+                           GO TO   D33-1-MODULE-CHECK
+                   ELSE
+                           GO TO   D33-EXIT
+           ELSE
+                   GO TO D33-EXIT.
+       
+       D33-10-CHECK-MODULE-LEVEL.
+           IF      WG-MODULE-LEVEL (SUB6) = SPACE
+                   MOVE    WC-PROG-ID TO WZ-CURRENT-POP-PROG
+                   MOVE   "Y" TO WZ-PROGRAM-SELECTED
+                   GO TO   D33-EXIT.
+       
+           IF      WG-MODULE-LEVEL (SUB6) = WC-LEVEL
+                   MOVE    WC-PROG-ID TO WZ-CURRENT-POP-PROG
+                   MOVE   "Y" TO WZ-PROGRAM-SELECTED.
+       
+       D33-EXIT.
+           EXIT.
+       
+      *> 
+       D34-PROGRAM-SELECTED SECTION.
+      *> ============================
+      *> 
+      *> ***************************************************************
+      *>     IF THE CURRENT POPULATION FILE PROGRAM HAS BEEN SELECTED  *
+      *>     FOR PROCESSING, THIS SECTION UPDATES VARIOUS FIELDS.      *
+      *>                                                               *
+      *>     PERFORMED BY    D32-PROCESS-COBOL-HEADER                  *
+      *>     PERFORMS        NONE                                      *
+      *> ***************************************************************
+       D34-1-SELECTION-CHECK.
+           IF      WZ-PROGRAM-SELECTED = SPACE
+                   GO TO   D34-EXIT.
+       
+           IF      WY-NO-SOURCE = SPACE
+                   ADD     1 TO WZ-SOURCE-PROGS.
+       
+           IF      WY-NEW-POP = "Y"
+                   ADD     1 TO WZ-NEWPOP-PROGS.
+       
+      *>     MOVE    SPACE TO WZ-CURRENT-MAIN-PROG.
+           MOVE    WZ-CURRENT-POP-PROG TO WZ-CURRENT-MAIN-PROG.
+       
+           PERFORM D36-INITIALISE-PROGRAM-TOTALS.
+       
+           MOVE    WC-HEADER TO PRINT-DATA.
+           IF      WC-SUBPRG = "SUBPRG"
+                   MOVE    WZ-CURRENT-POP-PROG TO WZ-CURRENT-MAIN-PROG
+      *>             MOVE    WC-PROG2ID          TO WZ-CURRENT-UPD-PROG
+                   MOVE    WC-PROG2ID          TO WZ-CURRENT-POP-PROG
+           END-IF.
+           IF      WC-SUBPRG = "SUBRTN"
+                   MOVE    WZ-CURRENT-POP-PROG TO WZ-CURRENT-MAIN-PROG
+      *>             MOVE    WC-PROG2ID          TO WZ-CURRENT-UPD-PROG
+                   MOVE    WC-PROG2ID          TO WZ-CURRENT-POP-PROG
+           END-IF.
+       
+       D34-2-OPEN-OUTPUT.
+           IF      WY-LIST-COMPACT = SPACE
+                   MOVE    51 TO WZ-LINE-CT.
+       
+           PERFORM X20-PRINT-DETAIL.
+       D34-EXIT.
+           EXIT.
+      *> 
+       D36-INITIALISE-PROGRAM-TOTALS SECTION.
+      *> =====================================
+      *> 
+      *> ***************************************************************
+      *>     WHEN A PROGRAM "*HEADER" IS SELECTED THIS SECTION RESETS  *
+      *>     ALL THE VARIOUS TOTALS FOR THAT PROGRAM.                  *
+      *>                                                               *
+      *>     PERFORMED BY    D32-PROCESS-COBOL-HEADER                  *
+      *>     PERFORMS        NONE                                      *
+      *> ***************************************************************
+       D36-1-RESET-TOTALS.
+           MOVE    ZERO  TO WZ-LINES-COBOL.
+           MOVE    ZERO  TO WZ-LINES-INSERTED.
+           MOVE    ZERO  TO WZ-LINES-REPLACED.
+           MOVE    ZERO  TO WZ-LINES-DELETED.
+           MOVE    ZERO  TO WZ-CODE-REMOVED.
+           MOVE    ZERO  TO WZ-COMMENTS-DEL.
+           MOVE    ZERO  TO WZ-SEQ-NO.
+       
+       D36-EXIT.
+           EXIT.
+      *> 
+       D40-ANY-UPDATES SECTION.
+      *> =======================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION FINDS THE FIRST UPDATE RECORD (IF ANY) FOR   *
+      *>     THE CURRENT POPULATION FILE PROGRAM BEING PROCESSED.      *
+      *>                                                               *
+      *>     PERFORMED BY    D30-PROCESS-HEADER                        *
+      *>     PERFORMS        D42-READ-UPDATE                           *
+      *> ***************************************************************
+       D40-1-CHECK-UPDATE-AND-POP.
+           MOVE    SPACE TO WZ-UPDATE-THIS-PROG.
+           IF      WZ-CURRENT-UPD-PROG > WZ-CURRENT-POP-PROG
+                   GO TO   D40-EXIT.
+       
+           IF      WZ-CURRENT-UPD-PROG = WZ-CURRENT-POP-PROG
+                   GO TO   D40-20-PROGRAMS-EQUAL.
+       
+      *>     IF      WZ-CURRENT-POP-PROG = WB-UPDATE-PROG
+      *>             GO TO   D40-20-PROGRAMS-EQUAL.
+       
+           IF      WZ-UPD-PROG-CHAR  = "A"
+                   GO TO D40-05-CHECK-LIBRARY.
+       
+           IF      WZ-UPD-PROG-CHAR = "K"
+                   GO TO D40-05-CHECK-LIBRARY
+           ELSE    GO TO D40-10-GET-NEXT-STAR-START.
+      *> 
+       D40-05-CHECK-LIBRARY.
+           IF      WZ-CURRENT-POP-PROG < "SQ000"
+                   GO TO D40-EXIT.
+       
+       D40-10-GET-NEXT-STAR-START.
+           MOVE    SPACES TO WB-STAR-START.
+           PERFORM D42-READ-UPDATE-FILE
+                   UNTIL   WB-STAR-START = "*START".
+       
+           IF      WZ-END-OF-UPDATES = "Y"
+                   GO TO   D40-EXIT.
+           PERFORM C60-START-CARD.
+       
+           GO TO   D40-1-CHECK-UPDATE-AND-POP.
+       
+       D40-20-PROGRAMS-EQUAL.
+           MOVE   "Y"   TO WZ-UPDATE-THIS-PROG.
+           IF      WB-RENUMBER = "R"
+                   MOVE    "Y"    TO WZ-RESEQUENCE-THIS
+           ELSE
+                   MOVE     SPACE TO WZ-RESEQUENCE-THIS.
+           READ    CONTROL-CARD-FILE INTO WB-CONTROL-DATA
+                   AT END  MOVE "Y" TO WZ-END-OF-UPDATES.
+       
+           IF      WB-11 = "*END-UPDATE"
+                   MOVE "Y" TO WZ-END-OF-UPDATES.
+       
+       D40-EXIT.
+           EXIT.
+       
+      *> 
+       D42-READ-UPDATE-FILE SECTION.
+      *> ============================
+       D42-1.
+           READ    CONTROL-CARD-FILE INTO WB-CONTROL-DATA
+                   AT END  MOVE   "Y"      TO WZ-END-OF-UPDATES
+                           MOVE   "*START" TO WB-STAR-START
+                           GO TO   D42-EXIT.
+       
+           IF      WB-11 = "*END-UPDATE"
+                   MOVE   "Y"      TO WZ-END-OF-UPDATES
+                   MOVE   "*START" TO WB-STAR-START.
+       
+       D42-EXIT.
+           EXIT.
+       
+       
+       
+       
+       D50-PROCESS-COBOL-LINE SECTION.
+      *> ==============================
+      *> 
+      *> ***************************************************************
+      *>     THIS IS THE MAIN SECTION FOR PROCESSING THE COBOL SOURCE  *
+      *>     CODE OF THE POPULATION FILE                               *
+      *>                                                               *
+      *>                                                               *
+      *> ***************************************************************
+       D50-1-CHECK-FOR-UPDATING.
+       
+           IF      WZ-UPDATE-THIS-PROG = "Y"
+                   PERFORM D60-PROCESS-UPDATE-CARD.
+       
+           IF      WZ-DELETE-FLAG = "Y"
+                   GO TO   D50-EXIT.
+       
+           IF      WY-NO-SOURCE = SPACE
+                   IF    BLOCK-TYPE NOT = "DATA*"
+                         PERFORM D80-RAW-LINE.
+       
+       
+       D50-EXIT.
+           EXIT.
+      *> 
+       D60-PROCESS-UPDATE-CARD SECTION.
+      *> ===============================
+      *> 
+      *> ***************************************************************
+      *>     THIS IS THE MAIN SECTION FOR PROCESSING ANY UPDATE CARDS  *
+      *>     WHICH EXIST FOR THE CURRENT POPULATION FILE PROGRAM       *
+      *>     BEING PROCESSED.                                          *
+      *>                                                               *
+      *>     PERFORMED BY    D50-PROCESS-COBOL-LINE                    *
+      *>     PERFORMS        D67-LINE-UPDATE                           *
+      *>                     D62-SERIES-UPDATE                         *
+      *> ***************************************************************
+       D60-1-CHECK-BLOCK-INSERT.
+           IF      WB-SEQ-1 = SPACES
+                   PERFORM D67-LINE-UPDATE
+                   GO TO   D60-30-CHECK-END.
+       
+       D60-10-CHECK-FOR-SERIES-UPDATE.
+           IF      WB-SEQ-1 NOT NUMERIC
+                   GO TO   D60-30-CHECK-END.
+       
+           IF      WB-SEQ-2 NUMERIC
+                   PERFORM D62-SERIES-UPDATE
+                   GO TO   D60-30-CHECK-END
+           ELSE
+                   PERFORM D67-LINE-UPDATE.
+       
+       D60-30-CHECK-END.
+           IF      WB-11 = "*END-UPDATE"
+                   MOVE   "Y" TO WZ-END-OF-UPDATES.
+       
+       
+       D60-EXIT.
+           EXIT.
+      *> 
+       D62-SERIES-UPDATE SECTION.
+      *> =========================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION WILL PROCESS SERIES INSERTIONS OR DELETIONS  *
+      *>                                                               *
+      *>     PERFORMED BY    D60-PROCESS-UPDATE-CARD                   *
+      *>     PERFORMS        C60-START-CARD                            *
+      *> ***************************************************************
+       D62-1-CHECK-FOR-WITHIN-RANGE.
+           IF      WC-6 < WB-SEQ-1
+               IF WZ-WITHIN-DELETE-SERIES-FLAG = "Y"
+      *>   ALLOWS FOR OUT-OF-SEQUENCE LINE NUMBER WITHIN DELETE RANGE
+                   GO TO D62-20-NOW-WITHIN-RANGE
+               END-IF
+                   GO TO   D62-EXIT.
+       
+           IF      WC-6 NOT > WB-SEQ-2
+                   GO TO   D62-20-NOW-WITHIN-RANGE.
+       
+       D62-10-READ-NEXT-UPDATE-CARD.
+                   MOVE SPACES TO WZ-WITHIN-DELETE-SERIES-FLAG.
+                   READ    CONTROL-CARD-FILE INTO WB-CONTROL-DATA
+                   AT END  MOVE "Y" TO WZ-END-OF-UPDATES
+                           GO TO   D62-EXIT.
+       
+           IF      WB-STAR-START = "*START"
+                   PERFORM C60-START-CARD
+                   GO TO   D62-EXIT.
+       
+           IF      WB-11 = "*END-UPDATE"
+                   MOVE   "Y" TO WZ-END-OF-UPDATES
+                   GO TO   D62-EXIT.
+       
+           IF WB-SEQ-2 NUMERIC
+           GO TO   D62-1-CHECK-FOR-WITHIN-RANGE.
+           PERFORM D67-LINE-UPDATE.
+           GO TO D62-EXIT.
+       
+       D62-20-NOW-WITHIN-RANGE.
+           MOVE   "Y" TO WZ-LINE-UPDATE.
+           IF      WB-COL-7 = ","
+                   MOVE "Y" TO WZ-WITHIN-DELETE-SERIES-FLAG
+                   ADD     1  TO WZ-LINES-DELETED
+                   MOVE   "Y" TO WZ-DELETE-FLAG
+                   MOVE    SPACES     TO WE-X-CARD
+                   MOVE   "DELETIONS" TO WE-CHANGE-TYPE
+                   IF WB-SEQ-1 = WB-SEQ-2
+                        MOVE SPACE TO WZ-WITHIN-DELETE-SERIES-FLAG
+                   END-IF
+                   GO TO   D62-EXIT.
+       
+           MOVE   "Y"       TO WZ-REPLACE-FLAG.
+           MOVE    WB-COL-7 TO WC-COL-7.
+       
+       D62-EXIT.
+           EXIT.
+       
+      *> 
+       D67-LINE-UPDATE SECTION.
+      *> =======================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION PERFORMS SINGLE LINE AMENDMENTS OR DELETIONS *
+      *>                                                               *
+      *>     PERFORMED BY    D60-PROCESS-UPDATE-CARD                   *
+      *>                     D62-SERIES-UPDATE                         *
+      *>     PERFORMS        C60-START-CARD                            *
+      *>                     D68-LINE-EQUAL                            *
+      *>                     D69-LINE-BLANK-OR-LESS                    *
+      *> ***************************************************************
+       D67-1-CHECK-FOR-WITHIN-RANGE.
+           IF      WC-6  < WB-SEQ-1
+                   GO TO   D67-EXIT.
+       
+       D67-10-LINES-EQUAL-OR-LESS.
+           MOVE   "Y" TO WZ-LINE-UPDATE.
+           IF      WB-COL-7 = ","
+                   ADD     1  TO WZ-LINES-DELETED
+                   MOVE   "Y" TO WZ-DELETE-FLAG
+                   MOVE    SPACES     TO WE-X-CARD
+                   MOVE   "DELETION"  TO WE-CHANGE-TYPE
+                   GO TO   D67-20-READ-CONTROL.
+       
+           IF      WC-6  = WB-SEQ-1
+                   PERFORM D68-LINE-EQUAL
+                   GO TO   D67-EXIT.
+       
+           IF      WB-SEQ-1 = SPACES
+                   PERFORM D69-LINE-BLANK-OR-LESS
+                   GO TO   D67-EXIT.
+       
+           IF      WC-6  > WB-SEQ-1
+                   PERFORM D69-LINE-BLANK-OR-LESS
+                   GO TO   D67-EXIT.
+       
+       D67-20-READ-CONTROL.
+           READ    CONTROL-CARD-FILE INTO  WB-CONTROL-DATA
+                   AT END  MOVE "Y" TO WZ-END-OF-UPDATES.
+           IF WB-STAR-START = "*START"
+                   PERFORM C60-START-CARD.
+       
+           IF WB-11 = "*END-UPDATE"
+                   MOVE "Y" TO WZ-END-OF-UPDATES.
+       
+       D67-EXIT.
+           EXIT.
+      *> 
+       D68-LINE-EQUAL SECTION.
+      *> ======================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION IS PERFORMED WHEN THE SEQUENCE NUMBER OF A   *
+      *>     SINGLE UPDATE AMEND CARD IS THE SAME AS THE SEQUENCE      *
+      *>     NUMBER OF THE CURRENT POPULATION FILE LINE BEING PROCESSED*
+      *> ***************************************************************
+      *> 
+       D68-1.
+           MOVE    WB-CONTROL-DATA TO WC-CURRENT-POP-RECORD.
+           ADD     1    TO WZ-LINES-REPLACED.
+           MOVE   "Y"   TO WZ-REPLACE-FLAG.
+       
+           READ    CONTROL-CARD-FILE INTO  WB-CONTROL-DATA
+                   AT END  MOVE "Y" TO WZ-END-OF-UPDATES.
+       
+           IF      WB-STAR-START = "*START"
+                   PERFORM C60-START-CARD.
+       
+           IF      WB-11 = "*END-UPDATE"
+                   MOVE   "Y" TO WZ-END-OF-UPDATES.
+       
+       D68-EXIT.
+           EXIT.
+       
+       
+       
+       
+       D69-LINE-BLANK-OR-LESS SECTION.
+      *> ==============================
+       D69-1.
+           MOVE    WB-CONTROL-DATA TO WC-CURRENT-POP-RECORD.
+           ADD     1    TO WZ-LINES-INSERTED.
+           MOVE   "Y"   TO WZ-DONT-READ-POPFILE.
+           MOVE   "INSERTIONS" TO WE-CHANGE-TYPE.
+           MOVE    SPACES      TO WE-X-CARD.
+           READ    CONTROL-CARD-FILE INTO  WB-CONTROL-DATA
+                   AT END  MOVE "Y" TO WZ-END-OF-UPDATES.
+       
+           IF      WB-STAR-START = "*START"
+                   PERFORM C60-START-CARD.
+       
+           IF      WB-11 = "*END-UPDATE"
+                   MOVE   "Y" TO WZ-END-OF-UPDATES.
+       
+       D69-EXIT.
+           EXIT.
+       
+      *> 
+       D80-RAW-LINE SECTION.
+      *> ====================
+      *> 
+      *> ***************************************************************
+      *>     IF COLUMN 7 OF THE POPULATION FILE PROGRAM CONTAINS A     *
+      *>     SPECIAL CHARACTER OR COLS. 12-16 CONTAIN X-CARD INFO.,    *
+      *>     THIS SECTION WILL MAKE THE NECESSARY CHANGES.             *
+      *>                                                               *
+      *>     PERFORMED BY    D50-PROCESS-COBOL-LINE                    *
+      *>     PERFORMS        D82-OPTIONAL-LETTER                       *
+      *>                     D86-X-CARD-CHECK                          *
+      *>                     X40-WRITE-SOURCE-FILE                     *
+      *> ***************************************************************
+       D80-1-ASTERISK-CHECK.
+           IF      WC-COL-7 = "D" GO TO D80-30-PRINT-LINE.
+           IF      WC-COL-7  NOT = "*"
+                   GO TO   D80-20-ALPHABETIC-CHECK.
+       
+           IF      WY-REMOVE-COMMENTS = "Y"
+                   ADD     1  TO WZ-COMMENTS-DELETED
+                   MOVE   "Y" TO WZ-NOT-THIS-COMMENT
+                   GO TO   D80-EXIT.
+       
+       D80-20-ALPHABETIC-CHECK.
+           IF      WC-COL-7 NOT ALPHABETIC
+                   GO TO   D80-30-PRINT-LINE.
+       
+           IF      WC-COL-7 NOT = SPACE
+                   PERFORM D82-OPTIONAL-LETTER.
+       
+       D80-30-PRINT-LINE.
+           IF      WZ-DELETE-FLAG = SPACE
+                   PERFORM D85-X-CARD-CHECK.
+       
+       D80-EXIT.
+           EXIT.
+       
+      *> 
+       D82-OPTIONAL-LETTER SECTION.
+      *> ===========================
+      *> 
+       D82-1-SELECT-OPTIONAL.
+           PERFORM D83-CHECK-OPTION-SWITCHES
+                   VARYING SUB4 FROM 1 BY 1
+                     UNTIL SUB4 > 26.
+       
+           IF      WZ-OPTIONAL-SELECTED = "Y"
+                   MOVE    SPACE TO WC-COL-7
+                   GO TO   D82-EXIT.
+       
+       D82-10-SAVE-OPTIONAL.
+           ADD     1    TO WZ-CODE-REMOVED.
+           IF      WY-KILL-DELETIONS = "Y"
+                   MOVE   "Y" TO WZ-DELETE-FLAG
+           ELSE
+                   MOVE    WC-COL-7 TO WC-COL-8
+                   MOVE   "*"       TO WC-COL-7.
+       
+       D82-EXIT.
+           EXIT.
+       
+       
+       
+       
+       
+       D83-CHECK-OPTION-SWITCHES SECTION.
+      *> =================================
+      *> 
+       D83-1-CHECK-SWITCH.
+           IF      WY-OPT-SW (SUB4) = WC-COL-7
+                   MOVE    99 TO SUB4
+                   MOVE   "Y" TO WZ-OPTIONAL-SELECTED.
+       
+       D83-EXIT.
+           EXIT.
+      *> 
+       D85-X-CARD-CHECK SECTION.
+      *> ========================
+      *> 
+      *> ***************************************************************
+      *>     WHEN "XXXX" IS ENCOUNTERED IN COLUMNS 12 - 15 THIS        *
+      *>     SECTION EITHER SUBSTITUTES THE IMPLEMENTOR ASSIGNED TEXT  *
+      *>     OR MOVES THE PROGRAM NAME TO AN IMPLEMENTOR SPECIFIED     *
+      *>     POSITION IN THE PROGRAM CODE.                             *
+      *>                                                               *
+      *>     PERFORMED BY    D80-RAW-LINE                              *
+      *>     PERFORMS        D87-PROGRAM-NAME                          *
+      *>                     D86-REMOVE-FULL-STOP                      *
+      *>                     D86-INSERT-FULL-STOP                      *
+      *> ***************************************************************
+       D85-1-CHECK-FOR-XXXXX.
+           IF      WC-12-15 NOT = "XXXX"
+                   GO TO   D85-EXIT.
+           IF      WC-17-19 NOT NUMERIC
+      *>  XXXXX ENTRY IN POPULATION FILE IN ERROR.
+                   GO TO D85-EXIT.
+       
+       D85-10-SUBSTITUTION-REQUIRED.
+           MOVE    WC-17-19 TO SUB1.
+           MOVE    WX-X-CARD (SUB1) TO WZ-X-CARD.
+           IF      WX-PROG-POS (SUB1) NOT = ZERO
+                   PERFORM D88-PROGRAM-NAME
+                   GO TO   D85-EXIT.
+       
+       D85-20-TEXT-SUBSTITUTION.
+           IF      WC-20 = SPACE
+                   PERFORM D86-REMOVE-FULL-STOP
+                   VARYING SUB4 FROM 60 BY -1
+                     UNTIL SUB4 < 1
+                   MOVE    WZ-X-CARD TO WC-SUB-DATA
+                   GO TO   D85-EXIT.
+       
+           IF      WC-20 = "."
+                   PERFORM D87-INSERT-FULL-STOP
+                   VARYING SUB4 FROM 60 BY -1
+                     UNTIL SUB4 < 1
+                   MOVE    WZ-X-CARD  TO WC-SUB-DATA.
+       D85-EXIT.
+           EXIT.
+       
+      *> 
+       D86-REMOVE-FULL-STOP SECTION.
+      *> ============================
+      *> 
+       D86-1.
+           IF      WZ-X-CHAR (SUB4) = SPACE
+                   GO TO   D86-EXIT.
+       
+           IF      WZ-X-CHAR (SUB4) = "."
+                   MOVE    SPACE TO WZ-X-CHAR (SUB4)
+                   MOVE    ZERO  TO SUB4
+           ELSE
+                   MOVE    ZERO  TO SUB4.
+       
+       D86-EXIT.
+           EXIT.
+       
+       
+       
+       
+       
+       D87-INSERT-FULL-STOP SECTION.
+      *> ============================
+      *> 
+       D87-1.
+           IF      WZ-X-CHAR (SUB4) = SPACE
+                   GO TO   D87-EXIT.
+       
+           IF      WZ-X-CHAR (SUB4) = "."
+                   MOVE    ZERO  TO SUB4
+           ELSE
+                   ADD     1     TO SUB4
+                   MOVE   "."    TO WZ-X-CHAR (SUB4)
+                   MOVE    ZERO  TO SUB4.
+       
+       D87-EXIT.
+           EXIT.
+      *> 
+       D88-PROGRAM-NAME SECTION.
+      *> ========================
+      *> 
+       D88-1.
+           MOVE    WX-PROG-POS (SUB1) TO SUB2.
+           MOVE    SPACE TO WZ-MAIN-PROG-FLAG.
+           MOVE    SPACE TO WZ-FULL-STOP.
+           IF      WC-20 = "."
+                   MOVE    "Y" TO WZ-FULL-STOP.
+       
+           IF      WX-X-CHAR (SUB1 SUB2) = "J"
+                   MOVE WZ-CURRENT-MAIN-PROG TO WZ-PROG-BREAK
+                   MOVE   "Y"    TO WZ-MAIN-PROG-FLAG
+           ELSE
+                   MOVE WZ-CURRENT-POP-PROG TO WZ-PROG-BREAK.
+       
+           IF      WZ-CURRENT-MAIN-PROG = SPACE
+                   MOVE    SPACE TO WZ-MAIN-PROG-FLAG.
+       
+           MOVE    1 TO SUB4.
+           PERFORM D89-MOVE-PROGRAM-NAME 6 TIMES.
+       
+           IF      WZ-FULL-STOP = "Y"
+                   PERFORM D87-INSERT-FULL-STOP
+                   VARYING SUB4 FROM 60 BY -1
+                     UNTIL SUB4 < 1
+           ELSE
+                   PERFORM D86-REMOVE-FULL-STOP
+                   VARYING SUB4 FROM 60 BY -1
+                     UNTIL SUB4 < 1.
+       
+           MOVE    WZ-X-CARD  TO WC-SUB-DATA.
+       
+       D88-EXIT.
+           EXIT.
+       
+       
+       
+       
+       D89-MOVE-PROGRAM-NAME SECTION.
+      *> =============================
+      *> 
+       D89-1.
+      *>     IF      WZ-MAIN-PROG-FLAG = "Y"
+      *>             MOVE    WZ-MAIN-PROG-CHAR (SUB4)
+      *>                  TO WZ-X-CHAR (SUB2)
+      *>     ELSE
+      *>             MOVE    WZ-UPD-PROG-CHAR  (SUB4)
+      *>                  TO WZ-X-CHAR (SUB2).
+       
+           MOVE    WZ-1CHAR(SUB4) TO WZ-X-CHAR(SUB2).
+       
+           IF      SUB4 = 6 AND WZ-X-CHAR(SUB2) = SPACE
+                   ADD 1 SUB2 GIVING SUB4
+                   PERFORM D89-2-CLOSE-SPACE UNTIL WZ-X-CHAR(SUB4) =
+                        SPACE
+                   MOVE SPACE TO WZ-X-CHAR(SUB2).
+       
+           ADD     1 TO SUB2.
+           ADD     1 TO SUB4.
+       
+       D89-EXIT.
+           EXIT.
+       
+       D89-2-CLOSE-SPACE SECTION.
+       D89-2-1.
+       
+           MOVE WZ-X-CHAR(SUB4) TO WZ-X-CHAR(SUB2).
+           ADD 1 TO SUB2 SUB4.
+       
+      *> 
+       D90-PROCESS-END-OF SECTION.
+      *> ==========================
+      *> 
+      *> ***************************************************************
+      *>     WHEN A "*END-OF"CARD IS ENCOUNTERED THIS SECTION PERFORMS *
+      *>     THE END-OF-PROGRAMS ACTIONS.                              *
+      *>                                                               *
+      *>     PERFORMED BY    D20-PROCESS-POPFILE                       *
+      *>     PERFORMS        X10-WRITE-UPDATED-POP                     *
+      *> ***************************************************************
+       D90-1-CHECK-HEADER-TYPE.
+           IF      WY-KILL-DELETIONS = "Y"
+                   MOVE   "DELETED"    TO WA-OPTIONAL-CODE
+           ELSE
+                   MOVE   "UNUSED "    TO WA-OPTIONAL-CODE.
+       
+           MOVE    WZ-CURRENT-POP-PROG TO WA-CURRENT-PROG
+           MOVE    WZ-LINES-COBOL      TO WA-LINES-COBOL
+           MOVE    WZ-LINES-INSERTED   TO WA-LINES-INSERTED
+           MOVE    WZ-LINES-REPLACED   TO WA-LINES-REPLACED
+           MOVE    WZ-LINES-DELETED    TO WA-LINES-DELETED
+           MOVE    WZ-CODE-REMOVED     TO WA-CODE-REMOVED
+           MOVE    WZ-COMMENTS-DELETED TO WA-COMMENTS-DEL
+           MOVE    WA-ACCT-LINE-1      TO PRINT-DATA
+           PERFORM X20-PRINT-DETAIL
+           MOVE    WA-ACCT-LINE-2      TO PRINT-DATA
+           PERFORM X20-PRINT-DETAIL
+           MOVE    WA-ACCT-LINE-3      TO PRINT-DATA
+           PERFORM X20-PRINT-DETAIL
+       
+           MOVE    SPACES  TO WZ-CURRENT-POP-PROG.
+      *>     CLOSE SOURCE-COBOL-PROGRAMS.
+       
+       D90-EXIT.
+           EXIT.
+       
+       
+       D100-PROCESS-DATA.
+           EXIT.
+       
+      *> 
+       E10-TERMINATE SECTION.
+      *> =====================
+      *> 
+      *> ***************************************************************
+      *>     THIS SECTION CLOSES ANY OPEN FILES                        *
+      *>                                                               *
+      *>                                                               *
+      *> ***************************************************************
+       E10-1.
+           CLOSE   PRINT-FILE.
+       
+           CLOSE   CONTROL-CARD-FILE.
+       
+           IF      WY-NEW-POP  = "Y"
+                   CLOSE   UPDATED-POPULATION-FILE.
+       
+      *> ****************************************************************
+           IF      WY-NO-SOURCE = SPACE
+                   CLOSE   SOURCE-COBOL-PROGRAMS.
+       
+           CLOSE   POPULATION-FILE.
+           STOP    RUN.
+       E20-EXIT.
+           EXIT.
+       
+      *> 
+       X10-WRITE-UPDATED-POPFILE SECTION.
+      *> =================================
+      *> 
+       X10-1-CHECK-FOR-NC114.
+      *>     N.B.
+      *>     NC114A HAS MISCELLANEOUS CHARACTERS IN COLUMNS 1-6 AND SO
+      *>     SHOULD NOT BE RESEQUENCED BY THIS EXECUTIVE.
+       
+           IF      WZ-CURRENT-POP-PROG = "NC114M"
+                   GO TO   X10-30-WRITE-FILE.
+       
+       X10-20-RENUMBER-CHECK.
+           IF      WC-STAR = "*"
+                   GO TO   X10-30-WRITE-FILE.
+           IF      WZ-RESEQUENCE-THIS = "Y"
+                   ADD     100 TO WZ-SEQ-NO
+                   MOVE    WZ-SEQ-NO TO WC-6.
+       
+       X10-30-WRITE-FILE.
+           MOVE    WC-CURRENT-POP-RECORD TO UD-SOURCE-OUT (SUB5).
+           ADD     1       TO SUB5.
+           IF      SUB5    GREATER 30
+                   WRITE   UPDATED-SOURCE-OUT-2400
+                   MOVE    1 TO SUB5
+                   MOVE   SPACE TO UPDATED-SOURCE-OUT-2400.
+       
+       
+       X10-EXIT.
+           EXIT.
+       
+       
+      *> 
+       X20-PRINT-DETAIL SECTION.
+      *> ========================
+      *> 
+       X20-1.
+       
+           IF      WZ-LINE-CT > 50
+                   MOVE    PRINT-REC    TO WZ-PRINT-HOLD
+                   ADD     1            TO WZ-PAGE-CT
+                   MOVE    WZ-PAGE-CT   TO WA-PAGE-CT
+                   MOVE    WA-TOP-OF-PAGE-LINE
+                                        TO PRINT-REC
+                   WRITE   PRINT-REC AFTER PAGE
+                   MOVE    SPACE        TO PRINT-REC
+                   WRITE   PRINT-REC
+                   MOVE    WZ-PRINT-HOLD TO PRINT-REC
+                   MOVE    ZERO TO WZ-LINE-CT.
+           ADD     1 TO WZ-LINE-CT.
+       
+       X20-2.
+           WRITE   PRINT-REC AFTER 1.
+           MOVE    SPACE TO PRINT-REC.
+       
+       X20-EXIT.
+           EXIT.
+      *> 
+       X30-READ-POPFILE SECTION.
+      *> ========================
+       X30-1.
+           IF      WZ-DONT-READ-POPFILE = "Y"
+                   MOVE    SPACE TO WZ-DONT-READ-POPFILE
+                   GO TO   X30-EXIT.
+       
+      *>     IF      SUB1 GREATER THAN 30
+           READ    POPULATION-FILE INTO WC-CURRENT-POP-RECORD
+                   AT END  MOVE  "Y"       TO WZ-END-OF-POPFILE
+                           MOVE  "*HEADER" TO WC-STAR-HEADER
+                           GO TO  X30-EXIT.
+           MOVE    WC-CURRENT-POP-RECORD   TO WZ-SAVE-POP-RECORD.
+       
+           IF      WC-STAR = "*"
+                   IF      WZ-CURRENT-HEADER = "COBOL"
+           IF WC-1-5 = "ABCDE"
+                ADD 1 TO WZ-LINES-COBOL
+           ELSE
+                           IF      WC-1-5 = "*/+(>"
+                                   ADD     1 TO WZ-LINES-COBOL
+                           ELSE
+                           IF      WC-1-5 = "999-9"
+                                   ADD     1 TO WZ-LINES-COBOL
+                           ELSE
+                           IF      WC-1-5 = "Z=.,;"
+                                   ADD     1 TO WZ-LINES-COBOL
+                           ELSE
+                           IF      WC-1-5 = ")14$ "
+                                   ADD     1 TO WZ-LINES-COBOL
+                           ELSE
+                           IF      WC-1-5 = "  23 "
+                                   ADD     1 TO WZ-LINES-COBOL
+                           ELSE
+                                   NEXT    SENTENCE
+                   ELSE
+                           NEXT    SENTENCE
+           ELSE
+                   IF      WZ-CURRENT-HEADER = "COBOL"
+                           ADD     1    TO WZ-LINES-COBOL.
+       
+      *>     MOVE SOURCE-IN (SUB1) TO WC-CURRENT-POP-RECORD.
+      *>     ADD     1 TO SUB1.
+       
+       
+       X30-EXIT.
+           EXIT.
+       
+       
+       
+       
+       
+       X40-WRITE-SOURCE-FILE SECTION.
+      *> = ===========================
+       X40-1.
+           MOVE    SPACES  TO WD-1.
+      *>     IF    BLOCK-TYPE NOT = "DATA*"
+      *>           MOVE SPACES TO WC-73-80.
+           IF      WC-STAR = "*"
+                   IF      WC-1-5 = "*/+(>"
+                           WRITE   CT-OUT FROM WC-CURRENT-POP-RECORD
+                   ELSE
+                           MOVE    WC-CURRENT-POP-RECORD TO WD-HEADER
+                           WRITE   CT-OUT FROM WD-SOURCE-REC
+           ELSE
+                   WRITE   CT-OUT  FROM WC-CURRENT-POP-RECORD.
+       
+       X40-EXIT.
+           EXIT.
+       
+      *> END-OF,EXEC85

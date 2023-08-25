@@ -1,0 +1,220 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n             
+					(programName 
+						(cobolWord CM401M)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(fileSection FILE SECTION .\n       )) 
+				(dataDivisionSection 
+					(communicationSection COMMUNICATION SECTION .\n        
+						(communicationDescriptionEntry 
+							(communicationDescriptionEntryFormat1 CD 
+								(cdName 
+									(cobolWord COMMNAME)) FOR INITIAL INPUT 
+								(symbolicSubQueueClause SYMBOLIC SUB-QUEUE-1 IS 
+									(dataDescName 
+										(dataName 
+											(cobolWord CQ)))) .\n      )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord CREC)) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 03 
+								(dataName 
+									(cobolWord CNAME1)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 8)) 
+										(pictureChars )))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 03 
+								(dataName 
+									(cobolWord CQ)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 8)) 
+										(pictureChars )))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 03 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 62)) 
+										(pictureChars )))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 03 
+								(dataName 
+									(cobolWord CINT)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 03 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 8)) 
+										(pictureChars )))) .\n       \n       )) 
+						(communicationDescriptionEntry 
+							(communicationDescriptionEntryFormat2 CD 
+								(cdName 
+									(cobolWord COMM2)) FOR OUTPUT 
+								(destinationTableClause DESTINATION TABLE OCCURS 
+									(integerLiteral 7) TIMES) .\n      ))))) 
+			(procedureDivision PROCEDURE DIVISION .\n       \n        
+				(procedureDivisionBody 
+					(paragraphs 
+						(paragraph 
+							(paragraphName 
+								(cobolWord CM401M-CONTROL)) .\n            
+							(sentence 
+								(statement 
+									(performStatement PERFORM 
+										(performProcedureStatement 
+											(procedureName 
+												(paragraphName 
+													(cobolWord CM401M-DISABLE))) THRU 
+											(procedureName 
+												(paragraphName 
+													(cobolWord CM401M-SENDREP)))))) .\n           ) 
+							(sentence 
+								(statement 
+									(stopStatement STOP RUN)) .\n       \n       )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord CM401M-DISABLE)) .\n            
+							(sentence 
+								(statement 
+									(disableStatement DISABLE INPUT 
+										(cdName 
+											(cobolWord COMMNAME)) WITH KEY 
+										(identifier 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord CNAME1))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord CM401M-ENABLE)) .\n            
+							(sentence 
+								(statement 
+									(enableStatement ENABLE INPUT 
+										(cdName 
+											(cobolWord COMMNAME)) WITH KEY 
+										(identifier 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord CNAME1))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord CM401M-PURGE)) .\n            
+							(sentence 
+								(statement 
+									(purgeStatement PURGE 
+										(cdName 
+											(cobolWord COMM2)))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord CM401M-SEND)) .\n            
+							(sentence 
+								(statement 
+									(sendStatement SEND 
+										(sendStatementSync 
+											(identifier 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord COMM2))))) 
+											(sendFromPhrase FROM 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord CNAME1))))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord CM401M-SENDID)) .\n            
+							(sentence 
+								(statement 
+									(sendStatement SEND 
+										(sendStatementSync 
+											(identifier 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord COMM2))))) 
+											(sendFromPhrase FROM 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord CNAME1)))))) 
+											(sendWithPhrase WITH 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord CINT))))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord CM401M-SENDESI)) .\n            
+							(sentence 
+								(statement 
+									(sendStatement SEND 
+										(sendStatementSync 
+											(identifier 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord COMM2))))) 
+											(sendFromPhrase FROM 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord CNAME1)))))) 
+											(sendWithPhrase WITH ESI)))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord CM401M-SENDREP)) .\n            
+							(sentence 
+								(statement 
+									(sendStatement SEND 
+										(sendStatementSync 
+											(identifier 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord COMM2))))) 
+											(sendWithPhrase WITH EMI) 
+											(sendReplacingPhrase REPLACING LINE)))) .\n      ))))))) <EOF>)

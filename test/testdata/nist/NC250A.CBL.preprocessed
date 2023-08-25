@@ -1,0 +1,1966 @@
+      *> HEADER,COBOL,NC250A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC250A.
+       
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC250A TESTS THE GENERAL FORMAT OF THE "IF" STATEMENT
+      *>     A VARIETY OF QUALIFIED DATA-NAMES AND CONDITION-NAMES
+      *>     ARE USED.
+      *> 
+       
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  WRK-DU-1V0-1 PIC 9 VALUE 1.
+       01  WRK-DU-1V0-2 PIC 9 VALUE 2.
+       01  WRK-DU-1V0-3 PIC 9 VALUE 3.
+       01  WRK-DU-1V0-4 PIC 9 VALUE ZERO.
+       01  WRK-DU-2V0-1 PIC 99 VALUE 10.
+       01  WRK-DU-2V0-2 PIC 99 VALUE 11.
+       01  WRK-DU-2V0-3 PIC 99 VALUE 12.
+       77  SMALL-VALU   PICTURE 99 VALUE 7.
+       77  SMALLER-VALU PICTURE 99 VALUE 6.
+       77  SMALLEST-VALU   PICTURE 99 VALUE 5.
+       77  EVEN-SMALLER PICTURE 99 VALUE 1.
+       77  WRK-DS-02V00                 PICTURE S99.
+           88 TEST-2NUC-COND-99         VALUE 99.
+       77  WRK-DS-06V06     PICTURE S9(6)V9(6).
+       77  WRK-DS-12V00-S REDEFINES WRK-DS-06V06
+                                        PICTURE S9(12).
+       77  A02TWOS-DS-02V00             PICTURE S99    VALUE 22.
+       77  WRK-DS-01V00                 PICTURE S9.
+       77  A02TWOS-DS-03V02             PICTURE S999V99 VALUE +022.00.
+       77  A990-DS-0201P                PICTURE S99P   VALUE 990.
+       77  A02ONES-DS-02V00             PICTURE S99    VALUE 11.
+       77  A01ONE-DS-P0801              PICTURE SP(8)9 VALUE .000000001.
+       77  ATWO-DS-01V00                PICTURE S9     VALUE 2.
+       77  WRK-XN-00001                 PICTURE X.
+       77  WRK-XN-00005                 PICTURE X(5).
+       77  TWO  PICTURE 9 VALUE 2.
+       77  THREE PICTURE 9 VALUE 3.
+       77  SEVEN PICTURE 9 VALUE 7.
+       77  EIGHT PICTURE 9 VALUE 8.
+       77  NINE  PICTURE 9 VALUE 9.
+       77  TEN  PICTURE 99 VALUE 10.
+       77  TWENTY PICTURE 99 VALUE 20.
+       77  ALTERCOUNT PICTURE 999 VALUE ZERO.
+       77  XRAY PICTURE IS X.
+       77  IF-D1 PICTURE S9(4)V9(2) VALUE 0.
+       77  IF-D2 PICTURE S9(4)V9(2) VALUE ZERO.
+       77  IF-D3 PICTURE X(10) VALUE "0000000000".
+       77  IF-D4 PICTURE X(15) VALUE "               ".
+       77  IF-D5 PICTURE X(10) VALUE ALL QUOTE.
+       77  IF-D6 PICTURE A(10) VALUE "BABABABABA".
+       77  IF-D7 PICTURE S9(6)V9(4) VALUE +123.45.
+       77  IF-D8 PICTURE 9(6)V9(4) VALUE 12300.
+       77  IF-D9 PICTURE X(3) VALUE "123".
+       77  IF-D11 PICTURE X(6) VALUE "ABCDEF".
+       77  IF-D13 PICTURE 9(6)V9(4) VALUE 12300.
+       77  IF-D14 PICTURE S9(4)V9(2) VALUE +123.45.
+       77  IF-D15 PICTURE S999PP VALUE 12300.
+       77  IF-D16 PICTURE PP99 VALUE .0012.
+       77  IF-D17 PICTURE SV9(4) VALUE .0012.
+       77  IF-D18 PICTURE X(10) VALUE "BABABABABA".
+       77  IF-D19 PICTURE X(10) VALUE "ABCDEF    ".
+       77  IF-D23 PICTURE $9,9B9.90+.
+       77  IF-D24 PICTURE X(10) VALUE "$1,2 3.40+".
+       77  IF-D25 PICTURE ABABX0A.
+       77  IF-D26 PICTURE X(8) VALUE "A C D0E".
+       77  IF-D27 PICTURE IS 9(6)V9(4) VALUE IS 2137.45
+           USAGE IS COMPUTATIONAL.
+       77  IF-D28 PICTURE IS 999999V9999 VALUE IS 2137.45.
+       77  IF-D31 PICTURE S9(6) VALUE -123.
+       77  IF-D32 PICTURE S9(4)V99.
+           88  A  VALUE 1.
+           88  B VALUES ARE 2 THRU 4.
+           88  C VALUE IS ZERO.
+           88  D VALUE IS +12.34.
+           88  E  VALUE IS .01, .11, .21 .81.
+           88  F  VALUE IS 100 THRU 128 1000 THRU 1280 -9 THRU -2.
+           88  G  VALUE IS 8765.43 1234 THRU 5678 5 -9999 THRU 10.
+       77  IF-D33 PICTURE X(4).
+           88  B   VALUE QUOTE.
+           88  C   VALUE SPACE.
+           88 D VALUE ALL "BAC".
+       77  IF-D34 PICTURE A(4).
+           88  B VALUE "A A ".
+       77  IF-D37 PICTURE 9(5) VALUE 12345.
+       77  IF-D38 PICTURE X(9) VALUE "12345    ".
+       77  CCON-1 PICTURE 99 VALUE 11.
+       77  CCON-2 PICTURE 99 VALUE 12.
+       77  CCON-3 PICTURE 99 VALUE 13.
+       77  COMP-SGN1  PICTURE S9(1) VALUE +9 COMPUTATIONAL.
+       77  COMP-SGN2  PICTURE S9(18) VALUE +3 COMPUTATIONAL.
+       77  COMP-SGN3  PICTURE S9(1) VALUE -5 COMPUTATIONAL.
+       77  COMP-SGN4  PICTURE S9(18) VALUE -3167598765431 COMPUTATIONAL.
+       77  START-POINT        PICTURE 9(6) COMPUTATIONAL.
+       77  INC-VALUE          PICTURE 9(6) COMPUTATIONAL.
+       77  SWITCH-PFM-1 PICTURE 9 VALUE ZERO.
+       77  SWITCH-PFM-2 PICTURE 9 VALUE ZERO.
+       77  PFM-11-COUNTER PICTURE 999 VALUE ZERO.
+       77  PFM-12-COUNTER  PICTURE 999 VALUE 100.
+       77  PFM-12-ANS1  PICTURE 999 VALUE ZERO.
+       77  PFM-12-ANS2  PICTURE 999 VALUE ZERO.
+       01  SUBSCRIPT-6 PICTURE 99999 VALUE ZERO.
+       01  IF-TABLE.
+           02 IF-ELEM PICTURE X OCCURS 12 TIMES.
+       01  QUOTE-DATA.
+           02 QU-1 PICTURE X(3) VALUE "123".
+           02 QU-2 PICTURE X VALUE QUOTE.
+           02 QU-3 PICTURE X(6) VALUE "ABC456".
+       01  IF-D10.
+           02  D1 PICTURE X(2) VALUE "01".
+           02  D2 PICTURE X(2) VALUE "23".
+           02  D3.
+           03  D4 PICTURE X(4) VALUE "4567".
+           03 D5 PICTURE X(4) VALUE "8912".
+       01  IF-D12.
+           02  D1 PICTURE X(3) VALUE "ABC".
+           02  D2.
+           03  D3.
+           04  D4      PICTURE XX     VALUE "DE".
+           04  D5 PICTURE X VALUE "F".
+       01  IF-D20.
+           02  FILLER    PICTURE 9(5)   VALUE ZERO.
+           02  D1 PICTURE 9(2) VALUE 12.
+           02  D2 PICTURE 9 VALUE 3.
+           02  D3 PICTURE 9(2) VALUE 45.
+       01  IF-D21.
+           02  D1 PICTURE 9(5) VALUE ZEROS.
+           02  D2 PICTURE 9(5) VALUE 12345.
+       01  IF-D22.
+           02  D1 PICTURE A(2) VALUE "AB".
+           02  D2 PICTURE A(4) VALUE "CDEF".
+       01  IF-D35.
+           02  AA PICTURE X(2).
+           88  A1 VALUE "AA".
+           88  A2 VALUE "AB".
+           02  BB PICTURE IS X(2).
+           88  B1 VALUE "CC".
+           88  B2 VALUE "CD".
+           02 BB-2 REDEFINES BB.
+           03  AAA PICTURE X.
+           88  AA1 VALUE "A".
+           88  AA2 VALUE "C".
+           03  BBB PICTURE X.
+           88  BB1    VALUE "B".
+           88  BB2 VALUE "D".
+       01  IF-D36  PICTURE X(120) VALUE IS    "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKL".
+       01  IF-D40 PICTURE 9(5) VALUE 12345
+                    COMPUTATIONAL SYNCHRONIZED RIGHT.
+           88 IF-D40A VALUE ZERO THRU 10000.
+           88 IF-D40B VALUE 10001 THRU 99999.
+           88 IF-D40C VALUE 99999.
+       01  PERFORM1  PICTURE XXX  VALUE SPACES.
+       01  PERFORM2  PICTURE S999 VALUE 20.
+       01  PERFORM3  PICTURE  9  VALUE  5.
+       01  PERFORM4  PICTURE S99V9.
+       01  PERFORM5  PICTURE S99V9  VALUE 10.0.
+       01  PERFORM6  PICTURE  99V9.
+       01  PERFORM7.
+           02  PERFORM8  OCCURS 7 TIMES  PICTURE  99V9.
+       01  PERFORM9  PICTURE 9   VALUE 3.
+       01  PERFORM10  PICTURE  S9  VALUE -1.
+       01  PERFORM11  PICTURE  99  VALUE 6.
+       01  PERFORM12.
+           02 PERFORM13  OCCURS 4 TIMES.
+               03 PERFORM14  OCCURS 20 TIMES  PICTURE  99V9.
+               03 PERFORM15  OCCURS 10 TIMES.
+                   04 PERFORM16  OCCURS 5 TIMES  PICTURE 99V9.
+       01  PERFORM17          PICTURE 9(6) COMPUTATIONAL.
+       01  PERFORM18          PICTURE 9(6) COMPUTATIONAL.
+       01  PERFORM-KEY  PICTURE 9.
+       01  PERFORM-SEVEN-LEVEL-TABLE.
+         03   PFM71                OCCURS 2.
+           05  PFM72               OCCURS 2.
+             07  PFM73             OCCURS 2.
+               09  PFM74           OCCURS 2.
+                 11  PFM75         OCCURS 2.
+                   13  PFM76       OCCURS 2.
+                     15  PFM77     OCCURS 2.
+                       17  PFM77-1 PIC X.
+       01  S1                      PIC S9(3) COMP.
+       01  S2                      PIC S9(3) COMP.
+       01  S3                      PIC S9(3) COMP.
+       01  S4                      PIC S9(3) COMP.
+       01  S5                      PIC S9(3) COMP.
+       01  S6                      PIC S9(3) COMP.
+       01  S7                      PIC S9(3) COMP.
+       01  PFM-7-TOT               PIC S9(3) COMP.
+       01  PFM-F4-24-TOT           PIC S9(3) COMP.
+       01  PFM-A                   PIC S9(3) COMP.
+       01  PFM-B                   PIC S9(3) COMP.
+       01  FILLER-A.
+         03  PFM-F4-25-A           PIC S9(3) COMP OCCURS 10.
+       01  FILLER-B.
+         03  PFM-F4-25-B           PIC S9(3) COMP OCCURS 10.
+       01  FILLER-C.
+         03  PFM-F4-25-C           PIC S9(3) COMP OCCURS 10.
+       01  RECEIVING-TABLE.
+           03 TBL-ELEMEN-A.
+               05 TBL-ELEMEN-B          PICTURE X(18).
+               05 TBL-ELEMEN-C          PICTURE X(18).
+           03  TBL-ELEMEN-D.
+               05 TBL-ELEMEN-E          PICTURE X OCCURS 36 TIMES.
+       01  LITERAL-SPLITTER.
+           02 PART1                     PICTURE X(20).
+           02 PART2                     PICTURE X(20).
+           02 PART3                     PICTURE X(20).
+           02 PART4                     PICTURE X(20).
+       01  LITERAL-TABLE REDEFINES LITERAL-SPLITTER.
+           02 80PARTS                   PICTURE X      OCCURS 80 TIMES.
+       01  GRP-FOR-88-LEVELS.
+           03 WRK-DS-02V00-COND         PICTURE 99.
+               88 COND-1                VALUE IS 01 THRU 05.
+               88 COND-2                VALUES ARE 06 THRU 10
+                                                 16 THRU 20  00.
+               88 COND-3                VALUES 11 THRU 15.
+       01  GRP-MOVE-CONSTANTS.
+           03 GRP-GROUP-MOVE-FROM.
+               04 GRP-ALPHABETIC.
+                   05 ALPHABET-AN-00026 PICTURE A(26)
+                              VALUE "ABCDEFGHIJKLMNOPQRSTUVWXYZ".
+               04 GRP-NUMERIC.
+                   05 DIGITS-DV-10V00   PICTURE 9(10) VALUE 0123456789.
+               05 DIGITS-DU-06V04-S REDEFINES DIGITS-DV-10V00
+                                        PICTURE 9(6)V9999.
+               04 GRP-ALPHANUMERIC.
+                   05 ALPHANUMERIC-XN-00049 PICTURE X(50)
+           VALUE  "ABCDEFGHIJKLMNOPQRSTUVWXYZ+-><=$,;.()/* 0123456789".
+                   05 FILLER                PICTURE X  VALUE QUOTE.
+       01  GRP-FOR-2N058.
+           02 SUB-GRP-FOR-2N058-A.
+               03 ELEM-FOR-2N058-A PICTURE 999  VALUE ZEROES.
+               03 ELEM-FOR-2N058-B PICTURE XXX  VALUE ZEROS.
+               03 ELEM-FOR-2N058-C PICTURE XXX  VALUE SPACES.
+               03 ELEM-FOR-2N058-D PICTURE X(6) VALUE ALL "ABC".
+               03 ELEM-FOR-2N058-E PICTURE XXX  VALUE ALL "Z".
+               03 ELEM-FOR-2N058-F PICTURE XXX  VALUE ALL SPACES.
+               03 ELEM-FOR-2N058-G PICTURE XXX  VALUE ALL ZEROES.
+               03 ELEM-FOR-2N058-H PICTURE 999  VALUE ALL ZEROS.
+               03 ELEM-FOR-2N058-I PICTURE XXX  VALUE QUOTES.
+               03 ELEM-FOR-2N058-J PICTURE XXX  VALUE ALL QUOTES.
+               03 ELEM-FOR-2N058-K PICTURE XXX  VALUE ALL HIGH-VALUES.
+               03 ELEM-FOR-2N058-L PICTURE XXX  VALUE ALL LOW-VALUES.
+               03 ELEM-FOR-2N058-M PICTURE XXX  VALUE HIGH-VALUES.
+               03 ELEM-FOR-2N058-N PICTURE XXX  VALUE LOW-VALUES.
+           02 SUB-GRP-FOR-2N058-B.
+               03 SUB-SUB-BA.
+                   04 ELEM-FOR-2N058-A  PICTURE 999.
+                   04 ELEM-FOR-2N058-B  PICTURE XXX.
+                   04 ELEM-FOR-2N058-C  PICTURE XXX.
+                   04 ELEM-FOR-2N058-D  PICTURE X(6).
+               03 SUB-SUB-BB.
+                   04 ELEM-FOR-2N058-E  PICTURE XXX.
+                   04 ELEM-FOR-2N058-F  PICTURE XXX.
+                   04 ELEM-FOR-2N058-G  PICTURE XXX.
+                   04 ELEM-FOR-2N058-H  PICTURE 999.
+               03 SUB-SUB-BC.
+                   04 ELEM-FOR-2N058-I  PICTURE XXX.
+                   04 ELEM-FOR-2N058-J  PICTURE XXX.
+                   04 ELEM-FOR-2N058-K  PICTURE XXX.
+                   04 ELEM-FOR-2N058-L  PICTURE XXX.
+                   04 ELEM-FOR-2N058-M  PICTURE XXX.
+                   04 ELEM-FOR-2N058-N  PICTURE XXX.
+       01  CHARACTER-BREAKDOWN-S.
+           02   FIRST-20S PICTURE X(20).
+           02  SECOND-20S PICTURE X(20).
+           02   THIRD-20S PICTURE X(20).
+           02  FOURTH-20S PICTURE X(20).
+           02   FIFTH-20S PICTURE X(20).
+           02   SIXTH-20S PICTURE X(20).
+           02 SEVENTH-20S PICTURE X(20).
+           02  EIGHTH-20S PICTURE X(20).
+           02   NINTH-20S PICTURE X(20).
+           02   TENTH-20S PICTURE X(20).
+       01  CHARACTER-BREAKDOWN-R.
+           02   FIRST-20R PICTURE X(20).
+           02  SECOND-20R PICTURE X(20).
+           02   THIRD-20R PICTURE X(20).
+           02  FOURTH-20R PICTURE X(20).
+           02   FIFTH-20R PICTURE X(20).
+           02   SIXTH-20R PICTURE X(20).
+           02 SEVENTH-20R PICTURE X(20).
+           02  EIGHTH-20R PICTURE X(20).
+           02   NINTH-20R PICTURE X(20).
+           02   TENTH-20R PICTURE X(20).
+       01  TABLE-80.
+           02  ELMT OCCURS 3 TIMES PIC 9.
+           88  A80  VALUES ARE ZERO THRU 7.
+           88  B80  VALUE 8.
+           88  C80  VALUES ARE 7, 8 THROUGH 9.
+       
+       01  TABLE-86.
+           88  A86  VALUE "ABC".
+           88  B86  VALUE "ABCABC".
+           88  C86  VALUE "   ABC".
+           02  DATANAME-86  PIC XXX  VALUE "ABC".
+           02  DNAME-86.
+               03  FILLER  PIC X  VALUE "A".
+               03  FILLER  PIC X  VALUE "B".
+               03  FILLER  PIC X   VALUE "C".
+       01  FIGCON-DATA.
+           02 SPACE-X         PICTURE X(10) VALUE "          ".
+           02 QUOTE-X         PICTURE X(5)  VALUE QUOTE.
+           02 LOW-VAL         PICTURE X(5)  VALUE LOW-VALUE.
+           02 ABC PICTURE XXX VALUE "ABC".
+           02 ONE23           PICTURE 9999  VALUE 123.
+           02 ZERO-C          PICTURE 9(10) VALUE 0 COMPUTATIONAL.
+           02 ZERO-D          PICTURE 9     VALUE ZERO USAGE DISPLAY.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC250A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC201A-001 SECTION.
+      *> 
+       IF--INIT-A.
+           MOVE   "VI-89 6.15" TO ANSI-REFERENCE.
+           PERFORM END-ROUTINE.
+           MOVE SPACE TO TEST-RESULTS.
+           MOVE "THE FOLLOWING TESTS        " TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "COMPARE FIGURATIVE         " TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "CONSTANTS, SIGN OF DATA,   " TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "AND CONDITION-NAMES        " TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "IN VARYING COMBINATIONS.   " TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "COMPARE--           " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+           MOVE "  FIG. CONSTANTS    " TO FEATURE.
+       IF--TEST-1.
+           IF ZEROES IS EQUAL TO IF-D3 PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE FIGURATIVE ZEROES VS ALPHANUMERIC FIELD.
+           GO TO IF--WRITE-1.
+       IF--DELETE-1.
+           PERFORM DE-LETE.
+       IF--WRITE-1.
+           MOVE "IF--TEST-1 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-2.
+           IF SPACES EQUAL TO IF-D4 PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE FIGURATIVE SPACES VS ALPHANUMERIC FIELD.
+           GO TO IF--WRITE-2.
+       IF--DELETE-2.
+           PERFORM DE-LETE.
+       IF--WRITE-2.
+           MOVE "IF--TEST-2 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-3.
+           IF QUOTES EQUAL TO IF-D5 PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE FIGURATIVE QUOTES VS ALPHANUMERIC FIELD.
+           GO TO IF--WRITE-3.
+       IF--DELETE-3.
+           PERFORM DE-LETE.
+       IF--WRITE-3.
+           MOVE "IF--TEST-3 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-4.
+           IF IF-D6 EQUAL TO ALL "BA" PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE ALL ANY LITERAL VS ALPHANUMERIC FIELD.
+           GO TO IF--WRITE-4.
+       IF--DELETE-4.
+           PERFORM DE-LETE.
+       IF--WRITE-4.
+           MOVE "IF--TEST-4 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-5.
+           IF IF-D4 GREATER THAN SPACES PERFORM FAIL ELSE
+           PERFORM PASS.
+      *>         NOTE FIG-SPACES VS ALPHANUMERIC FIELD.
+           GO TO IF--WRITE-5.
+       IF--DELETE-5.
+           PERFORM DE-LETE.
+       IF--WRITE-5.
+           MOVE "IF--TEST-5 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-6.
+           IF QUOTES GREATER THAN IF-D5 PERFORM FAIL ELSE PERFORM PASS.
+      *>         NOTE FIG-QUOTES VS ALPHANUMERIC FIELD.
+           GO TO IF--WRITE-6.
+       IF--DELETE-6.
+           PERFORM DE-LETE.
+       IF--WRITE-6.
+           MOVE "IF--TEST-6 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-7.
+           IF ALL "BA" GREATER THAN IF-D6 PERFORM FAIL
+           ELSE PERFORM PASS.
+      *>     NOTE ALL ANY LITERAL VS ALPHA FIELD.
+           GO TO IF--WRITE-7.
+       IF--DELETE-7.
+           PERFORM DE-LETE.
+       IF--WRITE-7.
+           MOVE "IF--TEST-7 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-B.
+           MOVE "  UNEQUAL LENGTHS   " TO FEATURE.
+       IF--TEST-8.
+           IF IF-D22 GREATER THAN IF-D19 PERFORM FAIL ELSE PERFORM PASS.
+      *>         NOTE ALPHANUMERIC GROUP VS ALPHANUMERIC FIELD.
+      *>     NOTE UNEQUAL LENGTHS.
+           GO TO IF--WRITE-8.
+       IF--DELETE-8.
+           PERFORM DE-LETE.
+       IF--WRITE-8.
+           MOVE "IF--TEST-8 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-C.
+           MOVE "  POSITIVE          " TO FEATURE.
+       IF--TEST-9.
+           IF IF-D1 IS NOT POSITIVE PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE POSITIVE TEST ON ZERO VALUE.
+           GO TO IF--WRITE-9.
+       IF--DELETE-9.
+           PERFORM DE-LETE.
+       IF--WRITE-9.
+           MOVE "IF--TEST-9 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-10.
+           IF IF-D8 POSITIVE PERFORM PASS ELSE      PERFORM FAIL.
+      *>         NOTE POSITIVE TEST ON UNSIGNED VALUE.
+           GO TO IF--WRITE-10.
+       IF--DELETE-10.
+           PERFORM DE-LETE.
+       IF--WRITE-10.
+           MOVE "IF--TEST-10" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-11.
+           IF IF-D16 POSITIVE PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE POSITIVE TEST ON SCALED VALUE.
+           GO TO IF--WRITE-11.
+       IF--DELETE-11.
+           PERFORM DE-LETE.
+       IF--WRITE-11.
+           MOVE "IF--TEST-11" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-12.
+           IF IF-D27 POSITIVE PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE POSITIVE TEST ON COMPUTATIONAL FIELD.
+           GO TO IF--WRITE-12.
+       IF--DELETE-12.
+           PERFORM DE-LETE.
+       IF--WRITE-12.
+           MOVE "IF--TEST-12" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-13.
+           IF IF-D28 POSITIVE PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE POSITIVE TEST ON NUMERIC DISPLAY IFELD.
+           GO TO IF--WRITE-13.
+       IF--DELETE-13.
+           PERFORM DE-LETE.
+       IF--WRITE-13.
+           MOVE "IF--TEST-13" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-14.
+           IF IF-D31 IS POSITIVE PERFORM FAIL ELSE PERFORM PASS.
+      *>         NOTE POSITIVE TEST ON NEGATIVE FIELD.
+           GO TO IF--WRITE-14.
+       IF--DELETE-14.
+           PERFORM DE-LETE.
+       IF--WRITE-14.
+           MOVE "IF--TEST-14" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-15.
+           IF IF-D31 IS NOT POSITIVE PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE NOT POSITIVE TEST ON NEGATIVE VALUE.
+           GO TO IF--WRITE-15.
+       IF--DELETE-15.
+           PERFORM DE-LETE.
+       IF--WRITE-15.
+           MOVE "IF--TEST-15" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-16.
+           IF IF-D28 IS NOT POSITIVE PERFORM FAIL ELSE PERFORM PASS.
+      *>         NOTE NOT POSITIVE TEST ON UNSIGNED FIELD.
+           GO TO IF--WRITE-16.
+       IF--DELETE-16.
+           PERFORM DE-LETE.
+       IF--WRITE-16.
+           MOVE "IF--TEST-16" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-D.
+           MOVE "  NEGATIVE          " TO FEATURE.
+       IF--TEST-17.
+           IF IF-D31 IS NEGATIVE PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE NEGATIVE TEST ON NEGATIVE VALUE.
+           GO TO IF--WRITE-17.
+       IF--DELETE-17.
+           PERFORM DE-LETE.
+       IF--WRITE-17.
+           MOVE "IF--TEST-17" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-18.
+           IF IF-D31 IS NOT NEGATIVE PERFORM FAIL ELSE PERFORM PASS.
+      *>         NOTE NOT NEGATIVE TEST ON NEGATIVE VALUE.
+           GO TO IF--WRITE-18.
+       IF--DELETE-18.
+           PERFORM DE-LETE.
+       IF--WRITE-18.
+           MOVE "IF--TEST-18" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-19.
+           IF IF-D16 NOT NEGATIVE PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE NOT NEGATIVE TEST ON UNSIGNED FIELD.
+           GO TO IF--WRITE-19.
+       IF--DELETE-19.
+           PERFORM DE-LETE.
+       IF--WRITE-19.
+           MOVE "IF--TEST-19" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-E.
+           MOVE "  ZERO              " TO FEATURE.
+       IF--TEST-20.
+           IF IF-D1 IS ZERO PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE ZERO TEST ON ZERO VALUE.
+           GO TO IF--WRITE-20.
+       IF--DELETE-20.
+           PERFORM DE-LETE.
+       IF--WRITE-20.
+           MOVE "IF--TEST-20" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-21.
+           IF IF-D10 NOT EQUAL TO ZERO
+               PERFORM PASS  ELSE
+           MOVE IF-D10 TO COMPUTED-A
+           MOVE ZERO TO CORRECT-N
+           PERFORM FAIL.
+      *>     NOTE NOT EQUAL TO ZERO TEST ON NON-ZERO VALUE.
+           GO TO IF--WRITE-21.
+       IF--DELETE-21.
+           PERFORM DE-LETE.
+       IF--WRITE-21.
+           MOVE "IF--TEST-21" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-F.
+           MOVE "  CONDITION-NAMES   " TO FEATURE.
+       IF--TEST-22.
+           MOVE 1 TO IF-D32. IF A OF IF-D32 PERFORM PASS
+           ELSE PERFORM FAIL.
+      *>         NOTE TEST OF SIGNED NUMERIC FIELD FOR SINGLE VALUE.
+           GO TO IF--WRITE-22.
+       IF--DELETE-22.
+           PERFORM DE-LETE.
+       IF--WRITE-22.
+           MOVE "IF--TEST-22" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-23.
+           MOVE 3 TO IF-D32. IF B OF IF-D32 PERFORM PASS
+           ELSE PERFORM FAIL.
+      *>         NOTE TEST OF SIGNED NUMERIC FIELD FOR MULTIPLE VALUES.
+           GO TO IF--WRITE-23.
+       IF--DELETE-23.
+           PERFORM DE-LETE.
+       IF--WRITE-23.
+           MOVE "IF--TEST-23" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-24.
+                   MOVE ZERO   TO IF-D32. IF C OF IF-D32 PERFORM PASS
+           ELSE PERFORM FAIL.
+      *>         NOTE TEST OF SIGNED NUMERIC FIELD FOR FIG-ZERO.
+           GO TO IF--WRITE-24.
+       IF--DELETE-24.
+           PERFORM DE-LETE.
+       IF--WRITE-24.
+           MOVE "IF--TEST-24" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-25.
+           MOVE +12.34 TO IF-D32.
+           IF D OF IF-D32 PERFORM PASS ELSE PERFORM FAIL.
+      *>     NOTE SIGNED CONDITION-NAME.
+           GO TO IF--WRITE-25.
+       IF--DELETE-25.
+           PERFORM DE-LETE.
+       IF--WRITE-25.
+           MOVE "IF--TEST-25" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-26.
+           MOVE QUOTE  TO IF-D33. IF B OF IF-D33 AND NOT B OF IF-D32
+           PERFORM PASS ELSE PERFORM FAIL.
+      *>         NOTE TEST OF ALPHANUMERIC FIELD FOR FIG-QUOTES.
+           GO TO IF--WRITE-26.
+       IF--DELETE-26.
+           PERFORM DE-LETE.
+       IF--WRITE-26.
+           MOVE "IF--TEST-26" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-27.
+           MOVE SPACE TO IF-D33. IF C OF IF-D33 PERFORM PASS
+           ELSE PERFORM FAIL.
+      *>         NOTE TEST OF ALPHANUMERIC FIELD FOR FIG-SPACES.
+           GO TO IF--WRITE-27.
+       IF--DELETE-27.
+           PERFORM DE-LETE.
+       IF--WRITE-27.
+           MOVE "IF--TEST-27" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-28.
+           MOVE "BACB" TO IF-D33. IF D OF IF-D33 PERFORM PASS
+           ELSE PERFORM FAIL.
+      *>         NOTE TEST OF ALPHANUMERIC FIELD FOR ALL ANY LITERAL.
+           GO TO IF--WRITE-28.
+       IF--DELETE-28.
+           PERFORM DE-LETE.
+       IF--WRITE-28.
+           MOVE "IF--TEST-28" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-29.
+           IF NOT B OF IF-D34 PERFORM PASS ELSE PERFORM FAIL.
+           GO TO IF--WRITE-29.
+       IF--DELETE-29.
+           PERFORM DE-LETE.
+       IF--WRITE-29.
+           MOVE "IF--TEST-29" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-30.
+           MOVE "ABCD" TO IF-D35.
+           IF A2 AND B2 PERFORM PASS ELSE PERFORM FAIL.
+           GO TO IF--WRITE-30.
+       IF--DELETE-30.
+           PERFORM DE-LETE.
+       IF--WRITE-30.
+           MOVE "IF--TEST-30" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-31.
+           MOVE .21 TO IF-D32.
+           IF E PERFORM PASS ELSE PERFORM FAIL.
+      *>     NOTE TESTS VALUE SERIES.
+           GO TO IF--WRITE-31.
+       IF--DELETE-31.
+           PERFORM DE-LETE.
+       IF--WRITE-31.
+           MOVE "IF--TEST-31" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-32.
+           MOVE 1279.99 TO IF-D32.
+           IF F PERFORM PASS ELSE PERFORM FAIL.
+      *>     NOTE TESTS VALUE RANGE SERIES.
+           GO TO IF--WRITE-32.
+       IF--DELETE-32.
+           PERFORM DE-LETE.
+       IF--WRITE-32.
+           MOVE "IF--TEST-32" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-33.
+           MOVE -4321.88 TO IF-D32.
+           IF G PERFORM PASS ELSE PERFORM FAIL.
+      *>     NOTE TESTS VALUE SERIES RANGE SERIES.
+           GO TO IF--WRITE-33.
+       IF--DELETE-33.
+           PERFORM DE-LETE.
+       IF--WRITE-33.
+           MOVE "IF--TEST-33" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-G.
+           PERFORM END-ROUTINE.
+           MOVE SPACES TO FEATURE.
+           MOVE "THE FOLLOWING TESTS USE ARITHMETIC-EXPRESSIONS"
+           TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "IN RELATION OR SIGN CONDITIONS."
+           TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "  EQUAL             " TO FEATURE.
+       IF--TEST-34.
+           IF  1 + (TWO * 3) EQUAL TO (TWO * 3) + 1
+                     PERFORM PASS
+           ELSE
+                     PERFORM FAIL.
+           GO TO IF--WRITE-34.
+       IF--DELETE-34.
+           PERFORM DE-LETE.
+       IF--WRITE-34.
+           MOVE "IF--TEST-34" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-35.
+           IF 9 + TWO + 2 * 3 EQUAL TO 2 * 3 + TWO + 9
+               PERFORM PASS
+           ELSE
+               PERFORM FAIL.
+           GO TO IF--WRITE-35.
+       IF--DELETE-35.
+           PERFORM DE-LETE.
+       IF--WRITE-35.
+           MOVE "IF--TEST-35" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-36.
+           IF  NINE ** 2 EQUAL TO 9 ** 2
+                    PERFORM PASS
+           ELSE
+                    PERFORM FAIL.
+           GO TO IF--WRITE-36.
+       IF--DELETE-36.
+           PERFORM DE-LETE.
+       IF--WRITE-36.
+           MOVE "IF--TEST-36" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-37.
+           IF 100 + (TWENTY + 3.4) + .05 EQUAL TO
+              .05 + (100 + TWENTY) + 3.4
+                  PERFORM PASS
+           ELSE
+                  PERFORM FAIL.
+           GO TO IF--WRITE-37.
+       IF--DELETE-37.
+           PERFORM DE-LETE.
+       IF--WRITE-37.
+           MOVE "IF--TEST-37" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-H.
+           MOVE "  GREATER           " TO FEATURE.
+       IF--TEST-38.
+           IF NINE * 8 IS GREATER THAN  9 * 7 + 8 PERFORM PASS
+           ELSE PERFORM FAIL.
+           GO TO IF--WRITE-38.
+       IF--DELETE-38.
+           PERFORM DE-LETE.
+       IF--WRITE-38.
+           MOVE "IF--TEST-38" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-39.
+           IF  10 ** 2 + 25 GREATER THAN IF-D14 PERFORM PASS ELSE
+           PERFORM FAIL.
+           GO TO IF--WRITE-39.
+       IF--DELETE-39.
+           PERFORM DE-LETE.
+       IF--WRITE-39.
+           MOVE "IF--TEST-39" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-40.
+           IF 1000 GREATER THAN TEN ** 3 - 1 PERFORM PASS ELSE PERFORM
+           FAIL.
+           GO TO IF--WRITE-40.
+       IF--DELETE-40.
+           PERFORM DE-LETE.
+       IF--WRITE-40.
+           MOVE "IF--TEST-40" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-I.
+           MOVE "  LESS              " TO FEATURE.
+       IF--TEST-41.
+           IF 1000 LESS THAN 10 ** THREE + 1 PERFORM PASS ELSE
+           PERFORM FAIL.
+           GO TO IF--WRITE-41.
+       IF--DELETE-41.
+           PERFORM DE-LETE.
+       IF--WRITE-41.
+           MOVE "IF--TEST-41" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-42.
+           IF 10 ** 2 + 20 LESS THAN IF-D14 PERFORM PASS ELSE
+           PERFORM FAIL.
+           GO TO IF--WRITE-42.
+       IF--DELETE-42.
+           PERFORM DE-LETE.
+       IF--WRITE-42.
+           MOVE "IF--TEST-42" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-43.
+           IF 9 * 8 LESS THAN 9 * 7 + TEN PERFORM PASS ELSE PERFORM
+           FAIL.
+           GO TO IF--WRITE-43.
+       IF--DELETE-43.
+           PERFORM DE-LETE.
+       IF--WRITE-43.
+           MOVE "IF--TEST-43" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-44-45.
+           MOVE SPACES TO TEST-RESULTS.
+           MOVE "NOT USED" TO RE-MARK.
+           MOVE "IF--TEST-44" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE "NOT USED" TO RE-MARK.
+           MOVE "IF--TEST-45" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-J.
+           MOVE "  NOT EQUAL          " TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-46.
+           IF NINE * 9 - 7 * SEVEN NOT EQUAL - (SEVEN * 7) + 9 * NINE
+                      PERFORM FAIL
+           ELSE
+                      PERFORM PASS.
+       
+           GO TO IF--WRITE-46.
+       IF--DELETE-46.
+           PERFORM DE-LETE.
+       IF--WRITE-46.
+           MOVE "IF--TEST-46" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-47.
+           IF IF-D14 - IF-D7 NOT EQUAL - IF-D7 + IF-D14
+           PERFORM FAIL ELSE PERFORM PASS.
+           GO TO IF--WRITE-47.
+       IF--DELETE-47.
+           PERFORM DE-LETE.
+       IF--WRITE-47.
+           MOVE "IF--TEST-47" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-K.
+           MOVE "  NOT GREATER       " TO FEATURE.
+       IF--TEST-48.
+           IF NINE * 8 IS NOT GREATER THAN 9 * SEVEN + 8 THEN
+                         PERFORM FAIL
+           ELSE
+                         PERFORM PASS.
+           GO TO IF--WRITE-48.
+       IF--DELETE-48.
+           PERFORM DE-LETE.
+       IF--WRITE-48.
+           MOVE "IF--TEST-48" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-49.
+           IF 10 ** 2 + 25 NOT GREATER THAN IF-D14 PERFORM FAIL ELSE
+           PERFORM PASS.
+           GO TO IF--WRITE-49.
+       IF--DELETE-49.
+           PERFORM DE-LETE.
+       IF--WRITE-49.
+           MOVE "IF--TEST-49" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-50.
+           IF 1000 NOT GREATER THAN 10 ** THREE - 1 PERFORM FAIL ELSE
+           PERFORM PASS.
+           GO TO IF--WRITE-50.
+       IF--DELETE-50.
+           PERFORM DE-LETE.
+       IF--WRITE-50.
+           MOVE "IF--TEST-50" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-L.
+           MOVE "  NOT LESS          " TO FEATURE.
+       IF--TEST-51.
+           IF 1000 NOT LESS THAN TEN ** 3 + 1 PERFORM FAIL ELSE
+           PERFORM PASS.
+           GO TO IF--WRITE-51.
+       IF--DELETE-51.
+           PERFORM DE-LETE.
+       IF--WRITE-51.
+           MOVE "IF--TEST-51" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-52.
+           IF 10 ** 2 + 20 NOT LESS THAN IF-D14 PERFORM FAIL ELSE
+           PERFORM PASS.
+           GO TO IF--WRITE-52.
+       IF--DELETE-52.
+           PERFORM DE-LETE.
+       IF--WRITE-52.
+           MOVE "IF--TEST-52" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-53.
+           IF NINE * 8 NOT LESS THAN 9 * 7 + TEN PERFORM FAIL ELSE
+           PERFORM PASS.
+           GO TO IF--WRITE-53.
+       IF--DELETE-53.
+           PERFORM DE-LETE.
+       IF--WRITE-53.
+           MOVE "IF--TEST-53" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-M.
+           MOVE "  POS, NEG, ZERO    " TO FEATURE.
+       IF--TEST-54.
+           IF 9 ** TWO + (180 - 90) IS NOT POSITIVE PERFORM FAIL ELSE
+           PERFORM PASS.
+           GO TO IF--WRITE-54.
+       IF--DELETE-54.
+           PERFORM DE-LETE.
+       IF--WRITE-54.
+           MOVE "IF--TEST-54" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-55.
+           IF NINE ** 2 + (90 - 180) IS POSITIVE PERFORM FAIL ELSE
+           PERFORM PASS.
+           GO TO IF--WRITE-55.
+       IF--DELETE-55.
+           PERFORM DE-LETE.
+       IF--WRITE-55.
+           MOVE "IF--TEST-55" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-56.
+           IF 8 * EIGHT - 8 * 8 NOT ZERO
+                   PERFORM FAIL ELSE PERFORM PASS.
+           GO TO IF--WRITE-56.
+       IF--DELETE-56.
+           PERFORM DE-LETE.
+       IF--WRITE-56.
+           MOVE "IF--TEST-56" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-57-58.
+           MOVE SPACES TO TEST-RESULTS.
+           MOVE "NOT USED" TO RE-MARK.
+           MOVE "IF--TEST-57" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE "NOT USED" TO RE-MARK.
+           MOVE "IF--TEST-58" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE "  POS, NEG, ZERO     " TO FEATURE.
+       IF--TEST-59.
+           IF 10 ** THREE + 99 - (1500 - 400) IS NEGATIVE PERFORM PASS
+           ELSE PERFORM FAIL.
+           GO TO IF--WRITE-59.
+       IF--DELETE-59.
+           PERFORM DE-LETE.
+       IF--WRITE-59.
+           MOVE "IF--TEST-59" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-60.
+           IF TEN ** 3 + 99 - (1500 - 400) IS NOT POSITIVE PERFORM PASS
+           ELSE PERFORM FAIL.
+           GO TO IF--WRITE-60.
+       IF--DELETE-60.
+           PERFORM DE-LETE.
+       IF--WRITE-60.
+           MOVE "IF--TEST-60" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-61.
+           IF 8 * EIGHT - 8 * 8 IS ZERO
+                   PERFORM PASS ELSE PERFORM FAIL.
+           GO TO IF--WRITE-61.
+       IF--DELETE-61.
+           PERFORM DE-LETE.
+       IF--WRITE-61.
+           MOVE "IF--TEST-61" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-62.
+           MOVE SPACES TO TEST-RESULTS.
+           MOVE "NOT USED" TO RE-MARK.
+           MOVE "IF--TEST-62" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE "POS, NEG, ZERO      " TO FEATURE.
+       IF--TEST-63.
+           IF 10 ** THREE + 99 - (1500 - 400) IS NOT NEGATIVE
+                    PERFORM FAIL ELSE PERFORM PASS.
+           GO TO IF--WRITE-63.
+       IF--DELETE-63.
+           PERFORM DE-LETE.
+       IF--WRITE-63.
+           MOVE "IF--TEST-63" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-N.
+           MOVE "  SYMBOLS > < =     " TO FEATURE.
+       IF--TEST-64.
+           IF TEN * 10 - 10 * 10 = - TEN * 10 + 10 * 10
+                     PERFORM PASS
+           ELSE
+                     PERFORM FAIL.
+           GO TO IF--WRITE-64.
+       IF--DELETE-64.
+           PERFORM DE-LETE.
+       IF--WRITE-64.
+           MOVE "IF--TEST-64" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-65.
+           IF NINE * 8 > 9 * 7 + 8 PERFORM PASS ELSE PERFORM FAIL.
+           GO TO IF--WRITE-65.
+       IF--DELETE-65.
+           PERFORM DE-LETE.
+       IF--WRITE-65.
+           MOVE "IF--TEST-65" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-66.
+           IF 1000 < 10 ** THREE + 1 PERFORM PASS ELSE PERFORM FAIL.
+           GO TO IF--WRITE-66.
+       IF--DELETE-66.
+           PERFORM DE-LETE.
+       IF--WRITE-66.
+           MOVE "IF--TEST-66" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-67.
+           IF 100 + TWENTY + 3.4 + .05 NOT = 100 + TWENTY + 3.4 + 0.6
+                PERFORM PASS
+           ELSE
+                PERFORM FAIL.
+           GO TO IF--WRITE-67.
+       IF--DELETE-67.
+           PERFORM DE-LETE.
+       IF--WRITE-67.
+           MOVE "IF--TEST-67" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-68.
+           IF NINE * 8 NOT > 9 * 7 + 8 PERFORM FAIL ELSE PERFORM PASS.
+           GO TO IF--WRITE-68.
+       IF--DELETE-68.
+           PERFORM DE-LETE.
+       IF--WRITE-68.
+           MOVE "IF--TEST-68" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-69.
+           IF 1000 NOT < 10 ** THREE + 1 PERFORM FAIL ELSE PERFORM PASS.
+           GO TO IF--WRITE-69.
+       IF--DELETE-69.
+           PERFORM DE-LETE.
+       IF--WRITE-69.
+           MOVE "IF--TEST-69" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-70.
+           MOVE SPACES TO TEST-RESULTS.
+           MOVE "NOT USED" TO RE-MARK.
+           MOVE "IF--TEST-70" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-N1.
+           PERFORM END-ROUTINE.
+           MOVE SPACES TO FEATURE.
+           MOVE "THE FOLLOWING TESTS COMBINATIONS OF"
+                   TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "RELATIONAL AND SIZE ERROR CONDITIONS."
+                   TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-71.
+           MOVE     "X" TO WRK-XN-00001.
+           MOVE     ZERO TO WRK-DS-01V00.
+           IF       WRK-XN-00001 IS EQUAL TO "X"
+                    MOVE "Z" TO WRK-XN-00001
+                    ADD 1 TO WRK-DS-01V00 ON SIZE ERROR
+                    MOVE "Y" TO WRK-XN-00001
+                    ELSE
+                    ADD 2 TO WRK-DS-01V00 ON SIZE ERROR
+                    MOVE "W" TO WRK-XN-00001.
+           IF  WRK-XN-00001 EQUAL TO "Z" AND
+                    WRK-DS-01V00 EQUAL TO 1
+                    PERFORM PASS ELSE PERFORM FAIL.
+      *>     NOTE     COMBINATION OF RELATIONAL AND SIZE ERROR CONDITIONS.
+           GO       TO IF--WRITE-71.
+       IF--DELETE-71.
+           PERFORM  DE-LETE.
+       IF--WRITE-71.
+           MOVE     "  INCL SIZE ERROR" TO FEATURE.
+           MOVE     "IF--TEST-71" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-O.
+           MOVE     "  UNEQUAL LENGTHS" TO FEATURE.
+       IF--TEST-73.
+           MOVE     "X" TO WRK-XN-00001.
+           MOVE     "X    " TO WRK-XN-00005.
+           IF       WRK-XN-00001 IS EQUAL TO WRK-XN-00005
+                    PERFORM PASS ELSE PERFORM FAIL.
+      *>     NOTE     EQUAL QUANTITIES IN UNEQUAL LENGTH FIELDS.
+           GO       TO IF--WRITE-73.
+       IF--DELETE-73.
+           PERFORM  DE-LETE.
+       IF--WRITE-73.
+           MOVE     "IF--TEST-73" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-74.
+           MOVE     "X" TO WRK-XN-00001.
+           MOVE     "Y    " TO WRK-XN-00005.
+           IF       WRK-XN-00001 IS NOT EQUAL TO WRK-XN-00005
+                    PERFORM PASS ELSE PERFORM FAIL.
+      *>     NOTE     UNEQUAL QUANTITIES IN UNEQUAL LENGTH FIELDS.
+           GO       TO IF--WRITE-74.
+       IF--DELETE-74.
+           PERFORM  DE-LETE.
+       IF--WRITE-74.
+           MOVE     "IF--TEST-74" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-75.
+           MOVE     "X" TO WRK-XN-00001.
+           MOVE     "X   X" TO WRK-XN-00005.
+           IF       WRK-XN-00001 IS NOT EQUAL TO WRK-XN-00005
+                    PERFORM PASS ELSE PERFORM FAIL.
+      *>     NOTE     UNEQUAL QUANTITIES IN UNEQUAL LENGTH FIELDS.
+           GO       TO IF--WRITE-75.
+       IF--DELETE-75.
+           PERFORM  DE-LETE.
+       IF--WRITE-75.
+           MOVE     "IF--TEST-75" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-P.
+           MOVE     "  UNEQUAL LENGTHS" TO FEATURE.
+       IF--TEST-77.
+           IF       IF-D37 NOT EQUAL TO IF-D21
+                    PERFORM PASS GO TO IF--WRITE-77.
+      *>     NOTE     NUMERIC VS GROUP COMPARISON, UNEQUAL LENGTHS.
+           GO       TO IF--FAIL-77.
+       IF--DELETE-77.
+           PERFORM DE-LETE.
+           GO       TO IF--WRITE-11.
+       IF--FAIL-77.
+           PERFORM  FAIL.
+           MOVE     "IF-D37 SHOULD PAD ON RIGHT" TO RE-MARK.
+       IF--WRITE-77.
+           MOVE     "IF--TEST-77" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-78.
+           IF       IF-D37 EQUAL TO IF-D38
+                    PERFORM PASS GO TO IF--WRITE-78.
+      *>     NOTE     NUMERIC VS ALPHANUMERIC COMPARISON, UNEQUAL LENGTHS.
+           GO       TO IF--FAIL-78.
+       IF--DELETE-78.
+           PERFORM  DE-LETE.
+           GO       TO IF--WRITE-78.
+       IF--FAIL-78.
+           PERFORM  FAIL.
+           MOVE     "IF-D37 SHOULD PAD ON RIGHT" TO RE-MARK.
+       IF--WRITE-78.
+           MOVE     "IF--TEST-78" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-79.
+           MOVE ZERO TO IF-D10.
+           IF D3 OF IF-D10 EQUAL TO "00000000"
+               PERFORM PASS
+               GO TO IF-WRITE-79.
+           MOVE D3 IN IF-D10 TO COMPUTED-A.
+           MOVE "00000000" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO IF-WRITE-79.
+       IF-DELETE-79.
+           PERFORM DE-LETE.
+       IF-WRITE-79.
+           MOVE "QUALIFIED GROUP   " TO FEATURE.
+           MOVE "IF--TEST-79 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-80.
+           PERFORM END-ROUTINE.
+           MOVE SPACES TO FEATURE.
+           MOVE "THESE SPECIAL CONDITION-   " TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "NAME TESTS VERIFY THE    " TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "ABILITY OF THE COMPILER TO " TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "ACCEPT SUBSCRIPTED 88 LEVEL" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE *******                  ******                *********
+      *>         *****  A NOTE AS THE FIRST STATEMENT IN THIS ******
+      *>                PARAGRAPH WILL BYPASS ALL THE SPECIAL *****
+      *>                CONDITION-NAME TESTS, BUT A NOTE STATEMENT
+      *>                MIGHT NEED TO BE INSERTED IN EACH TEST
+      *>                SO THE SYNTAX WOULD BE IGNORED BY THE COMPILER.
+           MOVE "OCCURS WITH 88 LEVEL" TO FEATURE.
+           MOVE 123 TO TABLE-80.
+           GO TO IF--TEST-80.
+       IF-DELETE-80.
+           PERFORM DE-LETE.
+           MOVE "IF--TEST-80" TO PAR-NAME.
+           MOVE "TEST-80 THRU 85 DELETED  " TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           ADD 5 TO DELETE-COUNTER.
+           GO TO IF--TEST-86.
+       IF--TEST-80.
+           IF A80 (2)
+               PERFORM PASS ELSE
+           PERFORM FAIL.
+      *>     NOTE ELMT(2) SHOULD CONTAIN A 2 WHICH IS CONTAINED IN
+      *>         THE VALUE OF THE A80 88 LEVEL.
+           GO TO IF-WRITE-80.
+       IF--DELETE-80.
+           PERFORM DE-LETE.
+       IF-WRITE-80.
+           MOVE "IF--TEST-80" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-81.
+           IF C80 (1)
+               PERFORM FAIL ELSE
+           PERFORM PASS.
+      *>     NOTE ELMT(1) SHOULD CONTAIN A 1 WHICH IS NOT CONTAINED
+      *>         IN THE VALUE OF THE C80 88 LEVEL.
+           GO TO IF-WRITE-81.
+       IF-DELETE-81.
+           PERFORM DE-LETE.
+       IF-WRITE-81.
+           MOVE "IF--TEST-81" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-82.
+           IF B80 (3)
+               PERFORM FAIL ELSE
+           PERFORM PASS.
+      *>     NOTE ELMT(3) SHOULD CONTAIN A 3 WHICH IS NOT CONTAINED
+      *>         IN THE VALUE OF THE B80 88 LEVEL.
+           GO TO IF-WRITE-82.
+       IF-DELETE-82.
+           PERFORM DE-LETE.
+       IF-WRITE-82.
+           MOVE "IF--TEST-82" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-83.
+           IF NOT A80 OF TABLE-80 (3)
+               PERFORM FAIL ELSE
+           PERFORM PASS.
+      *>     NOTE ELMT(3) SHOULD CONTAIN A 3 BUT THE NOT CONDITION
+      *>         SHOULD CAUSE THE TEST TO FAIL EVEN THOUGH THE A80
+      *>         VALUE INCLUDES THE VALUE 3.
+           GO TO IF-WRITE-83.
+       IF-DELETE-83.
+           PERFORM DE-LETE.
+       IF-WRITE-83.
+           MOVE "IF--TEST-83" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-84.
+           IF NOT B80 (1)
+               PERFORM PASS ELSE
+           PERFORM FAIL.
+      *>     NOTE ELMT(1) CONTAINS A 1 AND THE VALUE OF B80 IS 8
+      *>         SO, SAYING NOT 8 IS TRUE.
+           GO TO IF-WRITE-84.
+       IF-DELETE-84.
+           PERFORM DE-LETE.
+       IF-WRITE-84.
+           MOVE "IF--TEST-84" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-85.
+           IF C80 OF TABLE-80 (2)
+               PERFORM FAIL ELSE
+           PERFORM PASS.
+      *>     NOTE ELMT(2) IS 2 AND THE VALUES OF C80 DO NOT CONTAIN A 2.
+           GO TO IF-WRITE-85.
+       IF-DELETE-85.
+           PERFORM DE-LETE.
+       IF-WRITE-85.
+           MOVE "IF--TEST-85" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-86.
+           IF A86
+               PERFORM FAIL ELSE
+           PERFORM PASS.
+      *>     NOTE A86 (ABC   ) SHOULD NOT EQUAL TABLE-86 (ABCABC).
+           GO TO IF-WRITE-86.
+       IF-DELETE-86.
+           PERFORM DE-LETE.
+       IF-WRITE-86.
+           MOVE "IF--TEST-86" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-87.
+           IF NOT B86
+               PERFORM FAIL ELSE
+           PERFORM PASS.
+      *>     NOTE B86 (ABCABC) SHOULD EQUAL TABLE-86 (ABCABC) THUS
+      *>         FAILING THE TEST.
+           GO TO IF-WRITE-87.
+       IF-DELETE-87.
+           PERFORM DE-LETE.
+       IF-WRITE-87.
+           MOVE "IF--TEST-87" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-88.
+           MOVE SPACES TO DATANAME-86.
+           IF C86
+               PERFORM PASS ELSE
+           PERFORM FAIL.
+      *>     NOTE TABLE-86 (   ABC) SHOULD EQUAL C86 (   ABC).
+           GO TO IF-WRITE-88.
+       IF-DELETE-88.
+           PERFORM DE-LETE.
+       IF-WRITE-88.
+           MOVE "IF--TEST-88" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--INIT-R.
+           MOVE     "FIGCON < = > D-NAME" TO FEATURE.
+       IF--TEST-89.
+           IF       ZEROS NOT < LOW-VAL
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-89.
+       IF--DELETE-89.
+           PERFORM DE-LETE.
+       IF--WRITE-89.
+           MOVE     "IF--TEST-89 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-90.
+           IF       ZEROS < ONE23
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-90.
+       IF--DELETE-90.
+           PERFORM DE-LETE.
+       IF--WRITE-90.
+           MOVE     "IF--TEST-90 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-91.
+           IF       ZEROS = ZERO-C
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-91.
+       IF--DELETE-91.
+           PERFORM DE-LETE.
+       IF--WRITE-91.
+           MOVE     "IF--TEST-91 " TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-92.
+           IF       ZEROS NOT = ZERO-D
+                    PERFORM FAIL ELSE PERFORM PASS.
+           GO       TO IF--WRITE-92.
+       IF--DELETE-92.
+           PERFORM DE-LETE.
+       IF--WRITE-92.
+           MOVE     "IF--TEST-92 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-93.
+           IF       SPACES = SPACE-X
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-93.
+       IF--DELETE-93.
+           PERFORM DE-LETE.
+       IF--WRITE-93.
+           MOVE     "IF--TEST-93 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-94.
+           IF       SPACES NOT = QUOTE-X
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-94.
+       IF--DELETE-94.
+           PERFORM DE-LETE.
+       IF--WRITE-94.
+           MOVE     "IF--TEST-94 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-95.
+           IF       SPACES > ABC OR < ABC
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-95.
+       IF--DELETE-95.
+           PERFORM DE-LETE.
+       IF--WRITE-95.
+           MOVE     "IF--TEST-95 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-96.
+           IF       QUOTES NOT > QUOTE-X
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-96.
+       IF--DELETE-96.
+           PERFORM DE-LETE.
+       IF--WRITE-96.
+           MOVE     "IF--TEST-96 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-97.
+           IF       QUOTES NOT = ZERO-D
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-97.
+       IF--DELETE-97.
+           PERFORM DE-LETE.
+       IF--WRITE-97.
+           MOVE     "IF--TEST-97 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-98.
+           IF       HIGH-VALUES > LOW-VAL
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-98.
+       IF--DELETE-98.
+           PERFORM DE-LETE.
+       IF--WRITE-98.
+           MOVE     "IF--TEST-98 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-99.
+           IF       HIGH-VALUES > ABC
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-99.
+       IF--DELETE-99.
+           PERFORM DE-LETE.
+       IF--WRITE-99.
+           MOVE     "IF--TEST-99 " TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-100.
+           IF       HIGH-VALUES NOT > ONE23
+                    PERFORM FAIL ELSE PERFORM PASS.
+           GO       TO IF--WRITE-100.
+       IF--DELETE-100.
+           PERFORM DE-LETE.
+       IF--WRITE-100.
+           MOVE     "IF--TEST-100" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-101.
+           IF       HIGH-VALUES = ZERO-D
+                    PERFORM FAIL ELSE PERFORM PASS.
+           GO       TO IF--WRITE-101.
+       IF--DELETE-101.
+           PERFORM DE-LETE.
+       IF--WRITE-101.
+           MOVE     "IF--TEST-101" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-102.
+           IF       LOW-VALUES = LOW-VAL
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-102.
+       IF--DELETE-102.
+           PERFORM DE-LETE.
+       IF--WRITE-102.
+           MOVE     "IF--TEST-102" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-103.
+           IF       LOW-VALUES < ABC
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-103.
+       IF--DELETE-103.
+           PERFORM DE-LETE.
+       IF--WRITE-103.
+           MOVE     "IF--TEST-103" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-104.
+           IF       ALL "00" < ONE23
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-104.
+       IF--DELETE-104.
+           PERFORM DE-LETE.
+       IF--WRITE-104.
+           MOVE     "IF--TEST-104" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-105.
+           IF       ALL ZEROES = ZERO-D
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-105.
+       IF--DELETE-105.
+           PERFORM DE-LETE.
+       IF--WRITE-105.
+           MOVE     "IF--TEST-105" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-106.
+           IF       ALL "00" NOT > ZERO-D
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-106.
+       IF--DELETE-106.
+           PERFORM DE-LETE.
+       IF--WRITE-106.
+           MOVE     "IF--TEST-106" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-107.
+           IF       ALL "A" = SPACE-X
+                    PERFORM FAIL ELSE PERFORM PASS.
+           GO       TO IF--WRITE-107.
+       IF--DELETE-107.
+           PERFORM DE-LETE.
+       IF--WRITE-107.
+           MOVE     "IF--TEST-107" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-108.
+           IF       ALL "A" > ABC
+                    PERFORM FAIL ELSE PERFORM PASS.
+           GO       TO IF--WRITE-108.
+       IF--DELETE-108.
+           PERFORM DE-LETE.
+       IF--WRITE-108.
+           MOVE     "IF--TEST-108" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-109.
+           IF       IF-D4 ALPHABETIC
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-109.
+       IF--DELETE-109.
+           PERFORM  DE-LETE.
+       IF--WRITE-109.
+           MOVE     "CLASS --- ALPHABETIC" TO FEATURE.
+           MOVE     "IF--TEST-109" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-S.
+           MOVE     "SIGN --- ZERO" TO FEATURE.
+       IF--TEST-110.
+           IF      SMALLEST-VALU GREATER THAN SMALL-VALU
+               AND IS NOT LESS THAN EVEN-SMALLER OR SMALLER-VALU
+                   MOVE "CONDITION FALSE" TO CORRECT-A
+                   MOVE "CONDITION TRUE " TO COMPUTED-A
+                   PERFORM FAIL
+                   GO TO IF--WRITE-110.
+           PERFORM PASS.
+           GO TO IF--WRITE-110.
+       IF--DELETE-110.
+           PERFORM  DE-LETE.
+       IF--WRITE-110.
+           MOVE     "IF--TEST-110" TO PAR-NAME.
+           MOVE "ABBREV CONDITIONS" TO FEATURE.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-111.
+           IF SMALLEST-VALU LESS THAN SMALL-VALU AND
+           (SMALLEST-VALU GREATER THAN EVEN-SMALLER OR SMALLER-VALU)
+                    PERFORM PASS GO TO IF--WRITE-111.
+           MOVE "CONDITION TRUE" TO CORRECT-A.
+           MOVE "CONDITION FALSE" TO COMPUTED-A.
+           PERFORM  FAIL.
+           GO       TO IF--WRITE-111.
+       IF--DELETE-111.
+           PERFORM  DE-LETE.
+       IF--WRITE-111.
+           MOVE     "IF--TEST-111" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-112.
+           IF       IF-D40B
+                    PERFORM PASS ELSE PERFORM FAIL.
+           GO       TO IF--WRITE-112.
+       IF--DELETE-112.
+           PERFORM  DE-LETE.
+       IF--WRITE-112.
+           MOVE "CONDITION---NAME" TO FEATURE.
+           MOVE     "IF--TEST-112" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--INIT-T.
+           MOVE "ABBREV---CONDITION" TO FEATURE.
+       IF--TEST-113.
+           IF SMALLEST-VALU LESS THAN SMALL-VALU AND (SMALLEST-VALU NOT
+           GREATER THAN EVEN-SMALLER OR SMALLER-VALU)
+                   PERFORM PASS
+               GO TO IF--WRITE-113.
+           MOVE "CONDITION TRUE" TO CORRECT-A.
+           MOVE "CONDITION FALSE" TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO IF--WRITE-113.
+       IF--DELETE-113.
+           PERFORM  DE-LETE.
+       IF--WRITE-113.
+           MOVE     "IF--TEST-113" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-114.
+           IF      SMALLEST-VALU LESS THAN SMALL-VALU
+                   AND NOT EVEN-SMALLER OR SMALLER-VALU
+                   PERFORM PASS
+                   GO TO IF--WRITE-114
+                   ELSE
+                   PERFORM FAIL
+                   MOVE "CONDITION FALSE" TO CORRECT-A
+                   MOVE "CONDITION TRUE" TO COMPUTED-A
+                   GO TO IF--WRITE-114.
+       IF--DELETE-114.
+           PERFORM  DE-LETE.
+       IF--WRITE-114.
+           MOVE     "IF--TEST-114" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF--TEST-115.
+           IF COMP-SGN1 IS POSITIVE
+               PERFORM PASS
+               GO TO IF--WRITE-115.
+           MOVE "POSITIVE EXPECTED" TO CORRECT-A.
+           MOVE COMP-SGN1 TO COMPUTED-14V4.
+           PERFORM FAIL.
+           GO TO IF--WRITE-115.
+       IF--DELETE-115.
+           PERFORM DE-LETE.
+       IF--WRITE-115.
+           MOVE "POS/NEG SIGN TEST" TO FEATURE.
+           MOVE "IF--TEST-115" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-116.
+           IF COMP-SGN2 NOT POSITIVE
+               MOVE COMP-SGN2 TO COMPUTED-14V4
+               MOVE "POSITIVE EXPECTED" TO CORRECT-A
+               PERFORM FAIL
+               GO TO IF--WRITE-116.
+           PERFORM PASS.
+           GO TO IF--WRITE-116.
+       IF--DELETE-116.
+           PERFORM DE-LETE.
+       IF--WRITE-116.
+           MOVE "IF--TEST-116" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-117.
+           IF COMP-SGN3 NOT NEGATIVE
+               MOVE COMP-SGN3 TO COMPUTED-14V4
+               MOVE "NEGATIVE EXPECTED" TO CORRECT-A
+               PERFORM FAIL
+               GO TO IF--WRITE-117.
+           PERFORM PASS.
+           GO TO IF--WRITE-117.
+       IF--DELETE-117.
+           PERFORM DE-LETE.
+       IF--WRITE-117.
+           MOVE "IF--TEST-117" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-118.
+           IF COMP-SGN4 NOT POSITIVE
+               PERFORM PASS
+               GO TO IF--WRITE-118.
+           MOVE COMP-SGN4 TO COMPUTED-14V4.
+           MOVE "NEGATIVE EXPECTED" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO IF--WRITE-118.
+       IF--DELETE-118.
+           PERFORM DE-LETE.
+       IF--WRITE-118.
+           MOVE "IF--TEST-118" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-119.
+           MOVE SPACES TO TEST-RESULTS.
+           MOVE "NOT USED" TO RE-MARK.
+           MOVE "IF--TEST-119" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       IF--TEST-120.
+           MOVE     -10 TO WRK-DS-06V06.
+           ADD      +10 TO WRK-DS-06V06.
+           IF       WRK-DS-06V06 NEGATIVE
+                    PERFORM FAIL-120-121
+                    MOVE "NEGATIVE ZERO DETECTED" TO RE-MARK
+                    GO TO IF--WRITE-120.
+           IF       WRK-DS-06V06 POSITIVE
+                    PERFORM FAIL-120-121
+                    MOVE "POSITIVE ZERO DETECTED" TO RE-MARK
+                    GO TO IF--WRITE-120.
+           IF       WRK-DS-06V06 ZERO
+                    PERFORM PASS GO TO IF--WRITE-120.
+           PERFORM  FAIL-120-121.
+           MOVE     "NEITHER POS, NEG, NOR ZERO" TO RE-MARK.
+           GO       TO IF--WRITE-120.
+       IF--DELETE-120.
+           PERFORM  DE-LETE.
+       IF--WRITE-120.
+           MOVE     "SIGN TEST ON ZERO" TO FEATURE.
+           MOVE     "IF--TEST-120" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+           GO       TO IF--EXIT-120.
+       FAIL-120-121.
+           PERFORM  FAIL.
+           MOVE     WRK-DS-06V06 TO COMPUTED-N.
+           MOVE     ZERO TO CORRECT-N.
+       IF--EXIT-120.
+           EXIT.
+       IF--TEST-121.
+           MOVE     10 TO WRK-DS-06V06.
+           SUBTRACT 10 FROM WRK-DS-06V06.
+           IF       WRK-DS-06V06 NEGATIVE
+                    PERFORM FAIL-120-121
+                    MOVE "NEGATIVE ZERO DETECTED" TO RE-MARK
+                    GO TO IF--WRITE-121.
+           IF       WRK-DS-06V06 POSITIVE
+                    PERFORM FAIL-120-121
+                    MOVE "POSITIVE ZERO DETECTED" TO RE-MARK
+                    GO TO IF--WRITE-121.
+       
+           IF       WRK-DS-06V06 ZERO
+                    PERFORM PASS GO TO IF--WRITE-121.
+           PERFORM  FAIL-120-121.
+           MOVE     "NEITHER POS, NEG, NOR ZERO" TO RE-MARK.
+           GO       TO IF--WRITE-120.
+       IF--DELETE-121.
+           PERFORM  DE-LETE.
+       IF--WRITE-121.
+           MOVE     "IF--TEST-121" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       IF-INIT-122.
+           MOVE   "VI-89 6.15" TO ANSI-REFERENCE.
+           MOVE    1 TO WRK-DU-1V0-1.
+           MOVE    2 TO WRK-DU-1V0-2.
+           MOVE    3 TO WRK-DU-1V0-3.
+           MOVE    0 TO WRK-DU-1V0-4.
+       IF-TEST-122.
+           IF NOT (WRK-DU-1V0-1 NOT GREATER WRK-DU-1V0-2 AND
+               WRK-DU-1V0-3 AND NOT WRK-DU-1V0-4) GO TO BUMMER-122
+               ELSE NEXT SENTENCE.
+           PERFORM PASS.
+           GO TO IF-WRITE-122.
+       IF-DELETE-122.
+           PERFORM DE-LETE.
+           GO TO IF-WRITE-122.
+       BUMMER-122.
+           PERFORM FAIL.
+           MOVE "RESULT TRUE" TO COMPUTED-A.
+           MOVE "SHOULD BE FALSE" TO CORRECT-A.
+       IF-WRITE-122.
+           MOVE "IF-TEST-122" TO PAR-NAME.
+           MOVE "ABR. COM. REL. CONDT" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       IF-INIT-123.
+           MOVE   "VI-89 6.15" TO ANSI-REFERENCE.
+           MOVE 9 TO WRK-DU-1V0-1.
+           MOVE 8 TO WRK-DU-1V0-2.
+           MOVE 7 TO WRK-DU-1V0-3.
+       IF-LOGICAL-CONN-TEST-123.
+           IF WRK-DU-1V0-1 > WRK-DU-1V0-2 AND NOT < WRK-DU-2V0-1 OR
+                   WRK-DU-2V0-2 OR NOT WRK-DU-2V0-3 AND WRK-DU-1V0-3
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL MOVE "FALSE RESULT FOUND" TO COMPUTED-A
+                   MOVE "SHOULD BE TRUE" TO CORRECT-A.
+           GO TO IF-WRITE-123.
+       IF-DELETE-123.
+           PERFORM DE-LETE.
+       IF-WRITE-123.
+           MOVE "IF-TEST-123" TO PAR-NAME.
+           MOVE "LOGICAL CONNECTIVES" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+           PERFORM END-ROUTINE.
+           MOVE    " COLLATING-AND-ALPHABET-TEST-9  SYNTAX CHECK IN OBJECT-COMPUTER AND SPECIAL-NAMES" TO TEST-RESULTS.
+           PERFORM PRINT-DETAIL.
+           MOVE SPACE TO TEST-RESULTS.
+       IF-INIT-124.
+      *>     ===-->  ARITHMETIC EXPRESSION CONTAINING ZERO  <--===
+           MOVE   "VI-58 6.3.1.5 AND VI-51 6.2" TO ANSI-REFERENCE.
+           MOVE    4 TO WRK-DU-1V0-1.
+           MOVE   "IF-TEST-124" TO PAR-NAME.
+       IF-TEST-124.
+           IF      ZERO - WRK-DU-1V0-1 IS NEGATIVE
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL
+                   MOVE "POSITIVE RESULT FOUND" TO COMPUTED-A
+                   MOVE "SHOULD BE NEGATIVE" TO CORRECT-A.
+           GO TO IF-WRITE-124.
+       IF-DELETE-124.
+           PERFORM DE-LETE.
+       IF-WRITE-124.
+           MOVE "IF-TEST-124" TO PAR-NAME.
+           MOVE "LOGICAL CONNECTIVES" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC250A

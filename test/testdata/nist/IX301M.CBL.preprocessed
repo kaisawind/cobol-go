@@ -1,0 +1,72 @@
+      *> HEADER,COBOL,IX301M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+            IX301M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF INTERMEDIATE
+      *> SUBSET FEATURES THAT ARE USED IN LEVEL 1 INDEXED
+      *> INPUT-OUTPUT.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT TFIL ASSIGN
+           XXXXX024
+                  ORGANIZATION IS INDEXED
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+                  ACCESS MODE IS RANDOM
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+                  RECORD KEY IS RKEY.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       DATA DIVISION.
+       FILE SECTION.
+       FD  TFIL.
+       01  FREC.
+           03 RKEY  PIC X(8).
+       
+       WORKING-STORAGE SECTION.
+       01  VARIABLES.
+         03  STATE     PIC X(4) VALUE SPACES.
+       
+       PROCEDURE DIVISION.
+       
+       IX301M-CONTROL.
+           OPEN I-O TFIL.
+           PERFORM IX301M-READ THRU IX301M-DELETE 1 TIMES.
+           CLOSE TFIL.
+           STOP RUN.
+       
+       IX301M-READ.
+           READ TFIL INVALID KEY PERFORM INV-PARA
+                       NOT INVALID KEY PERFORM DONE-PARA.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       IX301M-REWRITE.
+           REWRITE FREC INVALID KEY PERFORM INV-PARA
+                       NOT INVALID KEY PERFORM DONE-PARA.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       IX301M-WRITE.
+           WRITE FREC INVALID KEY PERFORM INV-PARA
+                       NOT INVALID KEY PERFORM DONE-PARA.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       IX301M-DELETE.
+           DELETE TFIL INVALID KEY PERFORM INV-PARA
+                       NOT INVALID KEY PERFORM DONE-PARA.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       INV-PARA.
+           MOVE "INVA" TO STATE.
+       
+       DONE-PARA.
+           MOVE "DONE" TO STATE.
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 7.
+      *> END-OF,IX301M

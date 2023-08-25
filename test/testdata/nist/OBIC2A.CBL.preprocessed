@@ -1,0 +1,312 @@
+      *> HEADER,COBOL,OBIC1A,SUBRTN,OBIC2A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           OBIC2A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>         THE SUBPROGRAM IC219 TESTS THE USE OF A SORT STATEMENT
+      *>     IN A SEGMENTED SUBPROGRAM.  THE FIRST NON-DECLARATIVE SECTION
+      *>     OF THE SUBPROGRAM CONSISTS OF A SORT STATEMENT AND A STOP RUN
+      *>     STATEMENT IN A FIXED PERMANENT SEGMENT.  THE SORT INPUT
+      *>     PROCEDURE AND THE SORT OUTPUT PROCEDURE ARE CONTAINED IN TWO
+      *>     INDEPENDENT SEGMENTS.  THE MAIN PROGRAM IC218 CALLS THIS
+      *>     SUBPROGRAM AND THE SUBPROGRAM IC220 IS CALLED FROM THE
+      *>     OUTPUT PROCEDURE SECTION TO PRINT THE OUTPUT REPORT.
+      *> 
+      *> *****************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT ST-FS1 ASSIGN TO
+           XXXXX027.
+       DATA DIVISION.
+       FILE SECTION.
+       SD  ST-FS1
+           DATA RECORD IS ST-FS1R1-F-G-126.
+       01  ST-FS1R1-F-G-126.
+           02  ST-FS1-1-120.
+               03  FILLER          PICTURE X(34).
+               03  ST-FS1-REC-NO   PICTURE 9(6).
+               03  FILLER          PICTURE X(80).
+           02  ST-FS1-121-124      PICTURE X(4).
+           02  ST-FS1-125-126      PICTURE 99.
+       WORKING-STORAGE SECTION.
+       01  TEMP1               PICTURE X(4).
+       01  TEMP2               PICTURE 999.
+       01  TEMP3               PICTURE 999.
+       01  TEMP4               PICTURE 9(6).
+       01  FAIL-COUNT          PICTURE 999    VALUE ZERO.
+       01  EOF-FLAG            PICTURE 9    VALUE ZERO.
+       01  PRINT-LINE-VALUES.
+           02  PASS-OR-FAIL        PICTURE X(5).
+           02  R-COUNT             PICTURE 99.
+           02  FEATURE-TESTED      PICTURE X(20).
+           02  COMPUTED-SORT-KEY.
+               03  COMPUTED-1-4    PICTURE X(4).
+               03  COMPUTED-5-6    PICTURE 99.
+               03  COMPUTED-7-12   PICTURE 9(6).
+               03  FILLER          PICTURE X(8)  VALUE SPACE.
+           02  CORRECT-SORT-KEY.
+               03  CORRECT-1-4     PICTURE X(4).
+               03  CORRECT-5-6     PICTURE 99.
+               03  CORRECT-7-12    PICTURE 9(6).
+               03  FILLER          PICTURE X(8)   VALUE SPACE.
+           02  PARAGRAPH-NAME      PICTURE X(12).
+       01  PRINT-FLAG              PICTURE 9.
+       01  FILE-RECORD-INFORMATION-REC.
+           03 FILE-RECORD-INFO-SKELETON.
+              05 FILLER                 PICTURE X(48)       VALUE
+                   "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+              05 FILLER                 PICTURE X(46)       VALUE
+                   ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+              05 FILLER                 PICTURE X(26)       VALUE
+                   ",LFIL=000000,ORG=  ,LBLR= ".
+              05 FILLER                 PICTURE X(37)       VALUE
+                   ",RECKEY=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY1=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY2=                             ".
+              05 FILLER                 PICTURE X(7)        VALUE SPACE.
+           03 FILE-RECORD-INFO          OCCURS  10  TIMES.
+              05 FILE-RECORD-INFO-P1-120.
+                 07 FILLER              PIC X(5).
+                 07 XFILE-NAME           PIC X(6).
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-NAME         PIC X(6).
+                 07 FILLER              PIC X(1).
+                 07 REELUNIT-NUMBER     PIC 9(1).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-NUMBER       PIC 9(6).
+                 07 FILLER              PIC X(6).
+                 07 UPDATE-NUMBER       PIC 9(2).
+                 07 FILLER              PIC X(5).
+                 07 ODO-NUMBER          PIC 9(4).
+                 07 FILLER              PIC X(5).
+                 07 XPROGRAM-NAME        PIC X(5).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-LENGTH       PIC 9(6).
+                 07 FILLER              PIC X(7).
+                 07 CHARS-OR-RECORDS    PIC X(2).
+                 07 FILLER              PIC X(1).
+                 07 XBLOCK-SIZE          PIC 9(4).
+                 07 FILLER              PIC X(6).
+                 07 RECORDS-IN-FILE     PIC 9(6).
+                 07 FILLER              PIC X(5).
+                 07 XFILE-ORGANIZATION   PIC X(2).
+                 07 FILLER              PIC X(6).
+                 07 XLABEL-TYPE          PIC X(1).
+              05 FILE-RECORD-INFO-P121-240.
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-KEY          PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY1      PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY2      PIC X(29).
+                 07 FILLER              PIC X(7).
+       LINKAGE SECTION.
+       01  SORT-LINK           PICTURE 9.
+       PROCEDURE DIVISION USING SORT-LINK.
+       SECT-IC219-0001 SECTION 30.
+      *> 
+      *>         THIS SECTION CONTAINS A SORT STATEMENT AND A STOP RUN
+      *>     STATEMENT, THE ONLY STATEMENTS PERMITTED IN THE FIRST NON-
+      *>     DECLARATIVE PORTION OF THE PROCEDURE DIVISION IN SORT LEVEL 1
+      *> 
+       SORT-PARAGRAPH.
+           SORT ST-FS1
+               ASCENDING KEY ST-FS1-121-124
+               ASCENDING KEY ST-FS1-125-126
+               ASCENDING KEY ST-FS1-REC-NO
+                   INPUT PROCEDURE IS SECT-IC219-0002
+                   OUTPUT PROCEDURE IS SECT-IC219-0003.
+           STOP RUN.
+       SECT-IC219-0002 SECTION 60.
+      *> 
+      *>         THE SORT INPUT PROCEDURE RELEASES 500 SORT RECORDS OF
+      *>     LENGTH 126 CHARACTERS.  THREE ITEMS ARE USED AS THE SORT KEY, 
+      *>     THEY ARE CHARACTERS 121-124 PICX(4), CHARACTERS 125-126
+      *>     PIC 99, AND THE RECORD NUMBER FIELD CHARACTERS 35-40 PIC 9(6)
+      *>     THE RECORDS ARE WRITTEN WITH THE SORT KEY ITEMS CONTAINING
+      *>     THE FOLLOWING CHARACTERS
+      *> 
+      *>         FIRST 100 RECORDS  ABCD  00 THRU 99  000001 THRU 000100
+      *>         SECOND 100 RECORDS AAAA  00 THRU 99  000101 THRU 000200
+      *>         THIRD 100 RECORDS  ABCD  00 THRU 99  000201 THRU 00300
+      *>         FOURTH 100 RECORDS UVWY  00 THRU 99  000301 THRU 000400
+      *>         FIFTH 100 RECORDS  UVWX  00 THRU 99  000401 THRU 000500
+      *> 
+       SORT-INPUT-PROCEDURE.
+           MOVE 1 TO SORT-LINK.
+           MOVE FILE-RECORD-INFO-SKELETON TO FILE-RECORD-INFO (1).
+           PERFORM RECORD-AREA-INIT.
+           MOVE "ABCD" TO TEMP1.
+           MOVE 0 TO TEMP2.
+           PERFORM RELEASE-RECORD 100 TIMES.
+           MOVE "AAAA" TO TEMP1.
+           MOVE 0 TO TEMP2.
+           PERFORM RELEASE-RECORD 100 TIMES.
+           MOVE "ABCD" TO TEMP1.
+           MOVE 0 TO TEMP2.
+           PERFORM RELEASE-RECORD 100 TIMES.
+           MOVE "UVWY" TO TEMP1.
+           MOVE 0 TO TEMP2.
+           PERFORM RELEASE-RECORD 100 TIMES.
+           MOVE "UVWX" TO TEMP1.
+           MOVE 0 TO TEMP2.
+           PERFORM RELEASE-RECORD 100 TIMES.
+           GO TO SECT-IC219-0002-EXIT.
+       RECORD-AREA-INIT.
+           MOVE "ST-FS1" TO XFILE-NAME (1).
+           MOVE "R1-F-G" TO XRECORD-NAME (1).
+           MOVE "IC219" TO XPROGRAM-NAME (1).
+           MOVE 126 TO XRECORD-LENGTH (1).
+           MOVE "RC" TO CHARS-OR-RECORDS (1).
+           MOVE 0001 TO XBLOCK-SIZE (1).
+           MOVE 500 TO RECORDS-IN-FILE (1).
+           MOVE "NA" TO XFILE-ORGANIZATION (1).
+           MOVE "N" TO XLABEL-TYPE (1).
+           MOVE 1 TO XRECORD-NUMBER (1).
+       RELEASE-RECORD.
+           MOVE FILE-RECORD-INFO-P1-120 (1) TO ST-FS1-1-120.
+           MOVE TEMP1 TO ST-FS1-121-124.
+           MOVE TEMP2 TO ST-FS1-125-126.
+           RELEASE ST-FS1R1-F-G-126.
+           ADD 1 TO XRECORD-NUMBER (1).
+           ADD 1 TO TEMP2.
+       SECT-IC219-0002-EXIT.
+           EXIT.
+       SECT-IC219-0003 SECTION 80.
+      *> 
+      *>         THE SORT OUTPUT PROCEDURE RETURNS 500 SORT RECORDS.  THE
+      *>     DATA ITEMS COMPRISING THE SORT KEY ARE CHECKED TO ENSURE THE
+      *>     RECORDS ARE RETURNED IN THE EXPECTED SORT ORDER.  THE SUBPRO-
+      *>     GRAM IC220 IS CALLED TO PRODUCE THE OUTPUT REPORT FOR THE
+      *>     TEST RESULTS.
+      *> 
+      *>         THE RECORDS SHOULD BE RETURNED WITH THE SORT KEY ITEMS
+      *>     CONTAINING THE FOLLOWING CHARACTERS
+      *> 
+      *>         FIRST 100 RECORDS  AAAA  00 THRU 99  000101 THRU 000200
+      *>                            ABCD  00          000001
+      *>         NEXT               ABCD  00          000201
+      *>             200            ABCD  01          000002
+      *>                RECORDS     ABCD  01          000202
+      *>                             . . .            . . .
+      *>                            ABCD  99          000100
+      *>                            ABCD  99          000300
+      *>         FOURTH 100 RECORDS UVWX  00 THRU 99  000401 THRU 000500
+      *>         FIFTH 100 RECORDS  UVWY  00 THRU 99  000301 THRU 000400
+      *> 
+       SORT-OUTPUT-INIT.
+           MOVE 2 TO SORT-LINK.
+           MOVE 1 TO PRINT-FLAG.
+           CALL "OBIC3A" USING PRINT-LINE-VALUES  PRINT-FLAG.
+           MOVE "SORT IN SUBPROGRAM" TO FEATURE-TESTED.
+           MOVE "IC-SORT-TEST" TO PARAGRAPH-NAME.
+           MOVE 0 TO R-COUNT.
+       CHECK-OUTPUT-FROM-SORT.
+           MOVE "AAAA" TO TEMP1.
+           MOVE 0 TO TEMP3.
+           MOVE 100 TO TEMP4.
+           PERFORM CHECK-RECORD 100 TIMES.
+           MOVE "ABCD" TO TEMP1.
+           MOVE 0 TO TEMP3.
+           MOVE 0 TO TEMP4.
+           PERFORM CHECK-ABCD-RECORDS 100 TIMES.
+           MOVE "UVWX" TO TEMP1.
+           MOVE 0 TO TEMP3.
+           MOVE 400 TO TEMP4.
+           PERFORM CHECK-RECORD 100 TIMES.
+           MOVE "UVWY" TO TEMP1.
+           MOVE 0 TO TEMP3.
+           MOVE 300 TO TEMP4.
+           PERFORM CHECK-RECORD 100 TIMES.
+       CHECK-RESULTS.
+           IF EOF-FLAG EQUAL TO 1
+               MOVE "PREMATURE EOF" TO COMPUTED-SORT-KEY
+               MOVE "DATA RECORD EXPECTED" TO CORRECT-SORT-KEY
+               GO TO FAIL-WRITE.
+           RETURN ST-FS1 AT END GO TO CHECK-FAIL-COUNT.
+           MOVE "NO EOF - 500 READ" TO COMPUTED-SORT-KEY.
+           MOVE "EOF EXPECTED" TO CORRECT-SORT-KEY.
+           GO TO FAIL-WRITE.
+       CHECK-FAIL-COUNT.
+           IF FAIL-COUNT EQUAL TO ZERO
+               MOVE "PASS " TO PASS-OR-FAIL
+               GO TO WRITE-RESULTS.
+           MOVE "SORT ERRORS" TO COMPUTED-SORT-KEY.
+           MOVE SPACE TO CORRECT-SORT-KEY.
+       FAIL-WRITE.
+           MOVE "FAIL " TO PASS-OR-FAIL.
+       WRITE-RESULTS.
+           MOVE 0 TO R-COUNT.
+           MOVE 2 TO PRINT-FLAG.
+           CALL "OBIC3A" USING PRINT-LINE-VALUES  PRINT-FLAG.
+       WRAPUP-OUTPUT-PROC.
+           MOVE 3 TO PRINT-FLAG.
+           CALL "OBIC3A" USING PRINT-LINE-VALUES  PRINT-FLAG.
+           GO TO SECT-IC219-0003-EXIT.
+       CHECK-RECORD.
+           PERFORM RETURN-RECORD THROUGH RETURN-EXIT.
+           ADD 1 TO TEMP4.
+           PERFORM COMPARE-VALUES THROUGH COMPARE-EXIT.
+           ADD 1 TO TEMP3.
+       RETURN-RECORD.
+           IF EOF-FLAG EQUAL TO 1
+               GO TO RETURN-EXIT.
+           RETURN ST-FS1  AT END  MOVE 1 TO EOF-FLAG.
+       RETURN-EXIT.
+           EXIT.
+       CHECK-ABCD-RECORDS.
+           PERFORM CHECK-RECORD.
+           SUBTRACT 1 FROM TEMP3.
+           ADD 199 TO TEMP4.
+           PERFORM CHECK-RECORD.
+           SUBTRACT 200 FROM TEMP4.
+       COMPARE-VALUES.
+           IF TEMP1 NOT EQUAL TO ST-FS1-121-124
+               GO TO SORT-FAIL.
+           IF TEMP3 NOT EQUAL TO ST-FS1-125-126
+               GO TO SORT-FAIL.
+           IF TEMP4 NOT EQUAL TO ST-FS1-REC-NO
+               GO TO SORT-FAIL.
+           GO TO COMPARE-EXIT.
+       SORT-FAIL.
+           MOVE "FAIL " TO PASS-OR-FAIL.
+           ADD 1 TO R-COUNT.
+           MOVE TEMP1 TO CORRECT-1-4.
+           MOVE TEMP3 TO CORRECT-5-6.
+           MOVE TEMP4 TO CORRECT-7-12.
+           MOVE ST-FS1-121-124 TO COMPUTED-1-4.
+           MOVE ST-FS1-125-126 TO COMPUTED-5-6.
+           MOVE ST-FS1-REC-NO TO COMPUTED-7-12.
+           MOVE 2 TO PRINT-FLAG.
+           CALL "OBIC3A" USING PRINT-LINE-VALUES  PRINT-FLAG.
+           ADD 1 TO FAIL-COUNT.
+       COMPARE-EXIT.
+           EXIT.
+       SECT-IC219-0003-EXIT.
+           EXIT.
+      *> END-OF,OBIC2A

@@ -1,0 +1,181 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n            
+					(programName 
+						(cobolWord NC110M)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       ))))) 
+			(dataDivision DATA DIVISION .\n       ) 
+			(procedureDivision PROCEDURE DIVISION .\n        
+				(procedureDivisionBody 
+					(paragraphs 
+						(paragraph 
+							(paragraphName 
+								(cobolWord HEADER-PRINT)) .\n            
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal " ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal " FOR OFFICIAL USE ONLY                                    ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "     OFFICIAL COBOL COMPILER TEST SYSTEM.     ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "                TEST RESULTS SET- NC110M                  ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "                                                          ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal " FOR OFFICIAL USE ONLY ")) 
+										(displayOperand 
+											(literal "                                                         ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "COPYRIGHT  1985")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "                                                          ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal " FEATURE     RESULTS AND                                  ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal " TESTED      REMARKS                                      ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "                                                          ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal " ---------------------------------------------------------")))) .\n       )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord GO-TEST)) .\n            
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal " GO TO       THIS TEST PASSES UNLESS FAIL APPEARS BELOW.  ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(goToStatement GO TO 
+										(goToStatementSimple 
+											(procedureName 
+												(paragraphName 
+													(cobolWord PERFORM-TEST)))))) .\n       )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord GO-FAIL)) .\n            
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "             FAIL")))) .\n       )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord PERFORM-TEST)) .\n            
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal " PERFORM     THIS TEST FAILS UNLESS PASS APPEARS BELOW.   ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(performStatement PERFORM 
+										(performProcedureStatement 
+											(procedureName 
+												(paragraphName 
+													(cobolWord PASS)))))) .\n       )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord ENDER-PRINT)) .\n            
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal " ---------------------------------------------------------")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal 
+												(figurativeConstant SPACE))))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "                  END OF TEST - NC110M                    ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "                  CHECK FOR ERRORS                        ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "                                                          ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal " FOR OFFICIAL USE ONLY ")))) 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "COPYRIGHT  1985")))) .\n           ) 
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "       NTIS DISTRIBUTION COBOL 1985               ")))) .\n           ) 
+							(sentence 
+								(statement 
+									(stopStatement STOP RUN)) .\n       )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord PASS)) .\n            
+							(sentence 
+								(statement 
+									(displayStatement DISPLAY 
+										(displayOperand 
+											(literal "             PASS")))) .\n      ))))))) <EOF>)

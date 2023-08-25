@@ -1,0 +1,73 @@
+      *> HEADER,COBOL,IC116M,SUBRTN,IC117M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC117M.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>         THE SUBPROGRAM IC117 IS CALLED BY THE MAIN PROGRAM IC116.
+      *>     THE SUBPROGRAM IC117 DOES NOT CONTAIN A LINKAGE SECTION OR
+      *>     AN USING PHRASE IN THE PROCEDURE DIVISION HEADER.  DISPLAY
+      *>     STATEMENTS ARE USED TO VERIFY THE PROGRAM EXECUTION SEQUENCE.
+      *>     THE SUBPROGRAM IC118 IS CALLED BY THE SUBPROGRAM IC117 AND
+      *>     THE CALL STATEMENT IN THE SUBPROGRAM ALSO DOES NOT HAVE AN
+      *>     USING PHRASE.
+      *> 
+      *>     REFERENCE - AMERICAN NATIONAL STANDARD PROGRAMMING LANGUAGE
+      *>                     COBOL, X3.23-1974
+      *>                 SECTION XII, INTER-PROGRAM COMMUNICATION MODULE.
+      *> 
+      *> *****************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  IC117-TEMP1         PICTURE 9.
+       01  ONE                 PICTURE 9    VALUE 1.
+       01  IC117-TEMP2         PICTURE 9     VALUE 0.
+       PROCEDURE DIVISION.
+      *> USNG-TEST-02.
+      *> 
+      *>     THIS TEST VERIFIES THAT A SUBPROGRAM PROCEDURE DIVISION
+      *>     HEADER IS NOT REQUIRED TO HAVE THE OPTIONAL USING PHRASE.
+      *> 
+       USNG-VERIFY-02.
+           MOVE 1 TO IC117-TEMP1.
+           ADD ONE TO IC117-TEMP2.
+      *> 
+      *>     THE RESULTS OF THE ABOVE STATEMENTS ARE NOT TESTED.
+      *> 
+       USNG-DISPLAY-02.
+           DISPLAY "  ".
+           DISPLAY "IC117M CALLED".
+       USNG-TEST-03.
+           CALL "IC118M".
+      *> 
+      *>     THIS TEST CONTAINS A CALL STATEMENT WITHOUT THE OPTIONAL
+      *>     USING PHRASE.
+      *>     REFERENCE - X3.23-1995, PAGE X-27, 5.2, THE CALL STATEMENT.
+      *> 
+       USNG-DISPLAY-03.
+           DISPLAY "RETURNED TO IC117M".
+       IC117-EXIT.
+           EXIT PROGRAM.
+      *> END-OF,IC117M

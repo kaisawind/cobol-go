@@ -1,0 +1,1318 @@
+      *> HEADER,COBOL,NC246A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC246A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     PROGRAM NC246A TESTS THE USE OF QUALIFIED DATA NAMES AND  *
+      *>     SUBSCRIPTS WHEN ACCESSING A SEVEN-DIMENSIONAL TABLE.      *
+      *>     QUALIFIED CONDITION-NAMES AND RELATIVE INDEXING ARE ALSO  *
+      *>     USED IN ACCESSING THREE-DIMENSIONAL TABLES.               *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     DATA-NAMES MAY BE QUALIFIED AND THE NUMBER OF QUALIFIERS*
+      *>     PERMITTED MUST BE AT LEAST FIVE.  WHEN A SUBSCRIPT IS     *
+      *>     REPRESENTED BY A DATA-NAME, THE DATA-NAME MAY BE QUALIFIED*
+      *>     BUT NOT SUBSCRIPTED.                                      *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     STATEMENT DELETION INSTRUCTIONS                           *
+      *>                                                               *
+      *>     IF THE COMPILER REJECTS ANY OF THE TABLE REFERENCES IN  *
+      *>     THIS ROUTINE, DELETE THAT LINE OF CODE BY PLACING AN * IN *
+      *>     COLUMN 7.  LEAVE THE PERFORM STATEMENT.  THE TEST ELEMENT *
+      *>     DELETED APPEARS AS A FAILURE ON THE OUTPUT REPORT AND THE *
+      *>     COMPUTED RESULTS ARE SPACES.                              *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  TABLE-A.
+        02  L2 OCCURS 2.
+         03  L3 OCCURS 2.
+          04  L4 OCCURS 2.
+           05  L5 OCCURS 2.
+            06  L6 OCCURS 2.
+             07  L7 OCCURS 2.
+              08  L8 OCCURS 2.
+               09  ELEM1        PIC 99.
+               09  ELEM2        PIC 99.
+       01  TABLE-B.
+        02  L2 OCCURS 2.
+         03  L3 OCCURS 2.
+          04  L4 OCCURS 2.
+           05  L5 OCCURS 2.
+            06  L6 OCCURS 2.
+             07  L7 OCCURS 2.
+              08  L8 OCCURS 2.
+               09  ELEM1        PIC 99.
+               09  ELEM2        PIC 99.
+       01  SUBSCRIPTS-GROUP-1.
+        02  SO2.
+         03  SO3.
+          04  SO4.
+           05  SO5.
+            06  SO6.
+             07  SO7.
+              08  SO8.
+               09  SO9.
+                10  S10.
+                 11  S11.
+                  12  S12.
+                   13  S13.
+                    14  S14.
+                     15  S15.
+                      16  S16.
+                       17  S17.
+                        18  S18.
+                         19  S19.
+                          20  S20.
+                           21  S21.
+                            22  S22.
+                             23  S23.
+                              24  S24.
+                               25  S25.
+                                26  S26.
+                                 27  S27.
+                                  28  S28.
+                                   29  S29.
+                                    30  S30.
+                                     31  S31.
+                                      32  S32.
+                                       33  S33.
+                                        34  S34.
+                                         35  S35.
+                                          36  S36.
+                                           37  S37.
+                                            38  S38.
+                                             39  S39.
+                                              40  S40.
+                                               41  S41.
+                                                42  S42.
+                                                 43  S43.
+                                                  44  S44.
+                                                   45  S45.
+                                                    46  S46.
+                                                     47  S47.
+                                                      48  S48.
+                                                       49  SUB1 PIC 9
+                                                           VALUE 1.
+                                                       49  SUB2 PIC 9
+                                                           VALUE 1.
+                                                       49  SUB3 PIC 9
+                                                           VALUE 1.
+                                                       49  SUB4 PIC 9
+                                                           VALUE 1.
+                                                       49  SUB5 PIC 9
+                                                           VALUE 1.
+                                                       49  SUB6 PIC 9
+                                                           VALUE 1.
+                                                       49  SUB7 PIC 9
+                                                           VALUE 1.
+       01  SUBSCRIPTS-GROUP-2.
+        02  SO2.
+         03  SO3.
+          04  SO4.
+           05  SO5.
+            06  SO6.
+             07  SO7.
+              08  SO8.
+               09  SO9.
+                10  S10.
+                 11  S11.
+                  12  S12.
+                   13  S13.
+                    14  S14.
+                     15  S15.
+                      16  S16.
+                       17  S17.
+                        18  S18.
+                         19  S19.
+                          20  S20.
+                           21  S21.
+                            22  S22.
+                             23  S23.
+                              24  S24.
+                               25  S25.
+                                26  S26.
+                                 27  S27.
+                                  28  S28.
+                                   29  S29.
+                                    30  S30.
+                                     31  S31.
+                                      32  S32.
+                                       33  S33.
+                                        34  S34.
+                                         35  S35.
+                                          36  S36.
+                                           37  S37.
+                                            38  S38.
+                                             39  S39.
+                                              40  S40.
+                                               41  S41.
+                                                42  S42.
+                                                 43  S43.
+                                                  44  S44.
+                                                   45  S45.
+                                                    46  S46.
+                                                     47  S47.
+                                                      48  S48.
+                                                       49  SUB1 PIC 9
+                                                           VALUE 2.
+                                                       49  SUB2 PIC 9
+                                                           VALUE 2.
+                                                       49  SUB3 PIC 9
+                                                           VALUE 2.
+                                                       49  SUB4 PIC 9
+                                                           VALUE 2.
+                                                       49  SUB5 PIC 9
+                                                           VALUE 2.
+                                                       49  SUB6 PIC 9
+                                                           VALUE 2.
+                                                       49  SUB7 PIC 9
+                                                           VALUE 2.
+       01  COMPARISON-VALUES.
+           02  EXPECTED-VALUE   PICTURE X(6).
+           02  TEMP-VALUE       PICTURE X(6).
+       01  GROUP-1-TABLE.
+           02  TABLE-LEVEL-2.
+               03  FILLER  PIC X(13)  VALUE "GROUP-1-TABLE".
+               03  TABLE-LEVEL-3.
+                   04  FILLER  PIC X  VALUE SPACE.
+                   04  TABLE-LEVEL-4.
+                       05  FILLER  PIC X  VALUE "=".
+                       05  TABLE-LEVEL-5.
+                           06  FILLER  PIC X   VALUE SPACE.
+                           06  TABLE-ITEM   PICTURE X
+                                 OCCURS 15 TIMES
+                                 INDEXED BY IN1.
+                           88  EQUALS-A   VALUE "A".
+                           88  EQUALS-C   VALUE "C".
+                           88  EQUALS-M   VALUE "M".
+                       05  GROUP-1-ENTRY REDEFINES TABLE-LEVEL-5.
+                           06  FILLER  PIC X(16).
+       01  GROUP-2-TABLE.
+           02  TABLE-LEVEL-2.
+               03  FILLER  PIC X(13)  VALUE "GROUP-2-TABLE".
+               03  TABLE-LEVEL-3.
+                   04  FILLER  PIC X  VALUE SPACE.
+                   04  TABLE-LEVEL-4.
+                       05  FILLER  PIC X  VALUE "=".
+                       05  TABLE-LEVEL-5.
+                           06  FILLER  PIC X   VALUE SPACE.
+                           06  TABLE-ITEM   PICTURE X
+                                 OCCURS 12 TIMES
+                                 INDEXED BY IN2.
+                           88  EQUALS-A   VALUE "A".
+                           88  EQUALS-C   VALUE "C".
+                           88  EQUALS-M   VALUE "M".
+                       05  GROUP-2-ENTRY REDEFINES TABLE-LEVEL-5.
+                           06  FILLER  PIC X(13).
+       01  GROUP-3-TABLE.
+           02  TABLE-LEVEL-2.
+               03  FILLER  PIC X(15)  VALUE "GROUP-3-TABLE =".
+               03  TABLE-LEVEL-3.
+                   04  TABLE-LEVEL-4
+                         OCCURS 2 TIMES
+                         INDEXED BY IN3.
+                       05  TABLE-LEVEL-5
+                             OCCURS 2 TIMES
+                             INDEXED BY IN4.
+                         06  TABLE-ITEM      PICTURE X
+                                 OCCURS 4 TIMES
+                                 INDEXED BY IN5.
+                           88  EQUALS-A   VALUE "A".
+                           88  EQUALS-C   VALUE "C".
+                           88  EQUALS-M   VALUE "M".
+               03  GROUP-3-ENTRY REDEFINES TABLE-LEVEL-3.
+                           06  FILLER  PIC X(16).
+       01  GROUP-4-TABLE.
+           02  UNQUAL-TABLE-2.
+               03  UNQUAL-TABLE-3.
+                   04  UNQUAL-TABLE-4.
+                       05  FILLER  PIC X(15)  VALUE "GROUP-4-TABLE =".
+                      05  UNQUAL-TABLE-5.
+                           06  UNQUAL-ITEM  PIC X
+                              OCCURS 15 TIMES.
+       01  GROUP-5-TABLE.
+           02  TABLE5-LEVEL-2.
+               03  FILLER  PIC X(15)   VALUE "GROUP-5-TABLE =".
+               03  TABLE5-LEVEL-3.
+                   04  TABLE5-LEVEL-4  OCCURS 2 TIMES.
+                       05  TABLE5-LEVEL-5 OCCURS 2 TIMES.
+                           06  TABLE5-ITEM-UNQUAL   PIC X
+                                 OCCURS 4 TIMES.
+       01  FIRST-SUB    PIC  99    VALUE 1.
+       01  FOURTH-SUB   PIC  99    VALUE 4.
+       01  UNQUAL-SUB   PIC  99.
+       01  SUBSCRIPTS-PART1.
+           02  SUBSCRIPTS.
+               03  SUB1  PIC 9    VALUE 5.
+               03  SUB2  PIC 99   VALUE 12.
+               03  SUB3  PIC 999   USAGE COMP   VALUE 1.
+           02  SOME-MORE-SUBSCRIPTS.
+               03  SUB1   PIC 9   USAGE COMP   VALUE 3.
+               03  SUB2   PIC 99  USAGE COMP   VALUE 7.
+               03  SUB3   PIC 999   VALUE 15.
+       01  SUBSCRIPTS-PART2.
+           02  SUB-PART2-LEVEL2.
+               03  SUB-PART2-LEVEL3.
+                   04  SUB-PART2-LEVEL4.
+                       05  SUBSCRIPTS.
+                           06  SUB1   PIC 999   VALUE 5.
+                           06  SUB2   PIC 99   VALUE 12.
+                           06  SUB3   PIC 99   USAGE COMP   VALUE 1.
+               03  SOME-MORE-SUBSCRIPTS.
+                   04  SUB1  PIC 999   USAGE COMP   VALUE 3.
+                   04  SUB2   PIC 99   VALUE 7.
+               04  SUB3  PIC 99  USAGE COMP  VALUE 15.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC246A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC246A-001 SECTION.
+      *> 
+       TABLE-INIT.
+           MOVE "INIT-TABLE" TO PAR-NAME.
+           MOVE "STORE TABLE VALUES" TO FEATURE.
+      *> 
+      *>          THIS SECTION STORES THE LETTERS OF THE ALPHABET IN THE
+      *>     THREE TABLES WHOSE ITEMS ARE REFERENCED IN THE QUALIFICATION
+      *>     TESTS IN THIS ROUTINE.  THE TABLE CONTENTS ARE AS FOLLOWS
+      *>             GROUP-1-TABLE     A,B,...,O.
+      *>             GROUP-2-TABLE     L,K,J,...,B,A.
+      *>             GROUP-3-TABLE     A,B,...,O,P.
+      *>             GROUP-4-TABLE     A,B,...,O.
+      *>             GROUP-5-TABLE     P,O,N,...,B,A.
+      *>     THE TABLES ARE ALSO PRINTED ON THE OUTPUT REPORT.
+      *> 
+           MOVE " ABCDEFGHIJKLMNO" TO GROUP-1-ENTRY.
+           MOVE " LKJIHGFEDCBA" TO GROUP-2-ENTRY.
+           MOVE "ABCDEFGHIJKLMNOP" TO GROUP-3-ENTRY.
+           MOVE "ABCDEFGHIJKLMNO" TO UNQUAL-TABLE-5.
+           MOVE "PONMLKJIHGFEDCBA" TO TABLE5-LEVEL-3.
+      *> 
+       TABLE-PRINT.
+           MOVE GROUP-1-TABLE TO RE-MARK.
+           MOVE "SEE REMARKS" TO COMPUTED-A.
+           MOVE "ABCDEFGHIJKLMNO" TO CORRECT-A.
+           MOVE 1 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+           MOVE GROUP-2-TABLE TO RE-MARK.
+           MOVE "LKJIHGFEDCBA" TO CORRECT-A.
+           MOVE "SEE REMARKS" TO COMPUTED-A.
+           MOVE 2 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+           MOVE GROUP-3-TABLE TO RE-MARK.
+           MOVE "ABCDEFGHIJKLMNOP" TO CORRECT-A.
+           MOVE 3 TO REC-CT.
+           MOVE "SEE REMARKS" TO COMPUTED-A.
+           PERFORM PRINT-DETAIL.
+           MOVE GROUP-4-TABLE TO RE-MARK.
+           MOVE "ABCDEFGHIJKLMNO" TO CORRECT-A.
+           MOVE "SEE REMARKS" TO COMPUTED-A.
+           MOVE 4 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+           MOVE GROUP-5-TABLE TO RE-MARK.
+           MOVE "PONMLKJIHGFEDCBA" TO CORRECT-A.
+           MOVE "SEE REMARKS" TO COMPUTED-A.
+           MOVE 5 TO REC-CT.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-TEST-01.
+           MOVE ZERO TO REC-CT.
+           MOVE SPACE TO TEMP-VALUE.
+           MOVE "QUAL-TEST-01" TO PAR-NAME.
+           MOVE "QUALIFIED TABLE ITEM" TO FEATURE.
+           MOVE "ONE DIMENSIONAL TABLE" TO RE-MARK.
+           MOVE "A" TO EXPECTED-VALUE.
+      *> 
+      *>          THIS TEST CONTAINS QUALIFIED DATA NAMES IN MOVE
+      *>     STATEMENTS.  THE DATA NAMES REFER TO SINGLE DIMENSIONAL
+      *>     TABLE ITEMS.  THE SUBSCRIPTS IN THIS TEST ARE CONSTANTS, 
+      *>     UNQUALIFIED DATA NAMES AND INDEXES.  BOTH DIRECT AND RELATIVE
+      *>     INDEXING ARE USED.
+      *> 
+       QUAL-TEST-01-01.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                OF GROUP-1-TABLE (1) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-01-02.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                OF GROUP-1-TABLE (FIRST-SUB) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-01-03.
+           SET IN1 TO 1.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                OF GROUP-1-TABLE (IN1) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-01-04.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                OF GROUP-2-TABLE (12) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-01-05.
+           SET IN1 TO 1.
+           MOVE "D" TO EXPECTED-VALUE.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                OF GROUP-1-TABLE (IN1 + 3) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-01-06.
+           SET IN1 TO 6.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                OF GROUP-1-TABLE (IN1 - 2) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-01-07.
+           MOVE 9 TO UNQUAL-SUB.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                OF GROUP-2-TABLE (UNQUAL-SUB) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+           GO TO QUAL-TEST-02.
+      *> 
+       QUAL-DELETE-001.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-TEST-02.
+           MOVE ZERO TO REC-CT.
+           MOVE "QUAL-TEST-02" TO PAR-NAME.
+           MOVE "TRUE" TO EXPECTED-VALUE.
+      *> 
+      *>          THIS TEST CONTAINS TWO QUALIFIED DATA NAMES IN IF
+      *>     STATEMENTS.  THE DATA NAMES REFER TO SINGLE DIMENSIONAL
+      *>     TABLE ITEMS.  THE SUBSCRIPTS IN THIS TEST ARE CONSTANTS, 
+      *>     UNQUALIFIED DATA NAMES AND INDEXES.  BOTH DIRECT AND RELATIVE
+      *>     INDEXING ARE USED.
+      *> 
+       QUAL-TEST-02-01.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF TABLE-ITEM IN TABLE-LEVEL-5 IN TABLE-LEVEL-4
+              IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+              IN GROUP-1-TABLE (1) IS EQUAL TO
+              TABLE-ITEM IN TABLE-LEVEL-5 IN TABLE-LEVEL-4
+              IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+              IN GROUP-2-TABLE (12)
+                    MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-02-02.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF TABLE-ITEM IN TABLE-LEVEL-5 IN TABLE-LEVEL-4
+              IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+              IN GROUP-1-TABLE (FIRST-SUB) IS NOT EQUAL TO
+              TABLE-ITEM IN TABLE-LEVEL-5 IN TABLE-LEVEL-4
+              IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+              IN GROUP-2-TABLE (FIRST-SUB)
+                    MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-02-03.
+           SET IN1 TO 4.
+           SET IN2 TO 9.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF TABLE-ITEM IN TABLE-LEVEL-5 IN TABLE-LEVEL-4
+              IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+              IN GROUP-1-TABLE (IN1) IS EQUAL TO
+              TABLE-ITEM IN TABLE-LEVEL-5 IN TABLE-LEVEL-4
+              IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+              IN GROUP-2-TABLE (IN2)
+                    MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-02-04.
+           SET IN1 IN2 TO 5.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF TABLE-ITEM IN TABLE-LEVEL-5 IN TABLE-LEVEL-4
+              IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+              IN GROUP-1-TABLE (IN1 - 1) EQUAL TO
+              TABLE-ITEM IN TABLE-LEVEL-5 IN TABLE-LEVEL-4
+              IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+              IN GROUP-2-TABLE (IN2 + 4)
+                    MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-02-05.
+           SET IN1 TO 5.
+           MOVE 8 TO UNQUAL-SUB.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF TABLE-ITEM IN TABLE-LEVEL-5 IN TABLE-LEVEL-4
+              IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+              IN GROUP-1-TABLE (IN1) EQUAL TO
+              TABLE-ITEM IN TABLE-LEVEL-5 IN TABLE-LEVEL-4
+              IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+              IN GROUP-2-TABLE (UNQUAL-SUB)
+                    MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+           GO TO QUAL-INIT-03.
+      *> 
+       QUAL-DELETE-002.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-INIT-03.
+           MOVE ZERO TO REC-CT.
+           MOVE "QUAL-TEST-03" TO PAR-NAME.
+           MOVE "THREE DIMENSIONAL TABLE" TO RE-MARK.
+           MOVE SPACE TO TEMP-VALUE.
+           MOVE "D" TO EXPECTED-VALUE.
+      *> 
+      *>          THIS TEST CONTAINS QUALIFIED DATA NAMES IN MOVE
+      *>      STATEMENTS.  THE DATA NAMES REFER TO THREE DIMENSIONAL
+      *>     TABLE ITEMS.  THE SUBSCRIPTS IN THIS TEST ARE CONSTANTS, 
+      *>     UNQUALIFIED DATA NAMES AND INDEXES.  BOTH DIRECT AND RELATIVE
+      *>     INDEXING ARE USED.
+      *> 
+      *> 
+       QUAL-TEST-03-01.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                OF GROUP-3-TABLE (1, 1, 4) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-03-02.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                OF GROUP-3-TABLE (FIRST-SUB, FIRST-SUB, FOURTH-SUB)
+                    TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-03-03.
+           SET IN5 TO 4.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                OF GROUP-3-TABLE (1, 1, IN5) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-03-04.
+           SET IN3, IN4 TO 1.
+           SET IN5 TO 4.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                OF GROUP-3-TABLE (IN3, IN4, IN5) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-03-05.
+           SET IN3, IN4 TO 2.
+           SET IN5 TO 1.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                OF TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                IN GROUP-3-TABLE (IN3 - 1, IN4 - 1, IN5 + 3)
+                    TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+           GO TO QUAL-INIT-04.
+      *> 
+       QUAL-DELETE-003.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-INIT-04.
+           MOVE "QUAL-TEST-04" TO PAR-NAME.
+           MOVE ZERO TO REC-CT.
+           MOVE "QUALIFIED SUBSCRIPT" TO FEATURE.
+           MOVE  "ONE DIMENSIONAL TABLE" TO RE-MARK.
+           MOVE SPACE TO TEMP-VALUE.
+      *> 
+      *>          THIS TEST CONTAINS UNQUALIFIED DATA NAMES WITH
+      *>     QUALIFIED SUBSCRIPTS IN MOVE STATEMENTS.  THE DATA NAMES
+      *>     REFER TO SINGLE DIMENSIONAL TABLE ITEMS.
+      *> 
+           MOVE "E" TO EXPECTED-VALUE.
+      *> 
+       QUAL-TEST-04-01.
+           MOVE UNQUAL-ITEM (SUB1 OF SUBSCRIPTS OF SUBSCRIPTS-PART1)
+                         TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-04-02.
+           MOVE UNQUAL-ITEM (SUB1 OF SUBSCRIPTS OF SUB-PART2-LEVEL4)
+                         TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-04-03.
+           MOVE UNQUAL-ITEM (SUB1 OF SUBSCRIPTS OF SUB-PART2-LEVEL4
+                   OF SUB-PART2-LEVEL3 IN SUB-PART2-LEVEL2
+                   IN SUBSCRIPTS-PART2)
+                         TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-04-04.
+           MOVE "C" TO EXPECTED-VALUE.
+           MOVE UNQUAL-ITEM (SUB1 OF SOME-MORE-SUBSCRIPTS OF
+                   SUBSCRIPTS-PART1)
+                         TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-04-05.
+           MOVE "G" TO EXPECTED-VALUE.
+           MOVE UNQUAL-ITEM (SUB2 OF SOME-MORE-SUBSCRIPTS OF
+                   SUB-PART2-LEVEL2)
+                         TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+           GO TO QUAL-INIT-05.
+      *> 
+       QUAL-DELETE-004.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-INIT-05.
+           MOVE "QUAL-TEST-05" TO PAR-NAME.
+           MOVE ZERO TO REC-CT.
+           MOVE "THREE DIMENSIONAL TABLE" TO RE-MARK.
+      *> 
+      *>          THIS TEST CONTAINS UNQUALIFIED DATA NAMES WITH
+      *>     QUALIFIED SUBSCRIPTS IN MOVE STATEMENTS.  THE DATA NAMES
+      *>     REFER TO THREE DIMENSIONAL TABLE ITEMS.
+      *> 
+           MOVE SPACE TO TEMP-VALUE.
+           MOVE "N" TO EXPECTED-VALUE.
+      *> 
+       QUAL-TEST-05-01.
+           MOVE TABLE5-ITEM-UNQUAL (FIRST-SUB FIRST-SUB
+                   SUB1 OF SOME-MORE-SUBSCRIPTS OF SUB-PART2-LEVEL2
+                   IN SUBSCRIPTS-PART2)
+                        TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-05-02.
+           MOVE TABLE5-ITEM-UNQUAL (SUB3 OF SUBSCRIPTS OF
+                   SUBSCRIPTS-PART1 SUB3 OF SUBSCRIPTS OF
+                   SUB-PART2-LEVEL4 IN SUB-PART2-LEVEL3 IN
+                   SUB-PART2-LEVEL2 IN SUBSCRIPTS-PART2
+                   SUB1 OF SOME-MORE-SUBSCRIPTS OF SUB-PART2-LEVEL2
+                   IN SUBSCRIPTS-PART2)
+                        TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+           GO TO QUAL-INIT-06.
+      *> 
+       QUAL-DELETE-005.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-INIT-06.
+           MOVE "QUAL-TEST-06" TO PAR-NAME.
+           MOVE "ONE DIMENSIONAL TABLE" TO RE-MARK.
+           MOVE ZERO TO REC-CT.
+      *> 
+      *>          THIS TEST CONTAINS QUALIFIED DATA NAMES WITH
+      *>     QUALIFIED SUBSCRIPTS IN IF STATEMENTS.  THE DATA NAMES
+      *>     REFER TO SINGLE DIMENSIONAL TABLE ITEMS.
+      *> 
+           MOVE "TRUE" TO EXPECTED-VALUE.
+      *> 
+       QUAL-TEST-06-01.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF TABLE-ITEM OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    OF TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                    OF GROUP-1-TABLE (SUB3 IN SOME-MORE-SUBSCRIPTS
+                    IN SUB-PART2-LEVEL2 IN SUBSCRIPTS-PART2)
+               IS EQUAL TO "O"
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-06-02.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF TABLE-ITEM OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    OF TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                    OF GROUP-1-TABLE (SUB2 OF SUBSCRIPTS OF
+                    SUB-PART2-LEVEL4 IN SUB-PART2-LEVEL3 IN
+                    SUB-PART2-LEVEL2 IN SUBSCRIPTS-PART2)
+               IS EQUAL TO TABLE-ITEM OF TABLE-LEVEL-5
+                    IN TABLE-LEVEL-4 OF TABLE-LEVEL-3 IN
+                    TABLE-LEVEL-2 OF GROUP-2-TABLE (SUB3 IN SUBSCRIPTS
+                    OF SUBSCRIPTS-PART1)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+           GO TO QUAL-INIT-07.
+      *> 
+       QUAL-DELETE-006.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-INIT-07.
+           MOVE "QUAL-TEST-07" TO PAR-NAME.
+           MOVE "THREE DIMENSIONAL TABLE" TO RE-MARK.
+           MOVE ZERO TO REC-CT.
+      *> 
+      *>          THIS TEST CONTAINS QUALIFIED DATA NAMES WITH
+      *>     QUALIFIED SUBSCRIPTS IN IF STATEMENTS.  THE DATA NAMES
+      *>     REFER TO THREE DIMENSIONAL TABLE ITEMS.
+      *> 
+           MOVE "TRUE" TO EXPECTED-VALUE.
+      *> 
+       QUAL-TEST-07-01.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF TABLE-ITEM OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                    IN GROUP-3-TABLE (SUB3 IN SUBSCRIPTS IN
+                    SUBSCRIPTS-PART1 SUB3 OF SUBSCRIPTS OF
+                    SUBSCRIPTS-PART1 SUB1 OF SOME-MORE-SUBSCRIPTS OF
+                    SUBSCRIPTS-PART1) IS EQUAL TO "C"
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-07-02.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF TABLE-ITEM OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                    OF GROUP-3-TABLE (SUB3 IN SUBSCRIPTS IN
+                    SUB-PART2-LEVEL4 OF SUB-PART2-LEVEL3 OF
+                    SUB-PART2-LEVEL2 OF SUBSCRIPTS-PART2   SUB3 IN
+                    SUBSCRIPTS IN SUB-PART2-LEVEL4 OF SUB-PART2-LEVEL3
+                    IN SUB-PART2-LEVEL2 OF SUBSCRIPTS-PART2   SUB1 OF
+                    SOME-MORE-SUBSCRIPTS OF SUB-PART2-LEVEL2
+                    IN SUBSCRIPTS-PART2)
+               IS EQUAL TO TABLE-ITEM OF TABLE-LEVEL-5 IN
+                    TABLE-LEVEL-4 IN TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                    IN GROUP-3-TABLE (SUB3 OF SUBSCRIPTS IN
+                    SUBSCRIPTS-PART1  SUB3 OF SUBSCRIPTS IN
+                    SUB-PART2-LEVEL4 OF SUB-PART2-LEVEL3
+                    OF SUB-PART2-LEVEL2 OF SUBSCRIPTS-PART2  SUB1
+                    OF SOME-MORE-SUBSCRIPTS OF SUBSCRIPTS-PART1)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+           GO TO QUAL-INIT-08.
+      *> 
+       QUAL-DELETE-007.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-INIT-08.
+           MOVE "QUAL-TEST-08" TO PAR-NAME.
+           MOVE "QUAL. CONDITION NAME" TO FEATURE.
+           MOVE ZERO TO REC-CT.
+           MOVE "ONE DIMENSIONAL TABLE" TO RE-MARK.
+      *> 
+      *>          THIS TEST CONTAINS QUALIFIED CONDITION NAMES IN IF
+      *>     STATEMENTS.  THE CONDITION NAMES REFER TO SINGLE DIMENSIONAL
+      *>     CONDITIONAL VARIABLES.  THE SUBSCRIPTS IN THIS TEST ARE
+      *>     CONSTANTS, UNQUALIFIED DATA NAMES AND INDEXES.  BOTH DIRECT
+      *>     AND RELATIVE INDEXING ARE USED.
+      *> 
+           MOVE "TRUE" TO EXPECTED-VALUE.
+      *> 
+       QUAL-TEST-08-01.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF EQUALS-M OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                    OF GROUP-1-TABLE (13)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-08-02.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF EQUALS-A OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                    OF GROUP-1-TABLE (FIRST-SUB)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-08-03.
+           MOVE "FALSE" TO TEMP-VALUE.
+           SET IN1 TO 3.
+           IF EQUALS-C OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                    OF GROUP-1-TABLE (IN1)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-08-04.
+           MOVE "FALSE" TO TEMP-VALUE.
+           SET IN1 TO 6.
+           IF EQUALS-A OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                    OF GROUP-1-TABLE (IN1 - 5)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-08-05.
+           MOVE "FALSE" TO TEMP-VALUE.
+           SET IN1 TO 1.
+           IF EQUALS-C OF TABLE-LEVEL-5 OF TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                    OF GROUP-1-TABLE (IN1 + 2)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+           GO TO QUAL-INIT-09.
+      *> 
+       QUAL-DELETE-008.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-INIT-09.
+           MOVE "QUAL-TEST-09" TO PAR-NAME.
+           MOVE ZERO TO REC-CT.
+           MOVE "THREE DIMENSIONAL TABLE" TO RE-MARK.
+      *> 
+      *>          THIS TEST CONTAINS QUALIFIED CONDITION NAMES IN IF
+      *>     STATEMENTS.  THE CONDITION NAMES REFER TO THREE DIMENSIONAL
+      *>     CONDITIONAL VARIABLES.  THE SUBSCRIPTS IN THIS TEST ARE
+      *>     CONSTANTS, UNQUALIFIED DATA NAMES AND INDEXES.  BOTH DIRECT
+      *>     AND RELATIVE INDEXING ARE USED.
+      *> 
+           MOVE "TRUE" TO EXPECTED-VALUE.
+      *> 
+       QUAL-TEST-09-01.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF EQUALS-M OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                    OF GROUP-3-TABLE (2, 2, 1)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-09-02.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF EQUALS-A OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                    OF GROUP-3-TABLE (FIRST-SUB, FIRST-SUB, FIRST-SUB)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-09-03.
+           MOVE "FALSE" TO TEMP-VALUE.
+           SET IN5 TO 3.
+           IF EQUALS-C OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                    OF GROUP-3-TABLE (1, 1, IN5)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-09-04.
+           MOVE "FALSE" TO TEMP-VALUE.
+           SET IN3, IN4 TO 1.
+           SET IN5 TO 3.
+           IF EQUALS-C OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                    OF GROUP-3-TABLE (IN3, IN4, IN5)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-09-05.
+           MOVE "FALSE" TO TEMP-VALUE.
+           SET IN5 TO 1.
+           SET IN3, IN4 TO 2.
+           IF EQUALS-C OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 IN TABLE-LEVEL-2
+                    OF GROUP-3-TABLE (IN3 - 1, IN4 - 1, IN5 + 2)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+           GO TO QUAL-INIT-10.
+      *> 
+       QUAL-DELETE-009.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-INIT-10.
+           MOVE "QUAL-TEST-10" TO PAR-NAME.
+           MOVE "QUALIFIED SUBSCRIPTS" TO RE-MARK.
+           MOVE ZERO TO REC-CT.
+      *> 
+      *>          THIS TEST CONTAINS QUALIFIED CONDITION NAMES WITH
+      *>     QUALIFIED SUBSCRIPTS.
+      *> 
+           MOVE "TRUE" TO EXPECTED-VALUE.
+      *> 
+       QUAL-TEST-10-01.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF EQUALS-C OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                    IN GROUP-1-TABLE (SUB1 OF SOME-MORE-SUBSCRIPTS
+                    IN SUBSCRIPTS-PART1)
+                          MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-10-02.
+           IF NOT EQUALS-M OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                    IN GROUP-2-TABLE (SUB2 OF SUBSCRIPTS
+                    OF SUB-PART2-LEVEL4 OF SUB-PART2-LEVEL3
+                    OF SUB-PART2-LEVEL2 OF SUBSCRIPTS-PART2)
+                          MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-10-03.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF EQUALS-C OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                    IN GROUP-3-TABLE (SUB3 OF SUBSCRIPTS OF
+                    SUB-PART2-LEVEL4 IN SUB-PART2-LEVEL3 IN
+                    SUB-PART2-LEVEL2 IN SUBSCRIPTS-PART2, 
+                    SUB3 IN SUBSCRIPTS IN SUBSCRIPTS-PART1, 
+                    SUB1 IN SOME-MORE-SUBSCRIPTS IN SUB-PART2-LEVEL2
+                    IN SUBSCRIPTS-PART2)
+                          MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-10-04.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF NOT EQUALS-A OF TABLE-LEVEL-5 IN TABLE-LEVEL-4
+                    IN TABLE-LEVEL-3 OF TABLE-LEVEL-2
+                    IN GROUP-3-TABLE (SUB3 OF SUBSCRIPTS OF
+                    SUB-PART2-LEVEL4 IN SUB-PART2-LEVEL3 IN
+                    SUB-PART2-LEVEL2 IN SUBSCRIPTS-PART2, 
+                    SUB3 IN SUBSCRIPTS OF SUB-PART2-LEVEL4 OF
+                    SUB-PART2-LEVEL3 IN SUB-PART2-LEVEL2 IN
+                    SUBSCRIPTS-PART2,  SUB1 OF SOME-MORE-SUBSCRIPTS
+                    OF SUB-PART2-LEVEL2 IN SUBSCRIPTS-PART2)
+                          MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+           GO TO QUAL-INIT-11.
+      *> 
+       QUAL-DELETE-010.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-INIT-11.
+           MOVE "QUAL-TEST-11" TO PAR-NAME.
+           MOVE "QUALIFICATION" TO FEATURE.
+           MOVE "INTERMEDIATE LEVELS SKIPPED" TO RE-MARK.
+           MOVE SPACE TO TEMP-VALUE.
+           MOVE ZERO TO REC-CT.
+      *> 
+      *>          THIS TEST USES QUALIFIED DATA NAMES WITHOUT ALL OF THE
+      *>     INTERMEDIATE LEVELS SPECIFIED.  THERE ARE QUALIFIED TABLE
+      *>     ITEMS AND QUALIFIED SUBSCRIPTS INCLUDED IN THE TEST
+      *>     STATEMENTS.
+      *> 
+           MOVE "G" TO EXPECTED-VALUE.
+      *> 
+       QUAL-TEST-11-01.
+           MOVE TABLE-ITEM OF TABLE-LEVEL-5 OF GROUP-1-TABLE (7)
+                    TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-11-02.
+           MOVE UNQUAL-ITEM (SUB2 OF SOME-MORE-SUBSCRIPTS OF
+                    SUBSCRIPTS-PART2) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-11-03.
+           MOVE   TABLE-ITEM OF GROUP-1-TABLE (SUB2 OF
+               SOME-MORE-SUBSCRIPTS OF SUB-PART2-LEVEL2) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-11-04.
+           MOVE "A" TO EXPECTED-VALUE.
+           MOVE TABLE-ITEM OF GROUP-3-TABLE (FIRST-SUB, SUB3 OF
+                    SUBSCRIPTS OF SUBSCRIPTS-PART1,  SUB3 OF
+                    SUB-PART2-LEVEL4) TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-11-05.
+           MOVE "TRUE" TO EXPECTED-VALUE.
+           MOVE "FALSE" TO TEMP-VALUE.
+           SET IN1 TO 3.
+           IF EQUALS-C OF TABLE-ITEM OF GROUP-1-TABLE (IN1)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+      *> 
+       QUAL-TEST-11-06.
+           MOVE "FALSE" TO TEMP-VALUE.
+           IF EQUALS-C OF TABLE-ITEM OF GROUP-3-TABLE
+                    (FIRST-SUB,  SUB3 OF SUB-PART2-LEVEL3, SUB1 OF
+                    SOME-MORE-SUBSCRIPTS OF SUBSCRIPTS-PART2)
+                         MOVE "TRUE" TO TEMP-VALUE.
+           PERFORM SECT-TH220-0003.
+           GO TO   QUAL-INIT-12.
+       QUAL-DELETE-011.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+      *> 
+       QUAL-INIT-12.
+           MOVE   "IV-21 4.3.8.2.3 SR5 AND VI-2 1.3.2/4"
+                TO ANSI-REFERENCE.
+           MOVE   "QUAL-TEST-12" TO PAR-NAME.
+           MOVE   "SEVEN DIMENSIONAL TABLE" TO RE-MARK.
+           MOVE    ZEROES TO TABLE-A
+                             TABLE-B.
+           MOVE    27 TO ELEM1 OF L8 IN L7 IN L6 IN L5 IN L4 IN L3
+                               IN L2 OF TABLE-A (1, 2, 1, 2, 1, 1, 2).
+           GO TO   QUAL-TEST-12.
+       QUAL-DELETE-12.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO   CCVS-EXIT.
+       QUAL-TEST-12.
+           IF      ELEM1 OF L8 IN L7 OF L6 OF L5 IN L4 IN L3 OF L2
+                         IN TABLE-A
+                  (SUB1 OF S48 IN S47 OF S46 IN S45 OF S44 IN S43
+                        OF S42 IN S41 OF S40 IN S39 OF S38 IN S37
+                        OF S36 IN S35 OF S34 IN S33 OF S32 IN S31
+                        OF S30 IN S29 OF S28 IN S27 OF S26 IN S25
+                        OF S24 IN S23 OF S22 IN S21 OF S20 IN S19
+                        OF S18 IN S17 OF S16 IN S15 OF S14 IN S13
+                        OF S12 IN S11 OF S10 IN SO9 OF SO8 IN SO7
+                        OF SO6 IN SO5 OF SO4 IN SO3 OF SO2
+                        IN SUBSCRIPTS-GROUP-1, 
+                   SUB2 OF S48 IN S47 OF S46 IN S45 OF S44 IN S43
+                        OF S42 IN S41 OF S40 IN S39 OF S38 IN S37
+                        OF S36 IN S35 OF S34 IN S33 OF S32 IN S31
+                        OF S30 IN S29 OF S28 IN S27 OF S26 IN S25
+                        OF S24 IN S23 OF S22 IN S21 OF S20 IN S19
+                        OF S18 IN S17 OF S16 IN S15 OF S14 IN S13
+                        OF S12 IN S11 OF S10 IN SO9 OF SO8 IN SO7
+                        OF SO6 IN SO5 OF SO4 IN SO3 OF SO2
+                        OF SUBSCRIPTS-GROUP-2, 
+                   SUB3 OF S48 IN S47 OF S46 IN S45 OF S44 IN S43
+                        OF S42 IN S41 OF S40 IN S39 OF S38 IN S37
+                        OF S36 IN S35 OF S34 IN S33 OF S32 IN S31
+                        OF S30 IN S29 OF S28 IN S27 OF S26 IN S25
+                        OF S24 IN S23 OF S22 IN S21 OF S20 IN S19
+                        OF S18 IN S17 OF S16 IN S15 OF S14 IN S13
+                        OF S12 IN S11 OF S10 IN SO9 OF SO8 IN SO7
+                        OF SO6 IN SO5 OF SO4 IN SO3 OF SO2
+                        IN SUBSCRIPTS-GROUP-1, 
+                   SUB4 OF S48 IN S47 OF S46 IN S45 OF S44 IN S43
+                        OF S42 IN S41 OF S40 IN S39 OF S38 IN S37
+                        OF S36 IN S35 OF S34 IN S33 OF S32 IN S31
+                        OF S30 IN S29 OF S28 IN S27 OF S26 IN S25
+                        OF S24 IN S23 OF S22 IN S21 OF S20 IN S19
+                        OF S18 IN S17 OF S16 IN S15 OF S14 IN S13
+                        OF S12 IN S11 OF S10 IN SO9 OF SO8 IN SO7
+                        OF SO6 IN SO5 OF SO4 IN SO3 OF SO2
+                        OF SUBSCRIPTS-GROUP-2, 
+                   SUB5 OF S48 IN S47 OF S46 IN S45 OF S44 IN S43
+                        OF S42 IN S41 OF S40 IN S39 OF S38 IN S37
+                        OF S36 IN S35 OF S34 IN S33 OF S32 IN S31
+                        OF S30 IN S29 OF S28 IN S27 OF S26 IN S25
+                        OF S24 IN S23 OF S22 IN S21 OF S20 IN S19
+                        OF S18 IN S17 OF S16 IN S15 OF S14 IN S13
+                        OF S12 IN S11 OF S10 IN SO9 OF SO8 IN SO7
+                        OF SO6 IN SO5 OF SO4 IN SO3 OF SO2
+                        IN SUBSCRIPTS-GROUP-1, 
+                   SUB6 OF S48 IN S47 OF S46 IN S45 OF S44 IN S43
+                        OF S42 IN S41 OF S40 IN S39 OF S38 IN S37
+                        OF S36 IN S35 OF S34 IN S33 OF S32 IN S31
+                        OF S30 IN S29 OF S28 IN S27 OF S26 IN S25
+                        OF S24 IN S23 OF S22 IN S21 OF S20 IN S19
+                        OF S18 IN S17 OF S16 IN S15 OF S14 IN S13
+                        OF S12 IN S11 OF S10 IN SO9 OF SO8 IN SO7
+                        OF SO6 IN SO5 OF SO4 IN SO3 OF SO2
+                        IN SUBSCRIPTS-GROUP-1, 
+                   SUB7 OF S48 IN S47 OF S46 IN S45 OF S44 IN S43
+                        OF S42 IN S41 OF S40 IN S39 OF S38 IN S37
+                        OF S36 IN S35 OF S34 IN S33 OF S32 IN S31
+                        OF S30 IN S29 OF S28 IN S27 OF S26 IN S25
+                        OF S24 IN S23 OF S22 IN S21 OF S20 IN S19
+                        OF S18 IN S17 OF S16 IN S15 OF S14 IN S13
+                        OF S12 IN S11 OF S10 IN SO9 OF SO8 IN SO7
+                        OF SO6 IN SO5 OF SO4 IN SO3 OF SO2
+                        OF SUBSCRIPTS-GROUP-2)
+                        = 27
+                        PERFORM PASS
+                        PERFORM PRINT-DETAIL
+           ELSE
+                   MOVE  "QUALIFICATION FAILED" TO RE-MARK
+                   PERFORM FAIL
+                   PERFORM PRINT-DETAIL.
+      *> 
+           GO TO CCVS-EXIT.
+      *> 
+       SECT-TH220-0003 SECTION.
+       SYNTAX-CHECK.
+           ADD 1 TO REC-CT.
+           IF TEMP-VALUE IS EQUAL TO EXPECTED-VALUE
+                    PERFORM PASS
+                    GO TO SYNTAX-CHECK-WRITE.
+       SYNTAX-FAIL.
+           MOVE TEMP-VALUE TO COMPUTED-A.
+           MOVE EXPECTED-VALUE TO CORRECT-A.
+           PERFORM FAIL.
+       SYNTAX-CHECK-WRITE.
+           PERFORM PRINT-DETAIL.
+           MOVE SPACE TO TEMP-VALUE.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC246A

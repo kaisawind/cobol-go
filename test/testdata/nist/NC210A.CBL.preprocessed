@@ -1,0 +1,735 @@
+      *> HEADER,COBOL,NC210A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC210A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     PROGRAM NC210A TESTS NESTED "IF" STATEMENTS, USING 63     *
+      *>     STATEMENTS AND 6 LEVELS OF NESTING IN ONE SENTENCE AND    *
+      *>     22 LEVELS OF NESTING IN A SECOND TEST.                    *
+      *>                                                               *
+      *>      X-CARDS USED ARE :-                                      *
+      *>                                                               *
+      *>       X-55  - SYSTEM PRINTER NAME.                            *
+      *>       X-82  - SOURCE COMPUTER NAME.                           *
+      *>       X-83  - OBJECT COMPUTER NAME.                           *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  ACCUM-DATANAME PIC 99  VALUE ZERO.
+       77  DATANAME-A  PIC 9 VALUE 0.
+       77  DATANAME-B  PIC 9 VALUE 0.
+       77  DATANAME-C  PIC 9 VALUE 0.
+       77  DATANAME-D  PIC 9 VALUE 0.
+       77  DATANAME-E  PIC 9 VALUE 0.
+       77  DATANAME-F  PIC 9 VALUE 0.
+       77  SUB-SCRIPT     PIC 99  VALUE 01.
+       01  DATA-NAMES.
+           02  ONE-A PIC 9 VALUE 0.
+           02  ONE-B PIC 9 VALUE 0.
+           02  ONE-C PIC 9 VALUE 0.
+           02  ONE-D PIC 9 VALUE 0.
+           02  ONE-E PIC 9 VALUE 0.
+           02  ONE-F PIC 9 VALUE 0.
+       01  ONE-X REDEFINES DATA-NAMES  PIC 9(6).
+       01  BUILT-TABLE.
+           02  A-POS                   PIC XX.
+           02  B-POS                   PIC XX.
+           02  C-POS                   PIC XX.
+           02  D-POS                   PIC XXX.
+           02  E-POS                   PIC XXX.
+           02  F-POS                   PIC XXX.
+       01  PARAGRAPH-NAME.
+           02  FILLER                  PIC X(11) VALUE "IF-TEST-GF-".
+           02  PAR-NUMBER              PIC 99  VALUE 00.
+       01  COMPARISON-TABLE.
+           02  FILLER PIC X(15) VALUE "A1B1C1D01E01F01".
+           02  FILLER PIC X(15) VALUE "A1B1C1D01E01F02".
+           02  FILLER PIC X(15) VALUE "A1B1C1D01E02F03".
+           02  FILLER PIC X(15) VALUE "A1B1C1D01E02F04".
+           02  FILLER PIC X(15) VALUE "A1B1C1D02E03F05".
+           02  FILLER PIC X(15) VALUE "A1B1C1D02E03F06".
+           02  FILLER PIC X(15) VALUE "A1B1C1D02E04F07".
+           02  FILLER PIC X(15) VALUE "A1B1C1D02E04F08".
+           02  FILLER PIC X(15) VALUE "A1B1C2D03E05F09".
+           02  FILLER PIC X(15) VALUE "A1B1C2D03E05F10".
+           02  FILLER PIC X(15) VALUE "A1B1C2D03E06F11".
+           02  FILLER PIC X(15) VALUE "A1B1C2D03E06F12".
+           02  FILLER PIC X(15) VALUE "A1B1C2D04E07F13".
+           02  FILLER PIC X(15) VALUE "A1B1C2D04E07F14".
+           02  FILLER PIC X(15) VALUE "A1B1C2D04E08F15".
+           02  FILLER PIC X(15) VALUE "A1B1C2D04E08F16".
+           02  FILLER PIC X(15) VALUE "A1B2C3D05E09F17".
+           02  FILLER PIC X(15) VALUE "A1B2C3D05E09F18".
+           02  FILLER PIC X(15) VALUE "A1B2C3D05E10F19".
+           02  FILLER PIC X(15) VALUE "A1B2C3D05E10F20".
+           02  FILLER PIC X(15) VALUE "A1B2C3D06E11F21".
+           02  FILLER PIC X(15) VALUE "A1B2C3D06E11F22".
+           02  FILLER PIC X(15) VALUE "A1B2C3D06E12F23".
+           02  FILLER PIC X(15) VALUE "A1B2C3D06E12F24".
+           02  FILLER PIC X(15) VALUE "A1B2C4D07E13F25".
+           02  FILLER PIC X(15) VALUE "A1B2C4D07E13F26".
+           02  FILLER PIC X(15) VALUE "A1B2C4D07E14F27".
+           02  FILLER PIC X(15) VALUE "A1B2C4D07E14F28".
+           02  FILLER PIC X(15) VALUE "A1B2C4D08E15F29".
+           02  FILLER PIC X(15) VALUE "A1B2C4D08E15F30".
+           02  FILLER PIC X(15) VALUE "A1B2C4D08E16F31".
+           02  FILLER PIC X(15) VALUE "A1B2C4D08E16F32".
+           02  FILLER PIC X(15) VALUE "A2B3C5D09E17F33".
+           02  FILLER PIC X(15) VALUE "A2B3C5D09E17F34".
+           02  FILLER PIC X(15) VALUE "A2B3C5D09E18F35".
+           02  FILLER PIC X(15) VALUE "A2B3C5D09E18F36".
+           02  FILLER PIC X(15) VALUE "A2B3C5D10E19F37".
+           02  FILLER PIC X(15) VALUE "A2B3C5D10E19F38".
+           02  FILLER PIC X(15) VALUE "A2B3C5D10E20F39".
+           02  FILLER PIC X(15) VALUE "A2B3C5D10E20F40".
+           02  FILLER PIC X(15) VALUE "A2B3C6D11E21F41".
+           02  FILLER PIC X(15) VALUE "A2B3C6D11E21F42".
+           02  FILLER PIC X(15) VALUE "A2B3C6D11E22F43".
+           02  FILLER PIC X(15) VALUE "A2B3C6D11E22F44".
+           02  FILLER PIC X(15) VALUE "A2B3C6D12E23F45".
+           02  FILLER PIC X(15) VALUE "A2B3C6D12E23F46".
+           02  FILLER PIC X(15) VALUE "A2B3C6D12E24F47".
+           02  FILLER PIC X(15) VALUE "A2B3C6D12E24F48".
+           02  FILLER PIC X(15) VALUE "A2B4C7D13E25F49".
+           02  FILLER PIC X(15) VALUE "A2B4C7D13E25F50".
+           02  FILLER PIC X(15) VALUE "A2B4C7D13E26F51".
+           02  FILLER PIC X(15) VALUE "A2B4C7D13E26F52".
+           02  FILLER PIC X(15) VALUE "A2B4C7D14E27F53".
+           02  FILLER PIC X(15) VALUE "A2B4C7D14E27F54".
+           02  FILLER PIC X(15) VALUE "A2B4C7D14E28F55".
+           02  FILLER PIC X(15) VALUE "A2B4C7D14E28F56".
+           02  FILLER PIC X(15) VALUE "A2B4C8D15E29F57".
+           02  FILLER PIC X(15) VALUE "A2B4C8D15E29F58".
+           02  FILLER PIC X(15) VALUE "A2B4C8D15E30F59".
+           02  FILLER PIC X(15) VALUE "A2B4C8D15E30F60".
+           02  FILLER PIC X(15) VALUE "A2B4C8D16E31F61".
+           02  FILLER PIC X(15) VALUE "A2B4C8D16E31F62".
+           02  FILLER PIC X(15) VALUE "A2B4C8D16E32F63".
+           02  FILLER PIC X(15) VALUE "A2B4C8D16E32F64".
+       01  COMP-TBL REDEFINES COMPARISON-TABLE.
+           02  CORRECT-ENTRY OCCURS 64 TIMES PIC X(15).
+       01  T-F  PIC X(5) VALUE "FALSE".
+       01  CHECK-PARA.
+           02  FILLER  PIC X(21) VALUE "VALUE OF DATANAME AT ".
+           02  CHECK-VALU  PIC 99.
+           02  FILLER  PIC X(4) VALUE SPACES.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC210A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF   COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC210A-001 SECTION.
+       IF-INIT-GF-X.
+           MOVE   "VI-89 6.15.4 GR1(C)" TO ANSI-REFERENCE.
+       IF-TEST-GF-X.
+           IF DATANAME-A EQUAL TO ONE-A
+               MOVE "A1" TO A-POS
+               IF DATANAME-B EQUAL TO ONE-B
+                   MOVE "B1" TO B-POS
+                   IF DATANAME-C EQUAL TO ONE-C
+                       MOVE "C1" TO C-POS
+                       IF DATANAME-D EQUAL TO ONE-D
+                           MOVE "D01" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E01" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F01" TO F-POS
+                                 ELSE
+                                   MOVE "F02" TO F-POS
+                             ELSE
+                               MOVE "E02" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F03" TO F-POS
+                                 ELSE
+                                   MOVE "F04" TO F-POS
+                         ELSE
+                           MOVE "D02" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E03" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F05" TO F-POS
+                                 ELSE
+                                   MOVE "F06" TO F-POS
+                             ELSE
+                               MOVE "E04" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F07" TO F-POS
+                                 ELSE
+                                   MOVE "F08" TO F-POS
+                     ELSE
+                       MOVE "C2" TO C-POS
+                       IF DATANAME-D EQUAL TO ONE-D
+                           MOVE "D03" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E05" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F09" TO F-POS
+                                 ELSE
+                                   MOVE "F10" TO F-POS
+                             ELSE
+                               MOVE "E06" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F11" TO F-POS
+                                 ELSE
+                                   MOVE "F12" TO F-POS
+                         ELSE
+                           MOVE "D04" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E07" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F13" TO F-POS
+                                 ELSE
+                                   MOVE "F14" TO F-POS
+                             ELSE
+                               MOVE "E08" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F15" TO F-POS
+                                 ELSE
+                                   MOVE "F16" TO F-POS
+                 ELSE
+                   MOVE "B2" TO B-POS
+                   IF DATANAME-C EQUAL TO ONE-C
+                       MOVE "C3" TO C-POS
+                       IF DATANAME-D EQUAL TO ONE-D
+                           MOVE "D05" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E09" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F17" TO F-POS
+                                 ELSE
+                                   MOVE "F18" TO F-POS
+                             ELSE
+                               MOVE "E10" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F19" TO F-POS
+                                 ELSE
+                                   MOVE "F20" TO F-POS
+                         ELSE
+                           MOVE "D06" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E11" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F21" TO F-POS
+                                 ELSE
+                                   MOVE "F22" TO F-POS
+                             ELSE
+                               MOVE "E12" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F23" TO F-POS
+                                 ELSE
+                                   MOVE "F24" TO F-POS
+                     ELSE
+                       MOVE "C4" TO C-POS
+                       IF DATANAME-D EQUAL TO ONE-D
+                           MOVE "D07" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E13" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F25" TO F-POS
+                                 ELSE
+                                   MOVE "F26" TO F-POS
+                             ELSE
+                               MOVE "E14" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F27" TO F-POS
+                                 ELSE
+                                   MOVE "F28" TO F-POS
+                         ELSE
+                           MOVE "D08" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E15" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F29" TO F-POS
+                                 ELSE
+                                   MOVE "F30" TO F-POS
+                             ELSE
+                               MOVE "E16" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F31" TO F-POS
+                                 ELSE
+                                   MOVE "F32" TO F-POS
+             ELSE
+               MOVE "A2" TO A-POS
+               IF DATANAME-B EQUAL TO ONE-B
+                   MOVE "B3" TO B-POS
+                   IF DATANAME-C EQUAL TO ONE-C
+                       MOVE "C5" TO C-POS
+                       IF DATANAME-D EQUAL TO ONE-D
+                           MOVE "D09" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E17" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F33" TO F-POS
+                                 ELSE
+                                   MOVE "F34" TO F-POS
+                             ELSE
+                               MOVE "E18" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F35" TO F-POS
+                                 ELSE
+                                   MOVE "F36" TO F-POS
+                         ELSE
+                           MOVE "D10" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E19" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F37" TO F-POS
+                                 ELSE
+                                   MOVE "F38" TO F-POS
+                             ELSE
+                               MOVE "E20" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F39" TO F-POS
+                                 ELSE
+                                   MOVE "F40" TO F-POS
+                     ELSE
+                       MOVE "C6" TO C-POS
+                       IF DATANAME-D EQUAL TO ONE-D
+                           MOVE "D11" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E21" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F41" TO F-POS
+                                 ELSE
+                                   MOVE "F42" TO F-POS
+                             ELSE
+                               MOVE "E22" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F43" TO F-POS
+                                 ELSE
+                                   MOVE "F44" TO F-POS
+                         ELSE
+                           MOVE "D12" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E23" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F45" TO F-POS
+                                 ELSE
+                                   MOVE "F46" TO F-POS
+                             ELSE
+                               MOVE "E24" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F47" TO F-POS
+                                 ELSE
+                                   MOVE "F48" TO F-POS
+                 ELSE
+                   MOVE "B4" TO B-POS
+                   IF DATANAME-C EQUAL TO ONE-C
+                       MOVE "C7" TO C-POS
+                       IF DATANAME-D EQUAL TO ONE-D
+                           MOVE "D13" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E25" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F49" TO F-POS
+                                 ELSE
+                                   MOVE "F50" TO F-POS
+                             ELSE
+                               MOVE "E26" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F51" TO F-POS
+                                 ELSE
+                                   MOVE "F52" TO F-POS
+                         ELSE
+                           MOVE "D14" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E27" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F53" TO F-POS
+                                 ELSE
+                                   MOVE "F54" TO F-POS
+                             ELSE
+                               MOVE "E28" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F55" TO F-POS
+                                 ELSE
+                                   MOVE "F56" TO F-POS
+                     ELSE
+                       MOVE "C8" TO C-POS
+                       IF DATANAME-D EQUAL TO ONE-D
+                           MOVE "D15" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E29" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F57" TO F-POS
+                                 ELSE
+                                   MOVE "F58" TO F-POS
+                             ELSE
+                               MOVE "E30" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F59" TO F-POS
+                                 ELSE
+                                   MOVE "F60" TO F-POS
+                         ELSE
+                           MOVE "D16" TO D-POS
+                           IF DATANAME-E EQUAL TO ONE-E
+                               MOVE "E31" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F61" TO F-POS
+                                 ELSE
+                                   MOVE "F62" TO F-POS
+                             ELSE
+                               MOVE "E32" TO E-POS
+                               IF DATANAME-F EQUAL TO ONE-F
+                                   MOVE "F63" TO F-POS
+                                 ELSE
+                                   MOVE "F64" TO F-POS.
+           IF BUILT-TABLE EQUAL TO CORRECT-ENTRY (SUB-SCRIPT)
+               PERFORM PASS
+               GO TO IF-WRITE-GF-X.
+           GO TO IF-FAIL-GF-X.
+       IF-DELETE-GF-X.
+           MOVE 63 TO PAR-NUMBER.
+           PERFORM DE-LETE.
+           ADD 63 TO DELETE-COUNTER.
+           GO TO IF-WRITE-GF-X.
+       IF-FAIL-GF-X.
+           MOVE BUILT-TABLE TO COMPUTED-A.
+           MOVE CORRECT-ENTRY (SUB-SCRIPT) TO CORRECT-A.
+           PERFORM FAIL.
+       IF-WRITE-GF-X.
+           ADD 1 TO PAR-NUMBER.
+           MOVE PARAGRAPH-NAME TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           IF PAR-NUMBER EQUAL TO 64 GO TO IF-INIT-GF-Y.
+           ADD 1 TO  SUB-SCRIPT.
+           MOVE SPACES TO BUILT-TABLE.
+           ADD 1 TO ONE-X.
+           IF ONE-F EQUAL TO 2 ADD 8 TO ONE-X.
+           IF ONE-E EQUAL TO 2 ADD 80 TO ONE-X.
+           IF ONE-D EQUAL TO 2 ADD 800 TO ONE-X.
+           IF ONE-C EQUAL TO 2 ADD 8000 TO ONE-X.
+           IF ONE-B EQUAL TO 2 ADD 80000 TO ONE-X.
+           GO TO IF-INIT-GF-X.
+      *> 
+       IF-INIT-GF-Y.
+           MOVE   "VI-89 6.15.4 GR1(C)" TO ANSI-REFERENCE.
+           ADD 1 TO PAR-NUMBER.
+           MOVE 22 TO ACCUM-DATANAME.
+       IF-TEST-GF-Y.
+           MOVE "FALSE" TO T-F.
+           IF ACCUM-DATANAME NOT EQUAL TO 1
+           IF ACCUM-DATANAME NOT EQUAL TO 2
+           IF ACCUM-DATANAME NOT EQUAL TO 3
+           IF ACCUM-DATANAME NOT EQUAL TO 4
+           IF ACCUM-DATANAME NOT EQUAL TO 5
+           IF ACCUM-DATANAME NOT EQUAL TO 6
+           IF ACCUM-DATANAME NOT EQUAL TO 7
+           IF ACCUM-DATANAME NOT EQUAL TO 8
+           IF ACCUM-DATANAME NOT EQUAL TO 9
+           IF ACCUM-DATANAME NOT EQUAL TO 10
+           IF ACCUM-DATANAME NOT EQUAL TO 11
+           IF ACCUM-DATANAME NOT EQUAL TO 12
+           IF ACCUM-DATANAME NOT EQUAL TO 13
+           IF ACCUM-DATANAME NOT EQUAL TO 14
+           IF ACCUM-DATANAME NOT EQUAL TO 15
+           IF ACCUM-DATANAME NOT EQUAL TO 16
+           IF ACCUM-DATANAME NOT EQUAL TO 17
+           IF ACCUM-DATANAME NOT EQUAL TO 18
+           IF ACCUM-DATANAME NOT EQUAL TO 19
+           IF ACCUM-DATANAME NOT EQUAL TO 20
+           IF ACCUM-DATANAME NOT EQUAL TO 21
+               MOVE "TRUE" TO T-F.
+           IF ACCUM-DATANAME EQUAL TO 22 AND T-F EQUAL TO "TRUE"
+               PERFORM PASS
+               PERFORM IF-WRITE-GF-Y
+               SUBTRACT 1 FROM ACCUM-DATANAME
+               GO TO IF-TEST-GF-Y.
+           IF ACCUM-DATANAME LESS THAN 22 AND T-F EQUAL TO "FALSE"
+               PERFORM PASS
+               GO TO IF-WRITE-GF-Y
+           ELSE  GO TO IF-FAIL-GF-Y.
+       IF-DELETE-GF-Y.
+           ADD 21 TO PAR-NUMBER.
+           PERFORM DE-LETE.
+           ADD 21 TO DELETE-COUNTER.
+           MOVE 1 TO ACCUM-DATANAME.
+           GO TO IF-WRITE-GF-Y.
+       IF-FAIL-GF-Y.
+           MOVE "*****" TO COMPUTED-A  CORRECT-A.
+           MOVE ACCUM-DATANAME TO CHECK-VALU.
+           MOVE CHECK-PARA TO RE-MARK.
+           PERFORM FAIL.
+       IF-WRITE-GF-Y.
+           MOVE PARAGRAPH-NAME TO PAR-NAME.
+           ADD 1 TO PAR-NUMBER.
+           PERFORM PRINT-DETAIL.
+           IF ACCUM-DATANAME EQUAL TO 1 GO TO TEST-EXIT.
+           SUBTRACT 1 FROM ACCUM-DATANAME.
+       IF-RETURN-GF-Y.
+           GO TO IF-TEST-GF-Y.
+       TEST-EXIT.
+           EXIT.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC210A

@@ -1,0 +1,259 @@
+      *> HEADER,COBOL,NC113M
+          IDENTIFICATION DIVISION.
+          PROGRAM-ID.
+           NC113M.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>    PROGRAM NC113M VERIFIES CORRECT USE OF AREA A WITHIN
+      *>                       A PROGRAM.
+      *> 
+      *> 
+          ENVIRONMENT DIVISION.
+          CONFIGURATION SECTION.
+          SOURCE-COMPUTER.
+           XXXXX082.
+          OBJECT-COMPUTER.
+           XXXXX083.
+          INPUT-OUTPUT SECTION.
+          FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+          DATA
+           DIVISION.
+          FILE SECTION.
+          FD PRINT-FILE.
+          01 PRINT-REC PICTURE X(120).
+          01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+          77  ERROR-COUNTER PICTURE IS 999 VALUE IS ZERO.
+          77  DELETE-CNT                PICTURE 999  VALUE ZERO.
+          01  TEST-RESULTS.
+          02 FILLER                     PICTURE X VALUE SPACE.
+        02  FEATURE                PICTURE X(20).
+        02 FILLER                       PICTURE X VALUE SPACE.
+        02  P-OR-F                      PICTURE XXXXX.
+         02 FILLER                      PICTURE X  VALUE SPACE.
+          02 PAR-NAME                   PICTURE X(19).
+         02 FILLER                      PICTURE X VALUE SPACE.
+        02 COMPUTED-A                   PICTURE X(20).
+         02 COMPUTED-N REDEFINES COMPUTED-A PICTURE -9(9).9(9).
+           02 FILLER                    PICTURE XX VALUE SPACE.
+           02 CORRECT-A                 PICTURE X(20).
+        02 CORRECT-N REDEFINES CORRECT-A PICTURE -9(9).9(9).
+             02 FILLER                  PICTURE XX VALUE SPACE.
+        02 RE-MARK                      PICTURE X(27).
+         01  HEADER-LINE-1.
+             02  PAGE-CONTROL-4 PICTURE IS X   VALUE IS "1".
+             02  FILLER         PICTURE X(42)  VALUE
+           SPACE.
+       02 FILLER PICTURE X(42) VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM ".
+       02 FILLER                        PICTURE X(35)  VALUE
+           SPACE.
+          01 HEADER-LINE-2.
+        02 FILLER PICTURE IS X(52) VALUE IS SPACE.
+         02 FILLER PICTURE IS X(19) VALUE IS "TEST RESULTS SET-  ".
+          02 TEST-ID PICTURE IS X(9).
+         02 FILLER PICTURE IS X(40) VALUE IS SPACE.
+         01 HEADER-LINE-3.
+        02 FILLER PICTURE X(34) VALUE
+           " FOR OFFICIAL USE ONLY    ".
+           02  FILLER PICTURE X(58) VALUE
+           "                                                         ".
+             02 FILLER PICTURE X(28) VALUE
+           "          COPYRIGHT 1985    ".
+          01  COLUMNS-LINE-1.
+        02 PAGE-CONTROL-C PICTURE IS X VALUE IS SPACE.
+        02  FILLER   PICTURE IS X(99) VALUE IS "FEATURE              PASS  PARAGRAPH NAME                                                   REMARKS".
+        02 FILLER PICTURE IS X(20) VALUE IS SPACE.
+         01  COLUMNS-LINE-2.
+         02 FILLER PICTURE IS X VALUE IS SPACE.
+         02 FILLER PICTURE IS X(6) VALUE IS "TESTED".
+         02 FILLER PICTURE IS X(15) VALUE IS SPACE.
+         02 FILLER PICTURE IS X(4) VALUE IS "FAIL".
+         02 FILLER PICTURE IS X(94) VALUE IS SPACE.
+          01        ENDER-LINE-1.
+          02      FILLER PICTURE IS X(52) VALUE IS SPACE.
+          02        FILLER PICTURE IS X(14) VALUE IS "END OF TEST-  ".
+          02         ID-AGAIN   PICTURE IS X(9).
+          02         FILLER PICTURE IS X(45) VALUE IS SPACE.
+        01 ENDER-LINE-2.
+        02 FILLER                       PICTURE X(31)  VALUE
+           SPACE.
+        02 FILLER     PICTURE     X(21)    VALUE   IS   SPACE.
+         02 ERROR-TOTAL PICTURE IS         XXX     VALUE IS SPACE.
+        02 FILLER PICTURE IS X VALUE IS SPACE.
+          02      ENDER-DESC           PICTURE X(31) VALUE IS "ERRORS ENCOUNTERED".
+           02 FILLER PICTURE IS X(33) VALUE IS SPACE.
+          01 ENDER-LINE-3.
+         02 FILLER PICTURE X(22) VALUE
+           " FOR OFFICIAL USE ONLY".
+        02 FILLER PICTURE X(12) VALUE SPACE.
+         02 FILLER PICTURE X(58) VALUE SPACE.
+          02 FILLER PICTURE X(13) VALUE SPACE.
+           02  FILLER PICTURE X(15) VALUE " COPYRIGHT 1985".
+        01  HYPHEN-LINE.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(65) VALUE IS "-----------------------------------------------------------------".
+           02 FILLER PICTURE IS X(54) VALUE IS "------------------------------------------------------".
+          PROCEDURE
+            DIVISION
+                     .
+          OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE "  NC113M" TO TEST-ID.
+           MOVE     TEST-ID TO ID-AGAIN.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE     SPACE TO TEST-RESULTS.
+           MOVE "MARGIN TESTING" TO FEATURE.
+           PERFORM MAR-TEST-1.
+          MAR-TEST-2.
+           MOVE "VISUALLY CHECKED" TO RE-MARK.
+           MOVE "MAR-TEST-2"     TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO  MAR-TEST-3.
+          MAR-TEST-15.
+           MOVE "MAR-TEST-15"    TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+          MAR-TEST-7.
+           MOVE "MAR-TEST-7"     TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     GO TO MAR-TEST-8.
+          MAR-TEST-12.
+           MOVE "MAR-TEST-12"    TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO MAR-TEST-13.
+          MAR-TEST-4.
+           MOVE "MAR-TEST-4"     TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+        MAR-TEST-9.
+           MOVE "MAR-TEST-9"     TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       MAR-TEST-8.
+           MOVE "MAR-TEST-8"     TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           PERFORM MAR-TEST-9.
+           GO TO MAR-TEST-10.
+          MAR-TEST-1.
+           MOVE "ANSWERS MUST BE"  TO RE-MARK.
+           MOVE "MAR-TEST-1"     TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+          MAR-TEST-5.
+           MOVE "TESTS MUST BE SEQUENTIAL" TO RE-MARK.
+           MOVE "MAR-TEST-5"     TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO   MAR-TEST-6.
+          MAR-TEST-13.
+           MOVE "MAR-TEST-13"    TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO MAR-TEST-14.
+          MAR-TEST-3.
+           MOVE "FOR CORRECTNESS"  TO RE-MARK.
+           MOVE "MAR-TEST-3"     TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           PERFORM MAR-TEST-4.
+           GO TO MAR-TEST-5.
+          MAR-TEST-14.
+           MOVE "MAR-TEST-14"    TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           PERFORM MAR-TEST-15.
+           GO TO CLOSE-FILES.
+          MAR-TEST-11.
+           MOVE "MAR-TEST-11"    TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO MAR-TEST-12.
+         MAR-TEST-10.
+           MOVE "MAR-TEST-10"    TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO MAR-TEST-11.
+          MAR-TEST-6.
+           MOVE "MAR-TEST-6"     TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           PERFORM MAR-TEST-7.
+           GO TO MAR-TEST-8.
+          CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-3.
+           CLOSE    PRINT-FILE.
+           STOP     RUN.
+          PASS.
+           MOVE "PASS" TO P-OR-F.
+          FAIL.
+           ADD      1 TO ERROR-COUNTER.
+           MOVE "FAIL*" TO P-OR-F.
+          DE-LETE.
+           MOVE     SPACE TO P-OR-F.
+           MOVE     "    ************    " TO COMPUTED-A.
+           MOVE     "    ************    " TO CORRECT-A.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+           ADD 1 TO DELETE-CNT.
+          PRINT-DETAIL.
+           MOVE     TEST-RESULTS TO PRINT-REC.
+           WRITE    PRINT-REC                             AFTER 1.
+           MOVE     SPACE TO P-OR-F.
+           MOVE     SPACE TO PAR-NAME.
+           MOVE     SPACE TO COMPUTED-A.
+           MOVE SPACE TO CORRECT-A.
+           MOVE     SPACE TO RE-MARK.
+          HEAD-ROUTINE.
+           PERFORM  BLANK-LINE-PRINT 15 TIMES.
+           MOVE     HEADER-LINE-1 TO DUMMY-RECORD.
+           WRITE    DUMMY-RECORD                          AFTER 1.
+           PERFORM  BLANK-LINE-PRINT.
+           MOVE     HEADER-LINE-2 TO DUMMY-RECORD.
+           WRITE    DUMMY-RECORD                          AFTER 1.
+           PERFORM  BLANK-LINE-PRINT 4 TIMES.
+           MOVE HEADER-LINE-3 TO DUMMY-RECORD.
+           WRITE DUMMY-RECORD                             AFTER 1.
+           PERFORM BLANK-LINE-PRINT 2 TIMES.
+          COLUMN-NAMES-ROUTINE.
+           MOVE     COLUMNS-LINE-1 TO DUMMY-RECORD.
+           WRITE    DUMMY-RECORD                          AFTER 1.
+           MOVE     SPACE TO PAGE-CONTROL-C.
+           MOVE     COLUMNS-LINE-2 TO DUMMY-RECORD.
+           WRITE    DUMMY-RECORD                          AFTER 1.
+           PERFORM  BLANK-LINE-PRINT.
+           MOVE     HYPHEN-LINE TO DUMMY-RECORD.
+           WRITE    DUMMY-RECORD                          AFTER 1.
+          END-ROUTINE.
+           MOVE     HYPHEN-LINE TO DUMMY-RECORD.
+           WRITE    DUMMY-RECORD                          AFTER 1.
+          PARA-Z.
+           PERFORM  BLANK-LINE-PRINT 4 TIMES.
+           MOVE     ENDER-LINE-1 TO DUMMY-RECORD.
+           WRITE    DUMMY-RECORD                          AFTER 1.
+          END-ROUTINE-1.
+           PERFORM  BLANK-LINE-PRINT.
+           MOVE   "TESTS REQUIRE VISUAL INSPECTION" TO ENDER-DESC.
+          END-ROUTINE-2.
+           MOVE " 15" TO ERROR-TOTAL.
+          END-ROUTINE-3.
+           MOVE     ENDER-LINE-2 TO DUMMY-RECORD.
+           WRITE    DUMMY-RECORD                          AFTER 1.
+           IF DELETE-CNT IS EQUAL TO ZERO
+               MOVE " NO" TO ERROR-TOTAL  ELSE
+           MOVE DELETE-CNT TO ERROR-TOTAL.
+           MOVE "TESTS DELETED     " TO ENDER-DESC.
+           MOVE ENDER-LINE-2 TO DUMMY-RECORD.
+           WRITE DUMMY-RECORD                             AFTER 1.
+           MOVE ENDER-LINE-3 TO DUMMY-RECORD.
+           WRITE DUMMY-RECORD                             AFTER 1.
+          BLANK-LINE-PRINT.
+           MOVE     SPACE TO DUMMY-RECORD.
+           WRITE    DUMMY-RECORD                          AFTER 1.
+      *> END-OF,NC113M

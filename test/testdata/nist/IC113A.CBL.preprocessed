@@ -1,0 +1,80 @@
+      *> HEADER,COBOL,IC112A,SUBRTN,IC113A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC113A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>          THE SUBPROGRAM IC113 IS CALLED BY THE MAIN PROGRAM IC112
+      *>     WHICH HAS A FILE DESCRIPTION RECORD IN THE USING PHRASE OF
+      *>     THE CALL STATEMENT REFERENCING THIS SUBPROGRAM.  IC113 CHECKS
+      *>     THE VALUES IN THE FILE RECORD DESCRIBED IN THE LINKAGE
+      *>     SECTION OF THE SUBPROGRAM.  IF ANY ERRORS ARE ENCOUNTERED
+      *>     THE ERROR-FLAG IS SET TO 1 AND THE RECORDS-IN-ERROR COUNTER
+      *>     IS INCREMENTED BY 1.
+      *> 
+      *> *******************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  DUMMY-WS-ENTRY   PIC 99  VALUE 0.
+       LINKAGE SECTION.
+       01  COUNT-OF-RECORDS   PIC S9(9)   USAGE COMP.
+       01  RECORDS-IN-ERROR   PIC S9(5)   USAGE COMP.
+       01  ERROR-FLAG   PICTURE 9.
+       01  SQ-FS3-R1-G-120.
+           02  XFILE-NAME-GROUP.
+               03  FILLER   PIC X(5).
+               03  XFILE-NAME   PIC X(6).
+           02  XRECORD-NAME-GROUP.
+               03  FILLER   PIC X(8).
+               03  XRECORD-NAME   PIC X(6).
+           02  REELUNIT-NUMBER-GROUP.
+               03  FILLER   PIC X(1).
+               03  REELUNIT-NUMBER   PIC 9(1).
+           02  FILLER   PIC X(7).
+           02  XRECORD-NUMBER   PIC 9(6).
+           02  FILLER   PIC X(79).
+           02  XLABEL-TYPE   PIC X(1).
+       PROCEDURE DIVISION USING RECORDS-IN-ERROR  SQ-FS3-R1-G-120
+                   ERROR-FLAG  COUNT-OF-RECORDS.
+       SECT-IC113-0001 SECTION.
+       LINK-TEST-08.
+           ADD 1 TO COUNT-OF-RECORDS.
+           IF COUNT-OF-RECORDS NOT EQUAL TO XRECORD-NUMBER
+               GO TO LINK-FAIL-08.
+           IF REELUNIT-NUMBER-GROUP NOT EQUAL TO "/0"
+               GO TO LINK-FAIL-08.
+           IF XFILE-NAME NOT EQUAL TO "SQ-FS3"
+               GO TO LINK-FAIL-08.
+           IF XRECORD-NAME NOT EQUAL TO "R1-F-G"
+               GO TO LINK-FAIL-08.
+           IF XLABEL-TYPE NOT EQUAL TO "S"
+               GO TO LINK-FAIL-08.
+       LINK-EXIT-08.
+           EXIT PROGRAM.
+       LINK-FAIL-08.
+           ADD 1 TO RECORDS-IN-ERROR.
+           MOVE 1 TO ERROR-FLAG.
+           GO TO LINK-EXIT-08.
+      *> END-OF,IC113A

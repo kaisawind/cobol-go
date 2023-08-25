@@ -1,0 +1,260 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n             
+					(programName 
+						(cobolWord RL301M)) .\n      )) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       )))) 
+				(environmentDivisionBody 
+					(inputOutputSection INPUT-OUTPUT SECTION .\n        
+						(inputOutputSectionParagraph 
+							(fileControlParagraph FILE-CONTROL .\n            
+								(fileControlEntry 
+									(selectClause SELECT 
+										(fileName 
+											(cobolWord TFIL))) 
+									(fileControlClause 
+										(assignClause ASSIGN 
+											(assignmentName 
+												(systemName 
+													(cobolWord XXXXX021))))) 
+									(fileControlClause 
+										(organizationClause ORGANIZATION IS RELATIVE)) 
+									(fileControlClause 
+										(accessModeClause ACCESS MODE IS RANDOM)) 
+									(fileControlClause 
+										(relativeKeyClause RELATIVE KEY IS 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord RKEY))))))) .\n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(fileSection FILE SECTION .\n        
+						(fileDescriptionEntry FD 
+							(fileName 
+								(cobolWord TFIL)) .\n        
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 01 
+									(dataName 
+										(cobolWord FREC)) .\n           )) 
+							(dataDescriptionEntry 
+								(dataDescriptionEntryFormat1 03 
+									(dataName 
+										(cobolWord GUBBINS)) 
+									(dataPictureClause PIC 
+										(pictureString 
+											(pictureChars 
+												(integerLiteral 9)) 
+											(pictureChars () 
+											(pictureChars 
+												(integerLiteral 8)) 
+											(pictureChars )))) .\n       \n       ))))) 
+				(dataDivisionSection 
+					(workingStorageSection WORKING-STORAGE SECTION .\n        
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord VARIABLES)) .\n         )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 03 
+								(dataName 
+									(cobolWord STATE)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 4)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal 
+												(figurativeConstant SPACES))))) .\n         )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 03 
+								(dataName 
+									(cobolWord RKEY)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 8)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal 
+												(figurativeConstant ZERO))))) .\n       \n       ))))) 
+			(procedureDivision PROCEDURE DIVISION .\n       \n        
+				(procedureDivisionBody 
+					(paragraphs 
+						(paragraph 
+							(paragraphName 
+								(cobolWord RL301M-CONTROL)) .\n            
+							(sentence 
+								(statement 
+									(openStatement OPEN 
+										(openIOStatement I-O 
+											(fileName 
+												(cobolWord TFIL))))) .\n           ) 
+							(sentence 
+								(statement 
+									(performStatement PERFORM 
+										(performProcedureStatement 
+											(procedureName 
+												(paragraphName 
+													(cobolWord RL301M-READ))) THRU 
+											(procedureName 
+												(paragraphName 
+													(cobolWord RL301M-DELETE))) 
+											(performType 
+												(performTimes 
+													(integerLiteral 1) TIMES))))) .\n           ) 
+							(sentence 
+								(statement 
+									(closeStatement CLOSE 
+										(closeFile 
+											(fileName 
+												(cobolWord TFIL))))) .\n           ) 
+							(sentence 
+								(statement 
+									(stopStatement STOP RUN)) .\n       \n       )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord RL301M-READ)) .\n            
+							(sentence 
+								(statement 
+									(readStatement READ 
+										(fileName 
+											(cobolWord TFIL)) 
+										(invalidKeyPhrase INVALID KEY 
+											(statement 
+												(performStatement PERFORM 
+													(performProcedureStatement 
+														(procedureName 
+															(paragraphName 
+																(cobolWord INV-PARA))))))) 
+										(notInvalidKeyPhrase NOT INVALID KEY 
+											(statement 
+												(performStatement PERFORM 
+													(performProcedureStatement 
+														(procedureName 
+															(paragraphName 
+																(cobolWord DONE-PARA))))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord RL301M-REWRITE)) .\n            
+							(sentence 
+								(statement 
+									(rewriteStatement REWRITE 
+										(recordName 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord FREC))))) 
+										(invalidKeyPhrase INVALID KEY 
+											(statement 
+												(performStatement PERFORM 
+													(performProcedureStatement 
+														(procedureName 
+															(paragraphName 
+																(cobolWord INV-PARA))))))) 
+										(notInvalidKeyPhrase NOT INVALID KEY 
+											(statement 
+												(performStatement PERFORM 
+													(performProcedureStatement 
+														(procedureName 
+															(paragraphName 
+																(cobolWord DONE-PARA))))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord RL301M-WRITE)) .\n            
+							(sentence 
+								(statement 
+									(writeStatement WRITE 
+										(recordName 
+											(qualifiedDataName 
+												(qualifiedDataNameFormat1 
+													(dataName 
+														(cobolWord FREC))))) 
+										(invalidKeyPhrase INVALID KEY 
+											(statement 
+												(performStatement PERFORM 
+													(performProcedureStatement 
+														(procedureName 
+															(paragraphName 
+																(cobolWord INV-PARA))))))) 
+										(notInvalidKeyPhrase NOT INVALID KEY 
+											(statement 
+												(performStatement PERFORM 
+													(performProcedureStatement 
+														(procedureName 
+															(paragraphName 
+																(cobolWord DONE-PARA))))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord RL301M-DELETE)) .\n            
+							(sentence 
+								(statement 
+									(deleteStatement DELETE 
+										(fileName 
+											(cobolWord TFIL)) 
+										(invalidKeyPhrase INVALID KEY 
+											(statement 
+												(performStatement PERFORM 
+													(performProcedureStatement 
+														(procedureName 
+															(paragraphName 
+																(cobolWord INV-PARA))))))) 
+										(notInvalidKeyPhrase NOT INVALID KEY 
+											(statement 
+												(performStatement PERFORM 
+													(performProcedureStatement 
+														(procedureName 
+															(paragraphName 
+																(cobolWord DONE-PARA))))))))) .\n      )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord INV-PARA)) .\n            
+							(sentence 
+								(statement 
+									(moveStatement MOVE 
+										(moveToStatement 
+											(moveToSendingArea 
+												(literal "INVA")) TO 
+											(identifier 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord STATE)))))))) .\n       \n       )) 
+						(paragraph 
+							(paragraphName 
+								(cobolWord DONE-PARA)) .\n            
+							(sentence 
+								(statement 
+									(moveStatement MOVE 
+										(moveToStatement 
+											(moveToSendingArea 
+												(literal "DONE")) TO 
+											(identifier 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord STATE)))))))) .\n       \n      ))))))) <EOF>)

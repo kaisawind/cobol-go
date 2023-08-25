@@ -1,0 +1,540 @@
+(startRule 
+	(compilationUnit 
+		(programUnit 
+			(identificationDivision IDENTIFICATION DIVISION .\n        
+				(programIdParagraph PROGRAM-ID .\n            
+					(programName 
+						(cobolWord CM201M)) .\n       ) 
+				(identificationDivisionBody 
+					(authorParagraph AUTHOR .\n       
+						(commentEntry *>CE     FEDERAL COMPILER TESTING CENTER.))) 
+				(identificationDivisionBody 
+					(installationParagraph INSTALLATION .\n       
+						(commentEntry *>CE     GENERAL SERVICES ADMINISTRATION *>CE      AUTOMATED DATA AND TELECOMMUNICATION SERVICE. *>CE     SOFTWARE DEVELOPMENT OFFICE. *>CE     5203 LEESBURG PIKE  SUITE 1100 *>CE     FALLS CHURCH VIRGINIA 22041. *>CE  *>CE     PHONE   (703) 756-6153 *>CE  *>CE     " HIGH       ".))) 
+				(identificationDivisionBody 
+					(dateWrittenParagraph DATE-WRITTEN .\n       
+						(commentEntry *>CE     CCVS-74 VERSION 4.0 - 1980 JULY 1. *>CE     CREATION DATE     /    VALIDATION DATE *>CE     "4.2 ".))) 
+				(identificationDivisionBody 
+					(securityParagraph SECURITY .\n       
+						(commentEntry *>CE     NONE.)))) 
+			(environmentDivision ENVIRONMENT DIVISION .\n        
+				(environmentDivisionBody 
+					(configurationSection CONFIGURATION SECTION .\n        
+						(configurationSectionParagraph 
+							(sourceComputerParagraph SOURCE-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX082))) .\n       )) 
+						(configurationSectionParagraph 
+							(objectComputerParagraph OBJECT-COMPUTER .\n            
+								(computerName 
+									(systemName 
+										(cobolWord XXXXX083))) .\n       ))))) 
+			(dataDivision DATA DIVISION .\n        
+				(dataDivisionSection 
+					(workingStorageSection WORKING-STORAGE SECTION .\n        
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 77 
+								(dataName 
+									(cobolWord MSG-72)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 72)) 
+										(pictureChars )))) .\n       )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord RECOGNITION-MSG-1)) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 32)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal "RECEIPT OF MESSAGE FROM DEVICE """)))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord DEVICE-NAME)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 12)) 
+										(pictureChars )))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 18)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal """ IS ACKNOWLEDGED.")))) .\n       )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord RECOGNITION-MSG-2)) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 20)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal "QUEUE INVOLVED WAS """)))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord QUEUE-INVOLVED)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 48)) 
+										(pictureChars )))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars XX))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal """.")))) .\n       )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord RECOGNITION-MSG-3)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 41)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal "CM201M INVOKED BUT NO DATA WAS AVAILABLE.")))) .\n       )))) 
+				(dataDivisionSection 
+					(communicationSection COMMUNICATION SECTION .\n        
+						(communicationDescriptionEntry 
+							(communicationDescriptionEntryFormat1 CD 
+								(cdName 
+									(cobolWord CM-INQUE-1)) FOR INITIAL INPUT .\n       )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord INQUE-1-RECORD)) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord QUEUE-SET)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 48)) 
+										(pictureChars )))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 14)) 
+										(pictureChars )))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord SYM-SOURCE)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 12)) 
+										(pictureChars )))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord IN-LENGTH)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 4)) 
+										(pictureChars )))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars XXX))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord MSG-COUNT)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9)) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 6)) 
+										(pictureChars )))) .\n       )) 
+						(communicationDescriptionEntry 
+							(communicationDescriptionEntryFormat2 CD 
+								(cdName 
+									(cobolWord CM-OUTQUE-1)) FOR OUTPUT .\n       )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 01 
+								(dataName 
+									(cobolWord OUTQUE-1-RECORD)) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9999)))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(literal 
+												(numericLiteral 
+													(integerLiteral 1)))))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord OUT-LENGTH)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars 
+											(integerLiteral 9999)))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 FILLER 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars XXX))) .\n           )) 
+						(dataDescriptionEntry 
+							(dataDescriptionEntryFormat1 02 
+								(dataName 
+									(cobolWord SYM-DEST)) 
+								(dataPictureClause PIC 
+									(pictureString 
+										(pictureChars X) 
+										(pictureChars () 
+										(pictureChars 
+											(integerLiteral 12)) 
+										(pictureChars )))) 
+								(dataValueClause VALUE 
+									(dataValueInterval 
+										(dataValueIntervalFrom 
+											(cobolWord XXXXX032)))) .\n       ))))) 
+			(procedureDivision PROCEDURE DIVISION .\n        
+				(procedureDivisionBody paragraphs 
+					(procedureSection 
+						(procedureSectionHeader 
+							(sectionName 
+								(cobolWord SECT-CM201M-0001)) SECTION) .\n        
+						(paragraphs 
+							(paragraph 
+								(paragraphName 
+									(cobolWord CM201M-INIT)) .\n            
+								(sentence 
+									(statement 
+										(enableStatement ENABLE OUTPUT 
+											(cdName 
+												(cobolWord CM-OUTQUE-1)) WITH KEY 
+											(identifier 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord XXXXX033))))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord TAKE-NEXT-MSG)) .\n            
+								(sentence 
+									(statement 
+										(receiveStatement RECEIVE 
+											(receiveIntoStatement 
+												(cdName 
+													(cobolWord CM-INQUE-1)) MESSAGE INTO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord MSG-72))))) 
+												(receiveNoData NO DATA 
+													(statement 
+														(goToStatement GO TO 
+															(goToStatementSimple 
+																(procedureName 
+																	(paragraphName 
+																		(cobolWord SOMETHING-IS-WRONG-HERE)))))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord QUEUE-SET)))))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord QUEUE-INVOLVED)))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord SYM-SOURCE)))))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord DEVICE-NAME)))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 62)))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord OUT-LENGTH)))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(sendStatement SEND 
+											(sendStatementSync 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord CM-OUTQUE-1))))) 
+												(sendFromPhrase FROM 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord RECOGNITION-MSG-1)))))) 
+												(sendWithPhrase WITH EMI)))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 70)))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord OUT-LENGTH)))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(sendStatement SEND 
+											(sendStatementSync 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord CM-OUTQUE-1))))) 
+												(sendFromPhrase FROM 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord RECOGNITION-MSG-2)))))) 
+												(sendWithPhrase WITH EMI)))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord IN-LENGTH)))))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord OUT-LENGTH)))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(sendStatement SEND 
+											(sendStatementSync 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord CM-OUTQUE-1))))) 
+												(sendFromPhrase FROM 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord MSG-72)))))) 
+												(sendWithPhrase WITH EGI)))) .\n           ) 
+								(sentence 
+									(statement 
+										(acceptStatement ACCEPT 
+											(identifier 
+												(qualifiedDataName 
+													(qualifiedDataNameFormat1 
+														(dataName 
+															(cobolWord CM-INQUE-1))))) 
+											(acceptMessageCountStatement MESSAGE COUNT))) .\n           ) 
+								(sentence 
+									(statement 
+										(ifStatement IF 
+											(condition 
+												(combinableCondition 
+													(simpleCondition 
+														(relationCondition 
+															(relationArithmeticComparison 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(identifier 
+																					(qualifiedDataName 
+																						(qualifiedDataNameFormat1 
+																							(dataName 
+																								(cobolWord MSG-COUNT))))))))) 
+																(relationalOperator IS EQUAL TO) 
+																(arithmeticExpression 
+																	(multDivs 
+																		(powers 
+																			(basis 
+																				(literal 
+																					(numericLiteral 
+																						(integerLiteral 0)))))))))))) 
+											(ifThen 
+												(statement 
+													(stopStatement STOP RUN))) 
+											(ifElse ELSE 
+												(statement 
+													(goToStatement GO TO 
+														(goToStatementSimple 
+															(procedureName 
+																(paragraphName 
+																	(cobolWord TAKE-NEXT-MSG))))))))) .\n       )) 
+							(paragraph 
+								(paragraphName 
+									(cobolWord SOMETHING-IS-WRONG-HERE)) .\n            
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 40)))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord OUT-LENGTH)))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(sendStatement SEND 
+											(sendStatementSync 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord CM-OUTQUE-1))))) 
+												(sendFromPhrase FROM 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord RECOGNITION-MSG-3)))))) 
+												(sendWithPhrase WITH EMI)))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord QUEUE-SET)))))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord QUEUE-INVOLVED)))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(moveStatement MOVE 
+											(moveToStatement 
+												(moveToSendingArea 
+													(literal 
+														(numericLiteral 
+															(integerLiteral 70)))) TO 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord OUT-LENGTH)))))))) .\n           ) 
+								(sentence 
+									(statement 
+										(sendStatement SEND 
+											(sendStatementSync 
+												(identifier 
+													(qualifiedDataName 
+														(qualifiedDataNameFormat1 
+															(dataName 
+																(cobolWord CM-OUTQUE-1))))) 
+												(sendFromPhrase FROM 
+													(identifier 
+														(qualifiedDataName 
+															(qualifiedDataNameFormat1 
+																(dataName 
+																	(cobolWord RECOGNITION-MSG-2)))))) 
+												(sendWithPhrase WITH EGI)))) .\n           ) 
+								(sentence 
+									(statement 
+										(stopStatement STOP RUN)) .\n      )))))))) <EOF>)

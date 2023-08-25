@@ -1,0 +1,2801 @@
+      *> HEADER,COBOL,IX215A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IX215A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>     THE PURPOSE OF THIS PROGRAM IS TO TEST THE ABILITY TO
+      *>     DESCRIBE THE PRIME RECORD KEY AND THE ALTERNATE RECORD KEYS
+      *>     IN A REDEFINES CLAUSES AND TO TEST THE USE OF QUALIFICATION
+      *>     OF THE RECORD KEYS.  THE PROGRAM IS BROKEN INTO THREE SEC-
+      *>     TIONS.  THE FIRST SECTION TESTS THE ABILITY TO USE A
+      *>     REDEFINED DATA ITEM OR A DATA ITEM SUBORDINATE TO IT CON-
+      *>     TAINING THE LEFTMOST CHARACTER POSTIONS OF THE REDEFINED DATA
+      *>     ITEM IN THE KEY PHRASE OF THE START STATEMENT.  THE SECOND
+      *>     SECTION TESTS THE ABILITY TO USE A RECORD KEY WHICH IS NESTED
+      *>     IN REDEFINES OR A DATA ITEM SUBORDINATE TO IT THAT CONTAINS
+      *>     THE LEFTMOST CHARACTER POSITIONS OF A REDEFINED DATA ITEM
+      *>     WHICH IS NESTED IN REDEFINES IN THE KEY PHRASE OF THE START
+      *>     STATEMENT.  THE THIRD SECTION TESTS THE USE OF QUALIFICATION
+      *>     OF THE RECORD KEYS.  DIFFERENT KEY VALUES ARE USED FOR
+      *>     TESTING.  IF A KEY VALUE IS PROVIDED WHICH MATCHES A RECORD
+      *>     IN THE FILE THE EXECUTION OF A START STATEMENT FOLLOWED BY A
+      *>     READ NEXT STATEMENT IS EXPECTED TO MADE AVAILABLE THE RECORD.
+      *>     IF A KEY VALUE IS PROVIDED WHICH DOES NOT MATCH ANY RECORD IN
+      *>     THE FILE THEN THE INVALID KEY PATH IS EXPECTED TO BE TAKEN.
+      *> 
+      *>        REFERENCE    AMERICAN NATIONAL STANDARD
+      *>                     PROGRAMMING LANGUAGE COBOL, X3.23-1985.
+      *>                     SECTION IX, INDEX I-O, THE START
+      *>                     STATEMENT.  PARAGRAPHS 4.7.3 (2), (3), (4); 
+      *>                                            4.7.4 (1), (4), (5), 
+      *>                                            (10)   AND
+      *>                     THE REDEFINES CLAUSE PAGE VI-39 5.10.4 (1), 
+      *>                                                           (2).
+      *> 
+      *>     BEFORE EACH TEST THE RECORD KEY IS LOAD WITH A KEY VALUE
+      *>     WHICH MAY OR MAY NOT BE A VALID KEY FOR THE FILE.  ALSO
+      *>     BEFORE EACH STEP IN A TEST AN INITIALIZATION PROCEDURE MAY OR
+      *>     MAY NOT BE PERFORMED WHICH MAKES AVAILABLE RECORD NUMBER 200.
+      *>     IF DURING THIS PROCEDURE AN INVALID KEY OCCURS THE TEST IS
+      *>     DELETED.
+      *> 
+      *>     BEFORE EACH SECTION A INDEXED FILE IS CREATED CONTAINING TWO
+      *>     ALTERNATE KEY AND THE ONE REQUIRED RECORD KEY FOR THE FILE.
+      *>     IMMEDIATELY FOLLOWING FILE CREATION THE FILE IS READ AND THE
+      *>     RECORDS OF THE FILE VERIFIED FOR ACCURACY.  NEXT THE TESTS
+      *>     ARE EXECUTED USING THE READ, DELETE, REWRITE, and START
+      *>     STATEMENTS.
+      *> 
+      *>     THE RECORDS IN THE FILE ARE CREATED IN SEQUENTIAL ORDER BY
+      *>     RECORD KEY VALUE.  FOLLOWING IS A SAMPLE OF THE DATA CONTENTS
+      *>     FOR THE RECORD KEY AND TWO ALTERNATE RECORD KEYS IN THE FILE.
+      *> 
+      *>   REC-NO RECORD-KEY     ALTERNATE-KEY-1      ALTERNATE-KEY-2
+      *>   ------ ----------     ---------------      ---------------
+      *>   001   BBBBBBBBBC002  EEEEEEEEEF002ALTKEY1  WWWWWWWWWV398ALTKEY2
+      *>   002   BBBBBBBBCC004  EEEEEEEEFF004ALTKEY1  WWWWWWWWVV396ALTKEY2
+      *>   003   BBBBBBBCCC006  EEEEEEEFFF006ALTKEY1  WWWWWWWVVV394ALTKEY2
+      *>    .          .                  .                     .
+      *>    .          .                  .                     .
+      *>    .          .                  .                     .
+      *>   010   CCCCCCCCCC020  FFFFFFFFFF020ALTKEY1  VVVVVVVVVV380ALTKEY2
+      *>   011   CCCCCCCCCD022  FFFFFFFFFG022ALTKEY1  VVVVVVVVVV380ALTKEY2
+      *>   012   CCCCCCCCDD024  FFFFFFFFGG024ALTKEY1  VVVVVVVVUU376ALTKEY2
+      *>    .          .                  .                     .
+      *>    .          .                  .                     .
+      *>    .          .                  .                     .
+      *>   200   UUUUUUUUUU400  YYYYYYYYYY400ALTKEY1   DDDDDDDDDD000ALTKEY
+      *> 
+      *>    NOTE 1 - ALTERNATE-KEY-2 CONTAINS DUPLICATE KEYS EVERY 10TH
+      *>             AND 11TH RECORDS.
+      *> 
+      *>    NOTE 2 - THE FIRST 50 RECORDS AND LAST 25 RECORDS OF THE FILE
+      *>             FOLLOW THE ABOVE SEQUENTIAL KEY PATTERN.  FOR THE
+      *>             MIDDEL 125 RECORDS ONLY THE NUMBER PART OF THE KEYS
+      *>             ARE VARIED AND VARIED IN THE SEQUENCE SHOWN ABOVE.
+      *>             THAT IS, RECORD KEY AND ALTERNATE-KEY-1 ARE
+      *>             INCREMENTED BY 2 ANDT THE ALTERNATE KEY-2 IS
+      *>             DECREMENTED BY 2 EACH TIME A RECORD IS WRITTEN TO THE
+      *>             FILE.  THE FILE IS DESIGNED TO BE LARGE ENOUGH SO
+      *>             THAT AN I-O OPERATION IS REQUIRED FOR EACH RECORD
+      *>             ACCESSED FROM THE FILE.
+      *> 
+      *>    X-CARD'S WHICH MUST BE REPLACED WITH IMPLEMENTOR-NAMES' IN
+      *>    THIS PROGRAM ARE:
+      *> 
+      *>             X-24      IMPLEMENTOR-NAME IN ASSIGN TO CLAUSE FOR
+      *>                         INDEXED FILE-1.
+      *>             X-25      IMPLEMENTOR-NAME IN ASSIGN TO CLAUSE FOR
+      *>                         INDEXED FILE-2.
+      *>             X-26      IMPLEMENTOR-NAME IN ASSIGN TO CLAUSE FOR
+      *>                         INDEXED FILE-3.
+      *>             X-44      SYSTEM-NAME IN ASSIGN TO CLAUSE FOR INDEXED
+      *>                         FILE-1 IF NEEDED.
+      *>             X-45      SYSTEM-NAME IN ASSIGN TO CLAUSE FOR INDEXED
+      *>                         FILE-2 IF NEEDED.
+      *>             X-46      SYSTEM-NAME IN ASSIGN TO CLAUSE FOR INDEXED
+      *>                         FILE-3 IF NEEDED.
+      *>             X-55      SYSTEM PRINTER.
+      *>             X-62   FOR RAW-DATA
+      *>             X-82      SOURCE-COMPUTER.
+      *>             X-83      OBJECT-COMPUTER.
+      *> 
+      *> *****************************************************************
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083
+                PROGRAM COLLATING SEQUENCE IS FOR-INX-START-TEST.
+       SPECIAL-NAMES.
+           ALPHABET
+           FOR-INX-START-TEST IS "WVUTSRJIHGFEDCB".
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+      *>     SELECT RAW-DATA   ASSIGN TO
+      *>     XXXXX062
+      *>            ORGANIZATION IS INDEXED
+      *>            ACCESS MODE IS RANDOM
+      *>            RECORD KEY IS RAW-DATA-KEY.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+           SELECT  IX-FD1
+           ASSIGN TO
+           XXXXX024
+      *>     XXXXX044
+              ACCESS MODE IS DYNAMIC
+              RECORD KEY IS IX-FD1-KEY
+              ALTERNATE RECORD KEY IS IX-FD1-ALTKEY1
+              ALTERNATE RECORD KEY IS IX-FD1-ALTKEY2 WITH DUPLICATES
+              ORGANIZATION IS INDEXED.
+           SELECT  IX-FD2
+           ASSIGN TO
+           XXXXX025
+      *>     XXXXX045
+              ACCESS MODE IS DYNAMIC
+              ORGANIZATION IS INDEXED
+              RECORD KEY IS IX-FD2-KEY
+              ALTERNATE RECORD KEY IS IX-FD2-ALTKEY1
+              ALTERNATE RECORD KEY IS IX-FD2-ALTKEY2 WITH DUPLICATES
+                      .
+           SELECT  IX-FD3
+           ASSIGN TO
+           XXXXX026
+      *>     XXXXX046
+              ACCESS MODE IS DYNAMIC
+              ORGANIZATION IS INDEXED
+              RECORD KEY IS IX-FD3-KEY IN IX-FD3-RECKEY-AREA
+              ALTERNATE RECORD KEY IS IX-FD3-KEY OF
+               IX-FD3-ALTKEY1-AREA
+              ALTERNATE RECORD KEY IS IX-FD3-KEY
+               IN IX-FD3-ALTKEY2-AREA
+              WITH DUPLICATES
+                    .
+       DATA DIVISION.
+       FILE SECTION.
+      *> 
+      *> FD  RAW-DATA.
+      *> 
+      *> 01  RAW-DATA-SATZ.
+      *>     05  RAW-DATA-KEY        PIC X(6).
+      *>     05  C-DATE              PIC 9(6).
+      *>     05  C-TIME              PIC 9(8).
+      *>     05  C-NO-OF-TESTS       PIC 99.
+      *>     05  C-OK                PIC 999.
+      *>     05  C-ALL               PIC 999.
+      *>     05  C-FAIL              PIC 999.
+      *>     05  C-DELETED           PIC 999.
+      *>     05  C-INSPECT           PIC 999.
+      *>     05  C-NOTE              PIC X(13).
+      *>     05  C-INDENT            PIC X.
+      *>     05  C-ABORT             PIC X(8).
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       FD  IX-FD1
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS IX-FD1R1-F-G-240
+           RECORD CONTAINS 240 CHARACTERS.
+       01  IX-FD1R1-F-G-240.
+           05 IX-FD1-REC-120           PICTURE X(120).
+           05 IX-FD1-REC-121-240.
+              10 FILLER                PICTURE X(8).
+              10 IX-REC-KEY-AREA.
+                 15 IX-FD1-KEY.
+                    20 IX-FD1-KEY-1-10.
+                       25 IX-FD1-KEY-1-5      PICTURE X(5).
+                       25 IX-FD1-KEY-6-10     PICTURE X(5).
+                     20 IX-FD1-KEY-11-13      PICTURE X(3).
+                 15 IX-REDF-RECKEY REDEFINES IX-FD1-KEY.
+                    20 R-RECKEY-1-7    PICTURE X(7).
+                    20 R-REDF-RECKEY-1-7 REDEFINES R-RECKEY-1-7.
+                       25 R-RECKEY-1-5        PICTURE X(5).
+                       25 R-RECKEY-6-7        PICTURE XX.
+                    20 R-RECKEY-8-13   PICTURE X(6).
+                 15 FILLER             PICTURE X(16).
+              10 FILLER                PICTURE X(9).
+              10 IX-ALT-KEY1-AREA.
+                 15 IX-FD1-ALTKEY1.
+                    20 IX-FDW-ALTKEY1-1-10.
+                       25 IX-FDW-ALTKEY1-1-5  PICTURE X(5).
+                       25 IX-FDW-ALTKEY1-6-10 PICTURE X(5).
+                    20 IX-FDW-ALTKEY1-11-13   PICTURE X(3).
+                    20 IX-FDW-ALTKEY1-14-20   PICTURE X(7).
+                 15 IX-REDF-ALTKEY1 REDEFINES IX-FD1-ALTKEY1.
+                    20 R-ALTKEY1-1-6   PICTURE X(6).
+                    20 R-REDF-ALTKEY1-1-6 REDEFINES R-ALTKEY1-1-6.
+                       25 R-ALTKEY1-1-4       PICTURE X(4).
+                       25 R-ALTKEY1-5-6       PICTURE XX.
+                    20 R-ALTKEY1-7-10  PICTURE X(4).
+                    20 R-ALTKEY1-11-20 PICTURE X(10).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(9).
+              10 IX-ALT-KEY2-AREA.
+                 15 IX-FD1-ALTKEY2.
+                    20 IX-FDW-ALTKEY2-1-10.
+                       25 IX-FDW-ALTKEY2-1-5  PICTURE X(5).
+                       25 IX-FDW-ALTKEY2-6-10 PICTURE X(5).
+                    20 IX-FDW-ALTKEY2-11-13   PICTURE X(3).
+                    20 IX-FDW-ALTKEY2-14-20   PICTURE X(7).
+                 15 IX-REDF-ALTKEY2 REDEFINES IX-FD1-ALTKEY2.
+                    20 R-ALTKEY2-1-3          PICTURE XXX.
+                    20 R-REDF-ALTKEY2-1-3 REDEFINES R-ALTKEY2-1-3.
+                       25 R-ALTKEY2-1-2       PICTURE XX.
+                       25 R-ALTKEY2-3-3       PICTURE X.
+                    20 R-ALTKEY2-4-20         PICTURE X(17).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(7).
+       FD  IX-FD2
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS IX-FD2R1-F-G-241
+           BLOCK CONTAINS 4 RECORDS
+           RECORD CONTAINS 241 CHARACTERS.
+       01  IX-FD2R1-F-G-241.
+         03 IX-FD2-REC-241.
+           05 IX-FD2-REC-120           PICTURE X(120).
+           05 IX-FD2-REC-121-241.
+              10 IX-FD2-RECKEY-AREA    PICTURE X(37).
+              10 IX-FD2-RECKEY-AREA2 REDEFINES IX-FD2-RECKEY-AREA.
+                 15 IX-FD2-RECKEY-AREA2-1  PICTURE X(23).
+                 15 IX-FD2-RECKEY-AREA2-2  PICTURE X(14).
+              10 IX-FD2-RECKEY-AREA3 REDEFINES IX-FD2-RECKEY-AREA.
+                 15 FILLER             PICTURE X(8).
+                 15 IX-FD2-KEY         PICTURE X(13).
+                 15 FILLER             PICTURE X(16).
+              10 IX-FD2-RECKEY-AREA4 REDEFINES IX-FD2-RECKEY-AREA.
+                 15 FILLER             PICTURE X(8).
+                 15 IX-FD2-RECKEY-REDF PICTURE X(13).
+                 15 IX-FD2-RECKEY-REDF2 REDEFINES IX-FD2-RECKEY-REDF.
+                    20 IX-FD2-RECKEY-1-6  PICTURE X(6).
+                    20 IX-FD2-RECKEY-7-13  PICTURE X(7).
+                 15 FILLER             PICTURE X(16).
+              10 FILLER                PICTURE X(9).
+              10 IX-FD2-ALTKEY1-AREA   PICTURE X(29).
+              10 IX-FD2-ALTKEY1-AREA2 REDEFINES IX-FD2-ALTKEY1-AREA.
+                 15 IX-FD2-ALTKEY1-1-6  PICTURE X(6).
+                 15 IX-FD2-ALTKEY1-7-20  PICTURE X(14).
+                 15 FILLER             PICTURE X(9).
+              10 IX-FD2-ALTKEY1-AREA3 REDEFINES IX-FD2-ALTKEY1-AREA.
+                 15 IX-FD2-ALTKEY1.
+                    20 IX-FD2-ALTKEY1-10  PICTURE X(10).
+                    20 IX-FD2-ALTKEY1-11-20  PICTURE X(10).
+                 15 IX-FD2-REDF-ALTKEY1 REDEFINES IX-FD2-ALTKEY1.
+                    20 IX-FD2-ALTKEY1-1-5   PICTURE X(5).
+                    20 IX-FD2-ALTKEY1-6-20  PICTURE X(15).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(9).
+              10 IX-FD2-ALTKEY2-AREA   PICTURE X(29).
+              10 IX-FD2-ALTKEY2-AREA2 REDEFINES IX-FD2-ALTKEY2-AREA.
+                 15 IX-FD2-ALTKEY2     PICTURE X(20).
+                 15 FILLER             PICTURE X(9).
+              10 IX-FD2-ALTKEY2-AREA3 REDEFINES IX-FD2-ALTKEY2-AREA.
+                 15 IX-FD2-ALTKEY2-1-6  PICTURE X(6).
+                 15 IX-FD2-REDF-ALTKEY2-1-6
+                    REDEFINES IX-FD2-ALTKEY2-1-6.
+                    20 IX-FD2-ALTKEY2-1-3  PICTURE XXX.
+                    20 IX-FD2-ALTKEY2-4-6  PICTURE XXX.
+                 15 IX-FD2-ALTKEY2-7-20  PICTURE X(14).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(8).
+          03  IX-FD2-REC-241-240 REDEFINES IX-FD2-REC-241.
+             05 IX-FD2-REC-240   PIC X(240).
+             05 FILLER           PIC X.
+       FD  IX-FD3
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS IX-FD3R1-F-G-242
+           RECORD CONTAINS 242 CHARACTERS
+           BLOCK CONTAINS 1694 CHARACTERS.
+       01  IX-FD3R1-F-G-242.
+         03 IX-FD3-REC-242.
+           05 IX-FD3-REC-120           PICTURE X(120).
+           05 IX-FD3-REC-121-242.
+              10 FILLER                PICTURE X(8).
+              10 IX-FD3-RECKEY-AREA.
+                 15 IX-FD3-KEY         PICTURE X(13).
+              10 FILLER                PICTURE X(25).
+              10 IX-FD3-ALTKEY1-AREA.
+                 15 IX-FD3-KEY         PICTURE X(20).
+              10 FILLER                PICTURE X(18).
+              10 IX-FD3-ALTKEY2-AREA.
+                 15 IX-FD3-KEY         PICTURE X(20).
+              10 FILLER                PICTURE X(18).
+           03  IX-FD3-REC-240 REDEFINES IX-FD3-REC-242.
+             05  IX-FD3-240            PICTURE X(240).
+             05  FILLER                PICTURE XX.
+       
+       
+       WORKING-STORAGE SECTION.
+       01  WRK-FDW-RECKEY.
+           05 FDW-RECKEY-1-13.
+              10 FDW-RECKEY-1-10       PICTURE X(10).
+              10 FDW-RECKEY-11-13      PICTURE 9(3).
+           05 FILLER                   PICTURE X(16)  VALUE SPACE.
+       01  WRK-FDW-ALTKEY1.
+            05 FDW-ALTKEY1-1-20.
+             10  FDW-ALTKEY1-1-10.
+              15 FDW-ALTKEY1-1-5       PICTURE X(5).
+              15 FDW-ALTKEY1-6-10      PICTURE X(5).
+             10 FDW-ALTKEY1-11-13      PICTURE 9(3).
+             10 FDW-ALTKEY1-14-20      PICTURE X(7).
+           05 FILLER                   PICTURE X(9)  VALUE SPACE.
+       01  WRK-FDW-ALTKEY2.
+           05 FDW-ALTKEY2-1-20.
+              10 FDW-ALTKEY2-1-10.
+                 15 FDW-ALTKEY2-1-5    PICTURE X(5).
+                 15 FDW-ALTKEY2-6-10   PICTURE X(5).
+              10 FDW-ALTKEY2-11-13     PICTURE 9(3).
+              10 FDW-ALTKEY2-14-20     PICTURE X(7).
+           05 FILLER                   PICTURE X(9) VALUE SPACE.
+       01  RECNO                       PICTURE 9(5)  VALUE ZERO.
+       01  EXCUT-COUNTER-06V00         PICTURE 9(6) VALUE ZERO.
+       01  KEYSUB                      PICTURE 9(3) COMPUTATIONAL.
+       01  INVKEY-COUNTER              PICTURE 9(3) COMPUTATIONAL.
+       01  RECORDS-WRITTEN             PICTURE 9(3).
+       01  RECKEY-NUM                  PICTURE 9(3).
+       01  ALTKEY1-NUM                 PICTURE 9(3).
+       01  ALTKEY2-NUM                 PICTURE 9(3).
+       01  FAIL-SW                     PICTURE 9 VALUE ZERO.
+       01  RECORD-KEY-CONTENT.
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBBBBC002EEEEEEEEEF002ALTKEY1WWWWWWWWWV398ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBBBCC004EEEEEEEEFF004ALTKEY1WWWWWWWWVV396ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBBCCC006EEEEEEEFFF006ALTKEY1WWWWWWWVVV394ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBCCCC008EEEEEEFFFF008ALTKEY1WWWWWWVVVV392ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBCCCCC010EEEEEFFFFF010ALTKEY1WWWWWVVVVV390ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBCCCCCC012EEEEFFFFFF012ALTKEY1WWWWVVVVVV388ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBCCCCCCC014EEEFFFFFFF014ALTKEY1WWWVVVVVVV386ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBCCCCCCCC016EEFFFFFFFF016ALTKEY1WWVVVVVVVV384ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BCCCCCCCCC018EFFFFFFFFF018ALTKEY1WVVVVVVVVV382ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCCCC020FFFFFFFFFF020ALTKEY1VVVVVVVVVV380ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCCCD022FFFFFFFFFG022ALTKEY1VVVVVVVVVV380ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCCDD024FFFFFFFFGG024ALTKEY1VVVVVVVVUU376ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCDDD026FFFFFFFGGG026ALTKEY1VVVVVVVUUU374ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCDDDD028FFFFFFGGGG028ALTKEY1VVVVVVUUUU372ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCDDDDD030FFFFFGGGGG030ALTKEY1VVVVVUUUUU370ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCDDDDDD032FFFFGGGGGG032ALTKEY1VVVVUUUUUU368ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCDDDDDDD034FFFGGGGGGG034ALTKEY1VVVUUUUUUU366ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCDDDDDDDD036FFGGGGGGGG036ALTKEY1VVUUUUUUUU364ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CDDDDDDDDD038FGGGGGGGGG038ALTKEY1VUUUUUUUUU362ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDDDD040GGGGGGGGGG040ALTKEY1UUUUUUUUUU360ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDDDE042GGGGGGGGGH042ALTKEY1UUUUUUUUUU360ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDDEE044GGGGGGGGHH044ALTKEY1UUUUUUUUTT356ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDEEE046GGGGGGGHHH046ALTKEY1UUUUUUUTTT354ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDEEEE048GGGGGGHHHH048ALTKEY1UUUUUUTTTT352ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDEEEEE050GGGGGHHHHH050ALTKEY1UUUUUTTTTT350ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDEEEEEE052GGGGHHHHHH052ALTKEY1UUUUTTTTTT348ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDEEEEEEE054GGGHHHHHHH054ALTKEY1UUUTTTTTTT346ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDEEEEEEEE056GGHHHHHHHH056ALTKEY1UUTTTTTTTT344ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DEEEEEEEEE058GHHHHHHHHH058ALTKEY1UTTTTTTTTT342ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEEEE060HHHHHHHHHH060ALTKEY1TTTTTTTTTT340ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEEEF062HHHHHHHHHI062ALTKEY1TTTTTTTTTT340ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEEFF064HHHHHHHHII064ALTKEY1TTTTTTTTSS336ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEFFF066HHHHHHHIII066ALTKEY1TTTTTTTSSS334ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEFFFF068HHHHHHIIII068ALTKEY1TTTTTTSSSS332ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEFFFFF070HHHHHIIIII070ALTKEY1TTTTTSSSSS330ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEFFFFFF072HHHHIIIIII072ALTKEY1TTTTSSSSSS328ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEFFFFFFF074HHHIIIIIII074ALTKEY1TTTSSSSSSS326ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEFFFFFFFF076HHIIIIIIII076ALTKEY1TTSSSSSSSS324ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EFFFFFFFFF078HIIIIIIIII078ALTKEY1TSSSSSSSSS322ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFFFF080IIIIIIIIII080ALTKEY1SSSSSSSSSS320ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFFFG082IIIIIIIIIJ082ALTKEY1SSSSSSSSSS320ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFFGG084IIIIIIIIJJ084ALTKEY1SSSSSSSSRR316ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFGGG086IIIIIIIJJJ086ALTKEY1SSSSSSSRRR314ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFGGGG088IIIIIIJJJJ088ALTKEY1SSSSSSRRRR312ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFGGGGG090IIIIIJJJJJ090ALTKEY1SSSSSRRRRR310ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFGGGGGG092IIIIJJJJJJ092ALTKEY1SSSSRRRRRR308ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFGGGGGGG094IIIJJJJJJJ094ALTKEY1SSSRRRRRRR306ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFGGGGGGGG096IIJJJJJJJJ096ALTKEY1SSRRRRRRRR304ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FGGGGGGGGG098IJJJJJJJJJ098ALTKEY1SRRRRRRRRR302ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "GGGGGGGGGG100JJJJJJJJJJ100ALTKEY1RRRRRRRRRR300ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RRRRSSSSSS352VVVVWWWWWW352ALTKEY1GGGGFFFFFF048ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RRRSSSSSSS354VVVWWWWWWW354ALTKEY1GGGFFFFFFF046ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RRSSSSSSSS356VVWWWWWWWW356ALTKEY1GGFFFFFFFF044ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RSSSSSSSSS358VWWWWWWWWW358ALTKEY1GFFFFFFFFF042ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSSSS360WWWWWWWWWW360ALTKEY1FFFFFFFFFF040ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSSST362WWWWWWWWWX362ALTKEY1FFFFFFFFFF040ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSSTT364WWWWWWWWXX364ALTKEY1FFFFFFFFEE036ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSTTT366WWWWWWWXXX366ALTKEY1FFFFFFFEEE034ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSTTTT368WWWWWWXXXX368ALTKEY1FFFFFFEEEE032ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSTTTTT370WWWWWXXXXX370ALTKEY1FFFFFEEEEE030ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSTTTTTT372WWWWXXXXXX372ALTKEY1FFFFEEEEEE028ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSTTTTTTT374WWWXXXXXXX374ALTKEY1FFFEEEEEEE026ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSTTTTTTTT376WWXXXXXXXX376ALTKEY1FFEEEEEEEE024ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "STTTTTTTTT378WXXXXXXXXX378ALTKEY1FEEEEEEEEE022ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTTTT380XXXXXXXXXX380ALTKEY1EEEEEEEEEE020ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTTTU382XXXXXXXXXY382ALTKEY1EEEEEEEEEE020ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTTUU384XXXXXXXXYY384ALTKEY1EEEEEEEEDD016ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTUUU386XXXXXXXYYY386ALTKEY1EEEEEEEDDD014ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTUUUU388XXXXXXYYYY388ALTKEY1EEEEEEDDDD012ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTUUUUU390XXXXXYYYYY390ALTKEY1EEEEEDDDDD010ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTUUUUUU392XXXXYYYYYY392ALTKEY1EEEEDDDDDD008ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTUUUUUUU394XXXYYYYYYY394ALTKEY1EEEDDDDDDD006ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTUUUUUUUU396XXYYYYYYYY396ALTKEY1EEDDDDDDDD004ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TUUUUUUUUU398XYYYYYYYYY398ALTKEY1EDDDDDDDDD002ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "UUUUUUUUUU400YYYYYYYYYY400ALTKEY1DDDDDDDDDD000ALTKEY2".
+       01  RECORD-KEY-DATA   REDEFINES  RECORD-KEY-CONTENT.
+           05 KEY-VALUES                  OCCURS 75  TIMES.
+             10 RECKEY-VALUE           PICTURE X(13).
+             10 ALTKEY1-VALUE          PICTURE X(20).
+             10 ALTKEY2-VALUE          PICTURE X(20).
+       01  INIT-FLAG                   PICTURE 9.
+       01  FILE-RECORD-INFORMATION-REC.
+           03 FILE-RECORD-INFO-SKELETON.
+              05 FILLER                 PICTURE X(48)       VALUE
+                   "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+              05 FILLER                 PICTURE X(46)       VALUE
+                   ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+              05 FILLER                 PICTURE X(26)       VALUE
+                   ",LFIL=000000,ORG=  ,LBLR= ".
+              05 FILLER                 PICTURE X(37)       VALUE
+                   ",RECKEY=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY1=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY2=                             ".
+              05 FILLER                 PICTURE X(7)        VALUE SPACE.
+           03 FILE-RECORD-INFO          OCCURS  10  TIMES.
+              05 FILE-RECORD-INFO-P1-120.
+                 07 FILLER              PIC X(5).
+                 07 XFILE-NAME           PIC X(6).
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-NAME         PIC X(6).
+                 07 FILLER              PIC X(1).
+                 07 REELUNIT-NUMBER     PIC 9(1).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-NUMBER       PIC 9(6).
+                 07 FILLER              PIC X(6).
+                 07 UPDATE-NUMBER       PIC 9(2).
+                 07 FILLER              PIC X(5).
+                 07 ODO-NUMBER          PIC 9(4).
+                 07 FILLER              PIC X(5).
+                 07 XPROGRAM-NAME        PIC X(5).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-LENGTH       PIC 9(6).
+                 07 FILLER              PIC X(7).
+                 07 CHARS-OR-RECORDS    PIC X(2).
+                 07 FILLER              PIC X(1).
+                 07 XBLOCK-SIZE          PIC 9(4).
+                 07 FILLER              PIC X(6).
+                 07 RECORDS-IN-FILE     PIC 9(6).
+                 07 FILLER              PIC X(5).
+                 07 XFILE-ORGANIZATION   PIC X(2).
+                 07 FILLER              PIC X(6).
+                 07 XLABEL-TYPE          PIC X(1).
+              05 FILE-RECORD-INFO-P121-240.
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-KEY          PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY1      PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY2      PIC X(29).
+                 07 FILLER              PIC X(7).
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "IX215A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-1.
+      *>     MOVE "ABORTED " TO C-ABORT.
+      *>     ADD 1 TO C-NO-OF-TESTS.
+      *>     ACCEPT C-DATE  FROM DATE.
+      *>     ACCEPT C-TIME  FROM TIME.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-1.
+      *> END-E-1.
+      *>     CLOSE RAW-DATA.
+           OPEN    OUTPUT PRINT-FILE.
+           MOVE  CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE    ZERO TO REC-SKL-SUB.
+           PERFORM CCVS-INIT-FILE 9 TIMES.
+       CCVS-INIT-FILE.
+           ADD     1 TO REC-SKL-SUB.
+           MOVE    FILE-RECORD-INFO-SKELETON
+                TO FILE-RECORD-INFO (REC-SKL-SUB).
+       CCVS-INIT-EXIT.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-2.
+      *>     MOVE "OK.     " TO C-ABORT.
+      *>     MOVE PASS-COUNTER TO C-OK.
+      *>     MOVE ERROR-HOLD   TO C-ALL.
+      *>     MOVE ERROR-COUNTER TO C-FAIL.
+      *>     MOVE DELETE-COUNTER TO C-DELETED.
+      *>     MOVE INSPECT-COUNTER TO C-INSPECT.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-2.
+      *> END-E-2.
+      *>     CLOSE RAW-DATA.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO   FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-0001-IX215A SECTION.
+       WRITE-INT-GF-01.
+           OPEN    OUTPUT IX-FD1.
+           MOVE    "IX-FD1" TO XFILE-NAME           (1).
+           MOVE    "R1-F-G" TO  XRECORD-NAME        (1).
+           MOVE    ZERO     TO  XRECORD-NUMBER      (1).
+           MOVE    "RC"     TO  CHARS-OR-RECORDS    (1).
+           MOVE "IX215"     TO  XPROGRAM-NAME       (1).
+           MOVE    240      TO  XRECORD-LENGTH      (1).
+           MOVE    001      TO  XBLOCK-SIZE         (1).
+           MOVE    "IX"     TO  XFILE-ORGANIZATION  (1).
+           MOVE    "S"      TO  XLABEL-TYPE         (1).
+           MOVE    200      TO  RECORDS-IN-FILE     (1).
+           MOVE    "CREATE-FILE-FD1" TO FEATURE.
+           MOVE    "WRITE-TEST-GF-01" TO PAR-NAME.
+           MOVE    ZERO TO KEYSUB.
+           MOVE    ZERO TO INVKEY-COUNTER.
+       WRITE-INIT-GF-01-01.
+           PERFORM WRITE-TEST-GF-01-R1 50 TIMES.
+           PERFORM WRITE-TEST-GF-01-R2 125 TIMES.
+           PERFORM WRITE-TEST-GF-01-R1 25 TIMES.
+           GO TO   WRITE-TEST-GF-01.
+       WRITE-TEST-GF-01-R1.
+           ADD     001  TO XRECORD-NUMBER (1).
+           ADD     001  TO  KEYSUB.
+           MOVE    RECKEY-VALUE (KEYSUB) TO FDW-RECKEY-1-13.
+           MOVE    ALTKEY1-VALUE (KEYSUB) TO FDW-ALTKEY1-1-20.
+           MOVE    ALTKEY2-VALUE (KEYSUB) TO FDW-ALTKEY2-1-20.
+           MOVE    WRK-FDW-RECKEY   TO    XRECORD-KEY (1).
+           MOVE    WRK-FDW-ALTKEY1  TO ALTERNATE-KEY1 (1).
+           MOVE    WRK-FDW-ALTKEY2  TO ALTERNATE-KEY2 (1).
+           MOVE    FILE-RECORD-INFO (1)  TO IX-FD1R1-F-G-240.
+           WRITE   IX-FD1R1-F-G-240
+                              INVALID KEY ADD 001 TO INVKEY-COUNTER.
+           ADD     001 TO  EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-01-R2.
+           ADD     002  TO FDW-RECKEY-11-13.
+           ADD     002 TO FDW-ALTKEY1-11-13.
+           SUBTRACT  002 FROM FDW-ALTKEY2-11-13.
+           ADD     001  TO XRECORD-NUMBER (1).
+           MOVE    WRK-FDW-RECKEY   TO    XRECORD-KEY (1).
+           MOVE    WRK-FDW-ALTKEY1  TO ALTERNATE-KEY1 (1).
+           MOVE    WRK-FDW-ALTKEY2  TO ALTERNATE-KEY2 (1).
+           MOVE    FILE-RECORD-INFO (1) TO IX-FD1R1-F-G-240.
+           WRITE   IX-FD1R1-F-G-240
+                              INVALID KEY ADD 001 TO INVKEY-COUNTER.
+           ADD     001 TO EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-01.
+           SUBTRACT INVKEY-COUNTER FROM EXCUT-COUNTER-06V00
+                   GIVING RECORDS-WRITTEN.
+           IF      RECORDS-WRITTEN EQUAL TO 200
+                   PERFORM  PASS
+                   MOVE "FILE IX-FD1 CREATED (200 RECORDS)" TO RE-MARK
+           ELSE    PERFORM FAIL
+                   MOVE
+             "IX-41;WRONG NUMBER OF RECORDS WRITTEN (MAY ALREADY EXIST)"
+                  TO  RE-MARK
+                   MOVE RECORDS-WRITTEN TO COMPUTED-18V0.
+           GO TO   WRITE-TEST-GF-01-END.
+       WRITE-DELETE-GF-01.
+           PERFORM DE-LETE.
+       WRITE-TEST-GF-01-END.
+           PERFORM  PRINT-DETAIL.
+           CLOSE   IX-FD1.
+       READ-INIT-F1-01.
+           OPEN    INPUT  IX-FD1.
+           MOVE    "READ-TEST-F1-01" TO PAR-NAME.
+           MOVE    "READ FILE IX-FD1" TO FEATURE.
+           MOVE    ZERO TO EXCUT-COUNTER-06V00.
+           MOVE    02   TO RECKEY-NUM.
+           MOVE    002 TO ALTKEY1-NUM.
+       READ-TEST-F1-01-R1.
+           READ    IX-FD1 NEXT RECORD AT END  GO TO READ-TEST-F1-01.
+           MOVE    IX-REC-KEY-AREA TO WRK-FDW-RECKEY.
+           MOVE    IX-ALT-KEY1-AREA TO WRK-FDW-ALTKEY1.
+           IF      FDW-RECKEY-11-13 EQUAL TO RECKEY-NUM
+                   AND FDW-ALTKEY1-11-13 EQUAL TO ALTKEY1-NUM
+                   NEXT SENTENCE
+                   ELSE
+                   PERFORM  READ-FAIL-F1-01.
+           IF      EXCUT-COUNTER-06V00 NOT LESS THAN 200
+                   GO TO READ-TEST-F1-01.
+           ADD     001  TO EXCUT-COUNTER-06V00.
+           ADD     002  TO RECKEY-NUM
+           ADD     002  TO ALTKEY1-NUM.
+           GO TO   READ-TEST-F1-01-R1.
+       READ-TEST-F1-01.
+           IF      FAIL-SW EQUAL TO 1 GO TO READ-EXIT-F1-01.
+           IF      EXCUT-COUNTER-06V00 EQUAL TO 200
+                   PERFORM PASS
+                   MOVE "200 RECORDS VERIFIED" TO RE-MARK
+           ELSE    PERFORM FAIL
+           MOVE "INCORRECT NUMBER OF RECORDS; IX-41 OR IX-28" TO RE-MARK
+                   MOVE 200 TO CORRECT-18V0
+                   MOVE EXCUT-COUNTER-06V00 TO COMPUTED-18V0.
+           PERFORM PRINT-DETAIL.
+           GO TO   READ-EXIT-F1-01.
+       READ-FAIL-F1-01.
+           MOVE 1 TO FAIL-SW.
+           PERFORM FAIL.
+           MOVE    FDW-RECKEY-11-13  TO COMPUTED-18V0.
+           MOVE    RECKEY-NUM  TO CORRECT-18V0.
+           MOVE "READ-FAIL-F1-01; IX-41 OR IX-28" TO RE-MARK.
+       READ-EXIT-F1-01.
+           CLOSE   IX-FD1.
+       START-INIT.
+           OPEN    I-O  IX-FD1.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE    "START-TEST-GF-01" TO PAR-NAME.
+           MOVE    "START REDF REC-KEY" TO FEATURE.
+           MOVE    "BBBBBBBBBC002" TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY TO IX-REC-KEY-AREA.
+       START-TEST-GF-01.
+           DELETE  IX-FD1 INVALID KEY
+                   MOVE  "INVALID KEY (DELETE)" TO COMPUTED-A
+                   GO TO START-FAIL-GF-01.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-01.
+           MOVE    "BBBBBBBBBC002" TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY TO IX-REC-KEY-AREA.
+           START   IX-FD1
+                          KEY IS EQUAL TO IX-REDF-RECKEY
+                INVALID KEY    PERFORM PASS
+                   MOVE "OK.; INVALID KEY ON START OF DELETED RECORD"
+                        TO RE-MARK
+                   GO TO START-WRITE-GF-01.
+           READ    IX-FD1 NEXT RECORD  AT END
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-01.
+           MOVE    IX-FD1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-01.
+           PERFORM FAIL.
+           MOVE    "INVALID KEY ON START" TO CORRECT-A.
+           MOVE "WRONG RECORD NUMBER FOUND; IX-28 OR IX-36" TO RE-MARK.
+           GO TO   START-WRITE-GF-01.
+       START-DELETE-GF-01.
+           PERFORM DE-LETE.
+       START-WRITE-GF-01.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-02.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-02" TO PAR-NAME.
+           MOVE    "FGGGGGGGGG098" TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY TO IX-REC-KEY-AREA.
+       START-TEST-GF-02.
+           DELETE  IX-FD1 INVALID KEY
+                   MOVE  "INVALID KEY (DELETE)" TO COMPUTED-A
+                   GO TO START-FAIL-GF-02.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-02.
+           MOVE    "FGGGGGGAAA002" TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY TO IX-REC-KEY-AREA.
+           START   IX-FD1
+                          KEY IS EQUAL TO R-RECKEY-1-7
+                INVALID KEY    PERFORM PASS
+                   MOVE "OK.; INVALID KEY ON START OF DELETED RECORD"
+                        TO RE-MARK
+                   GO TO START-WRITE-GF-02.
+           READ    IX-FD1 NEXT RECORD  AT END
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-02.
+           MOVE    IX-FD1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-02.
+           PERFORM FAIL.
+           MOVE    "INVALID KEY ON START" TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; WRONG RECORD NUMBER FOUND" TO RE-MARK.
+           GO TO   START-WRITE-GF-02.
+       START-DELETE-GF-02.
+           PERFORM DE-LETE.
+       START-WRITE-GF-02.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-03.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-03" TO PAR-NAME.
+           MOVE    "UUUUUUUUUU400" TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY TO IX-REC-KEY-AREA.
+       START-TEST-GF-03.
+           DELETE  IX-FD1 INVALID KEY
+                   MOVE  "INVALID KEY (DELETE)" TO COMPUTED-A
+                   GO TO START-FAIL-GF-03.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-03.
+           MOVE    "UUUUURRRRR000" TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY TO IX-REC-KEY-AREA.
+           START   IX-FD1
+                          KEY IS EQUAL TO R-RECKEY-1-5
+                INVALID KEY    PERFORM PASS
+                   MOVE "OK.; INVALID KEY ON START OF DELETED RECORD"
+                        TO RE-MARK
+                   GO TO START-WRITE-GF-03.
+           READ    IX-FD1 NEXT RECORD  AT END
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-03.
+           MOVE    IX-FD1R1-F-G-240  TO  FILE-RECORD-INFO (1).
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-03.
+           PERFORM FAIL.
+           MOVE    "INVALID KEY ON START" TO CORRECT-A.
+           MOVE "WRONG RECORD NUMBER FOUND; IX-28 OR IX-36" TO RE-MARK.
+           GO TO   START-WRITE-GF-03.
+       START-DELETE-GF-03.
+           PERFORM DE-LETE.
+       START-WRITE-GF-03.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-04.
+           MOVE    "START REDF ALT-KEY-1" TO FEATURE.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-04" TO PAR-NAME.
+           MOVE    "TUUUUUUUUU398"  TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY   TO IX-REC-KEY-AREA.
+       START-TEST-GF-04.
+           READ    IX-FD1
+                           KEY IS IX-FD1-KEY
+               INVALID KEY
+           MOVE "ERROR IX-28 F2; INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-04.
+           MOVE    IX-FD1R1-F-G-240 TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 199
+           MOVE "WRONG RECORD NUMBER FOUND; IX-28 OR IX-36" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-04.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-04.
+           MOVE    "EEEEEEEEEE000ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "WWWWWWWWWW400ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD1R1-F-G-240.
+           REWRITE IX-FD1R1-F-G-240 INVALID KEY
+                   MOVE "ERROR IX-33; INVALID KEY PATH TAKEN ON REWRITE"
+                          TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-04.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-04.
+           MOVE    "EEEEEEEEEE000ALTKEY1"  TO FDW-ALTKEY1-1-20.
+           MOVE    WRK-FDW-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           START   IX-FD1
+                          KEY IS EQUAL TO IX-REDF-ALTKEY1
+                INVALID KEY
+                   MOVE "ERROR IX-36; INVALID KEY PATH TAKEN ON START"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-04.
+           READ    IX-FD1 NEXT RECORD AT END
+                  MOVE "IX-28 F1; AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-04.
+           MOVE    IX-FD1R1-F-G-240  TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 199
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-04.
+           MOVE    ALTERNATE-KEY1 (1)  TO WRK-FDW-ALTKEY1.
+           MOVE    FDW-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE    "EEEEEEEEEE000ALTKEY1"  TO CORRECT-A.
+           MOVE "IX-28 F1; INCORRECT ALTERNATE RECORD KEY1"  TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY1"
+                   TO RE-MARK.
+           MOVE XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-04.
+           MOVE "START-TEST-GF-04" TO PAR-NAME.
+           PERFORM FAIL.
+           MOVE    199  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-04.
+       START-DELETE-GF-04.
+           PERFORM DE-LETE.
+       START-WRITE-GF-04.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-05.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-05" TO PAR-NAME.
+           MOVE    "BCCCCCCCCC018"  TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY   TO IX-REC-KEY-AREA.
+       START-TEST-GF-05.
+           READ    IX-FD1
+                           KEY IS IX-FD1-KEY
+               INVALID KEY
+                   MOVE "ERROR IX-33; INVALID KEY PATH TAKEN ON READ"
+                          TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-05.
+           MOVE    IX-FD1R1-F-G-240 TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 9
+                   MOVE 9 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "WRONG RECORD NUMBER FOUND; IX-28 OR IX-36" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-05.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-05.
+           MOVE    "AAAAAAAAAA400ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "ZZZZZZZZZZ002ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD1R1-F-G-240.
+           REWRITE IX-FD1R1-F-G-240 INVALID KEY
+            MOVE "IX-33;  INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-05.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-05.
+           MOVE    "AAAAAANNNN200ALTKEY1"  TO FDW-ALTKEY1-1-20.
+           MOVE    WRK-FDW-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           START   IX-FD1
+                          KEY IS EQUAL TO R-ALTKEY1-1-6
+                INVALID KEY
+            MOVE "IX-36; INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-05.
+           READ    IX-FD1 NEXT RECORD AT END
+            MOVE "IX-28 F1; AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-05.
+           MOVE    IX-FD1R1-F-G-240  TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 9
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-05.
+           MOVE    ALTERNATE-KEY1 (1)  TO WRK-FDW-ALTKEY1.
+           MOVE    FDW-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE    "AAAAAAAAAA400ALTKEY1"  TO CORRECT-A.
+           MOVE    "INCORRECT ALTERNATE RECORD KEY1"  TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "IX-28 F1;WRONG RECORD NUMB FOUND READ ALTERN. REC KEY1"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-05.
+           PERFORM FAIL.
+           MOVE    9  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-05.
+       START-DELETE-GF-05.
+           PERFORM DE-LETE.
+       START-WRITE-GF-05.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-06.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-06" TO PAR-NAME.
+           MOVE    "GGGGGGGGGG100"  TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY   TO IX-REC-KEY-AREA.
+       START-TEST-GF-06.
+           READ    IX-FD1
+                           KEY IS IX-FD1-KEY
+               INVALID KEY
+                   MOVE "ERROR IX-28; INVALID KEY PATH TAKEN ON READ"
+                          TO RE-MARK
+                   GO TO START-FAIL-GF-06.
+           MOVE    IX-FD1R1-F-G-240 TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 50
+                   MOVE 50 TO RECNO
+                   MOVE  "WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-06.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-06.
+           MOVE    "AAGGGGGGGG100ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "GGGGGGGGGG100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD1R1-F-G-240.
+           REWRITE IX-FD1R1-F-G-240 INVALID KEY
+                   MOVE "ERROR IX-33; INVALID KEY PATH TAKEN ON REWRITE"
+                          TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-06.
+       
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-06.
+           MOVE    "AAGGZZZZZZ100ALTKEY1"  TO FDW-ALTKEY1-1-20.
+           MOVE    WRK-FDW-ALTKEY1  TO IX-ALT-KEY1-AREA.
+           START   IX-FD1
+                          KEY IS EQUAL TO R-ALTKEY1-1-4
+                INVALID KEY
+                   MOVE "ERROR IX-36; INVALID KEY PATH TAKEN ON START"
+                          TO RE-MARK
+                   MOVE "INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-06.
+           READ    IX-FD1 NEXT RECORD AT END
+                 MOVE "IX-28 F1; AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-06.
+           MOVE    IX-FD1R1-F-G-240  TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 50
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-06.
+           MOVE    ALTERNATE-KEY1 (1)  TO WRK-FDW-ALTKEY1.
+           MOVE    FDW-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE    "AAGGGGGGGG100ALTKEY1"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY1" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY1"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-06.
+           PERFORM FAIL.
+           MOVE    50  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-06.
+       START-DELETE-GF-06.
+           PERFORM DE-LETE.
+       START-WRITE-GF-06.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-07.
+           MOVE    "START REDF ALT-KEY-2" TO FEATURE.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-07" TO PAR-NAME.
+           MOVE    "DDDDDEEEEE050"  TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY   TO IX-REC-KEY-AREA.
+       START-TEST-GF-07.
+           READ    IX-FD1
+                           KEY IS IX-FD1-KEY
+               INVALID KEY
+            MOVE "IX-28 F2; INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-07.
+           MOVE    IX-FD1R1-F-G-240 TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 25
+                   MOVE 25 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-07.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-07.
+           MOVE    "BCBCBCBCBC200ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "CBCBCBCBCB100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD1R1-F-G-240.
+           REWRITE IX-FD1R1-F-G-240 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-07.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-07.
+           MOVE    "CBCBCBCBCB100ALTKEY2"  TO FDW-ALTKEY2-1-20.
+           MOVE    WRK-FDW-ALTKEY2  TO IX-ALT-KEY2-AREA.
+           START   IX-FD1
+                          KEY IS EQUAL TO IX-REDF-ALTKEY2
+                INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-07.
+           READ    IX-FD1 NEXT RECORD AT END
+            MOVE "IX-28; F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-07.
+           MOVE    IX-FD1R1-F-G-240  TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 25
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-07.
+           MOVE    ALTERNATE-KEY2 (1)  TO WRK-FDW-ALTKEY2.
+           MOVE    FDW-ALTKEY2-1-20  TO COMPUTED-A.
+           MOVE    "CBCBCBCBCB100ALTKEY2"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY2" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY2"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-07.
+           PERFORM FAIL.
+           MOVE    25  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-07.
+       START-DELETE-GF-07.
+           PERFORM DE-LETE.
+       START-WRITE-GF-07.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-08.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-08" TO PAR-NAME.
+           MOVE    "RRRRSSSSSS352"  TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY   TO IX-REC-KEY-AREA.
+       START-TEST-GF-08.
+           READ    IX-FD1
+                           KEY IS IX-FD1-KEY
+               INVALID KEY
+            MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-08.
+           MOVE    IX-FD1R1-F-G-240 TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 176
+                   MOVE 51 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-08.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-08.
+           MOVE    "DCDCDCDCDC100ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "DCDCDCDCDC100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD1R1-F-G-240.
+           REWRITE IX-FD1R1-F-G-240 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-08.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-08.
+           MOVE    "DCDAAAAAAA250ALTKEY2"  TO FDW-ALTKEY2-1-20.
+           MOVE    WRK-FDW-ALTKEY2  TO IX-ALT-KEY2-AREA.
+           START   IX-FD1
+                          KEY IS EQUAL TO R-ALTKEY2-1-3
+                INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-08.
+           READ    IX-FD1 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-08.
+           MOVE    IX-FD1R1-F-G-240  TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 176
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-08.
+           MOVE    ALTERNATE-KEY2 (1)  TO WRK-FDW-ALTKEY2.
+           MOVE    FDW-ALTKEY2-1-20  TO COMPUTED-A.
+           MOVE    "DCDCDCDCDC100ALTKEY2"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY2" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY2"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-08.
+           PERFORM FAIL.
+           MOVE    176  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-08.
+       START-DELETE-GF-08.
+           PERFORM DE-LETE.
+       START-WRITE-GF-08.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-09.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-09" TO PAR-NAME.
+           MOVE    "BBBBBBCCCC008"  TO FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY   TO IX-REC-KEY-AREA.
+       START-TEST-GF-09.
+           READ    IX-FD1
+                           KEY IS IX-FD1-KEY
+               INVALID KEY
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   MOVE 4 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-09.
+           MOVE    IX-FD1R1-F-G-240 TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 4
+                   MOVE 4 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   MOVE 4 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-09.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-09.
+           MOVE    "CDCDCDCDCD100ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "DCDCDCDCDC100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD1R1-F-G-240.
+           REWRITE IX-FD1R1-F-G-240 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   MOVE 4 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-09.
+           PERFORM START-INIT-FD1 THRU START-INIT-FD1-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-09.
+           MOVE    "DCZZZZZZZZ400ALTKEY2"  TO FDW-ALTKEY2-1-20.
+           MOVE    WRK-FDW-ALTKEY2  TO IX-ALT-KEY2-AREA.
+           START   IX-FD1
+                          KEY IS EQUAL TO R-ALTKEY2-1-2
+                INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   MOVE 176 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-09.
+           READ    IX-FD1 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   MOVE 176 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-09.
+           MOVE    IX-FD1R1-F-G-240  TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) NOT EQUAL TO 176
+                   MOVE ALTERNATE-KEY2 (1) TO WRK-FDW-ALTKEY2
+                   MOVE FDW-ALTKEY2-1-20 TO COMPUTED-A
+                   MOVE "DCDCDCDCDC100" TO CORRECT-A
+           MOVE
+           "IX-28 OR IX-36; INCORR KEY FOUND ON FIRST READ DUPL KEYS"
+                   TO RE-MARK
+                   PERFORM PRINT-DETAIL
+           MOVE "WRONG RECORD NUMBER FOUND ON FIRST READ DUPLICATE KEYS"
+                   TO RE-MARK
+                   MOVE XRECORD-NUMBER (1) TO COMPUTED-18V0
+                   MOVE 176 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-09.
+           READ    IX-FD1 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER FIRST READ" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   MOVE 4 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-09.
+           MOVE    IX-FD1R1-F-G-240 TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 4
+                   PERFORM PASS
+                   PERFORM PRINT-DETAIL
+                   GO TO START-WRITE-GF-09.
+           MOVE    ALTERNATE-KEY2 (1)  TO WRK-FDW-ALTKEY2.
+           MOVE    FDW-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE    "DCDCDCDCDC100ALTKEY2"  TO CORRECT-A.
+           MOVE
+           "IX-28OR IX-36; INCORR KEY FOUND ON SECOND READ DUPL.  KEYS"
+                   TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+           MOVE    4 TO CORRECT-18V0.
+       START-FAIL-GF-09.
+           PERFORM FAIL.
+           GO TO   START-WRITE-GF-09.
+       START-DELETE-GF-09.
+           PERFORM DE-LETE.
+       START-WRITE-GF-09.
+           PERFORM PRINT-DETAIL.
+       START-TERM-003.
+           CLOSE   IX-FD1.
+       WRITE-INT-GF-02.
+           OPEN    OUTPUT IX-FD2.
+           MOVE    "IX-FD2" TO XFILE-NAME           (1).
+           MOVE    "R1-F-G" TO  XRECORD-NAME        (1).
+           MOVE    ZERO     TO  XRECORD-NUMBER      (1).
+           MOVE    "RC"     TO  CHARS-OR-RECORDS    (1).
+           MOVE "IX215"     TO  XPROGRAM-NAME       (1).
+           MOVE    241      TO  XRECORD-LENGTH      (1).
+           MOVE    004      TO  XBLOCK-SIZE         (1).
+           MOVE    "IX"     TO  XFILE-ORGANIZATION  (1).
+           MOVE    "S"      TO  XLABEL-TYPE         (1).
+           MOVE    200      TO  RECORDS-IN-FILE     (1).
+           MOVE    "CREATE-FILE-FD2" TO FEATURE.
+           MOVE    "WRITE-TEST-GF-02" TO PAR-NAME.
+           MOVE    ZERO TO KEYSUB.
+           MOVE    ZERO TO INVKEY-COUNTER.
+           MOVE    ZERO TO EXCUT-COUNTER-06V00.
+       WRITE-INIT-GF-02-01.
+           PERFORM WRITE-TEST-GF-02-R1 50 TIMES.
+           PERFORM WRITE-TEST-GF-02-R2 125 TIMES.
+           PERFORM WRITE-TEST-GF-02-R1 25 TIMES.
+           GO TO   WRITE-TEST-GF-02.
+       WRITE-TEST-GF-02-R1.
+           ADD     001  TO XRECORD-NUMBER (1).
+           ADD     001  TO  KEYSUB.
+           MOVE    RECKEY-VALUE (KEYSUB) TO FDW-RECKEY-1-13.
+           MOVE    ALTKEY1-VALUE (KEYSUB) TO FDW-ALTKEY1-1-20.
+           MOVE    ALTKEY2-VALUE (KEYSUB) TO FDW-ALTKEY2-1-20.
+           MOVE    WRK-FDW-RECKEY   TO    XRECORD-KEY (1).
+           MOVE    WRK-FDW-ALTKEY1  TO ALTERNATE-KEY1 (1).
+           MOVE    WRK-FDW-ALTKEY2  TO ALTERNATE-KEY2 (1).
+           MOVE    FILE-RECORD-INFO (1)  TO IX-FD2R1-F-G-241.
+           WRITE   IX-FD2R1-F-G-241
+                              INVALID KEY ADD 001 TO INVKEY-COUNTER.
+           ADD     001 TO  EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-02-R2.
+           ADD     002  TO FDW-RECKEY-11-13.
+           ADD     002 TO FDW-ALTKEY1-11-13.
+           SUBTRACT  002 FROM FDW-ALTKEY2-11-13.
+           ADD     001  TO XRECORD-NUMBER (1).
+           MOVE    WRK-FDW-RECKEY   TO    XRECORD-KEY (1).
+           MOVE    WRK-FDW-ALTKEY1  TO ALTERNATE-KEY1 (1).
+           MOVE    WRK-FDW-ALTKEY2  TO ALTERNATE-KEY2 (1).
+           MOVE    FILE-RECORD-INFO (1) TO IX-FD2R1-F-G-241.
+           WRITE   IX-FD2R1-F-G-241
+                              INVALID KEY ADD 001 TO INVKEY-COUNTER.
+           ADD     001 TO EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-02.
+           SUBTRACT INVKEY-COUNTER FROM EXCUT-COUNTER-06V00
+                   GIVING RECORDS-WRITTEN.
+           IF      RECORDS-WRITTEN EQUAL TO 200
+                   PERFORM  PASS
+                   MOVE "FILE IX-FD2 CREATED (200 RECORDS)" TO RE-MARK
+           ELSE    PERFORM FAIL
+                   MOVE                                          "IX-41;WRONG NUMBER OF RECORDS WRITTEN (MAY ALREADY EXIST)"
+                   TO RE-MARK
+                   MOVE 200 TO CORRECT-18V0
+                   MOVE RECORDS-WRITTEN TO COMPUTED-18V0.
+           GO TO   WRITE-TEST-GF-02-END.
+       WRITE-DELETE-GF-02.
+           PERFORM DE-LETE.
+       WRITE-TEST-GF-02-END.
+           PERFORM  PRINT-DETAIL.
+           CLOSE   IX-FD2.
+       READ-INIT-F1-02.
+           OPEN    INPUT  IX-FD2.
+           MOVE    "READ-TEST-F1-02" TO PAR-NAME.
+           MOVE    "READ FILE IX-FD2" TO FEATURE.
+           MOVE    ZERO TO EXCUT-COUNTER-06V00.
+           MOVE    02   TO RECKEY-NUM.
+           MOVE    002 TO ALTKEY1-NUM.
+       READ-TEST-F1-02-R1.
+           READ    IX-FD2 NEXT RECORD AT END  GO TO READ-TEST-F1-02.
+           MOVE    IX-FD2-KEY TO FDW-RECKEY-1-13.
+           MOVE    IX-FD2-ALTKEY1 TO FDW-ALTKEY1-1-20.
+           IF      FDW-RECKEY-11-13 EQUAL TO RECKEY-NUM
+                   AND FDW-ALTKEY1-11-13 EQUAL TO ALTKEY1-NUM
+                   NEXT SENTENCE
+                   ELSE
+                   PERFORM  READ-FAIL-F1-02.
+           IF      EXCUT-COUNTER-06V00 NOT LESS THAN 200
+                   GO TO READ-TEST-F1-02.
+           ADD     001  TO EXCUT-COUNTER-06V00.
+           ADD     002  TO RECKEY-NUM
+           ADD     002  TO ALTKEY1-NUM.
+           GO TO   READ-TEST-F1-02-R1.
+       READ-TEST-F1-02.
+           IF      FAIL-SW EQUAL TO 1 GO TO READ-EXIT-F1-02.
+           IF      EXCUT-COUNTER-06V00 EQUAL TO 200
+                   PERFORM PASS
+                   MOVE "200 RECORDS VERIFIED" TO RE-MARK
+           ELSE    PERFORM FAIL
+                   MOVE
+                "INCORRECT NUMBER OF RECORDS; IX-28 OR IX-41" TO RE-MARK
+                   MOVE 200 TO CORRECT-18V0
+                   MOVE EXCUT-COUNTER-06V00 TO COMPUTED-18V0.
+           PERFORM PRINT-DETAIL.
+           GO TO   READ-EXIT-F1-02.
+       READ-FAIL-F1-02.
+           MOVE 1 TO FAIL-SW.
+           PERFORM FAIL.
+           MOVE    FDW-RECKEY-11-13  TO COMPUTED-18V0.
+           MOVE    RECKEY-NUM  TO CORRECT-18V0.
+           MOVE "NUM EMBEDDED IN RECKEY; IX-28 OR IX-41"  TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       READ-EXIT-F1-02.
+           CLOSE   IX-FD2.
+       START-INIT-GF-10.
+           OPEN    I-O  IX-FD2.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-10" TO PAR-NAME.
+           MOVE    "START REDF REC-KEY" TO FEATURE.
+           MOVE    "TTTTUUUUUU392" TO IX-FD2-KEY.
+       START-TEST-GF-10.
+           DELETE  IX-FD2 INVALID KEY
+                   MOVE  "INVALID KEY (DELETE)" TO COMPUTED-A
+                   GO TO START-FAIL-GF-10.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-10.
+           MOVE    "TTTTUUUUUU392" TO IX-FD2-KEY.
+           START   IX-FD2 KEY IS EQUAL TO IX-FD2-KEY
+                   INVALID KEY  PERFORM PASS
+                   GO TO START-WRITE-GF-10.
+           READ    IX-FD2 NEXT RECORD  AT END
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-10.
+           MOVE    IX-FD2-REC-240    TO  FILE-RECORD-INFO (1).
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-10.
+           PERFORM FAIL.
+           MOVE    "INVALID KEY ON START" TO CORRECT-A.
+           MOVE "IX-36; WRONG RECORD NUMBER FOUND" TO RE-MARK.
+           GO TO   START-WRITE-GF-10.
+       START-DELETE-GF-10.
+           PERFORM DE-LETE.
+       START-WRITE-GF-10.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-11.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-11" TO PAR-NAME.
+           MOVE    "FFFFFGGGGG090" TO IX-FD2-KEY.
+       START-TEST-GF-11.
+           DELETE  IX-FD2 INVALID KEY
+                   MOVE  "INVALID KEY (DELETE)" TO COMPUTED-A
+                   GO TO START-FAIL-GF-11.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-11.
+           MOVE    "FFFFFGGGGG090" TO IX-FD2-KEY.
+           START   IX-FD2 KEY IS EQUAL TO IX-FD2-RECKEY-REDF
+                   INVALID KEY  PERFORM PASS
+           MOVE "OK.;    INVALID KEY ON START OF DELETED RECORD"
+                        TO RE-MARK
+                   GO TO START-WRITE-GF-11.
+           READ    IX-FD2 NEXT RECORD  AT END
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-11.
+           MOVE    IX-FD2-REC-240    TO  FILE-RECORD-INFO (1).
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-11.
+           PERFORM FAIL.
+           MOVE    "INVALID KEY ON START" TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; WRONG RECORD NUMBER FOUND" TO RE-MARK.
+           GO TO   START-WRITE-GF-11.
+       START-DELETE-GF-11.
+           PERFORM DE-LETE.
+       START-WRITE-GF-11.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-12.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-12" TO PAR-NAME.
+           MOVE    "BBBBCCCCCC012" TO IX-FD2-KEY.
+       START-TEST-GF-12.
+           DELETE  IX-FD2 INVALID KEY
+                   MOVE  "INVALID KEY (DELETE)" TO COMPUTED-A
+                   GO TO START-FAIL-GF-12.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-12.
+           MOVE    "BBBBCCDDDD015" TO IX-FD2-KEY.
+           START   IX-FD2
+                          KEY IS EQUAL TO IX-FD2-RECKEY-1-6
+                INVALID KEY    PERFORM PASS
+                   MOVE "OK.; INVALID KEY ON START OF DELETED RECORD"
+                        TO RE-MARK
+                   GO TO START-WRITE-GF-12.
+           READ    IX-FD2 NEXT RECORD  AT END
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-12.
+           MOVE    IX-FD2-REC-240    TO  FILE-RECORD-INFO (1).
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-12.
+           PERFORM FAIL.
+           MOVE    "INVALID KEY ON START" TO CORRECT-A.
+           MOVE    "WRONG RECORD NUMBER FOUND" TO RE-MARK.
+           GO TO   START-WRITE-GF-12.
+       START-DELETE-GF-12.
+           PERFORM DE-LETE.
+       START-WRITE-GF-12.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-13.
+           MOVE    "START REDF ALT-KEY-1" TO FEATURE.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-13" TO PAR-NAME.
+           MOVE    "RSSSSSSSSS358"  TO IX-FD2-KEY.
+       START-TEST-GF-13.
+           READ    IX-FD2
+                           KEY IS IX-FD2-KEY
+               INVALID KEY
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-13.
+           MOVE    IX-FD2-REC-240   TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 179
+                   MOVE 54 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+                   MOVE  "WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-13.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-13.
+           MOVE    "EEEEEEEEEE000ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "WWWWWWWWWW400ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD2R1-F-G-241.
+           REWRITE IX-FD2R1-F-G-241 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-13.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-13.
+           MOVE    "EEEEEEEEEE000ALTKEY1"  TO IX-FD2-ALTKEY1.
+           START   IX-FD2
+                          KEY IS EQUAL TO IX-FD2-ALTKEY1
+                INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-13.
+           READ    IX-FD2 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-13.
+           MOVE    IX-FD2-REC-240    TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 179
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-13.
+           MOVE    ALTERNATE-KEY1 (1)  TO WRK-FDW-ALTKEY1.
+           MOVE    FDW-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE    "EEEEEEEEEE000ALTKEY1"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY1" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY1"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-13.
+           PERFORM FAIL.
+           MOVE    179  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-13.
+       START-DELETE-GF-13.
+           PERFORM DE-LETE.
+       START-WRITE-GF-13.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-14.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-14" TO PAR-NAME.
+           MOVE    "TTUUUUUUUU396"  TO IX-FD2-KEY.
+       START-TEST-GF-14.
+           READ    IX-FD2
+                           KEY IS IX-FD2-KEY
+               INVALID KEY
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-14.
+           MOVE    IX-FD2-REC-240   TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 198
+                   MOVE 73 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-14.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-14.
+           MOVE    "AAAAAAAAAA400ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "ZZZZZZZZZZ002ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD2R1-F-G-241.
+           REWRITE IX-FD2R1-F-G-241 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-14.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-14.
+           MOVE    "AAAAAAAAAA400ALTKEY1"  TO IX-FD2-ALTKEY1.
+           START   IX-FD2
+                          KEY IS EQUAL TO IX-FD2-REDF-ALTKEY1
+                   INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-14.
+           READ    IX-FD2 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-14.
+           MOVE    IX-FD2-REC-240    TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 198
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-14.
+           MOVE    ALTERNATE-KEY1 (1)  TO WRK-FDW-ALTKEY1.
+           MOVE    FDW-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE    "AAAAAAAAAA400ALTKEY1"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY1" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY1"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-14.
+           PERFORM FAIL.
+           MOVE    198  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-14.
+       START-DELETE-GF-14.
+           PERFORM DE-LETE.
+       START-WRITE-GF-14.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-15.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-15" TO PAR-NAME.
+           MOVE    "BBBBBBBBBC002"  TO IX-FD2-KEY.
+       START-TEST-GF-15.
+           READ    IX-FD2
+                           KEY IS IX-FD2-KEY
+               INVALID KEY
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-15.
+           MOVE    IX-FD2-REC-240   TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 1
+                   MOVE 1 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-15.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-15.
+           MOVE    "AAGGGGGGGG100ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "GGGGGGGGGG100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD2R1-F-G-241.
+           REWRITE IX-FD2R1-F-G-241 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-15.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-15.
+           MOVE    "AAGGGZZZZZ100ALTKEY1"  TO IX-FD2-ALTKEY1.
+           START   IX-FD2
+                          KEY IS EQUAL TO IX-FD2-ALTKEY1-1-5
+                   INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-15.
+           READ    IX-FD2 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-15.
+           MOVE    IX-FD2-REC-240    TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 1
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-15.
+           MOVE    ALTERNATE-KEY1 (1)  TO WRK-FDW-ALTKEY1.
+           MOVE    FDW-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE    "AAGGGGGGGG100ALTKEY1"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY1" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY1"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-15.
+           PERFORM FAIL.
+           MOVE    1  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-15.
+       START-DELETE-GF-15.
+           PERFORM DE-LETE.
+       START-WRITE-GF-15.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-16.
+           MOVE    "START REDF ALT-KEY-2" TO FEATURE.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-16" TO PAR-NAME.
+           MOVE    "SSSSSTTTTT370"  TO IX-FD2-KEY.
+       START-TEST-GF-16.
+           READ    IX-FD2
+                           KEY IS IX-FD2-KEY
+               INVALID KEY
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-16.
+           MOVE    IX-FD2-REC-240   TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 185
+                   MOVE 60 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-16.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-16.
+           MOVE    "BCBCBCBCBC200ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "CBCBCBCBCB100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD2R1-F-G-241.
+           REWRITE IX-FD2R1-F-G-241 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-16.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-16.
+           MOVE    "CBCBCBCBCB100ALTKEY2"  TO IX-FD2-ALTKEY2.
+           START   IX-FD2
+                          KEY IS EQUAL TO IX-FD2-ALTKEY2
+                INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-16.
+           READ    IX-FD2 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-16.
+           MOVE    IX-FD2-REC-240    TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 185
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-16.
+           MOVE    ALTERNATE-KEY2 (1)  TO WRK-FDW-ALTKEY2.
+           MOVE    FDW-ALTKEY2-1-20  TO COMPUTED-A.
+           MOVE    "CBCBCBCBCB100ALTKEY2"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY2" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY2"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-16.
+           PERFORM FAIL.
+           MOVE    185  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-16.
+       START-DELETE-GF-16.
+           PERFORM DE-LETE.
+       START-WRITE-GF-16.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-17.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-17" TO PAR-NAME.
+           MOVE    "FFFFFFFFFG082"  TO IX-FD2-KEY.
+       START-TEST-GF-17.
+           READ    IX-FD2
+                           KEY IS IX-FD2-KEY
+               INVALID KEY
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-17.
+           MOVE    IX-FD2-REC-240   TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 41
+                   MOVE 41 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-17.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-17.
+           MOVE    "DCDCDCDCDC100ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "DCDCDCDCDC100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD2R1-F-G-241.
+           REWRITE IX-FD2R1-F-G-241 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-17.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-17.
+           MOVE    "DCDCDCZZZZ999ALTKEY2"  TO IX-FD2-ALTKEY2.
+           START   IX-FD2
+                          KEY IS EQUAL TO IX-FD2-ALTKEY2-1-6
+                INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-17.
+           READ    IX-FD2 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-17.
+           MOVE    IX-FD2-REC-240    TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 41
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-17.
+           MOVE    ALTERNATE-KEY2 (1)  TO WRK-FDW-ALTKEY2.
+           MOVE    FDW-ALTKEY2-1-20  TO COMPUTED-A.
+           MOVE    "DCDCDCDCDC100ALTKEY2"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY2" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY2"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-17.
+           PERFORM FAIL.
+           MOVE    41  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-17.
+       START-DELETE-GF-17.
+           PERFORM DE-LETE.
+       START-WRITE-GF-17.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-18.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-18" TO PAR-NAME.
+           MOVE    "TTTTTTTTUU384"  TO IX-FD2-KEY.
+       START-TEST-GF-18.
+           READ    IX-FD2
+                           KEY IS IX-FD2-KEY
+               INVALID KEY
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   MOVE 192 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-18.
+           MOVE    IX-FD2-REC-240   TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 192
+                   MOVE 67 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   MOVE 192 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-18.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-18.
+           MOVE    "CDCDCDCDCD100ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "DCDCDCDCDC100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD2R1-F-G-241.
+           REWRITE IX-FD2R1-F-G-241 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   MOVE 192 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-18.
+           PERFORM START-INIT-FD2 THRU START-INIT-FD2-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-18.
+           MOVE    "DCDZZZZZZZ400ALTKEY2"  TO IX-FD2-ALTKEY2.
+           START   IX-FD2
+                          KEY IS EQUAL TO IX-FD2-ALTKEY2-1-3
+                   INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   MOVE 41 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-18.
+           READ    IX-FD2 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   MOVE 41 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-18.
+           MOVE    IX-FD2-REC-240    TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) NOT EQUAL TO 41
+                   MOVE ALTERNATE-KEY2 (1) TO WRK-FDW-ALTKEY2
+                   MOVE FDW-ALTKEY2-1-20 TO COMPUTED-A
+                   MOVE "DCDCDCDCDC100" TO CORRECT-A
+           MOVE
+           "IX-28/36; INCORRECT  KEY FOUND ON FIRST READ DUPLICATE KEYS"
+                   TO RE-MARK
+                   PERFORM PRINT-DETAIL
+           MOVE "WRONG RECORD NUMBER FOUND ON FIRST READ DUPLICATE KEYS"
+                   TO RE-MARK
+                   MOVE XRECORD-NUMBER (1) TO COMPUTED-18V0
+                   MOVE 41 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-18.
+           READ    IX-FD2 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER FIRST READ" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   MOVE 192 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-18.
+           MOVE    IX-FD2-REC-240   TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 192
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-18.
+           MOVE    ALTERNATE-KEY2 (1)  TO WRK-FDW-ALTKEY2.
+           MOVE    FDW-ALTKEY2-1-20  TO COMPUTED-A.
+           MOVE    "DCDCDCDCDC100ALTKEY2"  TO CORRECT-A.
+           MOVE
+           "IX-28/-36INCORRECT KEY FOUND ON SECOND READ DUPLICATE KEYS"
+                   TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "WRONG REC NUMBER FOUND ON SECOND READ DUPLICATE KEYS"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+           MOVE    192 TO CORRECT-18V0.
+       START-FAIL-GF-18.
+           PERFORM FAIL.
+           GO TO   START-WRITE-GF-18.
+       START-DELETE-GF-18.
+           PERFORM DE-LETE.
+       START-WRITE-GF-18.
+           PERFORM PRINT-DETAIL.
+       WRITE-WRITE-03.
+           CLOSE   IX-FD2.
+       WRITE-INT-GF-03.
+           OPEN    OUTPUT IX-FD3.
+           MOVE    "IX-FD3" TO XFILE-NAME           (1).
+           MOVE    "R1-F-G" TO  XRECORD-NAME        (1).
+           MOVE    ZERO     TO  XRECORD-NUMBER      (1).
+           MOVE    "RC"     TO  CHARS-OR-RECORDS    (1).
+           MOVE "IX215"     TO  XPROGRAM-NAME       (1).
+           MOVE    242      TO  XRECORD-LENGTH      (1).
+           MOVE    007      TO  XBLOCK-SIZE         (1).
+           MOVE    "IX"     TO  XFILE-ORGANIZATION  (1).
+           MOVE    "S"      TO  XLABEL-TYPE         (1).
+           MOVE    200      TO  RECORDS-IN-FILE     (1).
+           MOVE    "CREATE-FILE-FD3" TO FEATURE.
+           MOVE    "WRITE-TEST-GF-03" TO PAR-NAME.
+           MOVE    ZERO TO KEYSUB.
+           MOVE    ZERO TO INVKEY-COUNTER.
+           MOVE    ZERO TO EXCUT-COUNTER-06V00.
+       WRITE-INIT-GF-03.
+           PERFORM WRITE-TEST-GF-03R1  50 TIMES.
+           PERFORM WRITE-TEST-GF-03R2  125 TIMES.
+           PERFORM WRITE-TEST-GF-03R1  25 TIMES.
+           GO TO   WRITE-TEST-GF-03.
+       WRITE-TEST-GF-03R1.
+           ADD     001  TO XRECORD-NUMBER (1).
+           ADD     001  TO  KEYSUB.
+           MOVE    RECKEY-VALUE (KEYSUB) TO FDW-RECKEY-1-13.
+           MOVE    ALTKEY1-VALUE (KEYSUB) TO FDW-ALTKEY1-1-20.
+           MOVE    ALTKEY2-VALUE (KEYSUB) TO FDW-ALTKEY2-1-20.
+           MOVE    WRK-FDW-RECKEY   TO    XRECORD-KEY (1).
+           MOVE    WRK-FDW-ALTKEY1  TO ALTERNATE-KEY1 (1).
+           MOVE    WRK-FDW-ALTKEY2  TO ALTERNATE-KEY2 (1).
+           MOVE    FILE-RECORD-INFO (1)  TO IX-FD3R1-F-G-242.
+           WRITE   IX-FD3R1-F-G-242
+                              INVALID KEY ADD 001 TO INVKEY-COUNTER.
+           ADD     001 TO  EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-03R2.
+           ADD     002  TO FDW-RECKEY-11-13.
+           ADD     002 TO FDW-ALTKEY1-11-13.
+           SUBTRACT  002 FROM FDW-ALTKEY2-11-13.
+           ADD     001  TO XRECORD-NUMBER (1).
+           MOVE    WRK-FDW-RECKEY   TO    XRECORD-KEY (1).
+           MOVE    WRK-FDW-ALTKEY1  TO ALTERNATE-KEY1 (1).
+           MOVE    WRK-FDW-ALTKEY2  TO ALTERNATE-KEY2 (1).
+           MOVE    FILE-RECORD-INFO (1) TO IX-FD3R1-F-G-242.
+           WRITE   IX-FD3R1-F-G-242
+                              INVALID KEY ADD 001 TO INVKEY-COUNTER.
+           ADD     001 TO EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-03.
+           SUBTRACT INVKEY-COUNTER FROM EXCUT-COUNTER-06V00
+                   GIVING RECORDS-WRITTEN.
+           IF      RECORDS-WRITTEN EQUAL TO 200
+                   PERFORM  PASS
+                   MOVE "FILE IX-FD3 CREATED (200 RECORDS)" TO RE-MARK
+           ELSE    PERFORM FAIL
+                   MOVE                                          "IX-41;WRONG NUMBER OF RECORDS WRITTEN (MAY ALREADY EXIST)"
+                   TO RE-MARK
+                   MOVE 200 TO CORRECT-18V0
+                   MOVE RECORDS-WRITTEN TO COMPUTED-18V0.
+           PERFORM PRINT-DETAIL.
+           GO TO   WRITE-TEST-GF-03-END.
+       WRITE-DELETE-GF-03.
+           PERFORM DE-LETE.
+           PERFORM  PRINT-DETAIL.
+       WRITE-TEST-GF-03-END.
+           CLOSE   IX-FD3.
+       READ-INIT-F1-O3.
+           OPEN    INPUT  IX-FD3.
+           MOVE    "READ-TEST-F1-O3" TO PAR-NAME.
+           MOVE    "READ FILE IX-FD3" TO FEATURE.
+           MOVE    ZERO TO EXCUT-COUNTER-06V00.
+           MOVE    02   TO RECKEY-NUM.
+           MOVE    002 TO ALTKEY1-NUM.
+       READ-TEST-F1-O3-R1.
+           READ    IX-FD3 NEXT RECORD AT END  GO TO READ-TEST-F1-O3.
+           MOVE    IX-FD3-RECKEY-AREA TO FDW-RECKEY-1-13.
+           MOVE    IX-FD3-ALTKEY1-AREA TO FDW-ALTKEY1-1-20.
+           IF      FDW-RECKEY-11-13 EQUAL TO RECKEY-NUM
+                   AND FDW-ALTKEY1-11-13 EQUAL TO ALTKEY1-NUM
+                   NEXT SENTENCE
+                   ELSE
+                   PERFORM  READ-FAIL-F1-O3.
+           IF      EXCUT-COUNTER-06V00 NOT LESS THAN 200
+                   GO TO READ-TEST-F1-O3.
+           ADD     001  TO EXCUT-COUNTER-06V00.
+           ADD     002  TO RECKEY-NUM
+           ADD     002  TO ALTKEY1-NUM.
+           GO TO   READ-TEST-F1-O3-R1.
+       READ-TEST-F1-O3.
+           IF      FAIL-SW EQUAL TO 1 GO TO READ-EXIT-F1-O3.
+           IF      EXCUT-COUNTER-06V00 EQUAL TO 200
+                   PERFORM PASS
+                   MOVE "200 RECORDS VERIFIED" TO RE-MARK
+           ELSE    PERFORM FAIL
+                   MOVE
+                "IX-28 OR IX-41; INCORRECT NUMBER OF RECORDS" TO RE-MARK
+                   MOVE 200 TO CORRECT-18V0
+                   MOVE EXCUT-COUNTER-06V00 TO COMPUTED-18V0.
+           PERFORM PRINT-DETAIL.
+           GO TO   READ-EXIT-F1-O3.
+       READ-FAIL-F1-O3.
+           MOVE 1 TO FAIL-SW.
+           PERFORM FAIL.
+           MOVE    FDW-RECKEY-11-13  TO COMPUTED-18V0.
+           MOVE    RECKEY-NUM  TO CORRECT-18V0.
+           ADD     01 TO REC-CT.
+           MOVE    "NUM EMBEDDED IN RECKEY"  TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       READ-EXIT-F1-O3.
+           CLOSE   IX-FD3.
+       START-INIT-GF-19.
+           OPEN    I-O  IX-FD3.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-19" TO PAR-NAME.
+           MOVE    "START QUAL REC-KEY" TO FEATURE.
+           MOVE    "FFGGGGGGGG096" TO IX-FD3-RECKEY-AREA.
+       START-TEST-GF-19.
+           DELETE  IX-FD3 INVALID KEY
+           MOVE "IX-21; INVALID KEY "         TO COMPUTED-A
+                   GO TO START-FAIL-GF-19.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-19.
+           MOVE    "FFGGGGGGGG096" TO IX-FD3-RECKEY-AREA.
+           START IX-FD3 KEY IS EQUAL TO IX-FD3-KEY IN IX-FD3-RECKEY-AREA
+                   INVALID KEY  PERFORM PASS
+           MOVE "OK.;    INVALID KEY ON START OF DELETED RECORD"
+                        TO RE-MARK
+                   GO TO START-WRITE-GF-19.
+           READ    IX-FD3 NEXT RECORD  AT END
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-19.
+           MOVE    IX-FD3-240        TO  FILE-RECORD-INFO (1).
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-19.
+           PERFORM FAIL.
+           MOVE    "INVALID KEY ON START" TO CORRECT-A.
+           MOVE "WRONG RECORD NUMBER FOUND; IX-28 OR IX-36" TO RE-MARK.
+           GO TO   START-WRITE-GF-19.
+       START-DELETE-GF-19.
+           PERFORM DE-LETE.
+       START-WRITE-GF-19.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-20.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-20" TO PAR-NAME.
+           MOVE    "CCCCCCCCCC020" TO IX-FD3-RECKEY-AREA.
+       START-TEST-GF-20.
+           DELETE  IX-FD3 INVALID KEY
+                   MOVE  "INVALID KEY (DELETE)" TO COMPUTED-A
+                   GO TO START-FAIL-GF-20.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-20.
+           MOVE    "CCCCCCCCCC020" TO IX-FD3-RECKEY-AREA.
+           START   IX-FD3 KEY IS EQUAL TO IX-FD3-KEY
+                   OF IX-FD3-RECKEY-AREA
+                   INVALID KEY  PERFORM PASS
+            MOVE "OK.;   INVALID KEY ON START OF DELETED RECORD"
+                        TO RE-MARK
+                   GO TO START-WRITE-GF-20.
+           READ    IX-FD3 NEXT RECORD  AT END
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-20.
+           MOVE    IX-FD3-240        TO  FILE-RECORD-INFO (1).
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-20.
+           PERFORM FAIL.
+           MOVE    "INVALID KEY ON START" TO CORRECT-A.
+           MOVE "WRONG RECORD NUMBER FOUND; IX-28 OR IX-36" TO RE-MARK.
+           GO TO   START-WRITE-GF-20.
+       START-DELETE-GF-20.
+           PERFORM DE-LETE.
+       START-WRITE-GF-20.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-21.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-21" TO PAR-NAME.
+           MOVE    "SSSSSSSSST362" TO IX-FD3-RECKEY-AREA.
+       START-TEST-GF-21.
+           DELETE  IX-FD3 INVALID KEY
+                   MOVE  "INVALID KEY (DELETE)" TO COMPUTED-A
+                   GO TO START-FAIL-GF-21.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-21.
+           MOVE    "SSSSSSSSST362" TO IX-FD3-RECKEY-AREA.
+           START   IX-FD3 KEY IS EQUAL TO
+                   IX-FD3-KEY IN
+                   IX-FD3-RECKEY-AREA
+                   INVALID KEY  PERFORM PASS
+           MOVE "OK.;    INVALID KEY ON START OF DELETED RECORD"
+                        TO RE-MARK
+                   GO TO START-WRITE-GF-21.
+           READ    IX-FD3 NEXT RECORD  AT END
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-21.
+           MOVE    IX-FD3-240        TO  FILE-RECORD-INFO (1).
+           MOVE     XRECORD-NUMBER (1)  TO COMPUTED-18V0.
+       START-FAIL-GF-21.
+           PERFORM FAIL.
+           MOVE    "INVALID KEY ON START" TO CORRECT-A.
+           MOVE "WRONG RECORD NUMBER FOUND; IX-28 OR IX-36" TO RE-MARK.
+           GO TO   START-WRITE-GF-21.
+       START-DELETE-GF-21.
+           PERFORM DE-LETE.
+       START-WRITE-GF-21.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-22.
+           MOVE    "START QUAL ALT-KEY-1" TO FEATURE.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-22" TO PAR-NAME.
+           MOVE    "EEEEEEEEFF064"  TO IX-FD3-RECKEY-AREA.
+       START-TEST-GF-22.
+           READ    IX-FD3
+                   INVALID KEY  PERFORM FAIL
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-22.
+           MOVE    IX-FD3-240       TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 32
+                   MOVE 32 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-22.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-22.
+           MOVE    "EEEEEEEEEE000ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "WWWWWWWWWW400ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD3R1-F-G-242.
+           REWRITE IX-FD3R1-F-G-242 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-22.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-22.
+           MOVE    "EEEEEEEEEE000ALTKEY1"  TO IX-FD3-ALTKEY1-AREA.
+           START   IX-FD3
+                   KEY IS EQUAL TO IX-FD3-KEY OF
+                   IX-FD3-ALTKEY1-AREA
+                   INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-22.
+           READ    IX-FD3 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-22.
+           MOVE    IX-FD3-240        TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 32
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-22.
+           PERFORM FAIL.
+           MOVE    ALTERNATE-KEY1 (1)  TO WRK-FDW-ALTKEY1.
+           MOVE    FDW-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE    "EEEEEEEEEE000ALTKEY1"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY1" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY1"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-22.
+           PERFORM FAIL.
+           MOVE    32  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-22.
+       START-DELETE-GF-22.
+           PERFORM DE-LETE.
+       START-WRITE-GF-22.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-23.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-23" TO PAR-NAME.
+           MOVE    "BBBBBBBCCC006"  TO IX-FD3-RECKEY-AREA.
+       START-TEST-GF-23.
+           READ    IX-FD3
+                   INVALID KEY
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-23.
+           MOVE    IX-FD3-240       TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 3
+                   MOVE 3 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-23.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-23.
+           MOVE    "AAAAAAAAAA400ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "ZZZZZZZZZZ002ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD3R1-F-G-242.
+           REWRITE IX-FD3R1-F-G-242 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-23.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-23.
+           MOVE    "AAAAAAAAAA400ALTKEY1"  TO IX-FD3-ALTKEY1-AREA.
+           START   IX-FD3
+                          KEY IS EQUAL TO
+                   IX-FD3-KEY
+                   IN IX-FD3-ALTKEY1-AREA
+                   INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-23.
+           READ    IX-FD3 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-23.
+           MOVE    IX-FD3-240        TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 3
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-23.
+           MOVE    ALTERNATE-KEY1 (1)  TO WRK-FDW-ALTKEY1.
+           MOVE    FDW-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE    "AAAAAAAAAA400ALTKEY1"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY1" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY1"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-23.
+           PERFORM FAIL.
+           MOVE 3 TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-23.
+       START-DELETE-GF-23.
+           PERFORM DE-LETE.
+       START-WRITE-GF-23.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-24.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-24" TO PAR-NAME.
+           MOVE    "SSSSSSSSSS360"  TO IX-FD3-RECKEY-AREA.
+       START-TEST-GF-24.
+           READ    IX-FD3
+                   INVALID KEY
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-24.
+           MOVE    IX-FD3-240       TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 180
+                   MOVE 55 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-24.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-24.
+           MOVE    "AAGGGGGGGG100ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "GGGGGGGGGG100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD3R1-F-G-242.
+           REWRITE IX-FD3R1-F-G-242 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-24.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-24.
+           MOVE    "AAGGGGGGGG100ALTKEY1"  TO IX-FD3-ALTKEY1-AREA.
+           START   IX-FD3
+                   KEY IS EQUAL TO
+                   IX-FD3-KEY
+                   OF IX-FD3-ALTKEY1-AREA
+                   INVALID KEY  PERFORM FAIL
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-24.
+           READ    IX-FD3 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-24.
+           MOVE    IX-FD3-240        TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 180
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-24.
+           MOVE    ALTERNATE-KEY1 (1)  TO WRK-FDW-ALTKEY1.
+           MOVE    FDW-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE    "AAGGGGGGGG100ALTKEY1"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY1" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY1"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-24.
+           PERFORM FAIL.
+           MOVE    180  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-24.
+       START-DELETE-GF-24.
+           PERFORM DE-LETE.
+       START-WRITE-GF-24.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-25.
+           MOVE    "START QUAL ALT-KEY-2" TO FEATURE.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-25" TO PAR-NAME.
+           MOVE    "CCCCCDDDDD030"  TO IX-FD3-RECKEY-AREA.
+       START-TEST-GF-25.
+           READ    IX-FD3
+                   INVALID KEY
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-25.
+           MOVE    IX-FD3-240       TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 15
+                   MOVE 15 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-25.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-25.
+           MOVE    "BCBCBCBCBC200ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "CBCBCBCBCB100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD3R1-F-G-242.
+           REWRITE IX-FD3R1-F-G-242 INVALID KEY
+            MOVE "IX-33;  INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-25.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-25.
+           MOVE    "CBCBCBCBCB100ALTKEY2"  TO IX-FD3-ALTKEY2-AREA.
+           START   IX-FD3
+                          KEY IS EQUAL TO
+                   IX-FD3-KEY
+                   IN
+                   IX-FD3-ALTKEY2-AREA
+                   INVALID KEY
+           MOVE "IX-36;  INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-25.
+           READ    IX-FD3 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-25.
+           MOVE    IX-FD3-240        TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 15
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-25.
+           MOVE    ALTERNATE-KEY2 (1)  TO WRK-FDW-ALTKEY2.
+           MOVE    FDW-ALTKEY2-1-20  TO COMPUTED-A.
+           MOVE    "CBCBCBCBCB100ALTKEY2"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY2" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY2"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-25.
+           PERFORM FAIL.
+           MOVE    15  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-25.
+       START-DELETE-GF-25.
+           PERFORM DE-LETE.
+       START-WRITE-GF-25.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-26.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-26" TO PAR-NAME.
+           MOVE    "TTTTTTTTTT380"  TO IX-FD3-RECKEY-AREA.
+       START-TEST-GF-26.
+           READ    IX-FD3
+                   INVALID KEY
+           MOVE "IX-28;F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-26.
+           MOVE    IX-FD3-240       TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 190
+                   MOVE 65 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28;F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   GO TO START-FAIL-GF-26.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-26.
+           MOVE    "DCDCDCDCDC100ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "DCDCDCDCDC100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD3R1-F-G-242.
+           REWRITE IX-FD3R1-F-G-242 INVALID KEY
+            MOVE "IX-33;  INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   GO TO START-FAIL-GF-26.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-26.
+           MOVE    "DCDCDCDCDC100ALTKEY2"  TO IX-FD3-ALTKEY2-AREA.
+           START   IX-FD3
+                   KEY IS EQUAL TO
+                   IX-FD3-KEY OF IX-FD3-ALTKEY2-AREA
+                   INVALID KEY
+            MOVE "IX-36; INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   GO TO START-FAIL-GF-26.
+           READ    IX-FD3 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   GO TO START-FAIL-GF-26.
+           MOVE    IX-FD3-240        TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 190
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-26.
+           MOVE    ALTERNATE-KEY2 (1)  TO WRK-FDW-ALTKEY2.
+           MOVE    FDW-ALTKEY2-1-20  TO COMPUTED-A.
+           MOVE    "DCDCDCDCDC100ALTKEY2"  TO CORRECT-A.
+           MOVE "IX-28 OR IX-36; INCORR ALTERN RECORD KEY2" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE   "WRONG RECORD NUMBER FOUND ON READ ALTERNATE REC KEY2"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+       START-FAIL-GF-26.
+           PERFORM FAIL.
+           MOVE    190  TO CORRECT-18V0.
+           GO TO   START-WRITE-GF-26.
+       START-DELETE-GF-26.
+           PERFORM DE-LETE.
+       START-WRITE-GF-26.
+           PERFORM PRINT-DETAIL.
+       START-INIT-GF-27.
+           MOVE "----------" TO DUMMY-RECORD. PERFORM BLANK-LINE-PRINT.
+           MOVE "START-TEST-GF-27" TO PAR-NAME.
+           MOVE    "CCCCCCCCDD024"  TO IX-FD3-RECKEY-AREA.
+       START-TEST-GF-27.
+           READ    IX-FD3
+                   INVALID KEY
+           MOVE "IX-28,F2 INVALID KEY PATH TAKEN ON INITIAL READ"
+                         TO RE-MARK
+                   MOVE  "INVALID KEY ON READ" TO COMPUTED-A
+                   MOVE 12 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-27.
+           MOVE    IX-FD3-240       TO FILE-RECORD-INFO (3).
+           IF      XRECORD-NUMBER (3) NOT EQUAL TO 12
+                   MOVE 12 TO RECNO
+                   PERFORM DISPLAY-RECORD-KEYS
+           MOVE "IX-28,F2 WRONG RECORD FOUND ON INITIAL READ" TO RE-MARK
+                   MOVE  XRECORD-NUMBER (3) TO COMPUTED-18V0
+                   MOVE 4 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-27.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-DELETE-GF-27.
+           MOVE    "CDCDCDCDCD100ALTKEY1" TO ALTERNATE-KEY1 (3).
+           MOVE    "DCDCDCDCDC100ALTKEY2" TO ALTERNATE-KEY2 (3).
+           MOVE    FILE-RECORD-INFO (3) TO IX-FD3R1-F-G-242.
+           REWRITE IX-FD3R1-F-G-242 INVALID KEY
+           MOVE "IX-33;   INVALID KEY PATH TAKEN ON REWRITE" TO RE-MARK
+                   MOVE  "INVALID KEY; REWRITE" TO COMPUTED-A
+                   MOVE 12 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-27.
+           PERFORM START-INIT-FD3 THRU START-INIT-FD3-EXIT.
+           IF      INIT-FLAG NOT EQUAL ZERO
+                   GO TO START-FAIL-GF-27.
+           MOVE    "DCDCDCDCDC100ALTKEY2"  TO IX-FD3-ALTKEY2-AREA.
+           START   IX-FD3
+                          KEY IS EQUAL TO IX-FD3-KEY
+                   IN
+                   IX-FD3-ALTKEY2-AREA
+                   INVALID KEY
+            MOVE "IX-36; INVALID KEY ON START OF REWRITTEN RECORD"
+                   TO RE-MARK
+                   MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                   MOVE 190 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-27.
+           READ    IX-FD3 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER START" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   MOVE 190 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-27.
+           MOVE    IX-FD3-240        TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) NOT EQUAL TO 190
+                   MOVE ALTERNATE-KEY2 (1) TO WRK-FDW-ALTKEY2
+                   MOVE FDW-ALTKEY2-1-20 TO COMPUTED-A
+                   MOVE "DCDCDCDCDC100" TO CORRECT-A
+           MOVE
+           "IX-28 OR IX-36; INCORR KEY FOUND ON FIRST READ DUPL KEYS"
+                   TO RE-MARK
+                   PERFORM PRINT-DETAIL
+           MOVE "WRONG RECORD NUMBER FOUND ON FIRST READ DUPLICATE KEYS"
+                   TO RE-MARK
+                   MOVE XRECORD-NUMBER (1) TO COMPUTED-18V0
+                   MOVE 190 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-27.
+           READ    IX-FD3 NEXT RECORD AT END
+           MOVE "IX-28;F1 AT END ON READ AFTER FIRST READ" TO RE-MARK
+                   MOVE "AT END ON READ" TO COMPUTED-A
+                   MOVE 12 TO CORRECT-18V0
+                   GO TO START-FAIL-GF-27.
+           MOVE    IX-FD3-240       TO FILE-RECORD-INFO (1).
+           IF      XRECORD-NUMBER (1) EQUAL TO 12
+                   PERFORM PASS
+                   GO TO START-WRITE-GF-27.
+           PERFORM FAIL.
+           MOVE    ALTERNATE-KEY2 (1)  TO WRK-FDW-ALTKEY2.
+           MOVE    FDW-ALTKEY1-1-20  TO COMPUTED-A.
+           MOVE
+           "IX-28 OR IX-36; INCORR KEY FOUND ON SECOND READ DUPL KEYS"
+                   TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+           MOVE "WRONG REC NUMBER FOUND ON SECOND READ DUPLICATE KEYS"
+                   TO RE-MARK.
+           MOVE    XRECORD-NUMBER (1) TO COMPUTED-18V0.
+           MOVE    12 TO CORRECT-18V0.
+       START-FAIL-GF-27.
+           PERFORM FAIL.
+           GO TO   START-WRITE-GF-27.
+       START-DELETE-GF-27.
+           PERFORM DE-LETE.
+       START-WRITE-GF-27.
+           PERFORM PRINT-DETAIL.
+       START-TERM-GF.
+           CLOSE   IX-FD3.
+       START-TEST-FINISH.
+           GO TO   START-TEST-COMPLETE.
+       START-INIT-FD1.
+           MOVE    SPACE  TO FILE-RECORD-INFO (1).
+           MOVE    ZERO  TO INIT-FLAG.
+           MOVE    9999  TO XRECORD-NUMBER (2).
+           MOVE    SPACE TO IX-FD1R1-F-G-240.
+           MOVE    "GGGGGGGGGG200" TO  FDW-RECKEY-1-13.
+           MOVE    WRK-FDW-RECKEY TO IX-REC-KEY-AREA.
+           START   IX-FD1  KEY IS EQUAL TO IX-FD1-KEY INVALID KEY
+                           MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                           GO TO START-INIT-FD1-ERROR.
+           READ    IX-FD1 NEXT RECORD INTO  FILE-RECORD-INFO (2)
+                           AT END  MOVE  "AT END ON READ" TO COMPUTED-A
+                           GO TO START-INIT-FD1-ERROR.
+           IF      XRECORD-NUMBER (2) EQUAL TO 100
+                   GO TO START-INIT-FD1-EXIT.
+           MOVE    XRECORD-KEY (2)  TO WRK-FDW-RECKEY.
+           MOVE    FDW-RECKEY-1-13  TO COMPUTED-A.
+       START-INIT-FD1-ERROR.
+           MOVE     1 TO INIT-FLAG.
+           MOVE    "TEST IMPROPERLY INITIALIZED" TO RE-MARK.
+           MOVE    "GGGGGGGGGG200" TO CORRECT-A.
+           PERFORM PRINT-DETAIL.
+       START-INIT-FD1-EXIT.
+           EXIT.
+       START-INIT-FD2.
+           MOVE    SPACE  TO FILE-RECORD-INFO (1).
+           MOVE    ZERO  TO INIT-FLAG.
+           MOVE    9999  TO XRECORD-NUMBER (2).
+           MOVE    SPACE TO IX-FD2R1-F-G-241.
+           MOVE    "GGGGGGGGGG200" TO  IX-FD2-KEY.
+           START   IX-FD2  KEY IS EQUAL TO IX-FD2-KEY INVALID KEY
+                           MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                           GO TO START-INIT-FD2-ERROR.
+           READ    IX-FD2 NEXT RECORD INTO  FILE-RECORD-INFO (2)
+                           AT END  MOVE  "AT END ON READ" TO COMPUTED-A
+                           GO TO START-INIT-FD2-ERROR.
+           IF      XRECORD-NUMBER (2) EQUAL TO 100
+                   GO TO START-INIT-FD2-EXIT.
+           MOVE    XRECORD-KEY (2)  TO WRK-FDW-RECKEY.
+           MOVE    FDW-RECKEY-1-13  TO COMPUTED-A.
+       START-INIT-FD2-ERROR.
+           MOVE     1 TO INIT-FLAG.
+           MOVE    "TEST IMPROPERLY INITIALIZED" TO RE-MARK.
+           MOVE    "GGGGGGGGGG200" TO CORRECT-A.
+           PERFORM PRINT-DETAIL.
+       START-INIT-FD2-EXIT.
+           EXIT.
+       START-INIT-FD3.
+           MOVE    SPACE  TO FILE-RECORD-INFO (1).
+           MOVE    ZERO  TO INIT-FLAG.
+           MOVE    9999  TO XRECORD-NUMBER (2).
+           MOVE    SPACE TO IX-FD3R1-F-G-242.
+           MOVE    "GGGGGGGGGG200" TO  IX-FD3-RECKEY-AREA.
+           START   IX-FD3
+                 INVALID KEY  MOVE  "INVALID KEY ON START" TO COMPUTED-A
+                           GO TO START-INIT-FD3-ERROR.
+           READ    IX-FD3 NEXT RECORD INTO FILE-RECORD-INFO (2)
+                           AT END  MOVE  "AT END ON READ" TO COMPUTED-A
+                           GO TO START-INIT-FD3-ERROR.
+           IF      XRECORD-NUMBER (2) EQUAL TO 100
+                   GO TO START-INIT-FD3-EXIT.
+           MOVE    XRECORD-KEY (2)  TO WRK-FDW-RECKEY.
+           MOVE    FDW-RECKEY-1-13  TO COMPUTED-A.
+       START-INIT-FD3-ERROR.
+           MOVE     1 TO INIT-FLAG.
+           MOVE    "TEST IMPROPERLY INITIALIZED" TO RE-MARK.
+           MOVE    "GGGGGGGGGG200" TO CORRECT-A.
+           PERFORM PRINT-DETAIL.
+       START-INIT-FD3-EXIT.
+           EXIT.
+       DISPLAY-RECORD-KEYS.
+           MOVE    XRECORD-KEY (3)  TO WRK-FDW-RECKEY.
+           MOVE    FDW-RECKEY-1-13  TO COMPUTED-A.
+           MOVE    RECKEY-VALUE (RECNO)  TO CORRECT-A.
+           MOVE    "RECORD KEY VALUES" TO RE-MARK.
+           PERFORM PRINT-DETAIL.
+       START-TEST-COMPLETE.
+           EXIT.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,IX215A

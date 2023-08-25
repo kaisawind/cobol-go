@@ -1,0 +1,82 @@
+      *> HEADER,COBOL,OBIC1A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           OBIC1A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>         THE MAIN PROGRAM IC218 CALLS THE SUBPROGRAM IC219 WHICH
+      *>     CONTAINS A SORT STATEMENT AND A STOP RUN STATEMENT.  THE
+      *>     PURPOSE OF THESE PROGRAMS IS TO VERIFY THAT A SORT STATEMENT
+      *>     FUNCTIONS CORRECTLY IN A SUBPROGRAM.  THE FIRST NON-DECLARA-
+      *>     TIVE PORTION OF THE SUBPROGRAM, THE SORT INPUT PROCEDURE AND
+      *>     THE SORT OUTPUT PROCEDURE ARE CONTAINED IN DIFFERENT SUBPRO-
+      *>     GRAM SEGMENTS.
+      *> 
+      *>         A CALL IS MADE TO THE SUBPROGRAM IC219.  CONTROL SHOULD
+      *>     NOT BE RETURNED TO THIS PROGRAM SINCE IC219 CONTAINS A STOP
+      *>     RUN STATEMENT.  THE SUBPROGRAM IC220 CONTAINS THE PRINTER FD
+      *>     AND PRINTS OUT THE REPORT SHOWING THE TEST RESULTS.
+      *> 
+      *>     REFERENCE - AMERICAN NATIONAL STANDARD PROGRAMMING LANGUAGE
+      *>                 COBOL, X3.23-1985
+      *> 
+      *> *****************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  SORT-LINK               PICTURE 9.
+       01  PRINT-LINE-VALUES.
+           02  PASS-OR-FAIL        PICTURE X(5).
+           02  R-COUNT             PICTURE 99.
+           02  FEATURE-TESTED      PICTURE X(20).
+           02  COMPUTED-SORT-KEY   PICTURE X(20).
+           02  CORRECT-SORT-KEY    PICTURE X(20).
+           02  PARAGRAPH-NAME      PICTURE X(12).
+       01  PRINT-FLAG              PICTURE 9.
+       PROCEDURE DIVISION.
+       SECT-IC218-0001 SECTION.
+       CALL-IC219.
+           MOVE 0 TO SORT-LINK.
+           CALL "OBIC2A" USING SORT-LINK.
+       CALL-FAIL.
+      *> 
+      *>     CONTROL SHOULD NOT RETURN TO THE MAIN PROGRAM FROM THE SUB-
+      *>     PROGRAM SINCE THE SUBPROGRAM CONTAINS A STOP RUN STATEMENT.
+      *> 
+           MOVE 2 TO PRINT-FLAG.
+           MOVE "CALL-MAIN-IC" TO PARAGRAPH-NAME.
+           MOVE "CONTROL RETURNED" TO FEATURE-TESTED.
+           MOVE "FAIL " TO PASS-OR-FAIL.
+           MOVE 0 TO R-COUNT.
+           MOVE SORT-LINK TO COMPUTED-SORT-KEY.
+           MOVE SPACE TO CORRECT-SORT-KEY.
+           CALL "OBIC3A" USING PRINT-LINE-VALUES  PRINT-FLAG.
+           MOVE 3 TO PRINT-FLAG.
+           CALL "OBIC3A" USING PRINT-LINE-VALUES  PRINT-FLAG.
+      *> 
+      *>         NO STOP RUN STATEMENT APPEARS IN THIS PROGRAM.
+      *> 
+       END-OF-PROGRAM.
+           EXIT PROGRAM.
+      *> END-OF,OBIC1A

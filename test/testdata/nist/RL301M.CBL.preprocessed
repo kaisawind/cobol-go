@@ -1,0 +1,69 @@
+      *> HEADER,COBOL,RL301M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+            RL301M.
+      *> The following program tests the flagging of intermediate
+      *> subset features that are used in relative
+      *> input-output.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT TFIL ASSIGN
+           XXXXX021
+                  ORGANIZATION IS RELATIVE
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+                  ACCESS MODE IS RANDOM
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+                  RELATIVE KEY IS RKEY.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  TFIL.
+       01  FREC.
+           03 GUBBINS  PIC 9(8).
+       
+       WORKING-STORAGE SECTION.
+       01  VARIABLES.
+         03  STATE     PIC X(4) VALUE SPACES.
+         03  RKEY      PIC 9(8) VALUE ZERO.
+       
+       PROCEDURE DIVISION.
+       
+       RL301M-CONTROL.
+           OPEN I-O TFIL.
+           PERFORM RL301M-READ THRU RL301M-DELETE 1 TIMES.
+           CLOSE TFIL.
+           STOP RUN.
+       
+       RL301M-READ.
+           READ TFIL INVALID KEY PERFORM INV-PARA
+                       NOT INVALID KEY PERFORM DONE-PARA.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       RL301M-REWRITE.
+           REWRITE FREC INVALID KEY PERFORM INV-PARA
+                       NOT INVALID KEY PERFORM DONE-PARA.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       RL301M-WRITE.
+           WRITE FREC INVALID KEY PERFORM INV-PARA
+                       NOT INVALID KEY PERFORM DONE-PARA.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       RL301M-DELETE.
+           DELETE TFIL INVALID KEY PERFORM INV-PARA
+                       NOT INVALID KEY PERFORM DONE-PARA.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       INV-PARA.
+           MOVE "INVA" TO STATE.
+       
+       DONE-PARA.
+           MOVE "DONE" TO STATE.
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 6.
+      *> END-OF,RL301M

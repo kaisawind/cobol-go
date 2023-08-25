@@ -1,0 +1,86 @@
+      *> HEADER,COBOL,RW301M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           RW301M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF
+      *> FEATURES THAT ARE USED IN REPORT WRITING.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT TFIL ASSIGN
+           XXXXX001
+               ORGANIZATION IS SEQUENTIAL
+               ACCESS MODE IS SEQUENTIAL.
+       
+           SELECT TFIL2 ASSIGN
+           XXXXX002
+           ORGANIZATION IS SEQUENTIAL
+           ACCESS MODE IS SEQUENTIAL.
+       
+       
+       I-O-CONTROL.
+           MULTIPLE FILE TAPE CONTAINS TFIL2.
+       
+       DATA DIVISION.
+       FILE SECTION.
+       FD TFIL
+           LABEL RECORDS STANDARD
+           VALUE OF
+           XXXXX074
+           IS
+           XXXXX075.
+       
+       
+       01 FREC.
+           03 RKEY PIC 9(8).
+       
+       FD TFIL2
+              REPORT IS RFIL2.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       WORKING-STORAGE SECTION.
+       
+       01 VARIABLES.
+           03 VKEY PIC 9(8) VALUE ZERO.
+       
+       REPORT SECTION.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       RD  RFIL2.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       01  RREC
+                   TYPE IS DETAIL.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+           02  PIC 9(8)
+                   SOURCE IS RKEY
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+                   COLUMN NUMBER IS 1
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+                   LINE NUMBER IS PLUS 1.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       PROCEDURE DIVISION.
+       
+       RW301M-CONTROL.
+           OPEN INPUT TFIL.
+           READ TFIL
+               AT END
+                   GO TO RW301M-END.
+           OPEN OUTPUT TFIL2.
+           INITIATE RFIL2.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+           GENERATE RREC.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+           TERMINATE RFIL2.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       RW301M-END.
+           CLOSE TFIL, TFIL2.
+           STOP RUN.
+       
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 10
+      *> END-OF,RW301M

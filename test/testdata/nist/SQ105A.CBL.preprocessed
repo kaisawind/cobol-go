@@ -1,0 +1,1174 @@
+      *> HEADER,COBOL,SQ105A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SQ105A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>     USING CCVS85 VERSION 1.0 ISSUED IN JANUARY 1986.          *
+      *>                              REVISED 1986, AUGUST             *
+      *>                                                               *
+      *>     CREATION DATE     /     VALIDATION DATE                   *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>             X-14   SEQUENTIAL MASS STORAGE FILE               *
+      *>             X-55   SYSTEM PRINTER                             *
+      *>             X-82   SOURCE-COMPUTER                            *
+      *>             X-83   OBJECT-COMPUTER.                           *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     SQ105A CREATES A SEQUENTIAL MASS STORAGE FILE CONTAINING  *
+      *>     980 RECORDS, EACH 125 CHARACTERS LONG.  THERE ARE TWO     *
+      *>     USE PROCEDURES IN THE DECLARATIVE SECTION, ONE FOR        *
+      *>     EXCEPTION ON OUTPUT, THE OTHER FOR EXCEPTION ON INPUT.    *
+      *>     THE FILE IS READ TWICE.  IN THE FIRST PASS, RECORDS ARE   *
+      *>     READ WITH READ STATEMENTS WHICH DO NOT CONTAIN ANY        *
+      *>     OPTIONAL PHRASES EXCEPT THE OPTIONAL WORD "RECORD".  ON   *
+      *>     THE SECOND PASS, THE READ STATEMENT CONTAINS NO OPTIONAL  *
+      *>     WORDS OR PHRASES AT ALL.  ON BOTH PASSES, THE END OF FILE *
+      *>     SHOULD CAUSE EXECUTION OF THE DECLARATIVE PROCEDURE FOR   *
+      *>     INPUT.  THE DECLARATIVE PROCEDURE FOR OUTPUT SHOULD BE    *
+      *>     ON BOTH PASSES.                                           *
+      *>                                                               *
+      *>     THE OPTIONAL ORGANIZATION AND ACCESS MODE CLAUSES ARE     *
+      *>     BOTH OMITTED.                                             *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+      *> 
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+      *> 
+      *>     SELECT RAW-DATA   ASSIGN TO
+      *>     XXXXX062
+      *>           ORGANIZATION IS INDEXED
+      *>           ACCESS MODE  IS RANDOM
+      *>           RECORD-KEY   IS RAW-DATA-KEY.
+      *> 
+           SELECT SQ-FS4 ASSIGN
+           XXXXX014
+           STATUS SQ-FS4-STATUS.
+      *> 
+      *> 
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE
+           LABEL RECORDS
+           XXXXX084
+           DATA RECORD IS PRINT-REC DUMMY-RECORD
+                     .
+       01  PRINT-REC    PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+      *> 
+      *> FD  RAW-DATA.
+      *> 01  RAW-DATA-SATZ.
+      *>     05  RAW-DATA-KEY        PIC X(6).
+      *>     05  C-DATE              PIC 9(6).
+      *>     05  C-TIME              PIC 9(8).
+      *>     05  NO-OF-TESTS         PIC 99.
+      *>     05  C-OK                PIC 999.
+      *>     05  C-ALL               PIC 999.
+      *>     05  C-FAIL              PIC 999.
+      *>     05  C-DELETED           PIC 999.
+      *>     05  C-INSPECT           PIC 999.
+      *>     05  C-NOTE              PIC X(13).
+      *>     05  C-INDENT            PIC X.
+      *>     05  C-ABORT             PIC X(8).
+      *> 
+       FD  SQ-FS4
+           BLOCK CONTAINS 2 RECORDS
+           RECORD 125
+           LABEL RECORD STANDARD
+           DATA RECORDS SQ-FS4R1-F-G-125.
+      *> 
+       01  SQ-FS4R1-F-G-125.
+           02  SQ-FS4-FIRST  PIC X(120).
+           02  SQ-FS4-REC-NO   PIC  9(5).
+      *> 
+       WORKING-STORAGE SECTION.
+      *> 
+      *> **************************************************************
+      *>                                                              *
+      *>     WORKING-STORAGE DATA ITEMS SPECIFIC TO THIS TEST SUITE   *
+      *>                                                              *
+      *> **************************************************************
+      *> 
+       01  SQ-FS4-STATUS.
+         03  SQ-FS4-STATUS-1   PIC X.
+         03  SQ-FS4-STATUS-2   PIC X.
+      *> 
+       01  SQ-FS4-STATUS-COPY PIC XX.
+       01  DECL-EXEC-SW.
+           05  DECL-EXEC-SW-O PIC X.
+           05  DECL-EXEC-SW-I PIC X.
+       01  WRK-CS-09V00  PIC  S9(9) USAGE COMPUTATIONAL VALUE ZERO.
+       01  EOF-FLAG  PIC 9  VALUE ZERO.
+       01  RECORDS-IN-ERROR  PIC S9(5) USAGE COMP VALUE ZERO.
+       01  ERROR-FLAG PIC 9  VALUE ZERO.
+       01  PERM-ERRORS  PIC S9(5) USAGE COMP VALUE ZERO.
+      *> 
+       01  MAJOR-DELETIONS PIC 99.
+       01  COUNT-OF-RECS   PIC 9(5).
+      *> 
+      *> 
+      *> **************************************************************
+      *>                                                              *
+      *>     WORKING-STORAGE DATA ITEMS USED BY THE CCVS              *
+      *>                                                              *
+      *> **************************************************************
+      *> 
+       01  REC-SKEL-SUB   PIC 99.
+      *> 
+       01  FILE-RECORD-INFORMATION-REC.
+           03 FILE-RECORD-INFO-SKELETON.
+              05 FILLER                 PICTURE X(48)       VALUE
+                   "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+              05 FILLER                 PICTURE X(46)       VALUE
+                   ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+              05 FILLER                 PICTURE X(26)       VALUE
+                   ",LFIL=000000,ORG=  ,LBLR= ".
+              05 FILLER                 PICTURE X(37)       VALUE
+                   ",RECKEY=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY1=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY2=                             ".
+              05 FILLER                 PICTURE X(7)        VALUE SPACE.
+           03 FILE-RECORD-INFO          OCCURS  10  TIMES.
+              05 FILE-RECORD-INFO-P1-120.
+                 07 FILLER              PIC X(5).
+                 07 XFILE-NAME          PIC X(6).
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-NAME        PIC X(6).
+                 07 FILLER              PIC X(1).
+                 07 REELUNIT-NUMBER     PIC 9(1).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-NUMBER      PIC 9(6).
+                 07 FILLER              PIC X(6).
+                 07 UPDATE-NUMBER       PIC 9(2).
+                 07 FILLER              PIC X(5).
+                 07 ODO-NUMBER          PIC 9(4).
+                 07 FILLER              PIC X(5).
+                 07 XPROGRAM-NAME       PIC X(5).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-LENGTH      PIC 9(6).
+                 07 FILLER              PIC X(7).
+                 07 CHARS-OR-RECORDS    PIC X(2).
+                 07 FILLER              PIC X(1).
+                 07 XBLOCK-SIZE         PIC 9(4).
+                 07 FILLER              PIC X(6).
+                 07 RECORDS-IN-FILE     PIC 9(6).
+                 07 FILLER              PIC X(5).
+                 07 XFILE-ORGANIZATION  PIC X(2).
+                 07 FILLER              PIC X(6).
+                 07 XLABEL-TYPE         PIC X(1).
+              05 FILE-RECORD-INFO-P121-240.
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-KEY         PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY1      PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY2      PIC X(29).
+                 07 FILLER              PIC X(7).
+      *> 
+       01  TEST-RESULTS.
+           02 FILLER              PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER              PIC X(14)  VALUE SPACE.
+             03 PARDOT-X            PIC X      VALUE SPACE.
+             03 DOTVALUE            PIC 99     VALUE ZERO.
+           02 FILLER              PIC X      VALUE SPACE.
+           02 FEATURE             PIC X(24)  VALUE SPACE.
+           02 FILLER              PIC X      VALUE SPACE.
+           02 P-OR-F              PIC X(5)   VALUE SPACE.
+           02 FILLER              PIC X(9)   VALUE SPACE.
+           02 RE-MARK             PIC X(61).
+       01  TEST-COMPUTED.
+         02 FILLER  PIC X(30)  VALUE SPACE.
+         02 FILLER  PIC X(17)  VALUE "      COMPUTED =".
+         02 COMPUTED-X.
+           03 COMPUTED-A    PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N    REDEFINES COMPUTED-A PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+              04 COMPUTED-18V0                   PIC -9(18).
+              04 FILLER                          PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+      *> 
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X        VALUE  SPACE.
+           02 FILLER  PIC IS X(17)    VALUE "PARAGRAPH-NAME".
+           02 FILLER  PIC IS X        VALUE  SPACE.
+           02 FILLER  PIC IS X(24)    VALUE IS "FEATURE".
+           02 FILLER  PIC IS X        VALUE  SPACE.
+           02 FILLER  PIC IS X(5)     VALUE "PASS ".
+           02 FILLER  PIC IS X(9)     VALUE  SPACE.
+           02 FILLER  PIC IS X(62)    VALUE "REMARKS".
+       01  CCVS-C-2.
+           02 FILLER  PIC X(19)  VALUE  SPACE.
+           02 FILLER  PIC X(6)   VALUE "TESTED".
+           02 FILLER  PIC X(19)  VALUE  SPACE.
+           02 FILLER  PIC X(4)   VALUE "FAIL".
+           02 FILLER  PIC X(72)  VALUE  SPACE.
+      *> 
+       01  REC-SKL-SUB       PIC 9(2)     VALUE ZERO.
+       01  REC-CT            PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER    PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER     PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER   PIC 999      VALUE ZERO.
+       01  PASS-COUNTER      PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR       PIC 999      VALUE ZERO.
+       01  ERROR-HOLD        PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD        PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT      PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE    PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER          PIC X(39)    VALUE SPACES.
+           02  FILLER          PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER          PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER            PIC X(40)  VALUE SPACE.
+         02  FILLER            PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER            PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER            PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER            PIC X(41)  VALUE SPACE.
+      *> 
+       01  CCVS-H-2B.
+         02  FILLER            PIC X(15)  VALUE "TEST RESULT OF ".
+         02  TEST-ID           PIC X(9).
+         02  FILLER            PIC X(4)   VALUE " IN ".
+         02  FILLER            PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER            PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER            PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER          PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER          PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER          PIC X(28)  VALUE
+                  "  COPYRIGHT   1985,1986 ".
+       01  CCVS-E-1.
+           02 FILLER           PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN         PIC X(9).
+           02 FILLER           PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER          PIC X(31)  VALUE SPACE.
+           02  FILLER          PIC X(21)  VALUE SPACE.
+           02  CCVS-E-2-2.
+               03 ERROR-TOTAL    PIC XXX    VALUE SPACE.
+               03 FILLER         PIC X      VALUE SPACE.
+               03 ENDER-DESC     PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER          PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER          PIC X(12)  VALUE SPACE.
+           02  FILLER          PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER          PIC X(8)   VALUE SPACE.
+           02  FILLER          PIC X(20)  VALUE
+                   " COPYRIGHT 1985,1986".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1       PIC XXX    VALUE SPACE.
+           02 FILLER           PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2       PIC XXX    VALUE SPACE.
+           02 FILLER           PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER           PIC X(19)  VALUE "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER             PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED         PIC X(20).
+             04 FILLER             PIC X(5)   VALUE SPACE.
+             04 XXCORRECT          PIC X(20).
+           02 INF-ANSI-REFERENCE PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID  PIC X(9)   VALUE
+           "SQ105A".
+      *> 
+      *> 
+       PROCEDURE DIVISION.
+       DECLARATIVES.
+       SECT-SQ105-0001 SECTION.
+           USE AFTER STANDARD ERROR PROCEDURE OUTPUT.
+       OUTPUT-ERROR-PROCESS.
+           MOVE   "O" TO DECL-EXEC-SW-O.
+           MOVE    2     TO PERM-ERRORS.
+           ADD     1     TO RECORDS-IN-ERROR.
+           IF SQ-FS4-STATUS-1 EQUAL TO "3"
+                MOVE    1 TO PERM-ERRORS.
+       SECT-SQ105-0002 SECTION.
+           USE AFTER ERROR PROCEDURE ON INPUT.
+       INPUT-PROCESS.
+           MOVE   "I" TO DECL-EXEC-SW-I.
+           IF SQ-FS4-STATUS-1 EQUAL TO "1"
+                MOVE    1 TO EOF-FLAG.
+           IF SQ-FS4-STATUS-1 GREATER THAN "1"
+                MOVE    1 TO PERM-ERRORS.
+      *> 
+       END DECLARATIVES.
+      *> 
+      *> 
+       CCVS1 SECTION.
+       OPEN-FILES.
+      *>     OPEN    I-O RAW-DATA.
+      *>     MOVE    CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ    RAW-DATA INVALID KEY GO TO END-E-1.
+      *>     MOVE   "ABORTED "   TO C-ABORT.
+      *>     ADD     1           TO C-NO-OF-TESTS.
+      *>     ACCEPT  C-DATE      FROM DATE.
+      *>     ACCEPT  C-TIME      FROM TIME.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY CONTINUE.
+      *> END-E-1.
+      *>     CLOSE   RAW-DATA.
+           OPEN    OUTPUT PRINT-FILE.
+           MOVE    CCVS-PGM-ID TO TEST-ID.
+           MOVE    CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE    ZERO TO REC-SKEL-SUB.
+           PERFORM CCVS-INIT-FILE 10 TIMES.
+           GO TO CCVS1-EXIT.
+      *> 
+       CCVS-INIT-FILE.
+           ADD     1 TO REC-SKL-SUB.
+           MOVE    FILE-RECORD-INFO-SKELETON TO
+                        FILE-RECORD-INFO (REC-SKL-SUB).
+      *> 
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13.
+           CLOSE   PRINT-FILE.
+      *>     OPEN    I-O RAW-DATA.
+      *>     MOVE    CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ    RAW-DATA INVALID KEY GO TO END-E-2.
+      *>     MOVE   "OK.     " TO C-ABORT.
+      *>     MOVE    PASS-COUNTER  TO C-OK.
+      *>     MOVE    ERROR-HOLD    TO C-ALL.
+      *>     MOVE    ERROR-COUNTER TO C-FAIL.
+      *>     MOVE    DELETE-CNT    TO C-DELETED.
+      *>     MOVE    INSPECT-COUNTER TO C-INSPECT.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY CONTINUE.
+      *> END-E-2.
+      *>     CLOSE   RAW-DATA.
+       TERMINATE-CCVS.
+      *>     EXIT    PROGRAM.
+           STOP    RUN.
+      *> 
+       INSPT.
+           MOVE   "INSPT" TO P-OR-F.
+           ADD     1 TO INSPECT-COUNTER.
+           PERFORM PRINT-DETAIL.
+      *> 
+       PASS.
+           MOVE   "PASS " TO P-OR-F.
+           ADD     1 TO PASS-COUNTER.
+           PERFORM PRINT-DETAIL.
+      *> 
+       FAIL.
+           MOVE   "FAIL*" TO P-OR-F.
+           ADD     1 TO ERROR-COUNTER.
+           PERFORM PRINT-DETAIL.
+      *> 
+       DE-LETE.
+           MOVE   "****TEST DELETED****" TO RE-MARK.
+           MOVE   "*****" TO P-OR-F.
+           ADD     1 TO DELETE-COUNTER.
+           PERFORM PRINT-DETAIL.
+      *> 
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+               MOVE   "." TO PARDOT-X
+               MOVE    REC-CT TO DOTVALUE.
+           MOVE    TEST-RESULTS TO PRINT-REC.
+           PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"
+               PERFORM WRITE-LINE
+               PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+           ELSE
+               PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE    SPACE TO P-OR-F.
+           MOVE    SPACE TO COMPUTED-X.
+           MOVE    SPACE TO CORRECT-X.
+           IF REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE    SPACE TO RE-MARK.
+      *> 
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE    HYPHEN-LINE TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE    CCVS-E-1 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 2 TIMES.
+      *> 
+       END-ROUTINE-1.
+           ADD     ERROR-COUNTER   TO ERROR-HOLD
+           ADD     INSPECT-COUNTER TO ERROR-HOLD.
+           ADD     DELETE-COUNTER  TO ERROR-HOLD.
+           ADD     PASS-COUNTER    TO ERROR-HOLD.
+           MOVE    PASS-COUNTER    TO CCVS-E-4-1.
+           MOVE    ERROR-HOLD      TO CCVS-E-4-2.
+           MOVE    CCVS-E-4        TO CCVS-E-2-2.
+           MOVE    CCVS-E-2        TO DUMMY-RECORD
+           PERFORM WRITE-LINE.
+           MOVE   "TEST(S) FAILED" TO ENDER-DESC.
+           IF ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE   "NO " TO ERROR-TOTAL
+           ELSE
+               MOVE    ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE    CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE   "NO " TO ERROR-TOTAL
+           ELSE
+               MOVE    DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE   "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE    CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+           IF INSPECT-COUNTER EQUAL TO ZERO
+               MOVE   "NO " TO ERROR-TOTAL
+           ELSE
+               MOVE    INSPECT-COUNTER TO ERROR-TOTAL.
+           MOVE   "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+           MOVE    CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE    CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+      *> 
+       WRITE-LINE.
+           ADD     1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE  DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE  SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE  CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE  CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE  HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE  DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE  ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+      *> 
+       WRT-LN.
+           WRITE   DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE    SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE    ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE    XXINFO TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 2 TIMES.
+           MOVE    SPACES TO INF-ANSI-REFERENCE.
+           GO TO   FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE    TEST-COMPUTED  TO PRINT-REC
+           PERFORM WRITE-LINE
+           MOVE    ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE    TEST-CORRECT   TO PRINT-REC
+           PERFORM WRITE-LINE 2 TIMES.
+           MOVE    SPACES         TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX.
+           EXIT.
+       BAIL-OUT.
+           IF COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE    CORRECT-A      TO XXCORRECT.
+           MOVE    COMPUTED-A     TO XXCOMPUTED.
+           MOVE    ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE    XXINFO TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 2 TIMES.
+           MOVE    SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX.
+           EXIT.
+       CCVS1-EXIT.
+           EXIT.
+      *> 
+      *> ***************************************************************
+      *>                                                               *
+      *>     THIS POINT MARKS THE END OF THE CCVS MONITOR ROUTINES AND *
+      *>     THE START OF THE TESTS OF SPECIFIC COBOL FEATURES.        *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+       SECT-SQ105-0003 SECTION.
+       INITIAL-PARA.
+           MOVE   "SQ-FS4" TO XFILE-NAME (1).
+           MOVE   "R1-F-G" TO XRECORD-NAME (1).
+           MOVE    CCVS-PGM-ID TO XPROGRAM-NAME (1).
+           MOVE    000125 TO XRECORD-LENGTH (1).
+           MOVE   "RC" TO CHARS-OR-RECORDS (1).
+           MOVE    0002 TO XBLOCK-SIZE (1).
+           MOVE    000980 TO RECORDS-IN-FILE (1).
+           MOVE   "SQ" TO XFILE-ORGANIZATION (1).
+           MOVE   "S" TO XLABEL-TYPE (1).
+           MOVE    ZERO TO MAJOR-DELETIONS.
+      *> 
+      *>     THE INITIAL ACTIONS ARE TO CREATE A FILE FOR USE
+      *>     IN LATER TESTS.  FILE STATUS VALUES AND DECLARATIVE
+      *>     EXECUTION DURING THE CREATION PROCESS ARE MONITORED.
+      *> 
+       SEQ-INIT-01.
+           MOVE    ZERO TO XRECORD-NUMBER (1).
+           MOVE    0 TO COUNT-OF-RECS.
+           MOVE   "CREATE 980 RECORD FILE" TO FEATURE.
+           MOVE   "SEQ-TEST-WR-01" TO PAR-NAME.
+           MOVE   "**"    TO SQ-FS4-STATUS.
+           MOVE   "00"    TO SQ-FS4-STATUS-COPY.
+           MOVE   "**"    TO DECL-EXEC-SW.
+           MOVE    1 TO REC-CT.
+           GO TO   SEQ-TEST-WR-01.
+       SEQ-DELETE-01.
+           MOVE    1 TO MAJOR-DELETIONS.
+           GO TO   SEQ-DELETE-01-01.
+       SEQ-TEST-WR-01.
+           OPEN    OUTPUT SQ-FS4.
+           IF SQ-FS4-STATUS NOT EQUAL TO "00"
+               MOVE    SQ-FS4-STATUS TO SQ-FS4-STATUS-COPY
+               MOVE   "00" TO SQ-FS4-STATUS.
+      *> 
+       SEQ-TEST-WR-01-LOOP.
+           ADD     1 TO XRECORD-NUMBER (1).
+           MOVE    FILE-RECORD-INFO-P1-120 (1) TO SQ-FS4-FIRST.
+           ADD     1 TO COUNT-OF-RECS.
+           MOVE    COUNT-OF-RECS TO SQ-FS4-REC-NO.
+           WRITE   SQ-FS4R1-F-G-125.
+           IF SQ-FS4-STATUS NOT EQUAL TO "00"
+               MOVE    SQ-FS4-STATUS TO SQ-FS4-STATUS-COPY
+               MOVE   "00" TO SQ-FS4-STATUS.
+           IF PERM-ERRORS EQUAL TO 1
+               GO TO   SEQ-TEST-WR-01-LOOP-EXIT.
+           IF COUNT-OF-RECS LESS THAN 980
+               GO TO   SEQ-TEST-WR-01-LOOP.
+      *> 
+       SEQ-TEST-WR-01-LOOP-EXIT.
+      *> 
+           CLOSE   SQ-FS4.
+           IF SQ-FS4-STATUS NOT EQUAL TO "00"
+               MOVE    SQ-FS4-STATUS TO SQ-FS4-STATUS-COPY
+               MOVE   "00" TO SQ-FS4-STATUS.
+      *> 
+           GO TO   SEQ-TEST-WR-01-01.
+       SEQ-DELETE-01-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-INIT-WR-01-02.
+       SEQ-TEST-WR-01-01.
+      *> 
+           IF SQ-FS4-STATUS-COPY EQUAL "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-FS4-STATUS-COPY TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "ERROR I-O STATUS DURING FILE CREATION"
+                          TO RE-MARK
+               PERFORM FAIL.
+      *> 
+       SEQ-INIT-WR-01-02.
+           ADD     1 TO REC-CT.
+           IF MAJOR-DELETIONS = 1
+               GO TO   SEQ-DELETE-01-02.
+           GO TO   SEQ-TEST-WR-01-02.
+       SEQ-DELETE-01-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-01-END.
+       SEQ-TEST-WR-01-02.
+           IF DECL-EXEC-SW = "**"
+               PERFORM PASS
+           ELSE
+               MOVE    DECL-EXEC-SW TO COMPUTED-A
+               MOVE   "**" TO CORRECT-A
+               MOVE
+                "UNEXPECTED DECLARATIVE EXECUTION DURING FILE CREATION"
+                    TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-01-END.
+      *> 
+      *>     A SEQUENTIAL MASS STORAGE FILE WITH 125 CHARACTER RECORDS, 
+      *>     TWO RECORDS PER BLOCK, HAS BEEN CREATED.  THE FILE
+      *>     CONTAINS 980 RECORDS.  THE FOLLOWING TESTS READ AND
+      *>     VERIFY THE RECORDS IN THE FILE.  THE READ STATEMENT DOES
+      *>     NOT CONTAIN AN AT END PHRASE, SO THE INPUT DECLARATIVE
+      *>     SHOULD BE EXECUTED AT THE END OF THE FILE.  THE READ
+      *>     STATEMENT CONTAINS THE OPTIONAL WORD "RECORD"
+      *> 
+       SEQ-INIT-02.
+           MOVE    1 TO REC-CT.
+           MOVE   "**" TO DECL-EXEC-SW.
+           MOVE   "**" TO SQ-FS4-STATUS.
+           MOVE   "OPEN FILE FOR CHECK" TO FEATURE.
+           MOVE   "SEQ-TEST-GF-02" TO PAR-NAME.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO SEQ-DELETE-02.
+           GO TO   SEQ-TEST-GF-02.
+       SEQ-DELETE-02.
+           ADD     2 TO MAJOR-DELETIONS.
+           GO TO   SEQ-DELETE-02-01.
+      *> 
+       SEQ-TEST-GF-02.
+           OPEN INPUT SQ-FS4.
+           GO TO   SEQ-TEST-GF-02-01.
+       SEQ-DELETE-02-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-02-01-END.
+       SEQ-TEST-GF-02-01.
+           IF SQ-FS4-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-FS4-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "FAILURE STATUS CODE AFTER OPEN" TO RE-MARK
+               PERFORM FAIL.
+           IF SQ-FS4-STATUS GREATER THAN "10"
+               ADD     2 TO MAJOR-DELETIONS.
+       SEQ-TEST-02-01-END.
+      *> 
+           ADD     1 TO REC-CT.
+           GO TO   SEQ-TEST-GF-02-02.
+       SEQ-DELETE-02-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-02-02-END.
+       SEQ-TEST-GF-02-02.
+           IF DECL-EXEC-SW = "**"
+               PERFORM PASS
+           ELSE
+               MOVE    DECL-EXEC-SW TO COMPUTED-A
+               MOVE   "**" TO CORRECT-A
+               MOVE   "DECLARATIVE EXECUTED ON OPEN" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-02-02-END.
+      *> 
+       SEQ-INIT-03.
+           MOVE    1 TO REC-CT.
+           MOVE   "READ ... RECORD" TO FEATURE.
+           MOVE   "SEQ-TEST-GF-03" TO PAR-NAME.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO SEQ-DELETE-03.
+           GO TO   SEQ-TEST-GF-03.
+       SEQ-DELETE-03.
+           ADD     4 TO MAJOR-DELETIONS.
+           GO TO   SEQ-DELETE-03-01.
+       SEQ-TEST-GF-03.
+           MOVE    ZERO TO XRECORD-NUMBER (1).
+           MOVE    ZERO TO COUNT-OF-RECS.
+           MOVE    ZERO TO PERM-ERRORS.
+           MOVE    ZERO TO RECORDS-IN-ERROR.
+           MOVE   "**" TO DECL-EXEC-SW.
+           MOVE   "00" TO SQ-FS4-STATUS-COPY.
+       SEQ-TEST-03-LOOP.
+           MOVE   "**" TO SQ-FS4-STATUS.
+           READ    SQ-FS4 RECORD.
+           IF DECL-EXEC-SW NOT = "**"
+                GO TO SEQ-TEST-GF-03-01.
+           IF SQ-FS4-STATUS = "10"
+                GO TO SEQ-TEST-GF-03-LOOP-END.
+           IF SQ-FS4-STATUS NOT = "00"
+                MOVE    SQ-FS4-STATUS TO SQ-FS4-STATUS-COPY.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO COUNT-OF-RECS.
+           IF SQ-FS4-FIRST NOT EQUAL TO FILE-RECORD-INFO-P1-120 (1)
+              OR SQ-FS4-REC-NO NOT EQUAL TO COUNT-OF-RECS
+               ADD     1 TO RECORDS-IN-ERROR.
+           IF COUNT-OF-RECS LESS THAN 980
+               GO TO   SEQ-TEST-03-LOOP.
+      *> 
+       SEQ-TEST-GF-03-LOOP-END.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO   SEQ-DELETE-03-01.
+           GO TO   SEQ-TEST-GF-03-01.
+       SEQ-DELETE-03-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-03-01-END.
+       SEQ-TEST-GF-03-01.
+           IF COUNT-OF-RECS EQUAL TO 980
+               PERFORM PASS
+           ELSE
+               MOVE    COUNT-OF-RECS TO COMPUTED-18V0
+               MOVE    980 TO CORRECT-18V0
+               MOVE   "UNEXPECTED NUMBER OF RECORDS BEFORE EOF"
+                          TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-03-01-END.
+      *> 
+           ADD     1 TO REC-CT.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO   SEQ-TEST-03-02-END.
+           GO TO   SEQ-TEST-GF-03-02.
+       SEQ-DELETE-03-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-03-02-END.
+       SEQ-TEST-GF-03-02.
+           IF DECL-EXEC-SW = "**"
+               PERFORM PASS
+           ELSE
+               MOVE    DECL-EXEC-SW TO COMPUTED-A
+               MOVE   "**" TO CORRECT-A
+               MOVE   "DECLARATIVES ENTERED AT LEAST ONCE" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-03-02-END.
+      *> 
+           ADD     1 TO REC-CT.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO   SEQ-TEST-03-03-END.
+           GO TO   SEQ-TEST-GF-03-03.
+       SEQ-DELETE-03-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-03-03-END.
+       SEQ-TEST-GF-03-03.
+           IF SQ-FS4-STATUS-COPY = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-FS4-STATUS-COPY TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "AT LEAST ONE UNSUCCESSFUL READ" TO RE-MARK
+               MOVE   "VII-2" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-03-03-END.
+      *> 
+           ADD     1 TO REC-CT.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO   SEQ-TEST-03-04-END.
+           GO TO   SEQ-TEST-GF-03-04.
+       SEQ-DELETE-03-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-03-04-END.
+       SEQ-TEST-GF-03-04.
+           IF RECORDS-IN-ERROR EQUAL TO ZERO
+               PERFORM PASS
+           ELSE
+               MOVE    RECORDS-IN-ERROR TO COMPUTED-18V0
+               MOVE    ZERO TO CORRECT-18V0
+               MOVE   "ONE OR MORE ERRORS IN RECORDS READ" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-03-04-END.
+      *> 
+      *> 
+       SEQ-INIT-04.
+           MOVE    1 TO REC-CT.
+           MOVE   "**" TO SQ-FS4-STATUS.
+           MOVE   "**" TO DECL-EXEC-SW.
+           MOVE   "READ ... RECORD, EOF" TO FEATURE.
+           MOVE   "SEQ-TEST-GF-04" TO PAR-NAME.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO SEQ-DELETE-04.
+           GO TO   SEQ-TEST-GF-04.
+       SEQ-DELETE-04.
+           ADD     8 TO MAJOR-DELETIONS.
+           PERFORM DE-LETE.
+           GO TO   SEQ-DELETE-04-01.
+       SEQ-TEST-GF-04.
+           READ    SQ-FS4 RECORD.
+      *> 
+           GO TO   SEQ-TEST-GF-04-01.
+       SEQ-DELETE-04-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-04-01-END.
+       SEQ-TEST-GF-04-01.
+           IF SQ-FS4-STATUS = "10"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-FS4-STATUS TO COMPUTED-A
+               MOVE   "10" TO CORRECT-A
+               MOVE   "END OF FILE STATUS CODE NOT GIVEN AT EOF"
+                          TO RE-MARK
+               MOVE   "VII-3, 1.3.5(2)A" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-04-01-END.
+      *> 
+           ADD     1 TO REC-CT.
+           IF MAJOR-DELETIONS NOT EQUAL TO 0
+               GO TO   SEQ-DELETE-04-02.
+           GO TO   SEQ-TEST-GF-04-02.
+       SEQ-DELETE-04-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-04-02-END.
+       SEQ-TEST-GF-04-02.
+           IF DECL-EXEC-SW EQUAL "*I"
+               PERFORM PASS
+           ELSE
+               MOVE    DECL-EXEC-SW TO COMPUTED-A
+               MOVE   "*I" TO CORRECT-A
+               MOVE   "CORRECT DECLARATIVE NOT EXECUTED AT EOF"
+                         TO RE-MARK
+               MOVE   "VII-2, VII-46, 4.4.4(10)C" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-04-02-END.
+      *> 
+      *> 
+       SEQ-INIT-05.
+           MOVE    1 TO REC-CT.
+           MOVE   "**" TO SQ-FS4-STATUS.
+           MOVE   "**" TO DECL-EXEC-SW.
+           MOVE   "CLOSE AFTER READ" TO FEATURE.
+           MOVE   "SEQ-TEST-GF-05" TO PAR-NAME.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO   SEQ-DELETE-05.
+           GO TO   SEQ-TEST-GF-05.
+       SEQ-DELETE-05.
+           GO TO   SEQ-DELETE-05-01.
+       SEQ-TEST-GF-05.
+           CLOSE SQ-FS4.
+      *> 
+           GO TO SEQ-TEST-GF-05-01.
+       SEQ-DELETE-05-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-05-01-END.
+       SEQ-TEST-GF-05-01.
+           IF SQ-FS4-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-FS4-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS VALUE FROM CLOSE"
+                         TO RE-MARK
+               MOVE   "VII-3, VII-38, 4.2.4(4)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-05-01-END.
+      *> 
+           ADD     1 TO REC-CT.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO SEQ-DELETE-05-02.
+           GO TO   SEQ-TEST-GF-05-02.
+       SEQ-DELETE-05-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-05-02-END.
+       SEQ-TEST-GF-05-02.
+           IF DECL-EXEC-SW = "**"
+               PERFORM PASS
+           ELSE
+               MOVE    DECL-EXEC-SW TO COMPUTED-A
+               MOVE   "**" TO CORRECT-A
+               MOVE   "DECLARATIVE EXECUTED ON CLOSE FILE" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-05-02-END.
+           IF MAJOR-DELETIONS NOT LESS THAN 8
+               SUBTRACT 8 FROM MAJOR-DELETIONS.
+           IF MAJOR-DELETIONS NOT LESS THAN 4
+               SUBTRACT 4 FROM MAJOR-DELETIONS.
+           IF MAJOR-DELETIONS NOT LESS THAN 2
+               SUBTRACT 2 FROM MAJOR-DELETIONS.
+      *> 
+      *> 
+      *>     HAVING PROCESSED THE FILE WITH A READ ... RECORD STATEMENT, 
+      *>     IT WILL NOW BE PROCESSED WITH A READ STATEMENT WITHOUT THE
+      *>     OPTIONAL WORD RECORD, AND THE SAME TESTS CARRIED OUT.
+      *> 
+       SEQ-INIT-06.
+           MOVE    1 TO REC-CT.
+           MOVE   "**" TO DECL-EXEC-SW.
+           MOVE   "**" TO SQ-FS4-STATUS.
+           MOVE   "OPEN FILE FOR CHECK" TO FEATURE.
+           MOVE   "SEQ-TEST-GF-06" TO PAR-NAME.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO SEQ-DELETE-06.
+           GO TO   SEQ-TEST-GF-06.
+       SEQ-DELETE-06.
+           ADD     2 TO MAJOR-DELETIONS.
+           GO TO   SEQ-DELETE-06-01.
+      *> 
+       SEQ-TEST-GF-06.
+           OPEN INPUT SQ-FS4.
+           GO TO   SEQ-TEST-GF-06-01.
+       SEQ-DELETE-06-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-06-01-END.
+       SEQ-TEST-GF-06-01.
+           IF SQ-FS4-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-FS4-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "FAILURE STATUS CODE AFTER OPEN" TO RE-MARK
+               PERFORM FAIL.
+           IF SQ-FS4-STATUS GREATER THAN "10"
+               ADD     2 TO MAJOR-DELETIONS.
+       SEQ-TEST-06-01-END.
+      *> 
+           ADD     1 TO REC-CT.
+           GO TO   SEQ-TEST-GF-06-02.
+       SEQ-DELETE-06-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-06-02-END.
+       SEQ-TEST-GF-06-02.
+           IF DECL-EXEC-SW = "**"
+               PERFORM PASS
+           ELSE
+               MOVE    DECL-EXEC-SW TO COMPUTED-A
+               MOVE   "**" TO CORRECT-A
+               MOVE   "DECLARATIVE EXECUTED ON OPEN" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-06-02-END.
+      *> 
+      *> 
+      *>     THE NEXT GROUP OF TEST READ THE RECORDS FROM THE FILE, 
+      *>     USING A READ STATEMENT WITHOUT OPTIONAL PHRASES.  THE
+      *>     RECORDS RETURNED FROM THE FILE ARE CHECKED FOR EXPECTED
+      *>     CONTENTS.  FILE STATUS VALUES AND EXECUTION OF
+      *>     DECLARATIVE PROCEDURES ARE ALSO CHECKED.
+      *> 
+       SEQ-INIT-07.
+           MOVE    1 TO REC-CT.
+           MOVE   "READ ..." TO FEATURE.
+           MOVE   "SEQ-TEST-GF-07" TO PAR-NAME.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO SEQ-DELETE-07.
+           GO TO   SEQ-TEST-GF-07.
+       SEQ-DELETE-07.
+           ADD     4 TO MAJOR-DELETIONS.
+           GO TO   SEQ-DELETE-07-01.
+       SEQ-TEST-GF-07.
+           MOVE    ZERO TO XRECORD-NUMBER (1).
+           MOVE    ZERO TO COUNT-OF-RECS.
+           MOVE    ZERO TO PERM-ERRORS.
+           MOVE    ZERO TO RECORDS-IN-ERROR.
+           MOVE   "**" TO DECL-EXEC-SW.
+           MOVE   "00" TO SQ-FS4-STATUS-COPY.
+       SEQ-TEST-07-LOOP.
+           MOVE   "**" TO SQ-FS4-STATUS.
+           READ    SQ-FS4.
+           IF DECL-EXEC-SW NOT = "**"
+                GO TO SEQ-TEST-GF-07-01.
+           IF SQ-FS4-STATUS = "10"
+                GO TO SEQ-TEST-GF-07-LOOP-END.
+           IF SQ-FS4-STATUS NOT = "00"
+                MOVE    SQ-FS4-STATUS TO SQ-FS4-STATUS-COPY.
+           ADD     1 TO XRECORD-NUMBER (1).
+           ADD     1 TO COUNT-OF-RECS.
+           IF SQ-FS4-FIRST NOT EQUAL TO FILE-RECORD-INFO-P1-120 (1)
+              OR SQ-FS4-REC-NO NOT EQUAL TO COUNT-OF-RECS
+               ADD     1 TO RECORDS-IN-ERROR.
+           IF COUNT-OF-RECS LESS THAN 980
+               GO TO   SEQ-TEST-07-LOOP.
+      *> 
+       SEQ-TEST-GF-07-LOOP-END.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO   SEQ-DELETE-07-01.
+           GO TO   SEQ-TEST-GF-07-01.
+       SEQ-DELETE-07-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-07-01-END.
+       SEQ-TEST-GF-07-01.
+           IF COUNT-OF-RECS EQUAL TO 980
+               PERFORM PASS
+           ELSE
+               MOVE    COUNT-OF-RECS TO COMPUTED-18V0
+               MOVE    980 TO CORRECT-18V0
+               MOVE   "UNEXPECTED NUMBER OF RECORDS BEFORE EOF"
+                          TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-07-01-END.
+      *> 
+           ADD     1 TO REC-CT.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO   SEQ-TEST-07-02-END.
+           GO TO   SEQ-TEST-GF-07-02.
+       SEQ-DELETE-07-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-07-02-END.
+       SEQ-TEST-GF-07-02.
+           IF DECL-EXEC-SW = "**"
+               PERFORM PASS
+           ELSE
+               MOVE    DECL-EXEC-SW TO COMPUTED-A
+               MOVE   "**" TO CORRECT-A
+               MOVE   "DECLARATIVES ENTERED AT LEAST ONCE" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-07-02-END.
+      *> 
+           ADD     1 TO REC-CT.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO   SEQ-TEST-07-03-END.
+           GO TO   SEQ-TEST-GF-07-03.
+       SEQ-DELETE-07-03.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-07-03-END.
+       SEQ-TEST-GF-07-03.
+           IF SQ-FS4-STATUS-COPY = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-FS4-STATUS-COPY TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "AT LEAST ONE UNSUCCESSFUL READ" TO RE-MARK
+               MOVE   "VII-2" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-07-03-END.
+      *> 
+           ADD     1 TO REC-CT.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO   SEQ-TEST-07-04-END.
+           GO TO   SEQ-TEST-GF-07-04.
+       SEQ-DELETE-07-04.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-07-04-END.
+       SEQ-TEST-GF-07-04.
+           IF RECORDS-IN-ERROR EQUAL TO ZERO
+               PERFORM PASS
+           ELSE
+               MOVE    RECORDS-IN-ERROR TO COMPUTED-18V0
+               MOVE    ZERO TO CORRECT-18V0
+               MOVE   "ONE OR MORE ERRORS IN RECORDS READ" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-07-04-END.
+      *> 
+      *> 
+      *>     THE NEXT TEST EXECUTES ONE READ STATEMENT WITH THE FILE
+      *>     POSITIONED AFTER THE LAST RECORD.  THE READ STATEMENT DOES
+      *>     NOT CONTAIN AN AT END PHRASE, SO THE APPROPRIATE
+      *>     DECLARATIVE SHOULD BE EXECUTED.
+      *> 
+       SEQ-INIT-08.
+           MOVE    1 TO REC-CT.
+           MOVE   "**" TO SQ-FS4-STATUS.
+           MOVE   "**" TO DECL-EXEC-SW.
+           MOVE   "READ ... EOF" TO FEATURE.
+           MOVE   "SEQ-TEST-GF-08" TO PAR-NAME.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO SEQ-DELETE-08.
+           GO TO   SEQ-TEST-GF-08.
+       SEQ-DELETE-08.
+           ADD     8 TO MAJOR-DELETIONS.
+           PERFORM DE-LETE.
+           GO TO   SEQ-DELETE-08-01.
+       SEQ-TEST-GF-08.
+           READ    SQ-FS4.
+      *> 
+           GO TO   SEQ-TEST-GF-08-01.
+       SEQ-DELETE-08-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-08-01-END.
+       SEQ-TEST-GF-08-01.
+           IF SQ-FS4-STATUS = "10"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-FS4-STATUS TO COMPUTED-A
+               MOVE   "10" TO CORRECT-A
+               MOVE   "END OF FILE STATUS CODE NOT GIVEN AT EOF"
+                          TO RE-MARK
+               MOVE   "VII-3, 1.3.5(2)A" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-08-01-END.
+      *> 
+           ADD     1 TO REC-CT.
+           IF MAJOR-DELETIONS NOT EQUAL TO 0
+               GO TO   SEQ-DELETE-08-02.
+           GO TO   SEQ-TEST-GF-08-02.
+       SEQ-DELETE-08-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-08-02-END.
+       SEQ-TEST-GF-08-02.
+           IF DECL-EXEC-SW EQUAL "*I"
+               PERFORM PASS
+           ELSE
+               MOVE    DECL-EXEC-SW TO COMPUTED-A
+               MOVE   "*I" TO CORRECT-A
+               MOVE   "CORRECT DECLARATIVE NOT EXECUTED AT EOF"
+                        TO RE-MARK
+               MOVE   "VII-2, VII-46, 4.4.4(10)C" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-08-02-END.
+      *> 
+      *> 
+      *>     CLOSE THE FILE AND CHECK FILE STATUS AND THAT THE
+      *>     DECLARATIVE IS NOT EXECUTED
+      *> 
+       SEQ-INIT-09.
+           MOVE    1 TO REC-CT.
+           MOVE   "**" TO SQ-FS4-STATUS.
+           MOVE   "**" TO DECL-EXEC-SW.
+           MOVE   "CLOSE AFTER READ" TO FEATURE.
+           MOVE   "SEQ-TEST-GF-09" TO PAR-NAME.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO   SEQ-DELETE-09.
+           GO TO   SEQ-TEST-GF-09.
+       SEQ-DELETE-09.
+           GO TO   SEQ-DELETE-09-01.
+       SEQ-TEST-GF-09.
+           CLOSE SQ-FS4.
+      *> 
+           GO TO SEQ-TEST-GF-09-01.
+       SEQ-DELETE-09-01.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-09-01-END.
+       SEQ-TEST-GF-09-01.
+           IF SQ-FS4-STATUS = "00"
+               PERFORM PASS
+           ELSE
+               MOVE    SQ-FS4-STATUS TO COMPUTED-A
+               MOVE   "00" TO CORRECT-A
+               MOVE   "UNEXPECTED I-O STATUS VALUE FROM CLOSE"
+                         TO RE-MARK
+               MOVE   "VII-3, VII-38, 4.2.4(4)" TO ANSI-REFERENCE
+               PERFORM FAIL.
+       SEQ-TEST-09-01-END.
+      *> 
+           ADD     1 TO REC-CT.
+           IF MAJOR-DELETIONS NOT = 0
+               GO TO SEQ-DELETE-09-02.
+           GO TO   SEQ-TEST-GF-09-02.
+       SEQ-DELETE-09-02.
+           PERFORM DE-LETE.
+           GO TO   SEQ-TEST-09-02-END.
+       SEQ-TEST-GF-09-02.
+           IF DECL-EXEC-SW = "**"
+               PERFORM PASS
+           ELSE
+               MOVE    DECL-EXEC-SW TO COMPUTED-A
+               MOVE   "**" TO CORRECT-A
+               MOVE   "DECLARATIVE EXECUTED ON CLOSE FILE" TO RE-MARK
+               PERFORM FAIL.
+       SEQ-TEST-09-02-END.
+      *> 
+       TERMINATE-ROUTINE.
+           EXIT.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,SQ105A

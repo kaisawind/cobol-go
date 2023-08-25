@@ -1,0 +1,123 @@
+      *> HEADER,COBOL,ST122A,SUBPRG,ST123A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           ST123A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-01                                                  *
+      *>         X-02                                                  *
+      *>         X-27                                                  *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-69                                                  *
+      *>         X-74                                                  *
+      *>         X-75                                                  *
+      *>         X-76                                                  *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>     PROGRAM ST123A TESTS THE SORTING OF VARIABLE LENGTH       *
+      *>     RECORDS.  THIS PROGRAM CAN BE USED ONLY IF LEVEL 2 OF THE *
+      *>     SEQUENTIAL I-O MODULE IS SUPPORTED AS THE                 *
+      *>     "RECORD IS VARYING IN SIZE" CLAUSE IS USED IN THE SD      *
+      *>     ENTRY.  (ST123A WILL BE RUN AS PART OF THE SET ST122A,    *
+      *>     ST123A, ST124A).                                          *
+      *>                                                               *
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+           SELECT   SORTIN-1J ASSIGN TO
+           XXXXD001.
+           SELECT   SORTOUT-1J ASSIGN TO
+           XXXXP002.
+           SELECT   SORTFILE-1J ASSIGN TO
+           XXXXX027.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       FD  SORTIN-1J
+           LABEL RECORDS STANDARD
+           VALUE OF
+           XXXXX074
+           IS
+           XXXXX075
+      *>     XXXXX069
+           RECORD IS VARYING IN SIZE
+           DATA RECORDS ARE SHORT-IN
+                            MEDIUM-IN
+                            LONG-IN.
+       01  SHORT-IN           PICTURE X(50).
+       01  MEDIUM-IN          PICTURE X(75).
+       01  LONG-IN.
+           02 FALSE-LENGTH-1  PICTURE X(25).
+           02 FALSE-LENGTH-2  PICTURE A(20).
+           02 FALSE-LENGTH-3  PICTURE 9(15).
+           02 FALSE-LENGTH-4  PICTURE X(40).
+       FD  SORTOUT-1J
+           LABEL RECORDS ARE STANDARD
+           VALUE OF
+           XXXXX074
+           IS
+           XXXXX076
+      *>     XXXXX069
+           RECORD IS VARYING IN SIZE
+           DATA RECORD SHORT-OUT
+                       MEDIUM-OUT
+                       LONG-OUT.
+       01  SHORT-OUT.
+           02 FAKE-LENGTH-1   PICTURE X(10).
+           02 FAKE-LENGTH-2   PICTURE A(10).
+           02 FAKE-LENGTH-3   PICTURE 9(10).
+           02 FAKE-LENGTH-4   PICTURE X(20).
+       01  MEDIUM-OUT         PICTURE X(75).
+       01  LONG-OUT           PICTURE X(100).
+       SD  SORTFILE-1J
+           RECORD IS VARYING IN SIZE
+           DATA RECORD SHORT-SORT
+                       MEDIUM-SORT
+                       LONG-SORT.
+       01  SHORT-SORT.
+           02 SHORT-NON-KEY   PICTURE XX.
+           02 SHORT-KEY-1     PICTURE X(10).
+           02 SHORT-KEY-2     PICTURE X(38).
+       01  MEDIUM-SORT.
+           02 MEDIUM-NON-KEY  PICTURE XX.
+           02 MEDIUM-KEY-1    PICTURE X(10).
+           02 MEDIUM-KEY-2    PICTURE X(38).
+           02 MEDIUM-FILLER   PICTURE X(25).
+       01  LONG-SORT.
+           02 LONG-NON-KEY    PICTURE XX.
+           02 LONG-KEY-1      PICTURE X(10).
+           02 LONG-KEY-2      PICTURE X(38).
+           02 LONG-FILLER     PICTURE X(50).
+       PROCEDURE    DIVISION.
+       SORT-PARAGRAPH.
+           SORT     SORTFILE-1J
+                    DESCENDING KEY
+                    MEDIUM-KEY-1
+                    MEDIUM-KEY-2
+                    USING SORTIN-1J
+                    GIVING SORTOUT-1J.
+           STOP     RUN.
+      *> END-OF,ST123A

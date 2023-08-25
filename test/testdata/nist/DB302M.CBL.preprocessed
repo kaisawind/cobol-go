@@ -1,0 +1,46 @@
+      *> HEADER,COBOL,DB302M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           DB302M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF LEVEL 1
+      *> OBSOLETE FEATURES THAT ARE USED IN DEBUGGING.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082
+           WITH DEBUGGING MODE.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT TFIL ASSIGN
+           XXXXX014
+               ORGANIZATION IS SEQUENTIAL
+               ACCESS MODE IS SEQUENTIAL.
+       
+       DATA DIVISION.
+       FILE SECTION.
+       FD TFIL.
+       01 FREC.
+           03 RKEY  PIC 9(8).
+       
+       PROCEDURE DIVISION.
+       
+       DECLARATIVES.
+       
+       BUGGING SECTION.
+       
+           USE FOR DEBUGGING ON DB302M-CONTROL.
+      *> Message expected for above statement: OBSOLETE
+       
+       END DECLARATIVES.
+       
+       DB302-FLAGS SECTION.
+       
+       DB302M-CONTROL.
+           DISPLAY "THIS IS A DUMMY PROCEDURE".
+           STOP RUN.
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 1.
+      *> END-OF,DB302M

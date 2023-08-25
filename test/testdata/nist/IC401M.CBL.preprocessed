@@ -1,0 +1,76 @@
+      *> HEADER,COBOL,IC401M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+            IC401M IS INITIAL.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+      *> The following program tests the flagging of high
+      *> subset Features that are used in inter-program
+      *> communication.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       
+       01 GLOB IS GLOBAL   PIC IS X(2) VALUE IS "HI".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       01 EXTE IS EXTERNAL PIC IS X(5).
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       PROCEDURE DIVISION.
+       
+       DECLARATIVES.
+       
+       IC401M-USE SECTION.
+           USE GLOBAL AFTER STANDARD ERROR PROCEDURE ON I-O.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       END DECLARATIVES.
+       IC401M-NONDECL SECTION.
+       IC401M-CONTROL.
+           PERFORM IC401M-CANCEL THRU IC401M-BYCONT.
+           STOP RUN.
+       
+       IC401M-CANCEL.
+           CANCEL "NESTEDPROG".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       IC401M-BYREF.
+           CALL "NESTEDPROG" USING BY REFERENCE GLOB.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       IC401M-BYCONT.
+           CALL "FIC401M" USING BY CONTENT GLOB.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       IDENTIFICATION DIVISION.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       PROGRAM-ID.
+           NESTEDPROG IS COMMON.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       ENVIRONMENT DIVISION.
+       DATA DIVISION.
+       LINKAGE SECTION.
+       01  GLOB-2  PIC X(2).
+       
+       PROCEDURE DIVISION USING GLOB-2.
+       DUMMY-PARA.
+           DISPLAY "HELLO".
+       
+       END-PARA.
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 11.
+       END PROGRAM NESTEDPROG.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+      *> Message expected for following statement: NON-CONFORMING STANDARD
+       END PROGRAM IC401M.
+      *> END-OF,IC401M

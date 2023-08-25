@@ -1,0 +1,1231 @@
+      *> HEADER,COBOL,IX106A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IX106A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>  THE PURPOSE OF THIS PROGRAM IS TO TEST THE ABILITY TO
+      *>  USE THE THREE DIFFERENT TYPES OF FILES (SEQUENTIAL , 
+      *>  INDEXED , AND RELATIVE) IN ONE PROGRAM . THE PROGRAM
+      *>  IS BROKEN INTO FIVE SECTIONS . THE FIRST SECTION TESTS
+      *>  THE ABILITY TO CREATE A RELATIVE FILE RANDOMLY . THE
+      *>  SECOND SECTION TESTS THE ABILITY TO USE ALL THREE FILE
+      *>  TYPES , READING IN THE RELATIVE FILE AND WRITING OUT THE
+      *>  SEQUENTIAL AND INDEXED FILES . THE THIRD SECTION FURTHER
+      *>  TESTS THE ABILITY TO USE THE THREE FILE TYPES . THE FOURTH
+      *>  SECTION TESTS THE ABILITY TO DELETE RECORDS FROM THE
+      *>  DIFFERENT FILE TYPES . THE FIFTH SECTION TESTS THE ABILITY
+      *>  TO REWRITE RECORDS TO EACH OF THE FILE TYPES .
+      *> 
+      *>  X-CARDS WHICH MUST BE RELACED WITH IMPLEMENTORS NAMES' IN
+      *>  THIS PROGRAM ARE :
+      *> 
+      *>         X-14 IMPLEMENTOR-NAME IN ASSIGN TO CLAUSE FOR
+      *>              SEQUENTIAL FILE .
+      *>         X-21 IMPLEMENTOR-NAME IN ASSIGN TO CLAUSE FOR
+      *>              RELATIVE FILE-1 , FILE-2 .
+      *>         X-24 IMPLEMENTOR-NAME IN ASSIGN TO CLAUSE FOR
+      *>              INDEXED FILE .
+      *>         X-44 SYSTEM-NAME IN ASSIGN CLAUSE FOR
+      *>         INDEXED FILE .
+      *>         X-55 SYSTEM PRINTER .
+      *>         X-62   FOR RAW-DATA
+      *>         X-82 SOURCE-COMPUTER .
+      *>         X-83 OBJECT-COMPUTER .
+      *>     C   X-84 PRINTE-FILE LABELS
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+      *>     SELECT RAW-DATA   ASSIGN TO
+      *>     XXXXX062
+      *>            ORGANIZATION IS INDEXED
+      *>            ACCESS MODE IS RANDOM
+      *>            RECORD KEY IS RAW-DATA-KEY.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+           SELECT  RL-FR1
+           ASSIGN TO
+           XXXXX021
+              ACCESS MODE IS RANDOM
+              RELATIVE KEY IS RL-KEY
+              ORGANIZATION IS RELATIVE
+              FILE STATUS IS FR1-STATUS.
+           SELECT  IX-FS1
+           ASSIGN TO
+           XXXXX024
+      *>     XXXXX044
+              ACCESS MODE IS RANDOM
+              ORGANIZATION IS INDEXED
+              RECORD KEY IS IX-FS1-KEY-11-13
+              FILE STATUS IS FS1-STATUS-IX.
+           SELECT  SQ-FS1
+           ASSIGN TO
+           XXXXX014
+              ACCESS MODE IS SEQUENTIAL
+              ORGANIZATION IS SEQUENTIAL
+              FILE STATUS IS FS1-STATUS-SQ.
+       DATA DIVISION.
+       FILE SECTION.
+      *> 
+      *> FD  RAW-DATA.
+      *> 
+      *> 01  RAW-DATA-SATZ.
+      *>     05  RAW-DATA-KEY        PIC X(6).
+      *>     05  C-DATE              PIC 9(6).
+      *>     05  C-TIME              PIC 9(8).
+      *>     05  C-NO-OF-TESTS       PIC 99.
+      *>     05  C-OK                PIC 999.
+      *>     05  C-ALL               PIC 999.
+      *>     05  C-FAIL              PIC 999.
+      *>     05  C-DELETED           PIC 999.
+      *>     05  C-INSPECT           PIC 999.
+      *>     05  C-NOTE              PIC X(13).
+      *>     05  C-INDENT            PIC X.
+      *>     05  C-ABORT             PIC X(8).
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       FD  RL-FR1
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS RL-FR1R1-F-G-241
+           RECORD CONTAINS 241 CHARACTERS.
+       01  RL-FR1R1-F-G-241.
+           05 RL-FR1-REC-120           PICTURE X(120).
+           05 RL-FR1-REC-121-241.
+              10 FILLER                PICTURE X(8).
+              10 RL-REC-KEY-AREA.
+                 15 RL-FR1-KEY.
+                    20 RL-FR1-KEY-1-10.
+                       25 RL-FR1-KEY-1-5      PICTURE X(5).
+                       25 RL-FR1-KEY-6-10     PICTURE X(5).
+                     20 RL-FR1-KEY-11-13      PICTURE 9(3).
+                 15 RL-REDF-RECKEY REDEFINES RL-FR1-KEY.
+                    20 R-RECKEY-1-7    PICTURE X(7).
+                    20 R-RECKEY-8-13   PICTURE X(6).
+                 15 FILLER             PICTURE X(16).
+              10 FILLER                PICTURE X(9).
+              10 RL-ALT-KEY1-AREA.
+                 15 RL-FR1-ALTKEY1.
+                    20 RL-FR1-ALTKEY1-1-10.
+                       25 RL-FR1-ALTKEY1-1-5  PICTURE X(5).
+                       25 RL-FR1-ALTKEY1-6-10 PICTURE X(5).
+                    20 RL-FR1-ALTKEY1-11-13   PICTURE X(3).
+                    20 RL-FR1-ALTKEY1-14-20   PICTURE X(7).
+                 15 RL-REDF-ALTKEY1 REDEFINES RL-FR1-ALTKEY1.
+                    20 R-ALTKEY1-1-6   PICTURE X(6).
+                    20 R-ALTKEY1-7-10  PICTURE X(4).
+                    20 R-ALTKEY1-11-20 PICTURE X(10).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(9).
+              10 RL-ALT-KEY2-AREA.
+                 15 RL-FR1-ALTKEY2.
+                    20 RL-FR1-ALTKEY2-1-10.
+                       25 RL-FR1-ALTKEY2-1-5  PICTURE X(5).
+                       25 RL-FR1-ALTKEY2-6-10 PICTURE X(5).
+                    20 RL-FR1-ALTKEY2-11-13   PICTURE X(3).
+                    20 RL-FR1-ALTKEY2-14-20   PICTURE X(7).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(8).
+       FD  IX-FS1
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS IX-FS1R1-F-G-241
+           RECORD CONTAINS 241 CHARACTERS.
+       01  IX-FS1R1-F-G-241.
+           05 IX-FS1-REC-120           PICTURE X(120).
+           05 IX-FS1-REC-121-241.
+              10 FILLER                PICTURE X(8).
+              10 IX-REC-KEY-AREA.
+                 15 IX-FS1-KEY.
+                    20 IX-FS1-KEY-1-10.
+                       25 IX-FS1-KEY-1-5      PICTURE X(5).
+                       25 IX-FS1-KEY-6-10     PICTURE X(5).
+                    20 IX-FS1-KEY-11-13      PICTURE X(3).
+                 15 IX-REDF-RECKEY REDEFINES IX-FS1-KEY.
+                    20 I-RECKEY-1-7    PICTURE X(7).
+                    20 I-RECKEY-8-13   PICTURE X(6).
+                 15 FILLER             PICTURE X(16).
+              10 FILLER                PICTURE X(9).
+              10 IX-ALT-KEY1-AREA.
+                 15 IX-FS1-ALTKEY1.
+                    20 IX-FS1-ALTKEY1-1-10.
+                       25 IX-FS1-ALTKEY1-1-5  PICTURE X(5).
+                       25 IX-FS1-ALTKEY1-6-10 PICTURE X(5).
+                    20 IX-FS1-ALTKEY1-11-13   PICTURE X(3).
+                    20 IX-FS1-ALTKEY1-14-20   PICTURE X(7).
+                 15 IX-REDF-ALTKEY1 REDEFINES IX-FS1-ALTKEY1.
+                    20 I-ALTKEY1-1-6   PICTURE X(6).
+                    20 I-ALTKEY1-7-10  PICTURE X(4).
+                    20 I-ALTKEY1-11-20 PICTURE X(10).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(9).
+              10 IX-ALT-KEY2-AREA.
+                 15 IX-FS1-ALTKEY2.
+                    20 IX-FS1-ALTKEY2-1-10.
+                       25 IX-FR1-ALTKEY2-1-5  PICTURE X(5).
+                       25 IX-FR1-ALTKEY2-6-10 PICTURE X(5).
+                    20 IX-FS1-ALTKEY2-11-13   PICTURE X(3).
+                    20 IX-FS1-ALTKEY2-14-20   PICTURE X(7).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(8).
+       FD  SQ-FS1
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS SQ-FS1R1-F-G-241
+           RECORD CONTAINS 241 CHARACTERS.
+       01  SQ-FS1R1-F-G-241.
+           05 SQ-FS1-REC-120           PICTURE X(120).
+           05 SQ-FS1-REC-121-241.
+              10 FILLER                PICTURE X(8).
+              10 SQ-REC-KEY-AREA.
+                 15 SQ-FS1-KEY.
+                    20 SQ-FS1-KEY-1-10.
+                       25 SQ-FS1-KEY-1-5      PICTURE X(5).
+                       25 SQ-FS1-KEY-6-10     PICTURE X(5).
+                     20 SQ-FS1-KEY-11-13      PICTURE 9(3).
+                 15 SQ-REDF-RECKEY REDEFINES SQ-FS1-KEY.
+                    20 S-RECKEY-1-7    PICTURE X(7).
+                    20 S-RECKEY-8-13   PICTURE X(6).
+                 15 FILLER             PICTURE X(16).
+              10 FILLER                PICTURE X(9).
+              10 SQ-ALT-KEY1-AREA.
+                 15 SQ-FS1-ALTKEY1.
+                    20 SQ-FS1-ALTKEY1-1-10.
+                       25 SQ-FS1-ALTKEY1-1-5  PICTURE X(5).
+                       25 SQ-FS1-ALTKEY1-6-10 PICTURE X(5).
+                    20 SQ-FS1-ALTKEY1-11-13   PICTURE X(3).
+                    20 SQ-FS1-ALTKEY1-14-20   PICTURE X(7).
+                 15 SQ-REDF-ALTKEY1 REDEFINES SQ-FS1-ALTKEY1.
+                    20 S-ALTKEY1-1-6   PICTURE X(6).
+                    20 S-ALTKEY1-7-10  PICTURE X(4).
+                    20 S-ALTKEY1-11-20 PICTURE X(10).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(9).
+              10 SQ-ALT-KEY2-AREA.
+                 15 SQ-FS1-ALTKEY2.
+                    20 SQ-FS1-ALTKEY2-1-10.
+                       25 SQ-FS1-ALTKEY2-1-5  PICTURE X(5).
+                       25 SQ-FS1-ALTKEY2-6-10 PICTURE X(5).
+                    20 SQ-FS1-ALTKEY2-11-13   PICTURE X(3).
+                    20 SQ-FS1-ALTKEY2-14-20   PICTURE X(7).
+                 15 FILLER             PICTURE X(9).
+              10 FILLER                PICTURE X(8).
+       WORKING-STORAGE SECTION.
+       01  WRK-DS-09V00-001 PIC S9(09)      USAGE COMP VALUE ZERO.
+       01  WRK-DS-09V00-002 PIC 9(3) VALUE ZERO.
+       01  WRK-CS-09V00-002 PIC S9(09)       USAGE COMP VALUE ZERO.
+       01  WRK-CS-09V00-003 PIC S9(09)       USAGE COMP VALUE ZERO.
+       01  RL-KEY   PIC 9(3).
+       01  RL-KEY2  PIC 9(3).
+      *> 
+       01  WRK-FR1-RECKEY.
+           05 FR1-RECKEY-1-13.
+              10 FR1-RECKEY-1-10       PICTURE X(10).
+              10 FR1-RECKEY-11-13      PICTURE 9(3).
+           05 FILLER                   PICTURE X(16)  VALUE SPACE.
+       01  WRK-FR1-ALTKEY1.
+            05 FR1-ALTKEY1-1-20.
+             10  FR1-ALTKEY1-1-10.
+              15 FR1-ALTKEY1-1-5       PICTURE X(5).
+              15 FR1-ALTKEY1-6-10      PICTURE X(5).
+             10 FR1-ALTKEY1-11-13      PICTURE 9(3).
+             10 FR1-ALTKEY1-14-20      PICTURE X(7).
+           05 FILLER                   PICTURE X(9)  VALUE SPACE.
+       01  WRK-FR1-ALTKEY2.
+           05 FR1-ALTKEY2-1-20.
+              10 FR1-ALTKEY2-1-10.
+                 15 FR1-ALTKEY2-1-5    PICTURE X(5).
+                 15 FR1-ALTKEY2-6-10   PICTURE X(5).
+              10 FR1-ALTKEY2-11-13     PICTURE 9(3).
+              10 FR1-ALTKEY2-14-20     PICTURE X(7).
+           05 FILLER                   PICTURE X(9) VALUE SPACE.
+       01  RECNO                       PICTURE 9(5)  VALUE ZERO.
+       01  FR1-STATUS                  PICTURE XX   VALUE SPACE.
+       01  FS1-STATUS-IX PIC XX VALUE SPACE.
+       01  FS1-STATUS-SQ PIC XX VALUE SPACE.
+       01  EXCUT-COUNTER-06V00         PICTURE 9(6) VALUE ZERO.
+       01  KEYSUB                      PICTURE 9(3) COMPUTATIONAL.
+       01  INVKEY-COUNTER-RL           PICTURE 9(3) COMPUTATIONAL.
+       01  INVKEY-COUNTER-IX           PICTURE 9(3) COMPUTATIONAL.
+       01  RECORDS-WRITTEN             PICTURE 9(3).
+       01  RECKEY-NUM                  PICTURE 9(3).
+       01  ALTKEY1-NUM                 PICTURE 9(3).
+       01  ALTKEY2-NUM                 PICTURE 9(3).
+       01  RECORD-KEY-CONTENT.
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBBBBC225EEEEEEEEEF001ALTKEY1WWWWWWWWWV076ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBBBCC224EEEEEEEEFF002ALTKEY1WWWWWWWWVV077ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBBCCC223EEEEEEEFFF003ALTKEY1WWWWWWWVVV078ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBBCCCC222EEEEEEFFFF004ALTKEY1WWWWWWVVVV079ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBBCCCCC221EEEEEFFFFF005ALTKEY1WWWWWVVVVV080ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBBCCCCCC220EEEEFFFFFF006ALTKEY1WWWWVVVVVV081ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBBCCCCCCC219EEEFFFFFFF007ALTKEY1WWWVVVVVVV082ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BBCCCCCCCC218EEFFFFFFFF008ALTKEY1WWVVVVVVVV083ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "BCCCCCCCCC217EFFFFFFFFF009ALTKEY1WVVVVVVVVV084ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCCCC216FFFFFFFFFF010ALTKEY1VVVVVVVVVV085ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCCCD215FFFFFFFFFG011ALTKEY1VVVVVVVVVV086ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCCDD214FFFFFFFFGG012ALTKEY1VVVVVVVVUU087ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCCDDD213FFFFFFFGGG013ALTKEY1VVVVVVVUUU088ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCCDDDD212FFFFFFGGGG014ALTKEY1VVVVVVUUUU089ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCCDDDDD211FFFFFGGGGG015ALTKEY1VVVVVUUUUU090ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCCDDDDDD210FFFFGGGGGG016ALTKEY1VVVVUUUUUU091ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCCDDDDDDD209FFFGGGGGGG017ALTKEY1VVVUUUUUUU092ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CCDDDDDDDD208FFGGGGGGGG018ALTKEY1VVUUUUUUUU093ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "CDDDDDDDDD207FGGGGGGGGG019ALTKEY1VUUUUUUUUU094ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDDDD206GGGGGGGGGG020ALTKEY1UUUUUUUUUU095ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDDDE205GGGGGGGGGH021ALTKEY1UUUUUUUUUU096ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDDEE204GGGGGGGGHH022ALTKEY1UUUUUUUUTT097ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDDEEE203GGGGGGGHHH023ALTKEY1UUUUUUUTTT098ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDDEEEE202GGGGGGHHHH024ALTKEY1UUUUUUTTTT099ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDDEEEEE201GGGGGHHHHH025ALTKEY1UUUUUTTTTT100ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDDEEEEEE200GGGGHHHHHH026ALTKEY1UUUUTTTTTT101ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDDEEEEEEE199GGGHHHHHHH027ALTKEY1UUUTTTTTTT102ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DDEEEEEEEE198GGHHHHHHHH028ALTKEY1UUTTTTTTTT103ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "DEEEEEEEEE197GHHHHHHHHH029ALTKEY1UTTTTTTTTT104ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEEEE196HHHHHHHHHH030ALTKEY1TTTTTTTTTT105ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEEEF195HHHHHHHHHI031ALTKEY1TTTTTTTTTT106ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEEFF194HHHHHHHHII032ALTKEY1TTTTTTTTSS107ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEEFFF193HHHHHHHIII033ALTKEY1TTTTTTTSSS108ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEEFFFF192HHHHHHIIII034ALTKEY1TTTTTTSSSS109ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEEFFFFF191HHHHHIIIII035ALTKEY1TTTTTSSSSS110ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEEFFFFFF190HHHHIIIIII036ALTKEY1TTTTSSSSSS111ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEEFFFFFFF189HHHIIIIIII037ALTKEY1TTTSSSSSSS112ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EEFFFFFFFF188HHIIIIIIII038ALTKEY1TTSSSSSSSS113ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "EFFFFFFFFF187HIIIIIIIII039ALTKEY1TSSSSSSSSS114ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFFFF186IIIIIIIIII040ALTKEY1SSSSSSSSSS115ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFFFG185IIIIIIIIIJ041ALTKEY1SSSSSSSSSS116ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFFGG184IIIIIIIIJJ042ALTKEY1SSSSSSSSRR117ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFFGGG183IIIIIIIJJJ043ALTKEY1SSSSSSSRRR118ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFFGGGG182IIIIIIJJJJ044ALTKEY1SSSSSSRRRR119ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFFGGGGG181IIIIIJJJJJ045ALTKEY1SSSSSRRRRR120ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFFGGGGGG180IIIIJJJJJJ046ALTKEY1SSSSRRRRRR121ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFFGGGGGGG179IIIJJJJJJJ047ALTKEY1SSSRRRRRRR122ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FFGGGGGGGG178IIJJJJJJJJ048ALTKEY1SSRRRRRRRR123ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "FGGGGGGGGG177IJJJJJJJJJ049ALTKEY1SRRRRRRRRR124ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "GGGGGGGGGG176JJJJJJJJJJ050ALTKEY1RRRRRRRRRR125ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RRRRSSSSSS175VVVVWWWWWW051ALTKEY1GGGGFFFFFF126ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RRRSSSSSSS174VVVWWWWWWW052ALTKEY1GGGFFFFFFF127ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RRSSSSSSSS173VVWWWWWWWW053ALTKEY1GGFFFFFFFF128ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "RSSSSSSSSS172VWWWWWWWWW054ALTKEY1GFFFFFFFFF129ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSSSS171WWWWWWWWWW055ALTKEY1FFFFFFFFFF130ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSSST170WWWWWWWWWX056ALTKEY1FFFFFFFFFF131ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSSTT169WWWWWWWWXX057ALTKEY1FFFFFFFFEE132ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSSTTT168WWWWWWWXXX058ALTKEY1FFFFFFFEEE133ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSSTTTT167WWWWWWXXXX059ALTKEY1FFFFFFEEEE134ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSSTTTTT166WWWWWXXXXX060ALTKEY1FFFFFEEEEE135ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSSTTTTTT165WWWWXXXXXX061ALTKEY1FFFFEEEEEE136ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSSTTTTTTT164WWWXXXXXXX062ALTKEY1FFFEEEEEEE137ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "SSTTTTTTTT163WWXXXXXXXX063ALTKEY1FFEEEEEEEE138ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "STTTTTTTTT162WXXXXXXXXX064ALTKEY1FEEEEEEEEE139ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTTTT161XXXXXXXXXX065ALTKEY1EEEEEEEEEE140ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTTTU160XXXXXXXXXY066ALTKEY1EEEEEEEEEE141ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTTUU159XXXXXXXXYY067ALTKEY1EEEEEEEEDD142ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTTUUU158XXXXXXXYYY068ALTKEY1EEEEEEEDDD143ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTTUUUU157XXXXXXYYYY069ALTKEY1EEEEEEDDDD144ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTTUUUUU156XXXXXYYYYY070ALTKEY1EEEEEDDDDD145ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTTUUUUUU155XXXXYYYYYY071ALTKEY1EEEEDDDDDD146ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTTUUUUUUU154XXXYYYYYYY072ALTKEY1EEEDDDDDDD147ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TTUUUUUUUU153XXYYYYYYYY073ALTKEY1EEDDDDDDDD148ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "TUUUUUUUUU152XYYYYYYYYY074ALTKEY1EDDDDDDDDD149ALTKEY2".
+           05 FILLER PIC X(53) VALUE
+                "UUUUUUUUUU151YYYYYYYYYY075ALTKEY1DDDDDDDDDD150ALTKEY2".
+       01  RECORD-KEY-DATA   REDEFINES  RECORD-KEY-CONTENT.
+           05 KEY-VALUES                  OCCURS 75  TIMES.
+             10 RECKEY-VALUE           PICTURE X(13).
+             10 ALTKEY1-VALUE          PICTURE X(20).
+             10 ALTKEY2-VALUE          PICTURE X(20).
+       01  INIT-FLAG                   PICTURE 9.
+       01  HOLD-FILESTATUS-RECORD.
+           05 FILESTATUS               PICTURE XX  OCCURS 10 TIMES.
+       
+       01  FILE-RECORD-INFORMATION-REC.
+           03 FILE-RECORD-INFO-SKELETON.
+              05 FILLER                 PICTURE X(48)       VALUE
+                   "FILE=      ,RECORD=      /0,RECNO=000000,UPDT=00".
+              05 FILLER                 PICTURE X(46)       VALUE
+                   ",ODO=0000,PGM=     ,LRECL=000000,BLKSIZ  =0000".
+              05 FILLER                 PICTURE X(26)       VALUE
+                   ",LFIL=000000,ORG=  ,LBLR= ".
+              05 FILLER                 PICTURE X(37)       VALUE
+                   ",RECKEY=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY1=                             ".
+              05 FILLER                 PICTURE X(38)       VALUE
+                   ",ALTKEY2=                             ".
+              05 FILLER                 PICTURE X(7)        VALUE SPACE.
+           03 FILE-RECORD-INFO          OCCURS  10  TIMES.
+              05 FILE-RECORD-INFO-P1-120.
+                 07 FILLER              PIC X(5).
+                 07 XFILE-NAME           PIC X(6).
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-NAME         PIC X(6).
+                 07 FILLER              PIC X(1).
+                 07 REELUNIT-NUMBER     PIC 9(1).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-NUMBER       PIC 9(6).
+                 07 FILLER              PIC X(6).
+                 07 UPDATE-NUMBER       PIC 9(2).
+                 07 FILLER              PIC X(5).
+                 07 ODO-NUMBER          PIC 9(4).
+                 07 FILLER              PIC X(5).
+                 07 XPROGRAM-NAME        PIC X(5).
+                 07 FILLER              PIC X(7).
+                 07 XRECORD-LENGTH       PIC 9(6).
+                 07 FILLER              PIC X(7).
+                 07 CHARS-OR-RECORDS    PIC X(2).
+                 07 FILLER              PIC X(1).
+                 07 XBLOCK-SIZE          PIC 9(4).
+                 07 FILLER              PIC X(6).
+                 07 RECORDS-IN-FILE     PIC 9(6).
+                 07 FILLER              PIC X(5).
+                 07 XFILE-ORGANIZATION   PIC X(2).
+                 07 FILLER              PIC X(6).
+                 07 XLABEL-TYPE          PIC X(1).
+              05 FILE-RECORD-INFO-P121-240.
+                 07 FILLER              PIC X(8).
+                 07 XRECORD-KEY          PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY1      PIC X(29).
+                 07 FILLER              PIC X(9).
+                 07 ALTERNATE-KEY2      PIC X(29).
+                 07 FILLER              PIC X(7).
+       
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "IX106A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-1.
+      *>     MOVE "ABORTED " TO C-ABORT.
+      *>     ADD 1 TO C-NO-OF-TESTS.
+      *>     ACCEPT C-DATE  FROM DATE.
+      *>     ACCEPT C-TIME  FROM TIME.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-1.
+      *> END-E-1.
+      *>     CLOSE RAW-DATA.
+           OPEN    OUTPUT PRINT-FILE.
+           MOVE  CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           MOVE    ZERO TO REC-SKL-SUB.
+           PERFORM CCVS-INIT-FILE 9 TIMES.
+       CCVS-INIT-FILE.
+           ADD     1 TO REC-SKL-SUB.
+           MOVE    FILE-RECORD-INFO-SKELETON
+                TO FILE-RECORD-INFO (REC-SKL-SUB).
+       CCVS-INIT-EXIT.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+      *>     OPEN I-O RAW-DATA.
+      *>     MOVE CCVS-PGM-ID TO RAW-DATA-KEY.
+      *>     READ RAW-DATA INVALID KEY GO TO END-E-2.
+      *>     MOVE "OK.     " TO C-ABORT.
+      *>     MOVE PASS-COUNTER TO C-OK.
+      *>     MOVE ERROR-HOLD   TO C-ALL.
+      *>     MOVE ERROR-COUNTER TO C-FAIL.
+      *>     MOVE DELETE-COUNTER TO C-DELETED.
+      *>     MOVE INSPECT-COUNTER TO C-INSPECT.
+      *>     REWRITE RAW-DATA-SATZ INVALID KEY GO TO END-E-2.
+      *> END-E-2.
+      *>     CLOSE RAW-DATA.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO   FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+      *> *****************************************************************
+       SECT-0001-RIS101 SECTION.
+      *> 
+      *>  THIS SECTION CREATES A RELATIVE FILE RANDOMLY.
+      *> 
+       WRITE-INT-GF-01.
+           OPEN    OUTPUT RL-FR1.
+           MOVE    "RL-FR1" TO XFILE-NAME           (1).
+           MOVE    "R1-F-G" TO  XRECORD-NAME        (1).
+           MOVE    ZERO     TO  XRECORD-NUMBER      (1).
+           MOVE    "RC"     TO  CHARS-OR-RECORDS    (1).
+           MOVE    CCVS-PGM-ID TO  XPROGRAM-NAME    (1).
+           MOVE    241      TO  XRECORD-LENGTH      (1).
+           MOVE    001      TO  XBLOCK-SIZE         (1).
+           MOVE    "RL"     TO  XFILE-ORGANIZATION  (1).
+           MOVE    "S"      TO  XLABEL-TYPE         (1).
+           MOVE    225      TO  RECORDS-IN-FILE     (1).
+           MOVE    "WRITE RL-FR1   " TO FEATURE.
+           MOVE    "WRITE-TEST-GF-01" TO PAR-NAME.
+           MOVE    ZERO TO KEYSUB.
+           MOVE    ZERO TO INVKEY-COUNTER-RL.
+       WRITE-INIT-GF-01-01.
+           PERFORM WRITE-TEST-GF-01-R1 75 TIMES.
+           GO TO   WRITE-TEST-GF-01.
+       WRITE-TEST-GF-01-R1.
+      *> 
+      *>  WRITE-TEST-GF-01-R1 - WRITES THREE RECORDS FOR EACH PASS THRU .
+      *>                       1) FOR THE FIRST RECORD CREATED RL-KEY IS
+      *>                          SET TO FR1-RECKEY-11-13 .
+      *>                       2) FOR THE SECOND RECORD CREATED RL-KEY IS
+      *>                          SET TO FR1-ALTKEY1-11-13 .
+      *>                       3) FOR THE THIRD RECORD CREATED RL-KEY IS
+      *>                          SET TO FR1-ALTKEY2-11-13 .
+      *>                       THESE RECORD KEYS ARE IN THREE DIFFERENT
+      *>                       ORDERINGS.
+      *>                       1) FR1-RECKEY-11-13 ARE THE NUMBERS FROM
+      *>                          225 TO 151 DECENDING .
+      *>                       2) FR1-ALTKEY1-11-13 ARE THE NUMBERS FROM
+      *>                          1 TO 75 ASCENDING .
+      *>                       3) FR1-ALTKEY-11-13 ARE THE NUMBERS FROM
+      *>                          76 TO 151 ASCENDING .
+      *> 
+           ADD     001  TO XRECORD-NUMBER (1).
+           ADD     001  TO  KEYSUB.
+           MOVE    RECKEY-VALUE (KEYSUB) TO FR1-RECKEY-1-13.
+           MOVE    ALTKEY1-VALUE (KEYSUB) TO FR1-ALTKEY1-1-20.
+           MOVE    ALTKEY2-VALUE (KEYSUB) TO FR1-ALTKEY2-1-20.
+           MOVE    WRK-FR1-RECKEY   TO    XRECORD-KEY (1).
+           MOVE    WRK-FR1-ALTKEY1  TO ALTERNATE-KEY1 (1).
+           MOVE    WRK-FR1-ALTKEY2  TO ALTERNATE-KEY2 (1).
+           MOVE    FILE-RECORD-INFO (1)  TO RL-FR1R1-F-G-241.
+           MOVE FR1-RECKEY-11-13 TO RL-KEY.
+           WRITE   RL-FR1R1-F-G-241
+                              INVALID KEY ADD 001 TO INVKEY-COUNTER-RL.
+           ADD     001 TO EXCUT-COUNTER-06V00.
+           ADD     001 TO XRECORD-NUMBER (1).
+           MOVE  FR1-ALTKEY1-11-13 TO FR1-RECKEY-11-13.
+           MOVE WRK-FR1-RECKEY TO XRECORD-KEY (1).
+           MOVE FR1-RECKEY-11-13 TO RL-KEY.
+           MOVE FILE-RECORD-INFO (1) TO RL-FR1R1-F-G-241.
+           WRITE   RL-FR1R1-F-G-241
+                              INVALID KEY ADD 001 TO INVKEY-COUNTER-RL.
+           ADD     001 TO EXCUT-COUNTER-06V00.
+           ADD     001 TO XRECORD-NUMBER (1).
+           MOVE  FR1-ALTKEY2-11-13 TO FR1-RECKEY-11-13.
+           MOVE WRK-FR1-RECKEY TO XRECORD-KEY (1).
+           MOVE FR1-RECKEY-11-13 TO RL-KEY.
+           MOVE FILE-RECORD-INFO (1) TO RL-FR1R1-F-G-241.
+           WRITE   RL-FR1R1-F-G-241
+                              INVALID KEY ADD 001 TO INVKEY-COUNTER-RL.
+           ADD      001 TO EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-01.
+           SUBTRACT INVKEY-COUNTER-RL FROM EXCUT-COUNTER-06V00
+                   GIVING RECORDS-WRITTEN.
+       WRITE-TEST-CHECK.
+           MOVE    225  TO CORRECT-18V0.
+           MOVE    RECORDS-WRITTEN TO COMPUTED-18V0.
+           IF      RECORDS-WRITTEN EQUAL TO 225
+                   PERFORM  PASS
+                   ELSE
+                   MOVE "VIII-37  4.9.2                    " TO RE-MARK
+                   PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+       WRITE-TEST-GF-01-END.
+           CLOSE   RL-FR1.
+      *> *****************************************************************
+       SECT-0002-RIS101 SECTION.
+      *> 
+      *>  THIS SECTION CREATES A SEQUENTIAL AND AN INDEXED FILE USING THE
+      *>  RELATIVE FILE CREATED IN THE PREVIOUS SECTION AS INPUT .
+      *> 
+       WRITE-INIT-GF-02.
+           OPEN    OUTPUT IX-FS1 SQ-FS1.
+           OPEN    INPUT RL-FR1.
+           MOVE    ZERO TO RL-KEY.
+           MOVE    ZERO TO INVKEY-COUNTER-RL.
+           MOVE    ZERO TO INVKEY-COUNTER-IX.
+           MOVE ZERO TO EXCUT-COUNTER-06V00.
+           PERFORM WRITE-TEST-GF-02-01 75 TIMES.
+           PERFORM WRITE-TEST-GF-02-02 75 TIMES.
+           PERFORM WRITE-TEST-GF-02-03 75 TIMES.
+           GO TO WRITE-TEST-GF-02-END.
+       WRITE-INT-GF-02-IX.
+           MOVE    "WRITE IX-FS1  " TO FEATURE.
+           MOVE    "WRITE-TEST-GF-02" TO PAR-NAME.
+       WRITE-INT-GF-02-SQ.
+           MOVE    "WRITE SQ-FS1  " TO FEATURE.
+           MOVE    "WRITE-TEST-GF-02" TO PAR-NAME.
+       WRITE-TEST-GF-02-01.
+      *> 
+      *>  WRITE-TEST-GF-02-01 - READS IN THE RELATIVE FILE IN SEQUENCE , 
+      *>                       MOVES RL-FR1-ALTKEY1-11-13 TO
+      *>                       RL-FR1-ALTKEY2-11-13 SO THAT ALL THE
+      *>                       KEYS ON THE RECORD ARE THE SAME , THEN
+      *>                       WRITES A SEQUENTIAL RECORD AND AN INDEXED
+      *>                       FILE RECORD .
+      *> 
+           ADD     001 TO RL-KEY.
+           READ RL-FR1
+               INVALID KEY ADD 001 TO INVKEY-COUNTER-RL.
+           MOVE    RL-FR1-REC-120 TO FILE-RECORD-INFO-P1-120(1).
+           MOVE    RL-FR1-ALTKEY1-11-13 TO RL-FR1-ALTKEY2-11-13.
+           MOVE    RL-FR1R1-F-G-241 TO SQ-FS1R1-F-G-241.
+           MOVE    SQ-FS1R1-F-G-241 TO IX-FS1R1-F-G-241.
+           MOVE    "SQ-FS1" TO XFILE-NAME           (1).
+           MOVE    "SQ"     TO  XFILE-ORGANIZATION  (1).
+           MOVE    "WRITE SQ-FS1  " TO FEATURE.
+           MOVE    "WRITE-TEST-GF-02" TO PAR-NAME.
+           MOVE FILE-RECORD-INFO-P1-120(1) TO SQ-FS1-REC-120.
+           WRITE   SQ-FS1R1-F-G-241.
+           MOVE    "IX-FS1" TO XFILE-NAME           (1).
+           MOVE    "IX"     TO  XFILE-ORGANIZATION  (1).
+           MOVE    "WRITE IX-FS1  " TO FEATURE.
+           MOVE    "WRITE-TEST-GF-02" TO PAR-NAME.
+           MOVE FILE-RECORD-INFO-P1-120(1) TO IX-FS1-REC-120.
+           WRITE   IX-FS1R1-F-G-241
+               INVALID KEY ADD 001 TO INVKEY-COUNTER-IX.
+           ADD 001 TO EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-02-02.
+      *> 
+      *>  WRITE-TEST-GF-02-02 - READS IN THE RELATIVE FILE IN SEQUENCE
+      *>                  STARTING AT NUMBER 76 WHERE WRITE-TEST-GF-02-01
+      *>                      LEFT OFF . MOVES RL-FR1-ALTKEY2-11-13 TO
+      *>                      RL-FR1-ALTKEY1-11-13 SO THAT ALL THE KEYS
+      *>                      IN THE RECORD ARE THE SAME . WRITES A
+      *>                      SEQUENTIAL AND AN INDEXED FILE RECORD .
+      *> 
+           ADD     001 TO RL-KEY.
+           READ RL-FR1
+               INVALID KEY ADD 001 TO INVKEY-COUNTER-RL.
+           MOVE    RL-FR1-REC-120 TO FILE-RECORD-INFO-P1-120(1).
+           MOVE    RL-FR1-ALTKEY2-11-13 TO RL-FR1-ALTKEY1-11-13.
+           MOVE    RL-FR1R1-F-G-241 TO SQ-FS1R1-F-G-241.
+           MOVE    SQ-FS1R1-F-G-241 TO IX-FS1R1-F-G-241.
+           MOVE    "SQ-FS1" TO XFILE-NAME           (1).
+           MOVE    "SQ"     TO  XFILE-ORGANIZATION  (1).
+           MOVE FILE-RECORD-INFO-P1-120(1) TO SQ-FS1-REC-120.
+           WRITE   SQ-FS1R1-F-G-241.
+           MOVE    "IX-FS1" TO XFILE-NAME           (1).
+           MOVE    "IX"     TO  XFILE-ORGANIZATION  (1).
+           MOVE FILE-RECORD-INFO-P1-120(1) TO IX-FS1-REC-120.
+           WRITE   IX-FS1R1-F-G-241
+               INVALID KEY ADD 001 TO INVKEY-COUNTER-IX.
+           ADD 001 TO EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-02-03.
+      *> 
+      *>  WRITE-TEST-GF-02-03 - READS IN THE RELATIVE FILE IN SEQUENCE
+      *>                 STARTING AT NUMBER 151 WHERE WRITE-TEST-GF-02-02
+      *>                     LEFT OFF . MOVES RL-FR1-KEY-11-13 TO
+      *>                     RL-FR1-ALTKEY1-11-13 AND RL-ALTKEY2-11-13
+      *>                     SO THAT ALL THE KEYS IN THE RECORD ARE
+      *>                     THE SAME . WRITES A SEQUENTIAL AND AN
+      *>                     INDEXED FILE RECORD .
+      *> 
+           ADD     001 TO RL-KEY.
+           READ RL-FR1
+               INVALID KEY ADD 001 TO INVKEY-COUNTER-RL.
+           MOVE    RL-FR1-REC-120 TO FILE-RECORD-INFO-P1-120(1).
+           MOVE RL-FR1-KEY-11-13 TO RL-FR1-ALTKEY1-11-13.
+           MOVE    RL-FR1-ALTKEY1-11-13 TO RL-FR1-ALTKEY2-11-13.
+           MOVE    RL-FR1R1-F-G-241 TO SQ-FS1R1-F-G-241.
+           MOVE    SQ-FS1R1-F-G-241 TO IX-FS1R1-F-G-241.
+           MOVE    "SQ-FS1" TO XFILE-NAME           (1).
+           MOVE    "SQ"     TO  XFILE-ORGANIZATION  (1).
+           MOVE FILE-RECORD-INFO-P1-120(1) TO SQ-FS1-REC-120.
+           WRITE   SQ-FS1R1-F-G-241.
+           MOVE    "IX-FS1" TO XFILE-NAME           (1).
+           MOVE    "IX"     TO  XFILE-ORGANIZATION  (1).
+           MOVE FILE-RECORD-INFO-P1-120(1) TO IX-FS1-REC-120.
+           WRITE   IX-FS1R1-F-G-241
+               INVALID KEY ADD 001 TO INVKEY-COUNTER-IX.
+           ADD 001 TO EXCUT-COUNTER-06V00.
+       WRITE-TEST-GF-02-END.
+           CLOSE RL-FR1.
+           CLOSE SQ-FS1.
+           CLOSE IX-FS1.
+           MOVE "READ RL-FR1  " TO FEATURE.
+           MOVE "WRITE-TEST-GF-02" TO PAR-NAME.
+           PERFORM WRITE-TEST-GF-01 THRU WRITE-TEST-CHECK.
+           SUBTRACT INVKEY-COUNTER-IX FROM EXCUT-COUNTER-06V00
+                GIVING RECORDS-WRITTEN.
+       WRITE-TEST-GF-02-2.
+           PERFORM WRITE-INT-GF-02-IX.
+           MOVE "WRITE-TEST-GF-02-2" TO PAR-NAME.
+           PERFORM WRITE-TEST-CHECK.
+       WRITE-TEST-GF-02-3.
+           PERFORM WRITE-INT-GF-02-SQ.
+           MOVE "WRITE-TEST-GF-02-3" TO PAR-NAME.
+           PERFORM WRITE-TEST-CHECK.
+      *> *****************************************************************
+       SECT-0003-RIS101 SECTION.
+      *> 
+      *>  THIS SECTION TESTS THE ABILITY TO HAVE ALL THREE DIFFERNT FILE
+      *>  TYPES OPENED AND USED AT THE SAME TIME .
+      *> 
+       READ-TEST-F2-01-01.
+           MOVE ZEROES TO REC-CT.
+           OPEN INPUT RL-FR1.
+           OPEN INPUT IX-FS1.
+           OPEN INPUT SQ-FS1.
+           MOVE    "OPEN ALL - SEPARATE" TO FEATURE.
+           MOVE    "READ-TEST-F2-01-02" TO PAR-NAME.
+       READ-TEST-F2-01-02.
+      *> 
+      *>  READ-TEST-F2-01-02 - THIS TESTS THE ABILITY TO READ ALL THREE
+      *>                       TYPES OF FILES IN ANY ORDER WITH ALL OF THE
+      *>                       FILES OPEN AT ONCE .
+      *> 
+           MOVE ZERO TO RL-KEY.
+           ADD 001 TO RL-KEY.
+           READ SQ-FS1 INTO IX-FS1R1-F-G-241 AT END GO TEST-FINISH-EXIT.
+           READ IX-FS1
+               INVALID KEY
+               MOVE "1ST IX-FS1 READ - KEY SHOULD BE 001" TO RE-MARK
+               PERFORM FAIL
+               PERFORM PRINT-DETAIL
+               GO TO READ-TEST-F2-01-02-END.
+           READ RL-FR1
+               INVALID KEY
+               MOVE "1ST RL-FS1 READ - KEY SHOULD BE 001" TO RE-MARK
+               PERFORM FAIL
+               PERFORM PRINT-DETAIL
+               GO TO READ-TEST-F2-01-02-END.
+           READ SQ-FS1 AT END GO TO TEST-FINISH-EXIT.
+           READ SQ-FS1 AT END GO TO TEST-FINISH-EXIT.
+           READ RL-FR1
+               INVALID KEY
+               MOVE "2ND IX-FS1 READ - KEY SHOULD BE 001" TO RE-MARK
+               PERFORM FAIL
+               PERFORM PRINT-DETAIL
+               GO TO READ-TEST-F2-01-02-END.
+           READ IX-FS1
+               INVALID KEY
+               MOVE "2ND RL-FR1 READ - KEY SHOULD BE 001" TO RE-MARK
+               PERFORM FAIL
+               PERFORM PRINT-DETAIL
+               GO TO READ-TEST-F2-01-02-END.
+           READ SQ-FS1 AT END GO TO TEST-FINISH-EXIT.
+           PERFORM PASS.
+           PERFORM PRINT-DETAIL.
+       READ-TEST-F2-01-02-END.
+           CLOSE RL-FR1.
+           CLOSE IX-FS1.
+           CLOSE SQ-FS1.
+       READ-INIT-F2-02.
+           OPEN I-O IX-FS1 SQ-FS1 RL-FR1.
+       READ-TEST-F2-02.
+           READ SQ-FS1 AT END GO TO TEST-FINISH-EXIT.
+       READ-WRITE-F2-02.
+           CLOSE RL-FR1 IX-FS1 SQ-FS1.
+           MOVE    "R-I-S " TO XFILE-NAME           (1).
+           MOVE    ZERO     TO  XRECORD-NUMBER      (1).
+           MOVE    "AL"     TO  XFILE-ORGANIZATION  (1).
+           MOVE    "OPEN ALL 3 IN 1 LINE" TO FEATURE.
+           MOVE    "READ-TEST-F2-02   " TO PAR-NAME.
+           PERFORM PASS.
+           PERFORM PRINT-DETAIL.
+      *> *****************************************************************
+       SECT-0004-RIS101 SECTION.
+      *> 
+      *>  THIS SECTION TESTS THE ABILITY TO DELETE RECORDS FROM ONE FILE
+      *>  TYPE WHILE HAVING THE OTHER FILES OPEN .
+      *> 
+       DELETE-TEST-GF-01.
+      *> 
+      *>  DELETE-TEST-GF-01-01 -IN THIS TEST RECORD NUMBER 121 IS DELETED
+      *>                   THE RELATIVE FILE . THE FILE IS THEN CLOSED .
+      *>                    THE RELATIVE FILE IS THEN RE-OPENED AND
+      *>                    READ EXPECTING TO FIND 122 VALID RECORDS
+      *>                    AND AN INVALID KEY FOR WHAT USED TO BE
+      *>                    THE 122ND RECORD.  RL-FR1-RECKEY-11-13
+      *>                    IS CHECKED TO SEE IF RECORD 123 IS READ
+      *>                    AS IT SHOULD BE.
+      *> 
+           OPEN I-O IX-FS1 RL-FR1 SQ-FS1.
+           MOVE    ZERO TO IX-FS1-KEY-11-13.
+           MOVE    ZERO TO RL-KEY.
+           MOVE    ZERO TO INVKEY-COUNTER-RL.
+           MOVE    ZERO TO INVKEY-COUNTER-IX.
+           MOVE    121 TO IX-FS1-KEY-11-13.
+           READ    IX-FS1
+               INVALID KEY ADD 001 TO INVKEY-COUNTER-IX.
+           ADD     121 TO RL-KEY.
+           MOVE    "R-I-S " TO XFILE-NAME           (1)
+           MOVE    ZERO     TO  XRECORD-NUMBER      (1)
+           MOVE    "RL"     TO  XFILE-ORGANIZATION  (1)
+           MOVE    "DELETE RL RECORD" TO FEATURE
+           MOVE    "DELETE-TEST-GF-01   " TO PAR-NAME
+           DELETE RL-FR1
+               INVALID KEY PERFORM FAIL
+               PERFORM PRINT-DETAIL
+               GO TO DELETE-TEST-GF-01-END.
+           CLOSE RL-FR1.
+           OPEN INPUT RL-FR1.
+           MOVE ZERO TO RL-KEY.
+           PERFORM DELETE-TEST-GF-01-02-R2 122 TIMES.
+       DELETE-TEST-GF-01-02-R2.
+           ADD   1 TO RL-KEY.
+           READ RL-FR1 INVALID KEY
+                 ADD 1 TO INVKEY-COUNTER-RL.
+       DELETE-TEST-GF-01-02-CK.
+           IF RL-FR1-KEY-11-13 EQUAL TO 123
+              ADD 1 TO INVKEY-COUNTER-RL.
+              IF
+                 INVKEY-COUNTER-RL EQUAL TO 2
+                 PERFORM PASS ELSE
+                 MOVE "VII-19 4.3.2                        " TO RE-MARK
+                 PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+       DELETE-TEST-GF-01-END.
+           CLOSE RL-FR1 IX-FS1 SQ-FS1.
+      *> *****************************************************************
+       SECT-TEST-005-RIS101 SECTION.
+      *> 
+      *>  THIS SECTION TESTS THE ABILITY TO REWRITE A FILE WHILE OTHER
+      *>  FILES ARE BEING MANIPULATED .
+      *> 
+       REWRITE-INIT-GF-01.
+           OPEN I-O SQ-FS1 IX-FS1 RL-FR1.
+           MOVE ZEROES TO RL-KEY.
+           ADD 003 TO RL-KEY.
+           MOVE    ZERO TO INVKEY-COUNTER-RL.
+           MOVE    ZERO TO INVKEY-COUNTER-IX.
+       REWRITE-TEST-GF-01.
+      *> 
+      *>  REWRITE-TEST-GF-01:TESTS THE ABILITY TO REWRITE A RELATIVE FILE
+      *>                     WHILE ALSO MANIPULATING DATA FROM AN INEXED
+      *>                     FILE .
+      *> 
+       READ-INIT-RL.
+           READ RL-FR1
+               INVALID KEY
+               MOVE    "READ RL RECORD" TO FEATURE
+               MOVE    "READ-INIT-RL      " TO PAR-NAME
+           PERFORM FAIL PERFORM PRINT-DETAIL GO REWRITE-TEST-005-END.
+           MOVE RL-FR1-ALTKEY2-11-13 TO IX-FS1-KEY-11-13.
+       READ-INIT-IX.
+           READ IX-FS1
+               INVALID KEY
+               MOVE    "READ IX RECORD" TO FEATURE
+               MOVE    "READ-INIT-IX.      " TO PAR-NAME
+           PERFORM FAIL PERFORM PRINT-DETAIL GO REWRITE-TEST-005-END.
+           MOVE RL-FR1-ALTKEY2-11-13 TO IX-FS1-KEY-11-13.
+           MOVE IX-FS1R1-F-G-241 TO RL-FR1R1-F-G-241.
+           REWRITE RL-FR1R1-F-G-241
+               INVALID KEY
+               MOVE    "REWRITE RL RECORD" TO FEATURE
+               MOVE    "REWRITE-TEST-GF-01"    TO PAR-NAME
+           PERFORM FAIL PERFORM PRINT-DETAIL GO REWRITE-TEST-005-END.
+       REWRITE-TEST-005-01-1.
+           READ RL-FR1
+               INVALID KEY
+               MOVE    "READ RL RECORD" TO FEATURE
+               MOVE    "REWRITE-TEST-005-01-1" TO PAR-NAME
+             PERFORM FAIL PERFORM PRINT-DETAIL GO REWRITE-TEST-005-END.
+       REWRITE-TEST-01.
+           MOVE    "REWRITE RL RECORD" TO FEATURE
+           MOVE    "REWRITE-TEST-GF-01"    TO PAR-NAME.
+           IF RL-FR1-KEY-11-13 NOT EQUAL 78
+               PERFORM FAIL
+               MOVE RL-FR1-KEY-11-13 TO COMPUTED-A
+               MOVE "78" TO CORRECT-A
+               PERFORM PRINT-DETAIL
+               MOVE     RL-FR1-REC-120 TO DUMMY-RECORD
+               PERFORM  WRITE-LINE
+               MOVE RL-FR1-REC-121-241 TO DUMMY-RECORD
+               PERFORM WRITE-LINE
+           ELSE
+               PERFORM PASS.
+           PERFORM PRINT-DETAIL.
+      *> **************************************************************
+       REWRITE-TEST-GF-02.
+      *> 
+      *>  REWRITE-TEST-GF-02   TESTS THE ABILITY TO REWRITE A SEQUENTIAL
+      *>                       FILE WHILE WORKING WITH A RELATIVE ALSO .
+      *> 
+           PERFORM READ-TEST-F2-02       9 TIMES.
+           MOVE 15 TO RL-KEY.
+           READ RL-FR1 INTO SQ-FS1R1-F-G-241
+               INVALID KEY
+               MOVE "RL INTO SQ" TO FEATURE
+               MOVE "REWRITE-TEST-GF-02I" TO PAR-NAME
+               MOVE "VIII-26 4.5.2                         " TO RE-MARK
+               PERFORM FAIL
+               PERFORM PRINT-DETAIL
+               GO TEST-FINISH-EXIT.
+           MOVE "REWRITE-TEST-GF-02 " TO PAR-NAME.
+           MOVE "REWRITE SQ" TO FEATURE.
+           REWRITE SQ-FS1R1-F-G-241.
+           CLOSE SQ-FS1.
+           OPEN I-O SQ-FS1.
+           PERFORM READ-TEST-F2-02       9 TIMES.
+           IF SQ-FS1-ALTKEY2-11-13 EQUAL TO  "090"
+               PERFORM PASS
+           ELSE
+               PERFORM FAIL
+               MOVE "90" TO CORRECT-A
+               MOVE SQ-FS1-KEY-11-13 TO COMPUTED-A.
+           PERFORM PRINT-DETAIL.
+      *> ******** END OF 005-02 REWRITE SQ RECORD ************************
+       REWRITE-TEST-GF-03.
+      *> 
+      *>  REWRITE-TEST-GF-03  TESTS THE ABILITY TO REWRITE AN INDEXED FILE
+      *>                       WHILE ALSO READING A RELATIVE FILE .
+      *> 
+           MOVE 15 TO RL-KEY.
+           MOVE "077" TO IX-FS1-KEY-11-13.
+           MOVE "REWRITE-TEST-GF-03 " TO PAR-NAME.
+           MOVE "REWRITE IX" TO FEATURE.
+           READ IX-FS1
+               INVALID KEY
+               MOVE    "READ IX RECORD" TO FEATURE
+             PERFORM FAIL PERFORM PRINT-DETAIL GO REWRITE-TEST-005-END.
+           READ RL-FR1
+               INVALID KEY
+               MOVE "READ RL TO PASS TO IX" TO RE-MARK
+               PERFORM FAIL
+               PERFORM PRINT-DETAIL
+               GO REWRITE-TEST-005-END.
+           REWRITE IX-FS1R1-F-G-241 FROM RL-FR1R1-F-G-241
+               INVALID KEY
+               MOVE "REWRITE IX STATEMENT" TO RE-MARK
+               PERFORM FAIL
+               PERFORM PRINT-DETAIL
+               GO TO REWRITE-TEST-005-END.
+           MOVE "015" TO IX-FS1-KEY-11-13.
+           READ IX-FS1
+               INVALID KEY
+               MOVE "RE-READ IX FOR CHECK" TO RE-MARK
+               PERFORM FAIL
+               PERFORM PRINT-DETAIL
+               GO REWRITE-TEST-005-END.
+           IF IX-FS1-ALTKEY2-11-13 EQUAL TO "090"
+               PERFORM PASS
+           ELSE
+               MOVE IX-FS1-REC-120 TO DUMMY-RECORD
+               PERFORM WRITE-LINE
+               MOVE IX-FS1-REC-121-241 TO DUMMY-RECORD
+               PERFORM WRITE-LINE
+               PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+       REWRITE-TEST-005-END.
+           CLOSE SQ-FS1 IX-FS1 RL-FR1.
+       TEST-FINISH-EXIT.
+           EXIT.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,IX106A

@@ -1,0 +1,52 @@
+      *> HEADER,COBOL,IC209A,SUBRTN,IC210A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC210A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>  1  THIS IS SUBPROGRAM IC210.
+      *> ***************************************************************
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       DATA DIVISION.
+       LINKAGE SECTION.
+       01  TEST-AREA.
+           02  TEST1                   PICTURE X.
+           02  TEST2                   PICTURE X.
+           02  TEST3                   PICTURE X.
+           02  TEST4                   PICTURE X.
+       PROCEDURE DIVISION USING TEST-AREA.
+       CALL-TEST-2.
+           MOVE "Y" TO TEST1.
+           CALL "IC211A" USING TEST-AREA.
+           IF TEST2 = "Y" GO TO CALL-TEST-3.
+           MOVE "N" TO TEST2.
+       CALL-TEST-3.
+           CALL "IC212A" USING TEST-AREA.
+           IF TEST3 = "Y" GO TO CANCEL-TEST-1.
+           MOVE "N" TO TEST3.
+       CANCEL-TEST-1.
+           CANCEL "IC211A".
+           MOVE "Y" TO TEST4.
+       IC210-EXIT.
+           EXIT PROGRAM.
+      *> END-OF,IC210A

@@ -1,0 +1,35 @@
+      *> HEADER,COBOL,SM401M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SM401M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF HIGH
+      *> SUBSET FEATURES THAT ARE USED IN SOURCE TEXT
+      *> MANIPULATION.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       
+       
+       DATA DIVISION.
+       PROCEDURE DIVISION.
+       
+       SM401M-CONTROL.
+           PERFORM SM401M-COPYREP THRU SM401M-REPL.
+           STOP RUN.
+       
+       SM401M-COPYREP.
+      *> Message expected for following statement: NON-CONFORMING STANDARD
+      *> HEADER,CLBRY,KSM41
+           DISPLAY "COW SHEEP PIG HORSE LAMB DOG CAT ".
+      *> END-OF,KSM41
+
+       
+       SM401M-REPL.
+
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 2.
+      *> END-OF,SM401M

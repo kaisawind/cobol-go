@@ -1,0 +1,1449 @@
+      *> HEADER,COBOL,DB105A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           DB105A.
+       AUTHOR.
+      *>CE     FEDERAL COMPILER TESTING CENTER.
+       INSTALLATION.
+      *>CE     GENERAL SERVICES ADMINISTRATION
+      *>CE      AUTOMATED DATA AND TELECOMMUNICATION SERVICE.
+      *>CE     SOFTWARE DEVELOPMENT OFFICE.
+      *>CE     5203 LEESBURG PIKE  SUITE 1100
+      *>CE     FALLS CHURCH VIRGINIA 22041.
+      *>CE 
+      *>CE     PHONE   (703) 756-6153
+      *>CE 
+      *>CE     " HIGH       ".
+       DATE-WRITTEN.
+      *>CE     CCVS-74 VERSION 4.0 - 1980 JULY 1.
+      *>CE     CREATION DATE     /    VALIDATION DATE
+      *>CE     "4.2 ".
+       SECURITY.
+      *>CE     NONE.
+      *>CE 
+      *>CE     *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *  *
+      *>CE 
+      *>CE                        PROGRAM ABSTRACT
+      *>CE 
+      *>CE     DB105A TESTS THE CAPABILITY OF THE DEBUG MODULE TO MONITOR
+      *>CE     ALL PROCEDURES WITH A SINGLE DEBUGGING DECLARATIVE.  THIS
+      *>CE     PROGRAM IS TO BE COMPILED AND EXECUTED WITH BOTH COMPILE
+      *>CE     AND OBJECT TIME DEBUGGING SWITCHES ON.  THE DEBUGGING
+      *>CE     PROCEDURE SHOULD BE INCLUDED IN THE COMPILATION AND
+      *>CE     GENERATE CODE.  DURING EXECUTION, EACH PROCEDURE SHOULD
+      *>CE     TRIGGER THE DEBUGGING PROCEDURE WHICH SHOULD STACK THE
+      *>CE     NAME OF THE PROCEDURE CALLING IT.  PRIOR TO BEING STACKED, 
+      *>CE     EACH NAME IS POTENTIALLY ADJUSTED BY MODIFYING A FIXED-
+      *>CE     LOCATION NUMERIC SUBFIELD IN THE NAME.  THE CONSEQUENCE IS
+      *>CE     THAT IF THE PROGRAM EXECUTES PROPERLY, THE NAMES THAT ARE
+      *>CE     STACKED WILL BE UNIQUE AND IN AN INCREMENTING SEQUENCE IN
+      *>CE     THE NUMERIC SUBFIELD.  NEAR THE END OF THE PROGRAM, THE
+      *>CE     STACKING FUNCTION IS DISABLED AND THE NAME STACK IS COMPARED
+      *>CE     TO A STATIC TABLE CONTAINING PROCEDURE-NAMES IN THE ORDER
+      *>CE     IN WHICH THE PROCEDURES SHOULD HAVE STACKED.
+      *>CE 
+      *>CE    DB105A"S REPORT DIFFERS SLIGHTLY FROM THE NOMINAL CCVS FORMAT.
+      *>CE     IF EXECUTION IS PERFECT, THE REPORT WILL CONSIST OF 227
+      *>CE     LINES SHOWING
+      *>CE 
+      *>CE         (A)  PROGRAM PROCEDURE NAME, AS IT APPEARS IN THE
+      *>CE              PROGRAM.
+      *>CE         (B)  ADJUSTED PROCEDURE NAME, AFTER ITS NUMERIC SUBFIELD
+      *>CE              HAS BEEN ADJUSTED.
+      *>CE         (C)  ADJUSTED DEBUG-NAME, THAT WAS STACKED BY THE
+      *>CE              DEBUGGING PROCEDURE.
+      *>CE 
+      *>CE     NOMINALLY, THE NUMERIC SUBFIELDS OF THE PROCEDURE NAMES
+      *>CE     SHOULD APPEAR IN ASCENDING SEQUENCE.  ANY DEVIATIONS IN THE
+      *>CE     STACKING SEQUENCE FROM THE EXPECTED SEQUENCE WILL CAUSE
+      *>CE     ADDITIONAL REPORT LINES TO BE GENERATED WITH ONE OR MORE
+      *>CE     COLUMNS BLANK.  IF NOTHING EVER APPEARS IN THE "ADJUSTED
+      *>CE     DEBUG-NAME" COLUMN, IT MAY BE ASSUMED THAT THE DEBUGGING
+      *>CE     PROCEDURE WAS NEVER EXECUTED.
+      *>CE 
+      *>CE     IT IS A FUNDAMENTAL ASSUMPTION OF DB105A THAT WHEN A SECTION
+      *>CE     IS ENTERED, THE DEBUGGING SECTION WILL BE CALLED TWICE, ONCE
+      *>CE     FOR THE SECTION NAME AND ONCE FOR THE PARAGRAPH NAME THAT
+      *>CE     IMMEDIATELY FOLLOWS THE SECTION NAME.  ADDITIONALLY, DB105A
+      *>CE     TRAPS ANY FAILURES IN PROGRAM FLOW CAUSED BY A FAILURE OF
+      *>CE     VERBS FROM THE NUCLEUS MODULE.  THESE FAILURES ARE SUMMED
+      *>CE     AND REPORTED AT THE BOTTOM OF DB105A"S REPORT.  IF ANY
+      *>CE     PROCEDURE NAMES BEGINNING WITH "PROC-000" APPEAR IN THE
+      *>CE     "ADJUSTED DEBUG-NAME" COLUMN OF THE REPORT, THESE RESULT
+      *>CE     FROM EXECUTION OF PROCEDURES WHICH SHOULD NOT HAVE BEEN
+      *>CE     EXECUTED IF THE PROGRAM HAD FOLLOWED THE PROPER CONTROL FLOW
+      *>CE     SEQUENCE.
+      *>CE 
+      *>CE 
+      *>CE 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082
+           WITH DEBUGGING MODE.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE
+           LABEL RECORDS
+           XXXXX084
+           DATA RECORD IS PRINT-REC DUMMY-RECORD.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  ATWO-DS-01V00                PICTURE S9
+                                        VALUE 2.
+       77  P-COUNT                      PICTURE 9(6).
+       77  THREE                              PICTURE IS 9 VALUE IS 3.
+       77  XRAY                               PICTURE IS X.
+       77  ALTERLOOP                          PICTURE IS 9 VALUE IS
+           ZERO.
+       77  BYPASS PICTURE IS 9 VALUE IS 1.
+       77  STACK-END PICTURE IS 999 COMPUTATIONAL.
+       77  INCREMENT PICTURE IS 99.
+       77  PROC-ACTIVE PICTURE IS 9 VALUE IS 1.
+       01  PROCEDURE-NAMES.
+           02  FILLER PIC X(25) VALUE "PROC-001-BEGIN-TESTS     ".
+           02  FILLER PIC X(25) VALUE "PROC-002-GO--TEST-1      ".
+           02  FILLER PIC X(25) VALUE "PROC-003-GO--WRITE-1     ".
+           02  FILLER PIC X(25) VALUE "PROC-004-GO--INIT-2      ".
+           02  FILLER PIC X(25) VALUE "PROC-005-GO--TEST-2      ".
+           02  FILLER PIC X(25) VALUE "PROC-005-GO--A           ".
+           02  FILLER PIC X(25) VALUE "PROC-005-GO--TEST-2      ".
+           02  FILLER PIC X(25) VALUE "PROC-005-GO--B           ".
+           02  FILLER PIC X(25) VALUE "PROC-005-GO--TEST-2      ".
+           02  FILLER PIC X(25) VALUE "PROC-005-GO--C           ".
+           02  FILLER PIC X(25) VALUE "PROC-005-GO--TEST-2      ".
+           02  FILLER PIC X(25) VALUE "PROC-005-GO--D           ".
+           02  FILLER PIC X(25) VALUE "PROC-005-GO--TEST-2      ".
+           02  FILLER PIC X(25) VALUE "PROC-005-GO--A           ".
+           02  FILLER PIC X(25) VALUE "PROC-005-GO--E           ".
+           02  FILLER PIC X(25) VALUE "PROC-016-GO--WRITE-2     ".
+           02  FILLER PIC X(25) VALUE "PROC-017-GO--TEST-3      ".
+           02  FILLER PIC X(25) VALUE "PROC-018-GO--PASS-3      ".
+           02  FILLER PIC X(25) VALUE "PROC-019-GO--WRITE-3     ".
+           02  FILLER PIC X(25) VALUE "PROC-020-GO--TEST-4      ".
+           02  FILLER PIC X(25) VALUE "PROC-021-GO--PASS-4      ".
+           02  FILLER PIC X(25) VALUE "PROC-022-GO--PAS-4       ".
+           02  FILLER PIC X(25) VALUE "PROC-023-GO--WRITE-4     ".
+           02  FILLER PIC X(25) VALUE "PROC-024-ALTER-INIT      ".
+           02  FILLER PIC X(25) VALUE "PROC-025-ALTER-TEST-1    ".
+           02  FILLER PIC X(25) VALUE "PROC-026-ALTER-A         ".
+           02  FILLER PIC X(25) VALUE "PROC-026-ALTER-A         ".
+           02  FILLER PIC X(25) VALUE "PROC-027-ALTER-C         ".
+           02  FILLER PIC X(25) VALUE "PROC-028-ALTER-WRITE-1   ".
+           02  FILLER PIC X(25) VALUE "PROC-030-ALTER-TEST-3    ".
+           02  FILLER PIC X(25) VALUE "PROC-031-ALTER-G         ".
+           02  FILLER PIC X(25) VALUE "PROC-031-ALTER-G         ".
+           02  FILLER PIC X(25) VALUE "PROC-032-ALTER-I         ".
+           02  FILLER PIC X(25) VALUE "PROC-031-ALTER-G         ".
+           02  FILLER PIC X(25) VALUE "PROC-031-ALTER-G         ".
+           02  FILLER PIC X(25) VALUE "PROC-032-ALTER-WRITE-3   ".
+           02  FILLER PIC X(25) VALUE "PROC-037-EXIT-TEST-1     ".
+           02  FILLER PIC X(25) VALUE "PROC-038-EXIT-CHECK-1    ".
+           02  FILLER PIC X(25) VALUE "PROC-039-EXIT-WRITE-1    ".
+           02  FILLER PIC X(25) VALUE "PROC-040-PFM-TEST-1      ".
+           02  FILLER PIC X(25) VALUE "PROC-041-PFM-A           ".
+           02  FILLER PIC X(25) VALUE "PROC-042-PFM-WRITE-1     ".
+           02  FILLER PIC X(25) VALUE "PROC-043-PFM-TEST-2      ".
+           02  FILLER PIC X(25) VALUE "PROC-041-PFM-A           ".
+           02  FILLER PIC X(25) VALUE "PROC-045-PFM-B           ".
+           02  FILLER PIC X(25) VALUE "PROC-046-PFM-WRITE-2     ".
+           02  FILLER PIC X(25) VALUE "PROC-047-PFM-TEST-3      ".
+           02  FILLER PIC X(25) VALUE "PROC-048-PFM-C           ".
+           02  FILLER PIC X(25) VALUE "PROC-048-PFM-C           ".
+           02  FILLER PIC X(25) VALUE "PROC-048-PFM-C           ".
+           02  FILLER PIC X(25) VALUE "PROC-048-PFM-C           ".
+           02  FILLER PIC X(25) VALUE "PROC-048-PFM-C           ".
+           02  FILLER PIC X(25) VALUE "PROC-048-PFM-C           ".
+           02  FILLER PIC X(25) VALUE "PROC-048-PFM-WRITE-3     ".
+           02  FILLER PIC X(25) VALUE "PROC-055-PFM-TEST-4      ".
+           02  FILLER PIC X(25) VALUE "PROC-056-PFM-E           ".
+           02  FILLER PIC X(25) VALUE "PROC-057-PFM-F           ".
+           02  FILLER PIC X(25) VALUE "PROC-058-PFM-G           ".
+           02  FILLER PIC X(25) VALUE "PROC-059-PFM-H           ".
+           02  FILLER PIC X(25) VALUE "PROC-060-PFM-WRITE-4     ".
+           02  FILLER PIC X(25) VALUE "PROC-061-PFM-TEST-5      ".
+           02  FILLER PIC X(25) VALUE "PROC-062-PFM-J           ".
+           02  FILLER PIC X(25) VALUE "PROC-063-PFM-L           ".
+           02  FILLER PIC X(25) VALUE "PROC-064-PFM-WRITE-5     ".
+           02  FILLER PIC X(25) VALUE "PROC-065-PFM-TEST-6      ".
+           02  FILLER PIC X(25) VALUE "PROC-066-PFM-N           ".
+           02  FILLER PIC X(25) VALUE "PROC-067-PFM-O           ".
+           02  FILLER PIC X(25) VALUE "PROC-068-PFM-P           ".
+           02  FILLER PIC X(25) VALUE "PROC-069-PFM-WRITE-6     ".
+           02  FILLER PIC X(25) VALUE "PROC-070-PFM-TEST-7      ".
+           02  FILLER PIC X(25) VALUE "PROC-071-PFM-V           ".
+           02  FILLER PIC X(25) VALUE "PROC-072-PFM-W           ".
+           02  FILLER PIC X(25) VALUE "PROC-073-PFM-X           ".
+           02  FILLER PIC X(25) VALUE "PROC-074-PFM-Y           ".
+           02  FILLER PIC X(25) VALUE "PROC-075-PFM-Z           ".
+           02  FILLER PIC X(25) VALUE "PROC-071-PFM-V           ".
+           02  FILLER PIC X(25) VALUE "PROC-072-PFM-W           ".
+           02  FILLER PIC X(25) VALUE "PROC-073-PFM-X           ".
+           02  FILLER PIC X(25) VALUE "PROC-074-PFM-Y           ".
+           02  FILLER PIC X(25) VALUE "PROC-075-PFM-Z           ".
+           02  FILLER PIC X(25) VALUE "PROC-071-PFM-V           ".
+           02  FILLER PIC X(25) VALUE "PROC-072-PFM-W           ".
+           02  FILLER PIC X(25) VALUE "PROC-073-PFM-X           ".
+           02  FILLER PIC X(25) VALUE "PROC-074-PFM-Y           ".
+           02  FILLER PIC X(25) VALUE "PROC-075-PFM-Z           ".
+           02  FILLER PIC X(25) VALUE "PROC-071-PFM-V           ".
+           02  FILLER PIC X(25) VALUE "PROC-072-PFM-W           ".
+           02  FILLER PIC X(25) VALUE "PROC-073-PFM-X           ".
+           02  FILLER PIC X(25) VALUE "PROC-074-PFM-Y           ".
+           02  FILLER PIC X(25) VALUE "PROC-075-PFM-Z           ".
+           02  FILLER PIC X(25) VALUE "PROC-071-PFM-V           ".
+           02  FILLER PIC X(25) VALUE "PROC-072-PFM-W           ".
+           02  FILLER PIC X(25) VALUE "PROC-073-PFM-X           ".
+           02  FILLER PIC X(25) VALUE "PROC-074-PFM-Y           ".
+           02  FILLER PIC X(25) VALUE "PROC-075-PFM-Z           ".
+           02  FILLER PIC X(25) VALUE "PROC-096-PFM-WRITE-7     ".
+           02  FILLER PIC X(25) VALUE "PROC-097-PFM-TEST-08     ".
+           02  FILLER PIC X(25) VALUE "PROC-098-PFM-B-8         ".
+           02  FILLER PIC X(25) VALUE "PROC-097-PFM-A-8         ".
+           02  FILLER PIC X(25) VALUE "PROC-098-PFM-B-8         ".
+           02  FILLER PIC X(25) VALUE "PROC-097-PFM-A-8         ".
+           02  FILLER PIC X(25) VALUE "PROC-098-PFM-B-8         ".
+           02  FILLER PIC X(25) VALUE "PROC-097-PFM-TESTT-8     ".
+           02  FILLER PIC X(25) VALUE "PROC-098-PFM-TESTTT-8    ".
+           02  FILLER PIC X(25) VALUE "PROC-105-PFM-WRITE-08    ".
+           02  FILLER PIC X(25) VALUE "PROC-106-PFM-TEST-09     ".
+           02  FILLER PIC X(25) VALUE "PROC-107-PFM-B-9         ".
+           02  FILLER PIC X(25) VALUE "PROC-106-PFM-A-9         ".
+           02  FILLER PIC X(25) VALUE "PROC-107-PFM-B-9         ".
+           02  FILLER PIC X(25) VALUE "PROC-106-PFM-A-9         ".
+           02  FILLER PIC X(25) VALUE "PROC-107-PFM-B-9         ".
+           02  FILLER PIC X(25) VALUE "PROC-106-PFM-A-9         ".
+           02  FILLER PIC X(25) VALUE "PROC-107-PFM-B-9         ".
+           02  FILLER PIC X(25) VALUE "PROC-106-PFM-TESTT-9     ".
+           02  FILLER PIC X(25) VALUE "PROC-107-PFM-TESTTT-9    ".
+           02  FILLER PIC X(25) VALUE "PROC-116-PFM-WRITE-09    ".
+           02  FILLER PIC X(25) VALUE "PROC-117-PFM-TEST-10     ".
+           02  FILLER PIC X(25) VALUE "PROC-118-PFM-B-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-119-PFM-C-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-120-PFM-D-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-117-PFM-A-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-118-PFM-B-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-119-PFM-C-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-120-PFM-D-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-117-PFM-A-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-118-PFM-B-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-119-PFM-C-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-120-PFM-D-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-118-PFM-B-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-119-PFM-C-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-120-PFM-D-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-117-PFM-A-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-118-PFM-B-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-119-PFM-C-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-120-PFM-D-10        ".
+           02  FILLER PIC X(25) VALUE "PROC-121-PFM-TESTT-10    ".
+           02  FILLER PIC X(25) VALUE "PROC-122-PFM-TESTTT-10   ".
+           02  FILLER PIC X(25) VALUE "PROC-138-PFM-WRITE-10    ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-TEST-11     ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-B-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-C-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-D-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-A-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-B-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-C-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-D-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-A-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-B-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-C-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-D-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-A-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-B-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-C-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-D-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-A-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-B-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-C-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-D-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-B-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-C-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-D-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-A-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-B-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-C-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-D-11        ".
+           02  FILLER PIC X(25) VALUE "PROC-139-PFM-TESTT-11    ".
+           02  FILLER PIC X(25) VALUE "PROC-140-PFM-TESTTT-11   ".
+           02  FILLER PIC X(25) VALUE "PROC-168-PFM-WRITE-11    ".
+           02  FILLER PIC X(25) VALUE "PROC-169-PFM-TEST-12     ".
+           02  FILLER PIC X(25) VALUE "PROC-170-PFM-A-12        ".
+           02  FILLER PIC X(25) VALUE "PROC-171-PFM-B-12        ".
+           02  FILLER PIC X(25) VALUE "PROC-172-PFM-C-12        ".
+           02  FILLER PIC X(25) VALUE "PROC-173-PFM-D-12        ".
+           02  FILLER PIC X(25) VALUE "PROC-174-PFM-E-12        ".
+           02  FILLER PIC X(25) VALUE "PROC-175-PFM-TESTT-12    ".
+           02  FILLER PIC X(25) VALUE "PROC-176-PFM-WRITE-12    ".
+           02  FILLER PIC X(25) VALUE "PROC-177-PFM-TEST-13     ".
+           02  FILLER PIC X(25) VALUE "PROC-178-PFM-A-13        ".
+           02  FILLER PIC X(25) VALUE "PROC-177-PFM-B-13        ".
+           02  FILLER PIC X(25) VALUE "PROC-178-PFM-A-13        ".
+           02  FILLER PIC X(25) VALUE "PROC-177-PFM-B-13        ".
+           02  FILLER PIC X(25) VALUE "PROC-178-PFM-A-13        ".
+           02  FILLER PIC X(25) VALUE "PROC-177-PFM-B-13        ".
+           02  FILLER PIC X(25) VALUE "PROC-178-PFM-A-13        ".
+           02  FILLER PIC X(25) VALUE "PROC-177-PFM-B-13        ".
+           02  FILLER PIC X(25) VALUE "PROC-178-PFM-TESTT-13    ".
+           02  FILLER PIC X(25) VALUE "PROC-187-PFM-WRITE-13    ".
+           02  FILLER PIC X(25) VALUE "PROC-188-PFM-TEST-14     ".
+           02  FILLER PIC X(25) VALUE "PROC-189-A101            ".
+           02  FILLER PIC X(25) VALUE "PROC-190-A102            ".
+           02  FILLER PIC X(25) VALUE "PROC-191-A103            ".
+           02  FILLER PIC X(25) VALUE "PROC-192-A104            ".
+           02  FILLER PIC X(25) VALUE "PROC-193-A105            ".
+           02  FILLER PIC X(25) VALUE "PROC-194-A106            ".
+           02  FILLER PIC X(25) VALUE "PROC-195-A107            ".
+           02  FILLER PIC X(25) VALUE "PROC-196-A108            ".
+           02  FILLER PIC X(25) VALUE "PROC-197-A109            ".
+           02  FILLER PIC X(25) VALUE "PROC-198-A110            ".
+           02  FILLER PIC X(25) VALUE "PROC-199-A111            ".
+           02  FILLER PIC X(25) VALUE "PROC-200-A112            ".
+           02  FILLER PIC X(25) VALUE "PROC-201-A113            ".
+           02  FILLER PIC X(25) VALUE "PROC-202-A114            ".
+           02  FILLER PIC X(25) VALUE "PROC-203-A115            ".
+           02  FILLER PIC X(25) VALUE "PROC-204-A116            ".
+           02  FILLER PIC X(25) VALUE "PROC-205-A117            ".
+           02  FILLER PIC X(25) VALUE "PROC-206-A118            ".
+           02  FILLER PIC X(25) VALUE "PROC-207-A119            ".
+           02  FILLER PIC X(25) VALUE "PROC-208-A120            ".
+           02  FILLER PIC X(25) VALUE "PROC-209-A121            ".
+           02  FILLER PIC X(25) VALUE "PROC-210-PFM-WRITE-14    ".
+           02  FILLER PIC X(25) VALUE "PROC-211-PFM-A-15        ".
+           02  FILLER PIC X(25) VALUE "PROC-212-PFM-TEST-15     ".
+           02  FILLER PIC X(25) VALUE "PROC-213-PFM-G-15        ".
+           02  FILLER PIC X(25) VALUE "PROC-214-PFM-H-15        ".
+           02  FILLER PIC X(25) VALUE "PROC-215-PFM-E-15        ".
+           02  FILLER PIC X(25) VALUE "PROC-216-PFM-L-15        ".
+           02  FILLER PIC X(25) VALUE "PROC-217-PFM-B-15        ".
+           02  FILLER PIC X(25) VALUE "PROC-218-PFM-WRITE-15    ".
+           02  FILLER PIC X(25) VALUE "PROC-219-PFM-TEST-LAST   ".
+           02  FILLER PIC X(25) VALUE "PROC-220-PFM-U           ".
+           02  FILLER PIC X(25) VALUE "PROC-220-PFM-U           ".
+           02  FILLER PIC X(25) VALUE "PROC-220-PFM-U           ".
+           02  FILLER PIC X(25) VALUE "PROC-220-PFM-U           ".
+           02  FILLER PIC X(25) VALUE "PROC-220-PFM-U           ".
+           02  FILLER PIC X(25) VALUE "PROC-220-PFM-U           ".
+           02  FILLER PIC X(25) VALUE "PROC-220-PFM-U           ".
+           02  FILLER PIC X(25) VALUE "PROC-227-PFM-WRITE-LAST  ".
+       01  STATIC-TABLE REDEFINES PROCEDURE-NAMES.
+           02  EXPECTED-NAME OCCURS 227 TIMES INDEXED BY STATIC-INDEX
+               PICTURE IS X(25).
+       01  STACKING-AREA.
+           02  PROC-NAME OCCURS 500 TIMES INDEXED BY STACK-INDEX.
+               03  PROC-LOC PICTURE IS X(4).
+               03  FILLER PICTURE IS X.
+               03  BASE-NUMBER PICTURE IS 999.
+               03  FILLER PICTURE IS X.
+               03  BASE-NAME PICTURE IS X(16).
+       01  TABLE-ENTRY.
+           02  FILLER PICTURE IS X(5).
+           02  TABLE-ENTRY-BASE PICTURE IS 999.
+           02  FILLER PICTURE IS X(17).
+       01  FLOW-FAILURE-1.
+           02  FILLER PICTURE IS X VALUE IS SPACE.
+           02  FILLER PICTURE IS X(43) VALUE
+               "COUNT OF LEVEL 1 NUCLEUS FLOW FAILURES WAS ".
+           02  NUC-FAILURE-COUNT PICTURE IS 999 VALUE 0.
+           02  FILLER PICTURE X VALUE ".".
+       01  FLOW-FAILURE-2 PICTURE IS X(75) VALUE IS
+               " A NON-ZERO COUNT WILL CAUSE FAILURES TO APPEAR IN THE ABOVE REPORT.".
+       01  NOTE-RECORD.
+           02 A     PICTURE X VALUE SPACE.
+           02 B     PICTURE X VALUE SPACE.
+           02 C     PICTURE X VALUE SPACE.
+           02 D     PICTURE X VALUE SPACE.
+           02 E     PICTURE X VALUE SPACE.
+           02 F     PICTURE X VALUE SPACE.
+           02 G     PICTURE X VALUE SPACE.
+           02 H     PICTURE X VALUE SPACE.
+           02 I     PICTURE X VALUE SPACE.
+           02 J     PICTURE X VALUE SPACE.
+           02 K     PICTURE X VALUE SPACE.
+           02 L     PICTURE X VALUE SPACE.
+           02 M     PICTURE X VALUE SPACE.
+           02 N     PICTURE X VALUE SPACE.
+           02 O     PICTURE X VALUE SPACE.
+           02 P     PICTURE X VALUE SPACE.
+       01  GO-TABLE.
+           02 GO-SCRIPT OCCURS 8 TIMES PICTURE 9.
+       01  GO-TO-DEPEND                       PICTURE IS 9 VALUE IS 0.
+       01  GO-TO-DEEP                         PICTURE IS 9 VALUE IS 1.
+       01  PERFORM1                           PICTURE IS XXX
+           VALUE IS SPACE.
+       01  PERFORM2                           PICTURE IS S999
+           VALUE IS 20.
+       01  PERFORM4                           PICTURE IS S99V9.
+       01  PERFORM5                           PICTURE IS 999
+           VALUE IS ZERO.
+       01  PERFORM-KEY                        PICTURE IS 9.
+       01  PERFORM-HOLD.
+           02  TEST-LETTER OCCURS 20 TIMES  PICTURE X.
+       01  TEST-RESULTS.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 FEATURE                   PICTURE X(20).
+           02 FILLER                    PICTURE XX VALUE SPACE.
+           02 P-OR-F                    PICTURE X(5).
+           02 FILLER                    PICTURE XX  VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER PICTURE X(12).
+             03  PARDOT-X PICTURE X.
+             03 DOTVALUE PICTURE 99.
+             03 FILLER PICTURE IS X(10).
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02  CORRECT-A  PICTURE IS X(25).
+           02  CORRECT-NFIELD REDEFINES CORRECT-A.
+               03  CORRECT-N  PICTURE -9(9).9(9).
+               03  FILLER PICTURE X(5).
+           02 FILLER                    PICTURE XX VALUE SPACE.
+           02  COMPUTED-A PICTURE IS X(25).
+           02  COMPUTED-NFIELD REDEFINES COMPUTED-A.
+               03  COMPUTED-N PICTURE -9(9).9(9).
+               03  FILLER PICTURE X(5).
+           02  RE-MARK PICTURE IS XXX.
+       01  COLUMNS-LINE-1.
+           02 PAGE-CONTROL-C PICTURE IS X VALUE IS SPACE.
+           02  FILLER PICTURE IS X(7) VALUE IS SPACE.
+           02  FILLER PICTURE IS X(7) VALUE IS "FEATURE".
+           02  FILLER PICTURE IS X(9) VALUE IS SPACE.
+           02  FILLER PICTURE IS X(4) VALUE IS "PASS".
+           02  FILLER PICTURE IS X(10) VALUE IS SPACE.
+           02  FILLER PICTURE IS X(7)  VALUE IS "PROGRAM".
+           02  FILLER PICTURE IS X(19) VALUE IS SPACE.
+           02  FILLER PICTURE IS X(8)  VALUE IS "ADJUSTED".
+           02  FILLER PICTURE IS X(18) VALUE IS SPACE.
+           02  FILLER PICTURE IS X(8)  VALUE IS "ADJUSTED".
+       01  COLUMNS-LINE-2.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02  FILLER PICTURE IS X(7) VALUE IS SPACE.
+           02  FILLER PICTURE IS X(6)  VALUE IS "TESTED".
+           02  FILLER PICTURE IS X(10) VALUE IS SPACE.
+           02  FILLER PICTURE IS X(4)  VALUE IS "FAIL".
+           02  FILLER PICTURE IS X(7)  VALUE IS SPACE.
+           02  FILLER PICTURE IS X(14) VALUE IS "PROCEDURE NAME".
+           02  FILLER PICTURE IS X(12) VALUE IS SPACE.
+           02  FILLER PICTURE IS X(14) VALUE IS "PROCEDURE NAME".
+           02  FILLER PICTURE IS X(14) VALUE IS SPACE.
+           02  FILLER PICTURE IS X(10) VALUE IS "DEBUG-NAME".
+       01  REC-SKL-SUB PICTURE 9(2) VALUE ZERO.
+       01  REC-CT PICTURE 99 VALUE ZERO.
+       01  DELETE-CNT                   PICTURE 999  VALUE ZERO.
+       01  ERROR-COUNTER PICTURE IS 999 VALUE IS ZERO.
+       01  INSPECT-COUNTER PIC 999 VALUE ZERO.
+       01  PASS-COUNTER PIC 999 VALUE ZERO.
+       01  TOTAL-ERROR PIC 999 VALUE ZERO.
+       01  ERROR-HOLD PIC 999 VALUE ZERO.
+       01  DUMMY-HOLD PIC X(120) VALUE SPACE.
+       01  RECORD-COUNT PIC 9(5) VALUE ZERO.
+       01  CCVS-H-1.
+           02  FILLER   PICTURE X(27)  VALUE SPACE.
+           02 FILLER PICTURE X(67) VALUE
+           " FEDERAL COMPILER TESTING CENTER COBOL COMPILER VALIDATION   SYSTEM".
+           02  FILLER     PICTURE X(26)  VALUE SPACE.
+       01  CCVS-H-2.
+           02 FILLER PICTURE X(52) VALUE IS
+           "CCVS74 NCC  COPY, NOT FOR DISTRIBUTION.".
+           02 FILLER PICTURE IS X(19) VALUE IS "TEST RESULTS SET-  ".
+           02 TEST-ID PICTURE IS X(9).
+           02 FILLER PICTURE IS X(40) VALUE IS SPACE.
+       01  CCVS-H-3.
+           02  FILLER PICTURE X(34) VALUE
+           " FOR OFFICIAL USE ONLY    ".
+           02  FILLER PICTURE X(58) VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER PICTURE X(28) VALUE
+           "  COPYRIGHT   1974 ".
+       01  CCVS-E-1.
+           02 FILLER PICTURE IS X(52) VALUE IS SPACE.
+           02 FILLER PICTURE IS X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN PICTURE IS X(9).
+           02 FILLER PICTURE X(45) VALUE IS
+           " NTIS DISTRIBUTION COBOL 74".
+       01  CCVS-E-2.
+           02  FILLER                   PICTURE X(31)  VALUE
+           SPACE.
+           02  FILLER                   PICTURE X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL PICTURE IS XXX VALUE IS SPACE.
+               03 FILLER PICTURE IS X VALUE IS SPACE.
+               03 ENDER-DESC PIC X(44) VALUE "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER PICTURE X(22) VALUE
+           " FOR OFFICIAL USE ONLY".
+           02  FILLER PICTURE X(12) VALUE SPACE.
+           02  FILLER PICTURE X(58) VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER PICTURE X(13) VALUE SPACE.
+           02 FILLER PIC X(15) VALUE " COPYRIGHT 1974".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1 PIC XXX VALUE SPACE.
+           02 FILLER PIC XXXX VALUE " OF ".
+           02 CCVS-E-4-2 PIC XXX VALUE SPACE.
+           02 FILLER PIC X(40) VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER PIC X(30) VALUE "        *** INFORMATION  ***".
+           02 INFO-TEXT.
+           04 FILLER PIC X(20) VALUE SPACE.
+           04 XXCOMPUTED PIC X(20).
+           04 FILLER PIC X(5) VALUE SPACE.
+           04 XXCORRECT PIC X(20).
+       01  HYPHEN-LINE.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(65) VALUE IS "*****************************************************************".
+           02 FILLER PICTURE IS X(54) VALUE IS "******************************************************".
+       01  CCVS-PGM-ID PIC X(6) VALUE
+           "DB105A".
+       PROCEDURE DIVISION.
+       DECLARATIVES.
+       DEBUG-ALL-PROCS SECTION.
+           USE FOR DEBUGGING ON ALL PROCEDURES.
+       DEBUG-ALL-0.
+           MOVE 0 TO PROC-ACTIVE.
+           IF BYPASS IS EQUAL TO 1 GO TO DEBUG-ALL-EXIT.
+           MOVE DEBUG-NAME TO PROC-NAME (STACK-INDEX).
+           IF PROC-LOC (STACK-INDEX) IS EQUAL TO "PROC"
+                   INSPECT PROC-NAME (STACK-INDEX)
+                   REPLACING CHARACTERS BY " " AFTER INITIAL " ".
+           IF BASE-NUMBER (STACK-INDEX) IS NUMERIC
+                   ADD INCREMENT TO BASE-NUMBER (STACK-INDEX).
+           IF STACK-INDEX IS EQUAL TO 500
+                   MOVE 1 TO BYPASS
+                   GO TO DEBUG-ALL-EXIT.
+           SET STACK-INDEX UP BY 1.
+       DEBUG-ALL-EXIT.
+           EXIT.
+       END DECLARATIVES.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-CNT.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-A.
+           MOVE SPACE TO CORRECT-A.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+           MOVE CCVS-H-3 TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE COLUMNS-LINE-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE COLUMNS-LINE-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-CNT TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-CNT IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-CNT TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE COLUMNS-LINE-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE COLUMNS-LINE-2 TO DUMMY-RECORD PERFORM WRT-LN
+      *>             2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM   WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+      *> 
+       CCVS1-EXIT.
+           EXIT.
+       INITIALIZE-PROC-NAME-STACK.
+           MOVE 0 TO BYPASS.
+           SET STACK-INDEX TO 1.
+           MOVE 0 TO INCREMENT.
+       PROC-001-BEGIN-TESTS SECTION.
+       PROC-002-GO--TEST-1.
+           MOVE 0 TO INCREMENT.
+           GO TO    PROC-003-GO--WRITE-1.
+       PROC-000-GO--DELETE-1.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-003-GO--WRITE-1.
+       PROC-003-GO--WRITE-1.
+           MOVE 0 TO INCREMENT.
+           MOVE "GO TO " TO FEATURE.
+           MOVE "PROC-002-GO--TEST-1" TO PAR-NAME.
+       PROC-004-GO--INIT-2.
+           MOVE 0 TO INCREMENT.
+           MOVE "PROC-005-GO--TEST-2" TO PAR-NAME.
+           MOVE     SPACE TO P-OR-F.
+           MOVE "GO TO DEPENDING" TO FEATURE.
+       PROC-005-GO--TEST-2.
+           ADD 1 TO INCREMENT.
+           MOVE     SPACE TO FEATURE.
+           GO TO    PROC-005-GO--B
+                    PROC-005-GO--D
+                    PROC-005-GO--C DEPENDING ON GO-TO-DEPEND.
+           GO TO    PROC-005-GO--A.
+       PROC-000-GO--DELETE-2.
+           MOVE 0 TO INCREMENT.
+           MOVE "PROC-005-GO--TEST-2" TO PAR-NAME.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-016-GO--WRITE-2.
+       PROC-005-GO--A.
+           ADD 1 TO INCREMENT.
+           MOVE "PROC-005-GO--A" TO PAR-NAME.
+           IF       GO-TO-DEPEND EQUAL TO 0
+                    ADD 1 TO GO-TO-DEPEND
+                    GO TO PROC-005-GO--TEST-2.
+           IF       GO-TO-DEPEND GREATER THAN 3
+                    GO TO PROC-005-GO--E.
+           PERFORM  PROC-000-NUCLEUS-FAILURE
+                    MOVE 1 TO GO-TO-DEPEND
+                    GO TO PROC-005-GO--TEST-2.
+       PROC-005-GO--B.
+           ADD 1 TO INCREMENT.
+           MOVE "PROC-005-GO--B" TO PAR-NAME.
+           IF       GO-TO-DEPEND NOT EQUAL TO 1
+                    PERFORM PROC-000-NUCLEUS-FAILURE
+                    MOVE 3 TO GO-TO-DEPEND
+                    GO TO PROC-005-GO--TEST-2.
+           ADD      2 TO GO-TO-DEPEND.
+           GO TO    PROC-005-GO--TEST-2.
+       PROC-005-GO--C.
+           ADD 1 TO INCREMENT.
+           MOVE "PROC-005-GO--C" TO PAR-NAME.
+           IF       GO-TO-DEPEND NOT EQUAL TO 3
+                    PERFORM PROC-000-NUCLEUS-FAILURE
+                    MOVE 2 TO GO-TO-DEPEND
+                    GO TO PROC-005-GO--TEST-2.
+           SUBTRACT 1 FROM GO-TO-DEPEND.
+           GO TO    PROC-005-GO--TEST-2.
+       PROC-005-GO--D.
+           ADD 1 TO INCREMENT.
+           MOVE "PROC-005-GO--D" TO PAR-NAME.
+           IF       GO-TO-DEPEND NOT EQUAL TO 2
+                    PERFORM PROC-000-NUCLEUS-FAILURE
+                    MOVE 4 TO GO-TO-DEPEND
+                    GO TO PROC-005-GO--TEST-2.
+           ADD      2 TO GO-TO-DEPEND.
+           GO TO    PROC-005-GO--TEST-2.
+       PROC-005-GO--E.
+           MOVE 0 TO INCREMENT.
+           MOVE "PROC-005-GO--E" TO PAR-NAME.
+           IF       GO-TO-DEPEND EQUAL TO 4
+                    GO TO PROC-016-GO--WRITE-2.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-016-GO--WRITE-2.
+           MOVE 0 TO INCREMENT.
+           ADD 1 TO REC-CT.
+       PROC-017-GO--TEST-3.
+           MOVE 0 TO INCREMENT.
+           GO TO    PROC-018-GO--PASS-3.
+       PROC-000-GO--TEST-3A.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-019-GO--WRITE-3.
+       PROC-000-GO--DELETE-3.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-019-GO--WRITE-3.
+       PROC-018-GO--PASS-3   SECTION.
+       PROC-019-GO--WRITE-3.
+           MOVE 0 TO INCREMENT.
+           MOVE "GO TO" TO FEATURE.
+           MOVE "PROC-017-GO--TEST-3" TO PAR-NAME.
+       PROC-020-GO--TEST-4.
+           MOVE 0 TO INCREMENT.
+           GO TO    PROC-021-GO--PASS-4
+                    PROC-000-GO--NUC-FAIL-4 DEPENDING ON GO-TO-DEEP.
+      *>     NOTE THAT PROC-021-GO--PASS-4 IS A SECTION-NAME.
+           GO TO    PROC-000-GO--NUC-FAIL-4.
+       PROC-000-GO--DELETE-4.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-023-GO--WRITE-4.
+       PROC-021-GO--PASS-4   SECTION.
+       PROC-022-GO--PAS-4.
+           MOVE 0 TO INCREMENT.
+           IF       GO-TO-DEEP EQUAL TO 1
+                    GO TO PROC-023-GO--WRITE-4.
+       PROC-000-GO--NUC-FAIL-4.
+           MOVE 0 TO INCREMENT.
+           MOVE     GO-TO-DEEP TO COMPUTED-N.
+           MOVE     1 TO CORRECT-N.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-023-GO--WRITE-4.
+           MOVE 0 TO INCREMENT.
+           MOVE "GO TO DEPENDING" TO FEATURE.
+           MOVE "PROC-020-GO--TEST-4" TO PAR-NAME.
+       PROC-024-ALTER-INIT.
+           MOVE 0 TO INCREMENT.
+           MOVE "ALTER" TO FEATURE.
+       PROC-025-ALTER-TEST-1.
+           MOVE 0 TO INCREMENT.
+           ALTER    PROC-026-ALTER-A TO PROCEED TO PROC-027-ALTER-C.
+           MOVE 1 TO INCREMENT.
+           GO TO    PROC-026-ALTER-A.
+       PROC-000-ALTER-DELETE-1.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-028-ALTER-WRITE-1.
+       PROC-026-ALTER-A.
+           GO TO    PROC-000-ALTER-B.
+       PROC-000-ALTER-B.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-028-ALTER-WRITE-1.
+       PROC-027-ALTER-C.
+           ADD 0 TO INCREMENT.
+       PROC-028-ALTER-WRITE-1.
+           MOVE 0 TO INCREMENT.
+           MOVE "PROC-025-ALTER-TEST-1" TO PAR-NAME.
+       PROC-030-ALTER-TEST-3.
+           MOVE 0 TO INCREMENT.
+           ALTER    PROC-031-ALTER-G TO PROCEED TO PROC-032-ALTER-I.
+           MOVE 1 TO INCREMENT.
+           GO TO    PROC-031-ALTER-G.
+       PROC-000-ALTER-DELETE-3.
+           MOVE 0 TO INCREMENT.
+           PERFORM PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-032-ALTER-WRITE-3.
+       PROC-031-ALTER-G.
+           GO TO    PROC-000-ALTER-H.
+       PROC-000-ALTER-H.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-032-ALTER-WRITE-3.
+       PROC-032-ALTER-I.
+           MOVE 3 TO INCREMENT.
+           ADD      1 TO ALTERLOOP.
+           IF       ALTERLOOP GREATER THAN 1
+                    PERFORM PROC-000-NUCLEUS-FAILURE
+                    GO TO PROC-032-ALTER-WRITE-3.
+           ALTER    PROC-031-ALTER-G TO  PROC-032-ALTER-WRITE-3.
+           MOVE 4 TO INCREMENT.
+           GO TO    PROC-031-ALTER-G.
+       PROC-032-ALTER-WRITE-3.
+           MOVE 0 TO INCREMENT.
+           MOVE "PROC-030-ALTER-TEST-3" TO PAR-NAME.
+       PROC-037-EXIT-TEST-1.
+           MOVE 0 TO INCREMENT.
+           GO TO    PROC-038-EXIT-CHECK-1.
+       PROC-000-EXIT-DELETE-1.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-039-EXIT-WRITE-1.
+       PROC-038-EXIT-CHECK-1.
+           EXIT.
+       PROC-039-EXIT-WRITE-1.
+           MOVE 0 TO INCREMENT.
+           MOVE "EXIT" TO FEATURE.
+           MOVE "PROC-037-EXIT-TEST-1" TO PAR-NAME.
+       PROC-040-PFM-TEST-1.
+           MOVE 0 TO INCREMENT.
+           MOVE     1 TO PERFORM-KEY.
+           PERFORM  PROC-041-PFM-A.
+           IF       PERFORM1 EQUAL TO "ABC"
+                    NEXT SENTENCE
+                    ELSE
+                    PERFORM PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-042-PFM-WRITE-1.
+       PROC-000-PFM-DELETE-1.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-042-PFM-WRITE-1.
+           MOVE 0 TO INCREMENT.
+           MOVE "PERFORM" TO FEATURE.
+           MOVE "PFM-TEST-1" TO PAR-NAME.
+       PROC-043-PFM-TEST-2.
+           MOVE 3 TO INCREMENT.
+           MOVE     2 TO PERFORM-KEY.
+           GO TO    PROC-041-PFM-A.
+       PROC-000-PFM-DELETE-2.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-046-PFM-WRITE-2.
+       PROC-041-PFM-A.
+           MOVE 0 TO INCREMENT.
+           IF       PERFORM-KEY EQUAL TO 1
+                    MOVE "ABC" TO PERFORM1
+                    ELSE
+                    MOVE "XYZ" TO PERFORM1.
+       PROC-045-PFM-B.
+           MOVE 0 TO INCREMENT.
+           IF       PERFORM-KEY EQUAL TO 1
+                    PERFORM PROC-000-NUCLEUS-FAILURE
+                    GO TO PROC-043-PFM-TEST-2.
+           IF       PERFORM1 EQUAL TO "XYZ"
+                    NEXT SENTENCE
+                    ELSE
+                    PERFORM PROC-000-NUCLEUS-FAILURE.
+       PROC-046-PFM-WRITE-2.
+           MOVE 0 TO INCREMENT.
+           MOVE "PERFORM" TO FEATURE.
+           MOVE "PROC-043-PFM-TEST-2" TO PAR-NAME.
+       PROC-047-PFM-TEST-3.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-048-PFM-C 3 TIMES.
+           PERFORM  PROC-048-PFM-C THREE TIMES.
+           IF       PERFORM2 EQUAL TO 56
+                    NEXT SENTENCE
+                    ELSE
+                    PERFORM PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-048-PFM-WRITE-3.
+       PROC-000-PFM-DELETE-3.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-048-PFM-WRITE-3.
+           MOVE 0 TO INCREMENT.
+           MOVE "PERFORM TIMES" TO FEATURE.
+           MOVE "PROC-047-PFM-TEST-3" TO PAR-NAME.
+       PROC-055-PFM-TEST-4.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-056-PFM-E THRU PROC-059-PFM-H.
+           IF       PERFORM4 EQUAL TO 70.0
+                    NEXT SENTENCE
+                    ELSE
+                    PERFORM PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-060-PFM-WRITE-4.
+       PROC-000-PFM-DELETE-4.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-060-PFM-WRITE-4.
+           MOVE 0 TO INCREMENT.
+           MOVE "NESTED PERFORM THRU" TO FEATURE.
+           MOVE "PROC-055-PFM-TEST-4" TO PAR-NAME.
+       PROC-061-PFM-TEST-5.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-062-PFM-J.
+           IF       PERFORM2 EQUAL TO 312
+                    NEXT SENTENCE
+                    ELSE
+                    PERFORM PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-064-PFM-WRITE-5.
+       PROC-000-PFM-DELETE-5.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-064-PFM-WRITE-5.
+           MOVE 0 TO INCREMENT.
+           MOVE "NESTED PERFORM" TO FEATURE.
+           MOVE "PROC-061-PFM-TEST-5" TO PAR-NAME.
+       PROC-065-PFM-TEST-6.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-066-PFM-N.
+           GO TO    PROC-069-PFM-WRITE-6.
+       PROC-000-PFM-DELETE-6.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-069-PFM-WRITE-6.
+           MOVE 0 TO INCREMENT.
+           MOVE "PERFORM SECTION-NAME" TO FEATURE.
+           MOVE "PROC-065-PFM-TEST-6" TO PAR-NAME.
+       PROC-070-PFM-TEST-7.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-071-PFM-V THRU PROC-075-PFM-Z 5 TIMES.
+           MOVE 0 TO INCREMENT.
+           GO       TO PROC-096-PFM-WRITE-7.
+       PROC-000-PFM-DELETE-7.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-096-PFM-WRITE-7.
+           MOVE 0 TO INCREMENT.
+           MOVE     "PERFORM EXIT PARAS" TO FEATURE.
+           MOVE "PROC-070-PFM-TEST-7" TO PAR-NAME.
+       PROC-097-PFM-TEST-08.
+           MOVE 0 TO INCREMENT.
+           MOVE     ZERO TO P-COUNT
+           PERFORM  PROC-098-PFM-B-8.
+           ADD      1 TO P-COUNT.
+           PERFORM PROC-097-PFM-A-8.
+           ADD      1 TO P-COUNT.
+       PROC-097-PFM-A-8   SECTION.
+       PROC-098-PFM-B-8.
+           ADD 2 TO INCREMENT.
+           ADD      100 TO P-COUNT.
+       PROC-097-PFM-TESTT-8 SECTION.
+       PROC-098-PFM-TESTTT-8.
+           MOVE 0 TO INCREMENT.
+           IF       P-COUNT EQUAL TO 000302
+                    GO TO PROC-105-PFM-WRITE-08.
+           GO       TO PROC-000-PFM-NUC-FAIL-08.
+       PROC-000-DELETE-08.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO       TO PROC-105-PFM-WRITE-08.
+       PROC-000-PFM-NUC-FAIL-08.
+           MOVE 0 TO INCREMENT.
+           MOVE     P-COUNT TO COMPUTED-N.
+           MOVE     000302 TO CORRECT-N.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-105-PFM-WRITE-08.
+           MOVE 0 TO INCREMENT.
+           MOVE "PERFORM             " TO FEATURE.
+           MOVE     "PROC-097-PFM-TEST-08" TO PAR-NAME.
+       PROC-106-PFM-TEST-09.
+           MOVE 0 TO INCREMENT.
+           MOVE     ZERO TO P-COUNT.
+           PERFORM PROC-107-PFM-B-9   1 TIMES.
+           ADD      1 TO P-COUNT.
+           PERFORM  PROC-106-PFM-A-9   ATWO-DS-01V00 TIMES.
+           ADD      1 TO P-COUNT.
+       PROC-106-PFM-A-9   SECTION.
+       PROC-107-PFM-B-9.
+           ADD 2 TO INCREMENT.
+           ADD      100 TO P-COUNT.
+       PROC-106-PFM-TESTT-9 SECTION.
+       PROC-107-PFM-TESTTT-9.
+           MOVE 0 TO INCREMENT.
+           IF       P-COUNT EQUAL TO 000402
+                    GO TO PROC-116-PFM-WRITE-09.
+           GO       TO PROC-000-PFM-NUC-FAIL-09.
+       PROC-000-PFM-DELETE-09.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO       TO PROC-116-PFM-WRITE-09.
+       PROC-000-PFM-NUC-FAIL-09.
+           MOVE 0 TO INCREMENT.
+           MOVE     P-COUNT TO COMPUTED-N.
+           MOVE     000502 TO CORRECT-N.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-116-PFM-WRITE-09.
+           MOVE 0 TO INCREMENT.
+           MOVE "PERFORM TIMES       " TO FEATURE.
+           MOVE     "PROC-106-PFM-TEST-09" TO PAR-NAME.
+       PROC-117-PFM-TEST-10.
+           MOVE 0 TO INCREMENT.
+           MOVE     ZERO TO P-COUNT.
+           PERFORM  PROC-118-PFM-B-10 THROUGH PROC-120-PFM-D-10.
+           MOVE 4 TO INCREMENT.
+           ADD      1 TO P-COUNT
+           PERFORM  PROC-117-PFM-A-10 THRU PROC-119-PFM-C-10.
+           MOVE 8 TO INCREMENT.
+           ADD      1 TO P-COUNT.
+           PERFORM  PROC-117-PFM-A-10 THRU PROC-120-PFM-D-10.
+           MOVE 11 TO INCREMENT.
+           ADD      1 TO P-COUNT.
+           PERFORM  PROC-118-PFM-B-10 THRU PROC-119-PFM-C-10.
+           MOVE 15 TO INCREMENT.
+           ADD     1 TO P-COUNT.
+       PROC-117-PFM-A-10 SECTION.
+       PROC-118-PFM-B-10.
+           ADD      100 TO P-COUNT.
+       PROC-119-PFM-C-10 SECTION.
+       PROC-120-PFM-D-10.
+           ADD      10000 TO P-COUNT.
+       PROC-121-PFM-TESTT-10 SECTION.
+       PROC-122-PFM-TESTTT-10.
+           MOVE 0 TO INCREMENT.
+           IF       P-COUNT EQUAL TO 050504
+                    GO TO PROC-138-PFM-WRITE-10.
+           GO       TO PROC-000-PFM-NUC-FAIL-10.
+       PROC-000-PFM-DELETE-10.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO       TO PROC-138-PFM-WRITE-10.
+       PROC-000-PFM-NUC-FAIL-10.
+           MOVE 0 TO INCREMENT.
+           MOVE     P-COUNT TO COMPUTED-N.
+           MOVE     050504 TO CORRECT-N.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-138-PFM-WRITE-10.
+           MOVE 0 TO INCREMENT.
+           MOVE "PERFORM THRU        " TO FEATURE.
+           MOVE     "PROC-117-PFM-TEST-10" TO PAR-NAME.
+       PROC-139-PFM-TEST-11.
+           MOVE 0 TO INCREMENT.
+           MOVE     ZERO TO P-COUNT.
+           PERFORM PROC-140-PFM-B-11 THROUGH PROC-140-PFM-D-11 1 TIMES.
+           MOVE 4 TO INCREMENT.
+           ADD      1 TO P-COUNT.
+           PERFORM  PROC-139-PFM-A-11 THRU PROC-139-PFM-C-11 2 TIMES.
+           MOVE 12 TO INCREMENT.
+           ADD      1 TO P-COUNT.
+           PERFORM  PROC-139-PFM-A-11 THRU PROC-140-PFM-D-11 2 TIMES.
+           MOVE 19 TO INCREMENT.
+           ADD      1 TO P-COUNT.
+           PERFORM PROC-140-PFM-B-11 THRU PROC-139-PFM-C-11   1 TIMES.
+           MOVE 23 TO INCREMENT.
+           ADD      1 TO P-COUNT.
+       PROC-139-PFM-A-11 SECTION.
+       PROC-140-PFM-B-11.
+           ADD 2 TO INCREMENT.
+           ADD      100 TO P-COUNT.
+       PROC-139-PFM-C-11 SECTION.
+       PROC-140-PFM-D-11.
+           ADD 2 TO INCREMENT.
+           ADD     10000 TO P-COUNT.
+       PROC-139-PFM-TESTT-11 SECTION.
+       PROC-140-PFM-TESTTT-11.
+           MOVE 0 TO INCREMENT.
+           IF       P-COUNT EQUAL TO 070704
+                    GO TO PROC-168-PFM-WRITE-11.
+           GO       TO PROC-000-PFM-NUC-FAIL-11.
+       PROC-000-PFM-DELETE-11.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO       TO PROC-168-PFM-WRITE-11.
+       PROC-000-PFM-NUC-FAIL-11.
+           MOVE 0 TO INCREMENT.
+           MOVE     P-COUNT TO COMPUTED-N.
+           MOVE     090904 TO CORRECT-N.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-168-PFM-WRITE-11.
+           MOVE 0 TO INCREMENT.
+           MOVE "PERFORM THRU, TIMES " TO FEATURE.
+           MOVE     "PROC-139-PFM-TEST-11" TO PAR-NAME.
+       PROC-169-PFM-TEST-12.
+           MOVE 0 TO INCREMENT.
+           MOVE     ZERO TO P-COUNT.
+           ADD      1 TO P-COUNT.
+           PERFORM  PROC-170-PFM-A-12.
+           ADD      2 TO P-COUNT.
+           GO       TO PROC-175-PFM-TESTT-12.
+       PROC-170-PFM-A-12.
+           MOVE 0 TO INCREMENT.
+           ADD      10 TO P-COUNT.
+           PERFORM  PROC-171-PFM-B-12.
+           ADD      20 TO P-COUNT.
+       PROC-171-PFM-B-12.
+           MOVE 0 TO INCREMENT.
+           ADD      100 TO P-COUNT.
+           PERFORM  PROC-172-PFM-C-12.
+           ADD      200 TO P-COUNT.
+       PROC-172-PFM-C-12.
+           MOVE 0 TO INCREMENT.
+           ADD      1000 TO P-COUNT.
+           PERFORM  PROC-173-PFM-D-12.
+           ADD      2000 TO P-COUNT.
+       PROC-173-PFM-D-12.
+           MOVE 0 TO INCREMENT.
+           ADD      10000 TO P-COUNT.
+           PERFORM  PROC-174-PFM-E-12.
+           ADD      20000 TO P-COUNT.
+       PROC-174-PFM-E-12.
+           MOVE 0 TO INCREMENT.
+           ADD      100000 TO P-COUNT.
+       PROC-175-PFM-TESTT-12.
+           MOVE 0 TO INCREMENT.
+           IF       P-COUNT EQUAL TO 133333
+                    GO TO PROC-176-PFM-WRITE-12.
+           GO       TO PROC-000-PFM-NUC-FAIL-12.
+       PROC-000-PFM-DELETE-12.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO       TO PROC-176-PFM-WRITE-12.
+       PROC-000-PFM-NUC-FAIL-12.
+           MOVE 0 TO INCREMENT.
+           MOVE     P-COUNT TO COMPUTED-N.
+           MOVE     133333 TO CORRECT-N.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-176-PFM-WRITE-12.
+           MOVE 0 TO INCREMENT.
+           MOVE "NESTED PERFORM      " TO FEATURE.
+           MOVE     "PROC-169-PFM-TEST-12" TO PAR-NAME.
+       PROC-177-PFM-TEST-13.
+           MOVE 0 TO INCREMENT.
+           MOVE     ZERO TO P-COUNT.
+           PERFORM  PROC-178-PFM-A-13 THRU PROC-177-PFM-B-13.
+           ADD      1 TO P-COUNT.
+           MOVE 2 TO INCREMENT.
+           PERFORM  PROC-178-PFM-A-13 THRU PROC-177-PFM-B-13 2 TIMES.
+           ADD      2 TO P-COUNT.
+       PROC-178-PFM-A-13.
+           ADD 2 TO INCREMENT.
+           ADD      100 TO P-COUNT.
+       PROC-177-PFM-B-13.
+           EXIT.
+       PROC-178-PFM-TESTT-13.
+           MOVE 0 TO INCREMENT.
+           IF       P-COUNT EQUAL TO 000403
+                    GO TO PROC-187-PFM-WRITE-13.
+           GO       TO PROC-000-PFM-NUC-FAIL-13.
+       PROC-000-PFM-DELETE-13.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO       TO PROC-187-PFM-WRITE-13.
+       PROC-000-PFM-NUC-FAIL-13.
+           MOVE 0 TO INCREMENT.
+           MOVE     P-COUNT TO COMPUTED-N.
+           MOVE     000403 TO CORRECT-N.
+           MOVE     "PERFORM WITH EXIT" TO FEATURE.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-187-PFM-WRITE-13.
+           MOVE 0 TO INCREMENT.
+           MOVE     "PROC-177-PFM-TEST-13" TO PAR-NAME.
+       PROC-188-PFM-TEST-14.
+           MOVE 0 TO INCREMENT.
+           PERFORM PROC-189-A101.
+           IF PERFORM-HOLD EQUAL TO "ABCDEFGHIJKLMNOPQRST"
+               GO TO PROC-210-PFM-WRITE-14.
+           MOVE "ABCDEFGHIJKLMNOPQRST" TO CORRECT-A.
+           MOVE PERFORM-HOLD TO COMPUTED-A.
+           PERFORM PROC-000-NUCLEUS-FAILURE.
+           GO TO PROC-210-PFM-WRITE-14.
+       PROC-000-PFM-DELETE-14.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-210-PFM-WRITE-14.
+           MOVE 0 TO INCREMENT.
+           MOVE     "PROC-188-PFM-TEST-14" TO PAR-NAME.
+       PROC-211-PFM-A-15 SECTION.
+       PROC-212-PFM-TEST-15.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-213-PFM-G-15 THRU PROC-217-PFM-B-15.
+           GO       TO PROC-218-PFM-WRITE-15.
+       PROC-000-PFM-DELETE-15.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO       TO PROC-218-PFM-WRITE-15.
+       PROC-217-PFM-B-15.
+           MOVE 0 TO INCREMENT.
+           ADD 1 TO REC-CT.
+       PROC-000-PFM-C-15.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           MOVE     "RETURN MECHANISM LOST" TO RE-MARK.
+           GO       TO PROC-218-PFM-WRITE-15.
+       PROC-000-PFM-D-15.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           MOVE     "PERFORM GOT LOST IN GO TOS" TO RE-MARK.
+           GO       TO PROC-218-PFM-WRITE-15.
+       PROC-215-PFM-E-15.
+           MOVE 0 TO INCREMENT.
+           GO       TO PROC-216-PFM-L-15.
+       PROC-000-PFM-F-15.
+           MOVE 0 TO INCREMENT.
+           GO       TO PROC-000-PFM-D-15.
+       PROC-213-PFM-G-15 SECTION.
+       PROC-214-PFM-H-15.
+           MOVE 0 TO INCREMENT.
+           GO       TO PROC-215-PFM-E-15.
+       PROC-000-PFM-I-15.
+           MOVE 0 TO INCREMENT.
+           GO       TO PROC-000-PFM-D-15.
+       PROC-000-PFM-J-15 SECTION.
+       PROC-000-PFM-K-15.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           MOVE     "PROC-000-PFM-K-15 ENTERED" TO RE-MARK.
+           GO       TO PROC-218-PFM-WRITE-15.
+       PROC-216-PFM-L-15.
+           MOVE 0 TO INCREMENT.
+           GO       TO PROC-217-PFM-B-15.
+       PROC-218-PFM-WRITE-15.
+           MOVE 0 TO INCREMENT.
+           MOVE     "PERFORM GO TO PARAS" TO FEATURE.
+           MOVE     "PROC-212-PFM-TEST-15" TO PAR-NAME.
+       PROC-219-PFM-TEST-LAST.
+           MOVE 0 TO INCREMENT.
+           MOVE     7 TO PERFORM5.
+           PERFORM  PROC-220-PFM-U PERFORM5 TIMES.
+           MOVE 0 TO INCREMENT.
+           IF       PERFORM5 EQUAL TO 707
+                    GO TO PROC-227-PFM-WRITE-LAST.
+           GO       TO PROC-000-PFM-NUC-FAIL-LST.
+       PROC-000-PFM-DELETE-LAST.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO       TO PROC-227-PFM-WRITE-LAST.
+       PROC-000-PFM-NUC-FAIL-LST.
+           MOVE 0 TO INCREMENT.
+           MOVE     PERFORM5 TO COMPUTED-N.
+           MOVE     707 TO CORRECT-N.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+       PROC-227-PFM-WRITE-LAST.
+           IF PROC-ACTIVE IS NOT EQUAL TO 0
+               MOVE " DEBUGGING PROCEDURE WAS NEVER EXECUTED.  NO FURTHER REPORT WILL BE GENERATED." TO DUMMY-RECORD
+               PERFORM WRITE-LINE
+               MOVE 227 TO ERROR-COUNTER
+               GO TO CCVS-EXIT.
+           MOVE 0 TO INCREMENT.
+           MOVE SPACE TO TEST-RESULTS.
+           MOVE "DEBUG ALL PROCEDURES" TO FEATURE.
+           MOVE 0 TO REC-CT.
+           MOVE 1 TO BYPASS.
+           SET STACK-END TO STACK-INDEX.
+           SET STACK-INDEX TO 1.
+           SET STATIC-INDEX TO 1.
+           PERFORM NAME-LISTER 227 TIMES.
+       EMPTY-THE-STACK.
+           IF STACK-INDEX IS NOT LESS THAN STACK-END GO TO STACK-EMPTY.
+           PERFORM CORRECT-GT-STACK.
+           GO TO EMPTY-THE-STACK.
+       STACK-EMPTY.
+           MOVE SPACE TO DUMMY-RECORD.
+           MOVE 51 TO RECORD-COUNT.
+           PERFORM WRITE-LINE.
+           MOVE FLOW-FAILURE-1 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+           MOVE FLOW-FAILURE-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE 2 TIMES.
+      *> 
+           GO TO    CCVS-EXIT.
+       NAME-LISTER SECTION.
+       NAME-LISTER-1.
+           MOVE EXPECTED-NAME (STATIC-INDEX) TO TABLE-ENTRY.
+           SET TABLE-ENTRY-BASE TO STATIC-INDEX.
+           IF STACK-INDEX IS EQUAL TO STACK-END GO TO STACK-GT-CORRECT.
+           IF BASE-NUMBER (STACK-INDEX) IS NOT NUMERIC
+               GO TO CORRECT-GT-STACK.
+           IF TABLE-ENTRY-BASE IS GREATER THAN BASE-NUMBER (STACK-INDEX)
+               GO TO CORRECT-GT-STACK.
+           IF TABLE-ENTRY-BASE IS LESS THAN BASE-NUMBER (STACK-INDEX)
+               GO TO STACK-GT-CORRECT.
+       CORRECT-EQ-STACK.
+           MOVE EXPECTED-NAME (STATIC-INDEX) TO PAR-NAME.
+           MOVE TABLE-ENTRY TO CORRECT-A.
+           MOVE PROC-NAME (STACK-INDEX) TO COMPUTED-A.
+           IF CORRECT-A IS NOT EQUAL TO COMPUTED-A PERFORM FAIL
+                                              ELSE PERFORM PASS.
+           PERFORM PRINT-DETAIL.
+           IF STACK-INDEX IS LESS THAN 500
+                   SET STACK-INDEX UP BY 1.
+           IF STATIC-INDEX IS LESS THAN 227
+                   SET STATIC-INDEX UP BY 1.
+           GO TO NAME-LISTER-EXIT.
+       CORRECT-GT-STACK.
+           MOVE PROC-NAME (STACK-INDEX) TO COMPUTED-A.
+           PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+           IF STACK-INDEX IS LESS THAN 500
+                   SET STACK-INDEX UP BY 1.
+       CORRECT-GT-STACK-1.
+           GO TO NAME-LISTER-1.
+       STACK-GT-CORRECT.
+           MOVE EXPECTED-NAME (STATIC-INDEX) TO PAR-NAME.
+           MOVE TABLE-ENTRY TO CORRECT-A.
+           PERFORM FAIL.
+           PERFORM PRINT-DETAIL.
+           IF STATIC-INDEX IS LESS THAN 227
+                   SET STATIC-INDEX UP BY 1.
+       NAME-LISTER-EXIT.
+           EXIT.
+       OTHER-PROCEDURES SECTION.
+       PROC-000-NUCLEUS-FAILURE.
+           ADD 1 TO NUC-FAILURE-COUNT.
+       PROC-209-A121.
+           EXIT.
+       PROC-208-A120.
+           MOVE 0 TO INCREMENT.
+           MOVE "T" TO TEST-LETTER (20).
+           PERFORM PROC-209-A121.
+       PROC-207-A119.
+           MOVE 0 TO INCREMENT.
+           MOVE "S" TO TEST-LETTER (19).
+           PERFORM PROC-208-A120.
+       PROC-206-A118.
+           MOVE 0 TO INCREMENT.
+           MOVE "R" TO TEST-LETTER (18).
+           PERFORM PROC-207-A119.
+       PROC-205-A117.
+           MOVE 0 TO INCREMENT.
+           MOVE "Q" TO TEST-LETTER (17).
+           PERFORM PROC-206-A118.
+       PROC-204-A116.
+           MOVE 0 TO INCREMENT.
+           MOVE "P" TO TEST-LETTER (16).
+           PERFORM PROC-205-A117.
+       PROC-203-A115.
+           MOVE 0 TO INCREMENT.
+           MOVE "O" TO TEST-LETTER (15).
+           PERFORM PROC-204-A116.
+       PROC-202-A114.
+           MOVE 0 TO INCREMENT.
+           MOVE "N" TO TEST-LETTER (14).
+           PERFORM PROC-203-A115.
+       PROC-201-A113.
+           MOVE 0 TO INCREMENT.
+           MOVE "M" TO TEST-LETTER (13).
+           PERFORM PROC-202-A114.
+       PROC-200-A112.
+           MOVE 0 TO INCREMENT.
+           MOVE "L" TO TEST-LETTER (12).
+           PERFORM PROC-201-A113.
+       PROC-199-A111.
+           MOVE 0 TO INCREMENT.
+           MOVE "K" TO TEST-LETTER (11).
+           PERFORM PROC-200-A112.
+       PROC-198-A110.
+           MOVE 0 TO INCREMENT.
+           MOVE "J" TO TEST-LETTER (10).
+           PERFORM PROC-199-A111.
+       PROC-197-A109.
+           MOVE 0 TO INCREMENT.
+           MOVE "I" TO TEST-LETTER (9).
+           PERFORM PROC-198-A110.
+       PROC-196-A108.
+           MOVE 0 TO INCREMENT.
+           MOVE "H" TO TEST-LETTER (8).
+           PERFORM PROC-197-A109.
+       PROC-195-A107.
+           MOVE 0 TO INCREMENT.
+           MOVE "G" TO TEST-LETTER (7).
+           PERFORM PROC-196-A108.
+       PROC-194-A106.
+           MOVE 0 TO INCREMENT.
+           MOVE "F" TO TEST-LETTER (6).
+           PERFORM PROC-195-A107.
+       PROC-193-A105.
+           MOVE 0 TO INCREMENT.
+           MOVE "E" TO TEST-LETTER (5).
+           PERFORM PROC-194-A106.
+       PROC-192-A104.
+           MOVE 0 TO INCREMENT.
+           MOVE "D" TO TEST-LETTER (4).
+           PERFORM PROC-193-A105.
+       PROC-191-A103.
+           MOVE 0 TO INCREMENT.
+           MOVE "C" TO TEST-LETTER (3).
+           PERFORM PROC-192-A104.
+       PROC-190-A102.
+           MOVE 0 TO INCREMENT.
+           MOVE "B" TO TEST-LETTER (2).
+           PERFORM PROC-191-A103.
+       PROC-189-A101.
+           MOVE 0 TO INCREMENT.
+           MOVE "A" TO TEST-LETTER (1).
+           PERFORM PROC-190-A102.
+       PROC-048-PFM-C.
+           ADD 1 TO INCREMENT.
+           ADD      6 TO PERFORM2.
+       PROC-000-PFM-D.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-055-PFM-TEST-4.
+      *>     NOTE CONTROL SHOULD NOT PASS TO THIS PARAGRAPH
+      *>     FROM THE PREVIOUS ONE.
+       PROC-056-PFM-E.
+           MOVE 0 TO INCREMENT.
+           MOVE "CSW" TO PERFORM1.
+           PERFORM  PROC-057-PFM-F THRU PROC-058-PFM-G.
+           SUBTRACT .8 FROM PERFORM4.
+           GO TO    PROC-059-PFM-H.
+       PROC-057-PFM-F.
+           MOVE 0 TO INCREMENT.
+           MOVE     60.5 TO PERFORM4.
+       PROC-058-PFM-G.
+           MOVE 0 TO INCREMENT.
+           ADD      10.3 TO PERFORM4.
+       PROC-059-PFM-H.
+           EXIT.
+       PROC-000-PFM-I.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-060-PFM-WRITE-4.
+      *>     NOTE CONTROL SHOULD NOT PASS TO THIS PARAGRAPH
+      *>     FROM THE PREVIOUS ONE.
+       PROC-062-PFM-J.
+           MOVE 0 TO INCREMENT.
+           MOVE "YES" TO PERFORM1.
+           PERFORM  PROC-063-PFM-L.
+           MULTIPLY 3 BY PERFORM2.
+       PROC-000-PFM-K.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-064-PFM-WRITE-5.
+      *>     NOTE CONTROL SHOULD NOT PASS TO THIS PARAGRAPH
+      *>     FROM THE PREVIOUS ONE.
+       PROC-063-PFM-L.
+           MOVE 0 TO INCREMENT.
+           MOVE     4 TO PERFORM2.
+           ADD      100 TO PERFORM2.
+       PROC-000-PFM-M.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-064-PFM-WRITE-5.
+      *>     NOTE CONTROL SHOULD NOT PASS TO THIS PARAGRAPH
+      *>     FROM THE PREVIOUS ONE.
+       PROC-066-PFM-N        SECTION.
+       PROC-067-PFM-O.
+           MOVE 0 TO INCREMENT.
+           ADD 1 TO NUC-FAILURE-COUNT.
+       PROC-068-PFM-P.
+           MOVE 0 TO INCREMENT.
+           SUBTRACT 1 FROM NUC-FAILURE-COUNT.
+       PROC-000-PFM-Q        SECTION.
+       PROC-000-PFM-R.
+           MOVE 0 TO INCREMENT.
+           PERFORM  PROC-000-NUCLEUS-FAILURE.
+           GO TO    PROC-069-PFM-WRITE-6.
+      *>     NOTE CONTROL SHOULD NOT PASS TO THIS PARAGRAPH FROM THE
+      *>         PREVIOUS ONE.
+       PROC-000-PFM-S.
+           MOVE 0 TO INCREMENT.
+           ADD      1 TO PERFORM5.
+       PROC-000-PFM-T.
+           MOVE 0 TO INCREMENT.
+           ADD      10 TO PERFORM5.
+       PROC-220-PFM-U.
+           ADD 1 TO INCREMENT.
+           ADD      100 TO PERFORM5.
+           IF       PERFORM5 GREATER THAN 899
+                    MOVE PERFORM5 TO COMPUTED-N
+                    MOVE 707 TO CORRECT-N
+                    PERFORM PROC-000-NUCLEUS-FAILURE.
+       PROC-071-PFM-V.       EXIT.
+       PROC-072-PFM-W.       EXIT.
+       PROC-073-PFM-X.       EXIT.
+       PROC-074-PFM-Y.       EXIT.
+       PROC-075-PFM-Z.       ADD  5  TO INCREMENT.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,DB105A

@@ -1,0 +1,73 @@
+      *> HEADER,COBOL,IC103A,SUBRTN,IC104A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC104A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>         THE SUBPROGRAM IC104 HAS THREE OPERANDS IN THE
+      *>     USING PHRASE OF THE PROCEDURE DIVISION HEADER.  TWO
+      *>     OPERANDS ARE 01 GROUP ITEMS AND THE THIRD OPERAND IS
+      *>     AN ELEMENTARY 77 ITEM.  THE DATA DESCRIPTIONS OF THESE
+      *>     OPERANDS IN THE LINKAGE SECTION ARE NOT THE SAME AS THE
+      *>     DATA DESCRIPTIONS IN THE WORKING-STORAGE SECTION OF THE
+      *>     CALLING PROGRAM, BUT AN EQUAL NUMBER OF CHARACTER
+      *>     POSITIONS ARE DEFINED.  THE CALLING PROGRAM IS IC103.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  CONSTANT-VALUES.
+           02  AN-CONSTANT PIC X(5) VALUE "IC104".
+           02  NUM-CONSTANT PIC 99V9999 VALUE 0.7654.
+       LINKAGE SECTION.
+       01  GRP-01.
+           02  AN-FIELD PICTURE X(5).
+           02  NUM-DISPLAY PIC 99.
+           02  GRP-LEVEL.
+               03  A-FIELD PICTURE A(3).
+       77  ELEM-01 PIC  V9(4) COMPUTATIONAL.
+       01  GRP-02.
+           02  GRP-03.
+               03  NUM-ITEM PICTURE S99.
+               03  EDITED-FIELD  PIC XXBX0X.
+       PROCEDURE DIVISION USING GRP-01 ELEM-01 GRP-02.
+       SECT-IC104-0001 SECTION.
+      *>         THIS SECTION SETS THE PARAMETER FIELDS REFERRED TO
+      *>     IN THE USING PHRASE AND DEFINED IN THE LINKAGE SECTION.
+       CALL-TEST-06.
+           MOVE AN-CONSTANT TO AN-FIELD.
+           ADD 25 TO NUM-DISPLAY.
+           MOVE "YES" TO A-FIELD.
+           MOVE NUM-CONSTANT TO ELEM-01.
+           MOVE NUM-DISPLAY TO NUM-ITEM.
+           MOVE "ABCD" TO EDITED-FIELD.
+       CALL-EXIT-06.
+           EXIT PROGRAM.
+      *> END-OF,IC104A

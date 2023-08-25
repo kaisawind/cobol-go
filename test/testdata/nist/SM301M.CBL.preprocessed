@@ -1,0 +1,32 @@
+      *> HEADER,COBOL,SM301M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+            SM301M.
+      *> The following program tests the flagging of the intermediate
+      *> subset COPY feature.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       
+       
+       DATA DIVISION.
+       
+       PROCEDURE DIVISION.
+       
+       SM301M-CONTROL.
+           PERFORM SM301M-COPY.
+           STOP RUN.
+       
+       SM301M-COPY.
+      *> Message expected for following statement: NON-CONFORMING STANDARD
+      *> HEADER,CLBRY,KSM31
+           DISPLAY " ".
+      *> END-OF,KSM31
+
+       
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 1.
+      *> END-OF,SM301M

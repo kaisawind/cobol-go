@@ -1,0 +1,791 @@
+      *> HEADER,COBOL,NC132A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC132A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC132A TESTS THE USE OF SUBSCRIPTS TO ACCESS A
+      *>     SINGLE LEVEL TABLE USING INTEGER DISPLAY AND COMPUTATIONAL
+      *>     FIELDS AS SUBSCRIPTS.
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  CON-1             PICTURE 9  VALUE 1.
+       77  CON-2             PICTURE 9  VALUE 2.
+       77  CON-3             PICTURE 9  VALUE 3.
+       77  CON-4             PICTURE 9  VALUE 4.
+       77  SUB-3  PICTURE S9(18) COMPUTATIONAL VALUE 2.
+       77  SUB-4  PICTURE 9(18)  COMPUTATIONAL VALUE 4.
+       01  CONSTANTS-77.
+           02  SUB1   PICTURE 9  VALUE  1.
+           02  SUB2   PICTURE  S9  VALUE  +4.
+           02  TABLE-A-VALUES   PICTURE X(20) VALUE "11122233344411223344".
+       01  TABLE-A.
+           02  ENTRY-A-1   PICTURE XXX   OCCURS  4 TIMES.
+           02  ENTRY-A-2   OCCURS  4 TIMES.
+             03  ENTRY-A-3    PICTURE   X.
+             03  ENTRY-A-4    PICTURE   X.
+       01  TABLE-B.
+           02  ENTRY-B-1  PICTURE X(4)  VALUE  "1234".
+           02  ENTRY-B-2  REDEFINES  ENTRY-B-1  PICTURE  9 OCCURS  4.
+       01  TABLE-C.
+           02  ENTRY-C    PICTURE 9  OCCURS  4 TIMES.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC132A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-TH132A-001 SECTION.
+       TH-02-001.
+           MOVE "IV-21 4.3.8.2" TO ANSI-REFERENCE.
+           MOVE TABLE-A-VALUES  TO  TABLE-A.
+           MOVE  "SUBSCRIPTING"  TO FEATURE.
+       SUB-SCRIPT-1.
+           IF TABLE-A IS NOT EQUAL TO TABLE-A-VALUES
+           GO TO  SUB-SCRIPT-1B.
+           PERFORM PASS.
+           GO TO  SUB-SCRIPT-1C.
+       SUB-SCRIPT-1A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-1C.
+       SUB-SCRIPT-1B.
+           PERFORM FAIL.
+           MOVE TABLE-A TO COMPUTED-A.
+           MOVE   "11122233344411223344" TO CORRECT-A.
+       SUB-SCRIPT-1C.
+           MOVE "SUB-SCRIPT-1" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE    *******  THIS  TEST CHECKS TO SEE  THAT THE TABLE
+      *>                      TO BE USED IN THE PROGRAM IS SET UP
+      *>                      CORRECTLY.
+       SUB-SCRIPT-2.
+           IF  ENTRY-A-1 (1) NOT EQUAL TO "111"
+           GO TO SUB-SCRIPT-2B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-2C.
+       SUB-SCRIPT-2A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-2C.
+       SUB-SCRIPT-2B.
+           PERFORM FAIL.
+           MOVE ENTRY-A-1 (1) TO COMPUTED-A
+           MOVE "111" TO CORRECT-A.
+       SUB-SCRIPT-2C.
+           MOVE "SUB-SCRIPT-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *>     NOTE   ******   THIS CHECKS THE USE OF NUMERIC  LITERALS
+      *>                     AS SUBSCRIPTS.
+       SUB-SCRIPT-3.
+           IF ENTRY-A-1 (SUB1)    NOT EQUAL TO "111"
+           GO TO SUB-SCRIPT-3B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-3C.
+       SUB-SCRIPT-3A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-3C.
+       SUB-SCRIPT-3B.
+           PERFORM FAIL.
+           MOVE ENTRY-A-1 (SUB1) TO COMPUTED-A.
+           MOVE "111" TO CORRECT-A.
+       SUB-SCRIPT-3C.
+           MOVE "SUB-SCRIPT-3" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE  *******      THIS CHECKS THE USE OF UNSIGNED
+      *>                        CONSTANTS AS SUBSCRIPTS.
+       SUB-SCRIPT-4.
+           ADD 1 TO SUB1.
+           IF ENTRY-A-1 (SUB1) NOT EQUAL TO "222"
+           GO TO SUB-SCRIPT-4B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-4C.
+       SUB-SCRIPT-4A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-4C.
+       SUB-SCRIPT-4B.
+           PERFORM FAIL.
+           MOVE ENTRY-A-1 (SUB1) TO COMPUTED-A.
+           MOVE "222" TO CORRECT-A.
+       SUB-SCRIPT-4C.
+           MOVE "SUB-SCRIPT-4" TO  PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE  *******    THIS CHECKS THE VARYING OF AN
+      *>                      UNSIGNED SUBSCRIPT.
+       SUB-SCRIPT-5.
+           MOVE +4 TO SUB2.
+           IF ENTRY-A-1 (SUB2)  NOT EQUAL TO "444"
+           GO TO  SUB-SCRIPT-5B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-5C.
+       SUB-SCRIPT-5A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-5C.
+       SUB-SCRIPT-5B.
+           PERFORM FAIL.
+           MOVE ENTRY-A-1 (SUB2) TO COMPUTED-A.
+           MOVE "444" TO CORRECT-A.
+       SUB-SCRIPT-5C.
+           MOVE "SUB-SCRIPT-5" TO  PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE  ******  THIS CHECKS THE USE OF A SIGNED
+      *>                   CONSTANT AS SUBSCRIPTS.
+       SUB-SCRIPT-6.
+           SUBTRACT  +1 FROM SUB2.
+           IF ENTRY-A-1 (SUB2)  NOT EQUAL TO "333"
+           GO TO SUB-SCRIPT-6B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-6C.
+       SUB-SCRIPT-6A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-6C.
+       SUB-SCRIPT-6B.
+           PERFORM FAIL.
+           MOVE ENTRY-A-1 (SUB2) TO COMPUTED-A.
+           MOVE "333" TO CORRECT-A.
+       SUB-SCRIPT-6C.
+           MOVE "SUB-SCRIPT-6" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE  ******   THIS CHECKS THE VARYING OF A
+      *>                    SIGNED SUBSCRIPT.
+      *> SUB-SCRIPT-7.
+      *>     THIS TEST WAS DELETED BY THE FCCTS SINCE IT DID NOT
+      *>     APPLY TO THE REVISED FEDERAL STANDARD - FIPS PUB 21-1.
+       SUB-SCRIPT-8.
+           IF ENTRY-A-3 (2)  NOT EQUAL TO "2"
+           GO TO SUB-SCRIPT-8B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-8C.
+       SUB-SCRIPT-8A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-8C.
+       SUB-SCRIPT-8B.
+           PERFORM FAIL.
+           MOVE ENTRY-A-3 (2) TO COMPUTED-A.
+           MOVE "2" TO CORRECT-A.
+       SUB-SCRIPT-8C.
+           MOVE "SUB-SCRIPT-8" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE  *****  THIS CHECKS THE USE OF AN ELEMENTARY ITEM
+      *>                  WHEN THE GROUP ITEM HAS THE OCCURS.
+       SUB-SCRIPT-9.
+           IF ENTRY-A-2 (4)    NOT EQUAL TO  "44"
+           GO TO SUB-SCRIPT-9B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-9C.
+       SUB-SCRIPT-9A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-9C.
+       SUB-SCRIPT-9B.
+           PERFORM FAIL.
+           MOVE ENTRY-A-2 (4) TO COMPUTED-A.
+           MOVE "44" TO CORRECT-A.
+       SUB-SCRIPT-9C.
+           MOVE "SUB-SCRIPT-9" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE  *******  THIS CHECKS A GROUP ITEM WHEN IT
+      *>                    HAS THE OCCURS.
+       SUB-SCRIPT-10.
+           IF ENTRY-B-2 (1)  NOT EQUAL TO "1"
+           GO TO SUB-SCRIPT-10B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-10C.
+       SUB-SCRIPT-10A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-10C.
+       SUB-SCRIPT-10B.
+           PERFORM FAIL.
+           MOVE ENTRY-B-2 (1) TO COMPUTED-A.
+           MOVE "1" TO CORRECT-A.
+       SUB-SCRIPT-10C.
+           MOVE "SUB-SCRIPT-10" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE   ******  THIS CHECKS THE USE OF THE REDEFINE.
+       SUB-SCRIPT-11.
+           MOVE  ENTRY-B-2 (1) TO ENTRY-C (4).
+           MOVE  ENTRY-B-2 (2) TO ENTRY-C (3).
+           MOVE  ENTRY-B-2 (3) TO ENTRY-C (2).
+           MOVE  ENTRY-B-2 (4) TO ENTRY-C (1).
+           IF TABLE-C    NOT  EQUAL TO "4321"
+           GO TO SUB-SCRIPT-11B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-11C.
+       SUB-SCRIPT-11A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-11C.
+       SUB-SCRIPT-11B.
+           PERFORM FAIL.
+           MOVE TABLE-C TO COMPUTED-A.
+           MOVE "4321" TO CORRECT-A.
+       SUB-SCRIPT-11C.
+           MOVE "SUB-SCRIPT-11" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SUB-SCRIPT-12.
+           MOVE "0000" TO TABLE-C.
+           ADD ENTRY-B-2 (1) TO ENTRY-C (1).
+           ADD ENTRY-B-2 (2) TO ENTRY-C (2).
+           ADD ENTRY-B-2 (3) TO ENTRY-C (3).
+           ADD ENTRY-B-2 (4) TO ENTRY-C (4).
+           IF TABLE-C NOT EQUAL TO "1234"
+           GO TO SUB-SCRIPT-12B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-12C.
+       SUB-SCRIPT-12A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-12C.
+       SUB-SCRIPT-12B.
+           PERFORM FAIL.
+           MOVE TABLE-C TO COMPUTED-A.
+           MOVE "1234" TO CORRECT-A.
+       SUB-SCRIPT-12C.
+           MOVE "SUB-SCRIPT-12" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *>     THIS TEST CHECKS THE USE OF SUBSCRIPTED DATA-NAMES
+      *>     IN AN ADD STATEMENT
+       SUB-SCRIPT-13.
+           MOVE  "1234" TO TABLE-C.
+           SUBTRACT ENTRY-B-2 (1) FROM ENTRY-C (1).
+           SUBTRACT ENTRY-B-2 (2) FROM ENTRY-C (2).
+           SUBTRACT ENTRY-B-2 (3) FROM ENTRY-C (3).
+           SUBTRACT ENTRY-B-2 (4) FROM ENTRY-C (4).
+           IF TABLE-C  NOT EQUAL TO  "0000"
+           GO TO  SUB-SCRIPT-13B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-13C.
+       SUB-SCRIPT-13A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-13C.
+       SUB-SCRIPT-13B.
+           PERFORM FAIL.
+           MOVE TABLE-C TO COMPUTED-A.
+           MOVE "0000" TO CORRECT-A.
+       SUB-SCRIPT-13C.
+           MOVE "SUB-SCRIPT-13" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *>     THIS TEST CHECKS THE USE OF SUBSCRIPTED DATA-NAMES
+      *>     IN A SUBTRACT STATEMENT.
+       SUB-SCRIPT-14.
+           MOVE "1111" TO TABLE-C.
+           MULTIPLY ENTRY-B-2 (1) BY ENTRY-C (1).
+           MULTIPLY ENTRY-B-2 (2) BY ENTRY-C (2).
+           MULTIPLY ENTRY-B-2 (3) BY ENTRY-C (3).
+           MULTIPLY ENTRY-B-2 (4) BY ENTRY-C (4).
+           IF TABLE-C  NOT EQUAL TO "1234"
+           GO TO SUB-SCRIPT-14B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-14C.
+       SUB-SCRIPT-14A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-14C.
+       SUB-SCRIPT-14B.
+           PERFORM FAIL.
+           MOVE TABLE-C TO COMPUTED-A.
+           MOVE "1234" TO CORRECT-A.
+       SUB-SCRIPT-14C.
+           MOVE  "SUB-SCRIPT-14" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *>     THIS TEST CHECKS THE USE OF SUBSCRIPTED DATA-NAMES
+      *>     IN A MULTIPLY STATEMENT.
+       SUB-SCRIPT-15.
+           MOVE  "1234" TO TABLE-C.
+           DIVIDE  ENTRY-B-2 (1) INTO ENTRY-C (1).
+           DIVIDE  ENTRY-B-2 (2) INTO ENTRY-C (2).
+           DIVIDE  ENTRY-B-2 (3) INTO ENTRY-C (3).
+           DIVIDE  ENTRY-B-2 (4) INTO ENTRY-C (4).
+           IF  TABLE-C  NOT EQUAL TO "1111"
+           GO TO  SUB-SCRIPT-15B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-15C.
+       SUB-SCRIPT-15A.
+           PERFORM DE-LETE.
+           GO TO  SUB-SCRIPT-15C.
+       SUB-SCRIPT-15B.
+           PERFORM FAIL.
+           MOVE TABLE-C TO COMPUTED-A.
+           MOVE "1111" TO CORRECT-A.
+       SUB-SCRIPT-15C.
+           MOVE "SUB-SCRIPT-15" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     THIS TEST CHECKS THE USE OF SUBSCRIPTED DATA-NAMES
+      *>     IN A DIVIDE STATEMENT.
+           MOVE TABLE-A-VALUES TO TABLE-A.
+       SUB-SCRIPT-16.
+           IF ENTRY-A-1 (SUB-3) EQUAL TO "222"
+               PERFORM PASS
+               GO TO SUB-SCRIPT-16B.
+           MOVE "222" TO CORRECT-A.
+           MOVE ENTRY-A-1 (SUB-3) TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO SUB-SCRIPT-16B.
+       SUB-SCRIPT-16A.
+           PERFORM DE-LETE.
+       SUB-SCRIPT-16B.
+           MOVE "SUB-SCRIPT-16" TO PAR-NAME.
+      *>     NOTE  COMPUTATIONAL SUBSCRIPT  USED  S9(18).
+           PERFORM PRINT-DETAIL.
+       SUB-SCRIPT-17.
+           IF ENTRY-A-2 (SUB-4) EQUAL TO "44"
+               PERFORM PASS
+               GO TO SUB-SCRIPT-17B.
+           MOVE "44" TO CORRECT-A.
+           MOVE ENTRY-A-2 (SUB-4) TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO SUB-SCRIPT-17B.
+       SUB-SCRIPT-17A.
+           PERFORM DE-LETE.
+       SUB-SCRIPT-17B.
+           MOVE "SUB-SCRIPT-17" TO PAR-NAME.
+      *>     NOTE COMPUTATIONAL SUBSCRIPT  USED  9(18).
+           PERFORM PRINT-DETAIL.
+       SUB-SCRIPT-18.
+           IF ENTRY-A-2 (+4) EQUAL TO "44"
+               PERFORM PASS
+               GO TO SUB-SCRIPT-18B.
+           MOVE "44" TO CORRECT-A.
+           MOVE ENTRY-A-2 (+4) TO COMPUTED-A.
+           PERFORM FAIL.
+           GO TO SUB-SCRIPT-18B.
+       SUB-SCRIPT-18A.
+           PERFORM DE-LETE.
+       SUB-SCRIPT-18B.
+           MOVE "SUB-SCRIPT-18" TO PAR-NAME.
+      *>     NOTE SIGNED NUMERIC LITERAL SUBSCRIPT.
+           PERFORM PRINT-DETAIL.
+       SUB-SCRIPT-19.
+           IF ENTRY-A-3 (CON-2) NOT EQUAL TO "2"
+           GO TO SUB-SCRIPT-19B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-19C.
+       SUB-SCRIPT-19A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-19C.
+       SUB-SCRIPT-19B.
+           PERFORM FAIL.
+           MOVE ENTRY-A-3 (CON-2) TO COMPUTED-A.
+           MOVE "2" TO CORRECT-A.
+       SUB-SCRIPT-19C.
+           MOVE "SUB-SCRIPT-19" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE  *****  THIS CHECKS THE USE OF AN ELEMENTARY ITEM
+      *>                  WHEN THE GROUP ITEM HAS THE OCCURS.
+       SUB-SCRIPT-20.
+           IF ENTRY-A-2 (CON-4) NOT EQUAL TO "44"
+           GO TO SUB-SCRIPT-20B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-20C.
+       SUB-SCRIPT-20A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-20C.
+       SUB-SCRIPT-20B.
+           PERFORM FAIL.
+           MOVE ENTRY-A-2 (CON-4) TO COMPUTED-A.
+           MOVE "44" TO CORRECT-A.
+       SUB-SCRIPT-20C.
+           MOVE "SUB-SCRIPT-20" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     NOTE  *******  THIS CHECKS A GROUP ITEM WHEN IT
+      *>                    HAS THE OCCURS.
+       SUB-SCRIPT-21.
+           IF ENTRY-B-2 (CON-1) NOT EQUAL TO "1"
+           GO TO SUB-SCRIPT-21B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-21C.
+       SUB-SCRIPT-21A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-21C.
+       SUB-SCRIPT-21B.
+           PERFORM FAIL.
+           MOVE ENTRY-B-2 (CON-1) TO COMPUTED-A.
+           MOVE "1" TO CORRECT-A.
+       SUB-SCRIPT-21C.
+           MOVE "SUB-SCRIPT-21" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     USE OF ITEM WHICH IS DEFINED WITH BOTH THE REDEFINES
+      *>     AND THE OCCURS CLAUSE.
+       SUB-SCRIPT-22.
+           MOVE ENTRY-B-2 (CON-1) TO ENTRY-C (CON-4).
+           MOVE ENTRY-B-2 (CON-2) TO ENTRY-C (CON-3).
+           MOVE ENTRY-B-2 (CON-3) TO ENTRY-C (CON-2).
+           MOVE ENTRY-B-2 (CON-4) TO ENTRY-C (CON-1).
+           IF TABLE-C    NOT  EQUAL TO "4321"
+           GO TO SUB-SCRIPT-22B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-22C.
+       SUB-SCRIPT-22A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-22C.
+       SUB-SCRIPT-22B.
+           PERFORM FAIL.
+           MOVE TABLE-C TO COMPUTED-A.
+           MOVE "4321" TO CORRECT-A.
+       SUB-SCRIPT-22C.
+           MOVE "SUB-SCRIPT-22" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SUB-SCRIPT-23.
+           MOVE "0000" TO TABLE-C.
+           ADD ENTRY-B-2 (CON-1) TO ENTRY-C (CON-1).
+           ADD ENTRY-B-2 (CON-2) TO ENTRY-C (CON-2).
+           ADD ENTRY-B-2 (CON-3) TO ENTRY-C (CON-3).
+           ADD ENTRY-B-2 (CON-4) TO ENTRY-C (CON-4).
+           IF TABLE-C NOT EQUAL TO "1234"
+           GO TO SUB-SCRIPT-23B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-23C.
+       SUB-SCRIPT-23A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-23C.
+       SUB-SCRIPT-23B.
+           PERFORM FAIL.
+           MOVE TABLE-C TO COMPUTED-A.
+           MOVE "1234" TO CORRECT-A.
+       SUB-SCRIPT-23C.
+           MOVE "SUB-SCRIPT-23" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *>     ADD STATEMENTS WITH UNSIGNED NUMERIC ITEMS AS SUBSCRIPTS.
+       SUB-SCRIPT-24.
+           MOVE  "1234" TO TABLE-C.
+           SUBTRACT ENTRY-B-2 (CON-1) FROM ENTRY-C (CON-1).
+           SUBTRACT ENTRY-B-2 (CON-2) FROM ENTRY-C (CON-2).
+           SUBTRACT ENTRY-B-2 (CON-3) FROM ENTRY-C (CON-3).
+           SUBTRACT ENTRY-B-2 (CON-4) FROM ENTRY-C (CON-4).
+           IF TABLE-C  NOT EQUAL TO  "0000"
+           GO TO  SUB-SCRIPT-24B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-24C.
+       SUB-SCRIPT-24A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-24C.
+       SUB-SCRIPT-24B.
+           PERFORM FAIL.
+           MOVE TABLE-C TO COMPUTED-A.
+           MOVE "0000" TO CORRECT-A.
+       SUB-SCRIPT-24C.
+           MOVE "SUB-SCRIPT-24" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *>     SUBSTRACT STATEMENTS WITH UNSIGNED NUMERIC ITEMS AS SUBSCRIPT
+       SUB-SCRIPT-25.
+           MOVE "1111" TO TABLE-C.
+           MULTIPLY ENTRY-B-2 (CON-1) BY ENTRY-C (CON-1).
+           MULTIPLY ENTRY-B-2 (CON-2) BY ENTRY-C (CON-2).
+           MULTIPLY ENTRY-B-2 (CON-3) BY ENTRY-C (CON-3).
+           MULTIPLY ENTRY-B-2 (CON-4) BY ENTRY-C (CON-4).
+           IF TABLE-C  NOT EQUAL TO "1234"
+           GO TO SUB-SCRIPT-25B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-25C.
+       SUB-SCRIPT-25A.
+           PERFORM DE-LETE.
+           GO TO SUB-SCRIPT-25C.
+       SUB-SCRIPT-25B.
+           PERFORM FAIL.
+           MOVE TABLE-C TO COMPUTED-A.
+           MOVE "1234" TO CORRECT-A.
+       SUB-SCRIPT-25C.
+           MOVE  "SUB-SCRIPT-25" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *>     MULTIPLY STATEMENTS WITH UNSIGNED NUMERIC ITEMS AS SUBSCRIPTS
+       SUB-SCRIPT-26.
+           MOVE  "1234" TO TABLE-C.
+           DIVIDE ENTRY-B-2 (CON-1) INTO ENTRY-C (CON-1).
+           DIVIDE ENTRY-B-2 (CON-2) INTO ENTRY-C (CON-2).
+           DIVIDE ENTRY-B-2 (CON-3) INTO ENTRY-C (CON-3).
+           DIVIDE ENTRY-B-2 (CON-4) INTO ENTRY-C (CON-4).
+           IF  TABLE-C  NOT EQUAL TO "1111"
+           GO TO  SUB-SCRIPT-26B.
+           PERFORM PASS.
+           GO TO SUB-SCRIPT-26C.
+       SUB-SCRIPT-26A.
+           PERFORM DE-LETE.
+           GO TO  SUB-SCRIPT-26C.
+       SUB-SCRIPT-26B.
+           PERFORM FAIL.
+           MOVE TABLE-C TO COMPUTED-A.
+           MOVE "1111" TO CORRECT-A.
+       SUB-SCRIPT-26C.
+           MOVE "SUB-SCRIPT-26" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *>     DIVIDE STATEMENTS WITH UNSIGNED NUMERIC ITEMS AS SUBSCRIPTS.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC132A

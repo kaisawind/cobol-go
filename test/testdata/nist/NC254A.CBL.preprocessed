@@ -1,0 +1,669 @@
+      *> HEADER,COBOL,NC254A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           NC254A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>     PROGRAM NC254A TESTS SWITCH SETTINGS USING LEVEL 2 FEATURES
+      *>     LOGICAL OPERATORS AND, OR, NOT.
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       SPECIAL-NAMES.
+           XXXXX051
+           IS SW-1
+               ON STATUS IS ON-SWITCH-1
+               OFF STATUS IS OFF-SWITCH-1
+           XXXXX052
+           IS SW-2
+                 ON IS ON-SWITCH-2
+                 OFF IS OFF-SWITCH-2
+           CLASS   ORDINAL-A-ONLY IS
+           XXXXX090
+           CLASS   ORDINAL-A-THROUGH-D IS
+           XXXXX090
+           THROUGH
+           XXXXX091
+           CLASS   ORDINAL-D-THRU-A
+           XXXXX091
+           THRU
+           XXXXX090
+           CLASS   ACTUAL-A-ONLY "A"
+           CLASS   ACTUAL-A-THRU-D IS "A" THRU "D"
+           CLASS   ACTUAL-D-THROUGH-A IS "D" THROUGH "A"
+           CLASS   ACTUAL-ABCD "ABCD".
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  WS-A                        PIC X.
+       01  WS-B                        PIC X(5).
+       01  IF-D1                              PICTURE IS S9(4)V9(2)
+           VALUE IS 0.
+       01  IF-D2                              PICTURE IS S9(4)V9(2)
+           VALUE IS ZERO.
+       01  IF-D3                              PICTURE IS X(10)
+           VALUE IS "0000000000".
+       01  IF-D4                              PICTURE IS X(15)
+           VALUE IS "               ".
+       01  IF-D6                              PICTURE IS A(10)
+           VALUE IS "BABABABABA".
+       01  IF-D7                              PICTURE IS S9(6)V9(4)
+           VALUE IS +123.45.
+       01  IF-D8                              PICTURE IS 9(6)V9(4)
+           VALUE IS 12300.
+       01  IF-D9                              PICTURE IS X(3)
+           VALUE IS "123".
+       01  IF-D11                             PICTURE IS X(6)
+           VALUE IS "ABCDEF".
+       01  IF-D13                             PICTURE IS 9(6)V9(4)
+           VALUE IS 12300.
+       01  IF-D14                             PICTURE IS S9(4)V9(2)
+           VALUE IS +123.45.
+       01  IF-D15                             PICTURE IS S999PP
+           VALUE IS 12300.
+       01  IF-D16                             PICTURE IS PP99
+           VALUE IS .0012.
+       01  IF-D17                             PICTURE IS SV9(4)
+           VALUE IS .0012.
+       01  IF-D18                             PICTURE IS X(10)
+           VALUE IS "BABABABABA".
+       01  IF-D19                             PICTURE IS X(10)
+           VALUE IS "ABCDEF    ".
+       01  IF-D23                             PICTURE IS $9,9B9.90+.
+       01  IF-D24                             PICTURE IS X(10)
+           VALUE IS "$1,2 3.40+".
+       01  IF-D25                             PICTURE IS ABABX0A.
+       01  IF-D26  PIC X(7)
+           VALUE IS "A C D0E".
+       01  IF-D27             PICTURE 9(6)V9(4)  VALUE 2137.45
+           USAGE IS COMPUTATIONAL.
+       01  IF-D28                             PICTURE IS 999999V9999
+           VALUE IS 2137.45.
+       01  IF-D32                             PICTURE IS 9 VALUE IS 0.
+       01  IF-D33 PICTURE S9 VALUE -0.
+       01  IF-D34 PICTURE S9 VALUE +0.
+       01  IF-D37             PICTURE 9(5)  VALUE 0001234.
+       01  IF-D38             PICTURE X(20) VALUE " BABBAGE".
+       01  ALPHA-UPPER        PIC X(20)     VALUE " UPPERCASE CHARS".
+       01  ALPHA-LOWER        PIC X(20)     VALUE " lowercase chars".
+       01  NON-COBOL-CHARACTERS  PICTURE X(8) VALUE
+           XXXXX081.
+       01  AZERO-DS-05V05              PICTURE S9(5)V9(5) VALUE ZERO.
+       01  A18ONES-DS-18V00            PICTURE S9(18)
+                                       VALUE 111111111111111111.
+       01  ONES-XN-00018               PICTURE X(18)
+           VALUE "111111111111111111".
+       01  A99-DS-02V00                PICTURE S99  VALUE 99.
+       01  WRK-DU-02V00                PICTURE 99.
+       01  TWOS-XN-00002               PICTURE XX   VALUE "22".
+       01  A18ONES-DS-09V09            PICTURE S9(9)V9(9)
+                                       VALUE 111111111.111111111.
+       01  ONES-XN-00002               PICTURE XX   VALUE "11".
+       01  A02TWOS-DU-02V00            PICTURE 99   VALUE 22.
+       01  A01ONE-DS-P0801             PICTURE SP(8)9 VALUE .000000001.
+       01  A990-DS-0201P               PICTURE S99P  VALUE +990.
+       01  XDATA-XN-00018              PICTURE X(18)
+                                       VALUE "00ABCDEFGHI  4321 ".
+       01  XDATA-DS-18V00-S REDEFINES XDATA-XN-00018 PICTURE S9(18).
+       01  YADATA-XN-00010             PICTURE X(10) VALUE "ABCDEFGHIJ".
+       01  YADATA-XN-00010-U-AND-L     PICTURE X(10) VALUE "AbCdEfGhIj".
+       01  DUMMY-DS-00001     PICTURE S9 VALUE -1.
+       01  A02TWOS-DS-03V02            PICTURE S999V99  VALUE +022.00.
+       01  WRK-DS-18V0-1               PIC S9(18)     VALUE
+                  -123456789012345678.
+       01  WRK-XN-18-2                 PIC  X(18)     VALUE
+                  "123456789012345678".
+       
+       01  IF-D10.
+           02 FILLER          PICTURE XX VALUE "01".
+           02 FILLER          PICTURE XX VALUE "23".
+           02 IF-D10A.
+             03 FILLER        PICTURE XXXX VALUE "4567".
+             03 FILLER        PICTURE XXXX VALUE "8912".
+       01  IF-D12.
+           02 FILLER          PICTURE XXX VALUE "ABC".
+           02 IF-D12A.
+             03 IF-D12B.
+               04 FILLER      PICTURE XX VALUE "DE".
+               04 FILLER      PICTURE X  VALUE "F".
+       01  IF-D20.
+           02 FILLER          PICTURE 9(5) VALUE ZERO.
+           02 FILLER          PICTURE 99   VALUE 12.
+           02 FILLER          PICTURE 9    VALUE 3.
+           02 FILLER          PICTURE 99   VALUE 45.
+       01  IF-D21.
+           02 FILLER          PICTURE 9(5) VALUE ZERO.
+           02 FILLER          PICTURE 9(5) VALUE 12345.
+       01  IF-D22.
+           02 FILLER          PICTURE AA   VALUE "AB".
+           02 FILLER          PICTURE AAAA VALUE "CDEF".
+       01  IF-D35.
+           02 IF-D35A                             VALUE "*ASTERISK".
+             03 FILLER        PICTURE A(6).
+             03 FILLER        PICTURE AAA.
+           02 IF-D35B                            VALUE "/SLASH".
+             03 FILLER        PICTURE 9(6).
+       01  IF-D36 REDEFINES IF-D35.
+           02 IF-D36A         PICTURE X(6).
+           02 IF-D36B         PICTURE XXX.
+           02 IF-D36C         PICTURE X(6).
+       01  IF-D39.
+           02  FILLER   PICTURE A(6) VALUE "ABCDEF".
+           02  FILLER  PICTURE A(4) VALUE SPACE.
+       01  LEVEL-01.
+           02 LEVEL-02.
+           03 LEVEL-03.
+           04 LEVEL-04.
+           05 LEVEL-05.
+           06 LEVEL-06.
+           07 LEVEL-07.
+           08 LEVEL-08.
+           09 LEVEL-09.
+           10 LEVEL-10                        PICTURE IS X VALUE IS "R".
+       01  LEVEL-RECEIVER                     PICTURE IS X VALUE IS
+           SPACE.
+       01  LEVEL-SENDER PICTURE X VALUE "S".
+       01  VAL                                PICTURE IS 9 VALUE IS 0.
+       01  A-2                                PICTURE IS A VALUE IS "A".
+       01  N-27                               PICTURE IS 9999V9
+           VALUE IS 9999.9.
+       01  N-30                               PICTURE IS 9V9
+           VALUE IS 2.
+       01  N-31                               PICTURE IS 9(6).
+       01  X-32 REDEFINES N-31                PICTURE IS X(6).
+       01  N-33                               PICTURE IS 9(5)
+           VALUE IS 29.
+       01  A-37                               PICTURE IS A VALUE IS "X".
+       01  X-38 REDEFINES A-37                PICTURE IS X.
+       01  X-43 PIC X(10) VALUE "    l75.63".
+       01  N-84                               PICTURE IS 9999999999.
+       01  NUMERIC-GRP-TEST.
+           02  NUMERIC-1                PICTURE 9 VALUE 0.
+           02  NUMERIC-2.
+               03  NUMERIC-3            PICTURE 9(1)V9(1) VALUE ZERO.
+               03  NUMERIC-4.
+                   04  NUMERIC-5       PICTURE 9(18) VALUE 1.
+           02  NUMERIC-6.
+               03  NUMERIC-7            PICTURE X VALUE "7".
+               03  NUMERIC-8            PICTURE 9  VALUE 8.
+       01  NUM-GRP.
+           02  NUM-SUB-GRP  PIC 9.
+       01  GROUP-1000.
+           02  FILLER  PIC X.
+           02  GROUP-X1000.
+               03  GROUP-1000-1 PIC X(500) VALUE ZERO.
+               03  XNAME        PICTURE X(100) VALUE QUOTE.
+               03  GROUP-1000-2 PICTURE X(399) VALUE SPACE.
+               03  GROUP-1000-3 PICTURE X VALUE ".".
+           02  GROUP-X500-2.
+               03  GROUP-X500-A        PICTURE X(500) VALUE ZERO.
+               03  GROUP-X500-1.
+                   04  GROUP-X500-1-1  PICTURE X(50) VALUE QUOTE.
+                   04  GROUP-X500-1-2  PICTURE X(50) VALUE QUOTE.
+                   04  GROUP-X500-1-3  PICTURE X(398) VALUE SPACE.
+                   04  GROUP-X500-1-4  PICTURE XX VALUE " .".
+       01  HI-LO-VALUES.
+           02  LOW-VAL  PIC X VALUE LOW-VALUE.
+           02 ZERO-01  PICTURE 9(18) VALUE 1.
+           02  ABC      PICTURE XXX VALUE "ABC".
+           02  NINE-17-8 PICTURE 9(18) VALUE 999999999999999998.
+           02  ZERO-NULL PIC 9(9) VALUE 0.
+           02  ZERO-ZERO PICTURE 9(9)V9(9) VALUE 0.0.
+       01  COMP-DATA.
+           02  COMP-DATA1 PICTURE 9(18) COMPUTATIONAL VALUE 300.
+           02  COMP-DATA2  PICTURE 9(10) COMPUTATIONAL VALUE  100000.
+           02  COMP-DATA3  PICTURE 9     COMPUTATIONAL VALUE 9.
+           02  COMP-DATA4  PICTURE 9(9)V9(7) COMPUTATIONAL VALUE 3.3.
+           02  COMP-DATA5  PICTURE 9(5)V9(2) COMPUTATIONAL VALUE 52.25.
+           02  COMP-DATA6  PICTURE 9V9       COMPUTATIONAL VALUE 8.8.
+           02  COMP-DATA7  PICTURE 9(3)V9(2) COMPUTATIONAL VALUE 300.00.
+           02  COMP-DATA8  PICTURE 9V9(9) COMPUTATIONAL VALUE 3.3000000.
+           02  COMP-DATA9  PICTURE 9(8)  COMPUTATIONAL VALUE 100000.
+       01  DISP-DATA.
+           02  DISP-DATA1  PICTURE 9(18) VALUE 300.
+           02  DISP-DATA2  PICTURE 9(8)  VALUE 100000.
+           02  DISP-DATA3  PICTURE 9     VALUE 9.
+           02  DISP-DATA4  PICTURE 9(7)V9(9) VALUE 3.3.
+           02  DISP-DATA5  PICTURE 9(2)V9(2) VALUE 52.25.
+           02  DISP-DATA6  PICTURE 9V9   VALUE 8.8.
+       01  DATA-5          PICTURE 9     VALUE 5.
+       01  DATA-99999      PICTURE S9(5) VALUE +99999.
+       01  DATA-Z          PICTURE X     VALUE "Z".
+       01  DATA-4          PICTURE 9     VALUE 4.
+       01  DATA-Y          PICTURE X     VALUE "Y".
+       01  DATA-VWXYZ      PICTURE X(5)  VALUE "VWXYZ".
+       01  DATA-ADCBA      PICTURE X(5)  VALUE "ADCBA".
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC254A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       SECT-NC254A-001 SECTION.
+      *> 
+      *> 
+       NEXT-INIT-GF-1.
+      *>     ==-->     NEXT SENTENCE           <--==
+           MOVE   "V1-89 6.15.4 GR2 " TO ANSI-REFERENCE.
+           MOVE    "A" TO A-2.
+       NEXT-TEST-GF-1.
+           IF       A-2 EQUAL TO "A"
+                    NEXT SENTENCE
+                    ELSE
+                    NEXT SENTENCE.
+           PERFORM  PASS.
+           GO TO    NEXT-WRITE-GF-1.
+       NEXT-DELETE-GF-1.
+           PERFORM  DE-LETE.
+       NEXT-WRITE-GF-1.
+           MOVE "NEXT-TEST-1" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+      *> 
+      *> 
+       ANOTHER-REMARK.
+           MOVE     SPACE TO TEST-RESULTS.
+           MOVE "THE FOLLOWING TESTS        " TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+           MOVE "TEST THE COMPARISONS IN    " TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+           MOVE "SWITCH-STATUS, RELATION    " TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+           MOVE "AND CLASS CONDITIONALS.    " TO RE-MARK.
+           PERFORM  PRINT-DETAIL.
+       SWH-INIT-GF-1.
+           MOVE   "V1-13 4.5.2" TO ANSI-REFERENCE.
+           MOVE "SWITCH-STATUS" TO FEATURE.
+       SWH-TEST-GF-1.
+           IF      ON-SWITCH-1
+                   PERFORM PASS
+           ELSE
+                   PERFORM FAIL.
+           GO TO   SWH-WRITE-GF-1.
+       SWH-DELETE-GF-1.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM  DE-LETE.
+       SWH-WRITE-GF-1.
+           MOVE "SWH-TEST-GF-1" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SWH-INIT-GF-2.
+           MOVE   "V1-13 4.5.2" TO ANSI-REFERENCE.
+       SWH-TEST-GF-2.
+           IF       OFF-SWITCH-1
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    SWH-WRITE-GF-2.
+       SWH-DELETE-GF-2.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM  DE-LETE.
+       SWH-WRITE-GF-2.
+           MOVE "SWH-TEST-GF-2" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SWH-INIT-GF-3.
+           MOVE   "V1-13 4.5.2" TO ANSI-REFERENCE.
+       SWH-TEST-GF-3.
+           IF       OFF-SWITCH-2
+                    PERFORM PASS
+                    ELSE
+                    PERFORM FAIL.
+           GO TO    SWH-WRITE-GF-3.
+       SWH-DELETE-GF-3.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM  DE-LETE.
+       SWH-WRITE-GF-3.
+           MOVE "SWH-TEST-GF-3" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SWH-INIT-GF-4.
+           MOVE   "V1-13 4.5.2" TO ANSI-REFERENCE.
+       SWH-TEST-GF-4.
+           IF       ON-SWITCH-2
+                    PERFORM FAIL
+                    ELSE
+                    PERFORM PASS.
+           GO TO    SWH-WRITE-GF-4.
+       SWH-DELETE-GF-4.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM  DE-LETE.
+       SWH-WRITE-GF-4.
+           MOVE "SWH-TEST-GF-4" TO PAR-NAME.
+           PERFORM  PRINT-DETAIL.
+       SWH-TEST-5.
+           IF NOT ON-SWITCH-1
+               MOVE "SWITCH-1  OFF " TO COMPUTED-A
+               MOVE "SWITCH-1 EXPECTED ON" TO CORRECT-A
+               PERFORM FAIL
+               GO TO SWH-WRITE-5.
+           PERFORM PASS.
+           GO TO SWH-WRITE-5.
+       SWH-DELETE-5.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-5.
+           MOVE "SWH-TEST-5" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SWH-TEST-6.
+           IF NOT OFF-SWITCH-1
+               PERFORM PASS
+               GO TO SWH-WRITE-6.
+           MOVE "SWITCH-1  OFF " TO COMPUTED-A.
+           MOVE "SWITCH-1 EXPECTED ON" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SWH-WRITE-6.
+       SWH-DELETE-6.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-6.
+           MOVE "SWH-TEST-6" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SWH-TEST-7.
+           IF NOT ON-SWITCH-2
+               PERFORM PASS
+               GO TO SWH-WRITE-7.
+           MOVE "SWITCH-2  ON " TO COMPUTED-A.
+           MOVE "SWITCH2 EXPECTED OFF" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO SWH-WRITE-7.
+       SWH-DELETE-7.
+           MOVE "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-7.
+           MOVE "SWH-TEST-7" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       SWH-TEST-8.
+           IF NOT OFF-SWITCH-2
+               MOVE "SWITCH-2  ON " TO COMPUTED-A
+               MOVE "SWITCH2 EXPECTED OFF" TO CORRECT-A
+               PERFORM FAIL
+               GO TO SWH-WRITE-8.
+           PERFORM PASS.
+           GO TO  SWH-WRITE-8.
+       SWH-DELETE-8.
+           MOVE  "SWITCHES NOT IMPLEMENTED" TO RE-MARK.
+           PERFORM DE-LETE.
+       SWH-WRITE-8.
+           MOVE  "SWH-TEST-8" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+      *> 
+      *> 
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC254A

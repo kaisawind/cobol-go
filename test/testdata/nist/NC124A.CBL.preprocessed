@@ -1,0 +1,2352 @@
+      *> HEADER,COBOL,NC124A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+       
+           NC124A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *> 
+      *>                PROGRAM NC124A TESTS THE USE OF
+      *>             PICTURE CHARACTERS P, S, +, -, Z AND *.
+      *> 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       01  WORK-AREA-1                 PICTURE 9       VALUE 0.
+       01  WORK-AREA-2                 PICTURE 99      VALUE 12.
+       01  WORK-AREA-3                 PICTURE S99     VALUE -12.
+       01  WORK-AREA-4                 PICTURE S999    VALUE 123.
+       01  WORK-AREA-5                 PICTURE S999    VALUE -123.
+       01  WORK-AREA-6                 PICTURE 9999    VALUE 1234.
+       01  WORK-AREA-7                 PICTURE S9999   VALUE -1234.
+       01  WORK-AREA-8                 PICTURE S99V99  VALUE 12.34.
+       01  WORK-AREA-9                 PICTURE S99V99  VALUE -12.34.
+       01  WORK-AREA-10                PICTURE 9       VALUE 0.
+       01  WORK-AREA-11                PICTURE V99     VALUE .02.
+       01  WORK-AREA-12                PICTURE 99      VALUE 12.
+       01  WORK-AREA-13                PICTURE 99V99   VALUE 12.34.
+       01  WORK-AREA-14                PICTURE 9999    VALUE 1234.
+       01  WORK-AREA-15                PICTURE 9999V99 VALUE 1234.56.
+       01  WORK-AREA-16                PICTURE 9       VALUE 0.
+       01  WORK-AREA-17                PICTURE 99      VALUE 13.
+       01  WORK-AREA-18                PICTURE 999     VALUE 123.
+       01  WORK-AREA-19                PICTURE 9999    VALUE 2010.
+       01  WORK-AREA-20                PICTURE 9999V9  VALUE 1010.2.
+       01  WORK-AREA-21                PICTURE V99     VALUE .01.
+       01  WORK-AREA-22                PICTURE 9       VALUE 0.
+       01  WORK-AREA-23                PICTURE 9V99    VALUE 1.01.
+       01  WORK-AREA-24                PICTURE 999V    VALUE 217.
+       01  WORK-AREA-25                PICTURE 9999V99 VALUE 1010.20.
+       01  WORK-AREA-26                PICTURE V99     VALUE .01.
+       01  WORK-AREA-27                PICTURE S9PP    VALUE 200.
+       01  WORK-AREA-27A               PICTURE X(3)    VALUE SPACE.
+       01  WORK-AREA-28                PICTURE 999     VALUE 567.
+       01  WORK-AREA-28A               PICTURE S9PP    VALUE ZERO.
+       01  WORK-AREA-29                PICTURE 999     VALUE 123.
+       01  WORK-AREA-29A               PICTURE 9PP     VALUE ZERO.
+       01  WORK-AREA-29B               PICTURE X(3)    VALUE SPACE.
+       01  WORK-AREA-30                PICTURE 999PP   VALUE 00900.
+       01  WORK-AREA-30A               PICTURE ZZZPP   VALUE ZERO.
+       01  WORK-AREA-31                PICTURE 999PP   VALUE 01200.
+       01  WORK-AREA-31A               PICTURE ZZZPP   VALUE ZERO.
+       01  WORK-AREA-31B               PICTURE X(5)    VALUE SPACE.
+       01  WORK-AREA-32                PICTURE PP9     VALUE .001.
+       01  WORK-AREA-32A               PICTURE V999    VALUE ZERO.
+       01  WORK-AREA-33                PICTURE V999    VALUE .567.
+       01  WORK-AREA-33A               PICTURE PP9     VALUE ZERO.
+       01  WORK-AREA-34                PICTURE V999    VALUE .123.
+       01  WORK-AREA-34A               PICTURE PP9     VALUE ZERO.
+       01  WORK-AREA-34B               PICTURE V999    VALUE ZERO.
+       01  EDIT-AREA-1                 PICTURE +9999.
+       01  EDIT-AREA-2                 PICTURE -9999.
+       01  EDIT-AREA-3                 PICTURE ++++9.
+       01  EDIT-AREA-4                 PICTURE ----9.
+       01  EDIT-AREA-5                 PICTURE +++++.
+       01  EDIT-AREA-6                 PICTURE -----.
+       01  EDIT-AREA-7                 PICTURE +++++.++.
+       01  EDIT-AREA-8                 PICTURE --,---.--.
+       01  EDIT-AREA-9                 PICTURE $$99.
+       01  EDIT-AREA-10                PICTURE $$$$9.
+       01  EDIT-AREA-11                PICTURE $$$$$.99.
+       01  EDIT-AREA-12                PICTURE $$,$$$.$$.
+       01  EDIT-AREA-13                PICTURE *999.
+       01  EDIT-AREA-14                PICTURE **99.
+       01  EDIT-AREA-15                PICTURE ***9.
+       01  EDIT-AREA-16                PICTURE **.**.
+       01  EDIT-AREA-17                PICTURE *,***.**.
+       01  EDIT-AREA-18                PICTURE 9999.
+       01  EDIT-AREA-19                PICTURE Z999.
+       01  EDIT-AREA-20                PICTURE ZZ99.
+       01  EDIT-AREA-21                PICTURE ZZZ9.
+       01  EDIT-AREA-22                PICTURE ZZZZ.
+       01  EDIT-AREA-23                PICTURE ZZ.ZZ.
+       01  EDIT-AREA-24                PICTURE Z,ZZZ.
+       01  TEST-RESULTS.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 FEATURE                  PIC X(20)  VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02 P-OR-F                   PIC X(5)   VALUE SPACE.
+           02 FILLER                   PIC X      VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER                 PIC X(19)  VALUE SPACE.
+             03  PARDOT-X              PIC X      VALUE SPACE.
+             03 DOTVALUE               PIC 99     VALUE ZERO.
+           02 FILLER                   PIC X(8)   VALUE SPACE.
+           02 RE-MARK                  PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER                   PIC X(30)  VALUE SPACE.
+           02 FILLER                   PIC X(17)  VALUE
+                  "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A               PIC X(20)  VALUE SPACE.
+           03 COMPUTED-N               REDEFINES COMPUTED-A
+                                       PIC -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A   PIC -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A   PIC -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A   PIC -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                    PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                  PIC X(20) VALUE SPACE.
+           03 CORRECT-N    REDEFINES CORRECT-A     PIC -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A     PIC -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A     PIC -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A     PIC -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                     PIC -9(18).
+               04 FILLER                           PIC X.
+           03 FILLER PIC X(2) VALUE SPACE.
+           03 COR-ANSI-REFERENCE             PIC X(48) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER  PIC IS X(99)    VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                 REMARKS".
+           02 FILLER                     PIC X(20)    VALUE SPACE.
+       01  CCVS-C-2.
+           02 FILLER                     PIC X        VALUE SPACE.
+           02 FILLER                     PIC X(6)     VALUE "TESTED".
+           02 FILLER                     PIC X(15)    VALUE SPACE.
+           02 FILLER                     PIC X(4)     VALUE "FAIL".
+           02 FILLER                     PIC X(94)    VALUE SPACE.
+       01  REC-SKL-SUB                   PIC 9(2)     VALUE ZERO.
+       01  REC-CT                        PIC 99       VALUE ZERO.
+       01  DELETE-COUNTER                PIC 999      VALUE ZERO.
+       01  ERROR-COUNTER                 PIC 999      VALUE ZERO.
+       01  INSPECT-COUNTER               PIC 999      VALUE ZERO.
+       01  PASS-COUNTER                  PIC 999      VALUE ZERO.
+       01  TOTAL-ERROR                   PIC 999      VALUE ZERO.
+       01  ERROR-HOLD                    PIC 999      VALUE ZERO.
+       01  DUMMY-HOLD                    PIC X(120)   VALUE SPACE.
+       01  RECORD-COUNT                  PIC 9(5)     VALUE ZERO.
+       01  ANSI-REFERENCE                PIC X(48)    VALUE SPACES.
+       01  CCVS-H-1.
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+           02  FILLER                    PIC X(42)    VALUE
+           "OFFICIAL COBOL COMPILER VALIDATION SYSTEM".
+           02  FILLER                    PIC X(39)    VALUE SPACES.
+       01  CCVS-H-2A.
+         02  FILLER                        PIC X(40)  VALUE SPACE.
+         02  FILLER                        PIC X(7)   VALUE "CCVS85 ".
+         02  FILLER                        PIC XXXX   VALUE
+           "4.2 ".
+         02  FILLER                        PIC X(28)  VALUE
+                  " COPY - NOT FOR DISTRIBUTION".
+         02  FILLER                        PIC X(41)  VALUE SPACE.
+       
+       01  CCVS-H-2B.
+         02  FILLER                        PIC X(15)  VALUE
+                  "TEST RESULT OF ".
+         02  TEST-ID                       PIC X(9).
+         02  FILLER                        PIC X(4)   VALUE
+                  " IN ".
+         02  FILLER                        PIC X(12)  VALUE
+           " HIGH       ".
+         02  FILLER                        PIC X(22)  VALUE
+                  " LEVEL VALIDATION FOR ".
+         02  FILLER                        PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+       01  CCVS-H-3.
+           02  FILLER                      PIC X(34)  VALUE
+                  " FOR OFFICIAL USE ONLY    ".
+           02  FILLER                      PIC X(58)  VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER                      PIC X(28)  VALUE
+                  "  COPYRIGHT   1985 ".
+       01  CCVS-E-1.
+           02 FILLER                       PIC X(52)  VALUE SPACE.
+           02 FILLER  PIC X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN                     PIC X(9).
+           02 FILLER                       PIC X(45)  VALUE SPACES.
+       01  CCVS-E-2.
+           02  FILLER                      PIC X(31)  VALUE SPACE.
+           02  FILLER                      PIC X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL              PIC XXX    VALUE SPACE.
+               03 FILLER                   PIC X      VALUE SPACE.
+               03 ENDER-DESC               PIC X(44)  VALUE
+                  "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER                      PIC X(22)  VALUE
+                  " FOR OFFICIAL USE ONLY".
+           02  FILLER                      PIC X(12)  VALUE SPACE.
+           02  FILLER                      PIC X(58)  VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER                      PIC X(13)  VALUE SPACE.
+           02 FILLER                       PIC X(15)  VALUE
+                   " COPYRIGHT 1985".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(4)   VALUE " OF ".
+           02 CCVS-E-4-2                   PIC XXX    VALUE SPACE.
+           02 FILLER                       PIC X(40)  VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER                       PIC X(19)  VALUE
+                  "*** INFORMATION ***".
+           02 INFO-TEXT.
+             04 FILLER                     PIC X(8)   VALUE SPACE.
+             04 XXCOMPUTED                 PIC X(20).
+             04 FILLER                     PIC X(5)   VALUE SPACE.
+             04 XXCORRECT                  PIC X(20).
+           02 INF-ANSI-REFERENCE           PIC X(48).
+       01  HYPHEN-LINE.
+           02 FILLER  PIC IS X VALUE IS SPACE.
+           02 FILLER  PIC IS X(65)    VALUE IS "*****************************************************************".
+           02 FILLER  PIC IS X(54)    VALUE IS "******************************************************".
+       01  CCVS-PGM-ID                     PIC X(9)   VALUE
+           "NC124A".
+       PROCEDURE DIVISION.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-COUNTER.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1  TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2A TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2B TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+           MOVE CCVS-H-3  TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-COUNTER TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-COUNTER TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 42
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-H-1  TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2A TO DUMMY-RECORD  PERFORM WRT-LN 2 TIMES
+      *>         MOVE CCVS-H-2B TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-H-3  TO DUMMY-RECORD  PERFORM WRT-LN 3 TIMES
+      *>         MOVE CCVS-C-1  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE CCVS-C-2  TO DUMMY-RECORD  PERFORM WRT-LN
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF     COMPUTED-X NOT EQUAL TO SPACE
+                  GO TO FAIL-ROUTINE-WRITE.
+           IF     CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE  "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+           GO TO  FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE   TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE   ANSI-REFERENCE TO COR-ANSI-REFERENCE.
+           MOVE   TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO COR-ANSI-REFERENCE.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF     COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF     CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE   ANSI-REFERENCE TO INF-ANSI-REFERENCE.
+           MOVE   XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE   SPACES TO INF-ANSI-REFERENCE.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       PICTURE-INIT-1.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTRE-TST-1"    TO PAR-NAME.
+           MOVE "PICTURE + AND -" TO FEATURE.
+           MOVE  0                TO WORK-AREA-1.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-1.
+           MOVE WORK-AREA-1 TO EDIT-AREA-1  EDIT-AREA-2  EDIT-AREA-3
+                               EDIT-AREA-4  EDIT-AREA-5  EDIT-AREA-6
+                               EDIT-AREA-7  EDIT-AREA-8.
+           GO TO PICTURE-TEST-1-A.
+       PICTURE-DELETE-1.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-2.
+       PICTURE-TEST-1-A.
+           IF EDIT-AREA-1 EQUAL TO "+0000"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-1 TO COMPUTED-A
+              MOVE "+0000" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-1-B.
+           IF EDIT-AREA-2 EQUAL TO " 0000"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-2 TO COMPUTED-A
+              MOVE " 0000" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-1-C.
+           IF EDIT-AREA-3 EQUAL TO "   +0"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-3 TO COMPUTED-A
+              MOVE "   +0" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-1-D.
+           IF EDIT-AREA-4 EQUAL TO "    0"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-4 TO COMPUTED-A
+              MOVE "    0" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-1-E.
+           IF EDIT-AREA-5 EQUAL TO "     "
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-5 TO COMPUTED-A
+              MOVE "SPACES" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-1-F.
+           IF EDIT-AREA-6 EQUAL TO "      "
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-6 TO COMPUTED-A
+              MOVE "SPACES" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-1-G.
+           IF EDIT-AREA-7 EQUAL TO "        "
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-7 TO COMPUTED-A
+              MOVE "SPACES" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-1-H.
+           IF EDIT-AREA-8 EQUAL TO "         "
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-8 TO COMPUTED-A
+              MOVE "SPACES" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-2.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTRE-TST-2" TO PAR-NAME.
+           MOVE "PICTURE + AND -" TO FEATURE.
+           MOVE  12               TO WORK-AREA-2.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-2.
+           MOVE WORK-AREA-2 TO EDIT-AREA-1  EDIT-AREA-2  EDIT-AREA-3
+                               EDIT-AREA-4  EDIT-AREA-5  EDIT-AREA-6
+                               EDIT-AREA-7  EDIT-AREA-8.
+           GO TO PICTURE-TEST-2-A.
+       PICTURE-DELETE-2.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-3.
+       PICTURE-TEST-2-A.
+           IF EDIT-AREA-1 EQUAL TO "+0012"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-1 TO COMPUTED-A
+              MOVE "+0012" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-2-B.
+           IF EDIT-AREA-2 EQUAL TO " 0012"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-2 TO COMPUTED-A
+              MOVE " 0012" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-2-C.
+           IF EDIT-AREA-3 EQUAL TO "  +12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-3 TO COMPUTED-A
+              MOVE "  +12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-2-D.
+           IF EDIT-AREA-4 EQUAL TO "   12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-4 TO COMPUTED-A
+              MOVE "   12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-2-E.
+           IF EDIT-AREA-5 EQUAL TO "  +12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-5 TO COMPUTED-A
+              MOVE "  +12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-2-F.
+           IF EDIT-AREA-6 EQUAL TO "   12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-6 TO COMPUTED-A
+              MOVE "   12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-2-G.
+           IF EDIT-AREA-7 EQUAL TO "  +12.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-7 TO COMPUTED-A
+              MOVE "  +12.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-2-H.
+           IF EDIT-AREA-8 EQUAL TO "    12.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-8 TO COMPUTED-A
+              MOVE "    12.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-3.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTRE-TST-3" TO PAR-NAME.
+           MOVE "PICTURE + AND -" TO FEATURE.
+           MOVE  -12              TO WORK-AREA-3.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-3.
+           MOVE WORK-AREA-3 TO EDIT-AREA-1  EDIT-AREA-2  EDIT-AREA-3
+                               EDIT-AREA-4  EDIT-AREA-5  EDIT-AREA-6
+                               EDIT-AREA-7  EDIT-AREA-8.
+           GO TO PICTURE-TEST-3-A.
+       PICTURE-DELETE-3.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-4.
+       PICTURE-TEST-3-A.
+           IF EDIT-AREA-1 EQUAL TO "-0012"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-1 TO COMPUTED-A
+              MOVE "-0012" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-3-B.
+           IF EDIT-AREA-2 EQUAL TO "-0012"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-2 TO COMPUTED-A
+              MOVE "-0012" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-3-C.
+           IF EDIT-AREA-3 EQUAL TO "  -12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-3 TO COMPUTED-A
+              MOVE "  -12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-3-D.
+           IF EDIT-AREA-4 EQUAL TO "  -12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-4 TO COMPUTED-A
+              MOVE "  -12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-3-E.
+           IF EDIT-AREA-5 EQUAL TO "  -12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-5 TO COMPUTED-A
+              MOVE "  -12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-3-F.
+           IF EDIT-AREA-6 EQUAL TO "  -12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-6 TO COMPUTED-A
+              MOVE "  -12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-3-G.
+           IF EDIT-AREA-7 EQUAL TO "  -12.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-7 TO COMPUTED-A
+              MOVE "  -12.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-3-H.
+           IF EDIT-AREA-8 EQUAL TO "   -12.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-8 TO COMPUTED-A
+              MOVE "   -12.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-4.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTRE-TST-4" TO PAR-NAME.
+           MOVE "PICTURE + AND -" TO FEATURE.
+           MOVE  123              TO WORK-AREA-4.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-4.
+           MOVE WORK-AREA-4 TO EDIT-AREA-1  EDIT-AREA-2  EDIT-AREA-3
+                               EDIT-AREA-4  EDIT-AREA-5  EDIT-AREA-6
+                               EDIT-AREA-7  EDIT-AREA-8.
+           GO TO PICTURE-TEST-4-A.
+       PICTURE-DELETE-4.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-5.
+       PICTURE-TEST-4-A.
+           IF EDIT-AREA-1 EQUAL TO "+0123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-1 TO COMPUTED-A
+              MOVE "+0123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-4-B.
+           IF EDIT-AREA-2 EQUAL TO " 0123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-2 TO COMPUTED-A
+              MOVE " 0123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-4-C.
+           IF EDIT-AREA-3 EQUAL TO " +123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-3 TO COMPUTED-A
+              MOVE " +123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-4-D.
+           IF EDIT-AREA-4 EQUAL TO "  123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-4 TO COMPUTED-A
+              MOVE "  123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-4-E.
+           IF EDIT-AREA-5 EQUAL TO " +123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-5 TO COMPUTED-A
+              MOVE " +123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-4-F.
+           IF EDIT-AREA-6 EQUAL TO "  123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-6 TO COMPUTED-A
+              MOVE "  123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-4-G.
+           IF EDIT-AREA-7 EQUAL TO " +123.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-7 TO COMPUTED-A
+              MOVE " +123.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-4-H.
+           IF EDIT-AREA-8 EQUAL TO "   123.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-8 TO COMPUTED-A
+              MOVE "   123.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-5.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTRE-TST-5" TO PAR-NAME.
+           MOVE "PICTURE + AND -" TO FEATURE.
+           MOVE  -123             TO WORK-AREA-5.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-5.
+           MOVE WORK-AREA-5 TO EDIT-AREA-1  EDIT-AREA-2  EDIT-AREA-3
+                               EDIT-AREA-4  EDIT-AREA-5  EDIT-AREA-6
+                               EDIT-AREA-7  EDIT-AREA-8.
+           GO TO PICTURE-TEST-5-A.
+       PICTURE-DELETE-5.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-6.
+       PICTURE-TEST-5-A.
+           IF EDIT-AREA-1 EQUAL TO "-0123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-1 TO COMPUTED-A
+              MOVE "-0123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-5-B.
+           IF EDIT-AREA-2 EQUAL TO "-0123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-2 TO COMPUTED-A
+              MOVE "-0123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-5-C.
+           IF EDIT-AREA-3 EQUAL TO " -123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-3 TO COMPUTED-A
+              MOVE " -123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-5-D.
+           IF EDIT-AREA-4 EQUAL TO " -123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-4 TO COMPUTED-A
+              MOVE " -123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-5-E.
+           IF EDIT-AREA-5 EQUAL TO " -123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-5 TO COMPUTED-A
+              MOVE " -123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-5-F.
+           IF EDIT-AREA-6 EQUAL TO " -123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-6 TO COMPUTED-A
+              MOVE " -123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-5-G.
+           IF EDIT-AREA-7 EQUAL TO " -123.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-7 TO COMPUTED-A
+              MOVE " -123.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-5-H.
+           IF EDIT-AREA-8 EQUAL TO "  -123.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-8 TO COMPUTED-A
+              MOVE "  -123.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-6.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTRE-TST-6" TO PAR-NAME.
+           MOVE "PICTURE + AND -" TO FEATURE.
+           MOVE  1234             TO WORK-AREA-6.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-6.
+           MOVE WORK-AREA-6 TO EDIT-AREA-1  EDIT-AREA-2  EDIT-AREA-3
+                               EDIT-AREA-4  EDIT-AREA-5  EDIT-AREA-6
+                               EDIT-AREA-7  EDIT-AREA-8.
+           GO TO PICTURE-TEST-6-A.
+       PICTURE-DELETE-6.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-7.
+       PICTURE-TEST-6-A.
+           IF EDIT-AREA-1 EQUAL TO "+1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-1 TO COMPUTED-A
+              MOVE "+1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-6-B.
+           IF EDIT-AREA-2 EQUAL TO " 1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-2 TO COMPUTED-A
+              MOVE " 1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-6-C.
+           IF EDIT-AREA-3 EQUAL TO "+1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-3 TO COMPUTED-A
+              MOVE "+1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-6-D.
+           IF EDIT-AREA-4 EQUAL TO " 1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-4 TO COMPUTED-A
+              MOVE " 1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-6-E.
+           IF EDIT-AREA-5 EQUAL TO "+1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-5 TO COMPUTED-A
+              MOVE "+1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-6-F.
+           IF EDIT-AREA-6 EQUAL TO " 1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-6 TO COMPUTED-A
+              MOVE " 1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-6-G.
+           IF EDIT-AREA-7 EQUAL TO "+1234.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-7 TO COMPUTED-A
+              MOVE "+1234.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-6-H.
+           IF EDIT-AREA-8 EQUAL TO " 1,234.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-8 TO COMPUTED-A
+              MOVE " 1,234.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-7.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTRE-TST-7" TO PAR-NAME.
+           MOVE "PICTURE + AND -" TO FEATURE.
+           MOVE  -1234           TO WORK-AREA-7.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-7.
+           MOVE WORK-AREA-7 TO EDIT-AREA-1  EDIT-AREA-2  EDIT-AREA-3
+                               EDIT-AREA-4  EDIT-AREA-5  EDIT-AREA-6
+                               EDIT-AREA-7  EDIT-AREA-8.
+           GO TO PICTURE-TEST-7-A.
+       PICTURE-DELETE-7.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-8.
+       PICTURE-TEST-7-A.
+           IF EDIT-AREA-1 EQUAL TO "-1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-1 TO COMPUTED-A
+              MOVE "-1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-7-B.
+           IF EDIT-AREA-2 EQUAL TO "-1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-2 TO COMPUTED-A
+              MOVE "-1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-7-C.
+           IF EDIT-AREA-3 EQUAL TO "-1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-3 TO COMPUTED-A
+              MOVE "-1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-7-D.
+           IF EDIT-AREA-4 EQUAL TO "-1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-4 TO COMPUTED-A
+              MOVE "-1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-7-E.
+           IF EDIT-AREA-5 EQUAL TO "-1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-5 TO COMPUTED-A
+              MOVE "-1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-7-F.
+           IF EDIT-AREA-6 EQUAL TO "-1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-6 TO COMPUTED-A
+              MOVE "-1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-7-G.
+           IF EDIT-AREA-7 EQUAL TO "-1234.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-7 TO COMPUTED-A
+              MOVE "-1234.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-7-H.
+           IF EDIT-AREA-8 EQUAL TO "-1,234.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-8 TO COMPUTED-A
+              MOVE "-1,234.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-8.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTRE-TST-8" TO PAR-NAME.
+           MOVE "PICTURE + AND -" TO FEATURE.
+           MOVE  12.34           TO WORK-AREA-8.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-8.
+           MOVE WORK-AREA-8 TO EDIT-AREA-1  EDIT-AREA-2  EDIT-AREA-3
+                               EDIT-AREA-4  EDIT-AREA-5  EDIT-AREA-6
+                               EDIT-AREA-7  EDIT-AREA-8.
+           GO TO PICTURE-TEST-8-A.
+       PICTURE-DELETE-8.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-9.
+       PICTURE-TEST-8-A.
+           IF EDIT-AREA-1 EQUAL TO "+0012"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-1 TO COMPUTED-A
+              MOVE "+0012" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-8-B.
+           IF EDIT-AREA-2 EQUAL TO " 0012"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-2 TO COMPUTED-A
+              MOVE " 0012" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-8-C.
+           IF EDIT-AREA-3 EQUAL TO "  +12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-3 TO COMPUTED-A
+              MOVE "  +12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-8-D.
+           IF EDIT-AREA-4 EQUAL TO "   12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-4 TO COMPUTED-A
+              MOVE "   12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-8-E.
+           IF EDIT-AREA-5 EQUAL TO "  +12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-5 TO COMPUTED-A
+              MOVE "  +12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-8-F.
+           IF EDIT-AREA-6 EQUAL TO "   12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-6 TO COMPUTED-A
+              MOVE "   12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-8-G.
+           IF EDIT-AREA-7 EQUAL TO "  +12.34"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-7 TO COMPUTED-A
+              MOVE "  +12.34" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-8-H.
+           IF EDIT-AREA-8 EQUAL TO "    12.34"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-8 TO COMPUTED-A
+              MOVE "    12.34" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-9.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTRE-TST-9" TO PAR-NAME.
+           MOVE "PICTURE + AND -" TO FEATURE.
+           MOVE -12.34           TO WORK-AREA-9.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-9.
+           MOVE WORK-AREA-9 TO EDIT-AREA-1  EDIT-AREA-2  EDIT-AREA-3
+                               EDIT-AREA-4  EDIT-AREA-5  EDIT-AREA-6
+                               EDIT-AREA-7  EDIT-AREA-8.
+           GO TO PICTURE-TEST-9-A.
+       PICTURE-DELETE-9.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-10.
+       PICTURE-TEST-9-A.
+           IF EDIT-AREA-1 EQUAL TO "-0012"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-1 TO COMPUTED-A
+              MOVE "-0012" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-9-B.
+           IF EDIT-AREA-2 EQUAL TO "-0012"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-2 TO COMPUTED-A
+              MOVE "-0012" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-9-C.
+           IF EDIT-AREA-3 EQUAL TO "  -12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-3 TO COMPUTED-A
+              MOVE "  -12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-9-D.
+           IF EDIT-AREA-4 EQUAL TO "  -12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-4 TO COMPUTED-A
+              MOVE "  -12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-9-E.
+           IF EDIT-AREA-5 EQUAL TO "  -12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-5 TO COMPUTED-A
+              MOVE "  -12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-9-F.
+           IF EDIT-AREA-6 EQUAL TO "  -12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-6 TO COMPUTED-A
+              MOVE "  -12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-9-G.
+           IF EDIT-AREA-7 EQUAL TO "  -12.34"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-7 TO COMPUTED-A
+              MOVE "  -12.34" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-9-H.
+           IF EDIT-AREA-8 EQUAL TO "   -12.34"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-8 TO COMPUTED-A
+              MOVE "   -12.34" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-10.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-10" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER l" TO FEATURE.
+           MOVE  0               TO WORK-AREA-10.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-10.
+           MOVE WORK-AREA-10 TO EDIT-AREA-9  EDIT-AREA-10
+                                EDIT-AREA-11  EDIT-AREA-12.
+           GO TO PICTURE-TEST-10-A.
+       PICTURE-DELETE-10.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-11.
+       PICTURE-TEST-10-A.
+           IF EDIT-AREA-9 EQUAL TO " $00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-9 TO COMPUTED-A
+              MOVE " $00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-10-B.
+           IF EDIT-AREA-10 EQUAL TO "   $0"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-10 TO COMPUTED-A
+              MOVE "   $0" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-10-C.
+           IF EDIT-AREA-11 EQUAL TO "    $.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-11 TO COMPUTED-A
+              MOVE "    $.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-10-D.
+           IF EDIT-AREA-12 EQUAL TO "         "
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-12 TO COMPUTED-A
+              MOVE "SPACES" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-11.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-11" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER l" TO FEATURE.
+           MOVE  .02                  TO WORK-AREA-11.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-11.
+           MOVE WORK-AREA-11 TO EDIT-AREA-9  EDIT-AREA-10
+                                EDIT-AREA-11  EDIT-AREA-12.
+           GO TO PICTURE-TEST-11-A.
+       PICTURE-DELETE-11.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-12.
+       PICTURE-TEST-11-A.
+           IF EDIT-AREA-9 EQUAL TO " $00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-9 TO COMPUTED-A
+              MOVE " $00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-11-B.
+           IF EDIT-AREA-10 EQUAL TO "   $0"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-10 TO COMPUTED-A
+              MOVE "   $0" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-11-C.
+           IF EDIT-AREA-11 EQUAL TO "    $.02"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-11 TO COMPUTED-A
+              MOVE "    $.02" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-11-D.
+           IF EDIT-AREA-12 EQUAL TO "     $.02"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-12 TO COMPUTED-A
+              MOVE "     $.02" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-12.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-12" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER l" TO FEATURE.
+           MOVE  12                   TO WORK-AREA-12.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-12.
+           MOVE WORK-AREA-12 TO EDIT-AREA-9  EDIT-AREA-10
+                                EDIT-AREA-11  EDIT-AREA-12.
+           GO TO PICTURE-TEST-12-A.
+       PICTURE-DELETE-12.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-13.
+       PICTURE-TEST-12-A.
+           IF EDIT-AREA-9 EQUAL TO " $12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-9 TO COMPUTED-A
+              MOVE " $12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-12-B.
+           IF EDIT-AREA-10 EQUAL TO "  $12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-10 TO COMPUTED-A
+              MOVE "  $12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-12-C.
+           IF EDIT-AREA-11 EQUAL TO "  $12.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-11 TO COMPUTED-A
+              MOVE "  $12.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-12-D.
+           IF EDIT-AREA-12 EQUAL TO "   $12.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-12 TO COMPUTED-A
+              MOVE "   $12.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-13.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-13" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER l" TO FEATURE.
+           MOVE  12.34                TO WORK-AREA-13.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-13.
+           MOVE WORK-AREA-13 TO EDIT-AREA-9  EDIT-AREA-10
+                                EDIT-AREA-11  EDIT-AREA-12.
+           GO TO PICTURE-TEST-13-A.
+       PICTURE-DELETE-13.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-14.
+       PICTURE-TEST-13-A.
+           IF EDIT-AREA-9 EQUAL TO " $12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-9 TO COMPUTED-A
+              MOVE " $12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-13-B.
+           IF EDIT-AREA-10 EQUAL TO "  $12"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-10 TO COMPUTED-A
+              MOVE "  $12" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-13-C.
+           IF EDIT-AREA-11 EQUAL TO "  $12.34"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-11 TO COMPUTED-A
+              MOVE "  $12.34" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-13-D.
+           IF EDIT-AREA-12 EQUAL TO "   $12.34"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-12 TO COMPUTED-A
+              MOVE "   $12.34" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-14.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-14" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER l" TO FEATURE.
+           MOVE  1234                 TO WORK-AREA-14.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-14.
+           MOVE WORK-AREA-14 TO EDIT-AREA-9  EDIT-AREA-10
+                                EDIT-AREA-11  EDIT-AREA-12.
+           GO TO PICTURE-TEST-14-A.
+       PICTURE-DELETE-14.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-15.
+       PICTURE-TEST-14-A.
+           IF EDIT-AREA-9 EQUAL TO "$234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-9 TO COMPUTED-A
+              MOVE "$234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-14-B.
+           IF EDIT-AREA-10 EQUAL TO "$1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-10 TO COMPUTED-A
+              MOVE "$1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-14-C.
+           IF EDIT-AREA-11 EQUAL TO "$1234.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-11 TO COMPUTED-A
+              MOVE "$1234.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-14-D.
+           IF EDIT-AREA-12 EQUAL TO "$1,234.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-12 TO COMPUTED-A
+              MOVE "$1,234.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-15.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-15" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER l" TO FEATURE.
+           MOVE  1234.56              TO WORK-AREA-15.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-15.
+           MOVE WORK-AREA-15 TO EDIT-AREA-9  EDIT-AREA-10
+                                EDIT-AREA-11  EDIT-AREA-12.
+           GO TO PICTURE-TEST-15-A.
+       PICTURE-DELETE-15.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-16.
+       PICTURE-TEST-15-A.
+           IF EDIT-AREA-9 EQUAL TO "$234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-9 TO COMPUTED-A
+              MOVE "$234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-15-B.
+           IF EDIT-AREA-10 EQUAL TO "$1234"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-10 TO COMPUTED-A
+              MOVE "$1234" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-15-C.
+           IF EDIT-AREA-11 EQUAL TO "$1234.56"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-11 TO COMPUTED-A
+              MOVE "$1234.56" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-15-D.
+           IF EDIT-AREA-12 EQUAL TO "$1,234.56"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-12 TO COMPUTED-A
+              MOVE "$1,234.56" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-16.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-16" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER *" TO FEATURE.
+           MOVE  0                    TO WORK-AREA-16.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-16.
+           MOVE WORK-AREA-16 TO EDIT-AREA-13  EDIT-AREA-14  EDIT-AREA-15
+                                EDIT-AREA-16  EDIT-AREA-17.
+           GO TO PICTURE-TEST-16-A.
+       PICTURE-DELETE-16.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-17.
+       PICTURE-TEST-16-A.
+           IF EDIT-AREA-13 EQUAL TO "*000"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-13 TO COMPUTED-A
+              MOVE "*000" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-16-B.
+           IF EDIT-AREA-14 EQUAL TO "**00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-14 TO COMPUTED-A
+              MOVE "**00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-16-C.
+           IF EDIT-AREA-15 EQUAL TO "***0"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-15 TO COMPUTED-A
+              MOVE "***0" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-16-D.
+           IF EDIT-AREA-16 EQUAL TO "**.**"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-16 TO COMPUTED-A
+              MOVE "**.**" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-16-E.
+           IF EDIT-AREA-17 EQUAL TO "*****.**"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-17 TO COMPUTED-A
+              MOVE "*****.**" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-17.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-17" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER *" TO FEATURE.
+           MOVE  13                   TO WORK-AREA-17.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-17.
+           MOVE WORK-AREA-17 TO EDIT-AREA-13  EDIT-AREA-14  EDIT-AREA-15
+                                EDIT-AREA-16  EDIT-AREA-17.
+           GO TO PICTURE-TEST-17-A.
+       PICTURE-DELETE-17.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-18.
+       PICTURE-TEST-17-A.
+           IF EDIT-AREA-13 EQUAL TO "*013"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-13 TO COMPUTED-A
+              MOVE "*013" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-17-B.
+           IF EDIT-AREA-14 EQUAL TO "**13"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-14 TO COMPUTED-A
+              MOVE "**13" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-17-C.
+           IF EDIT-AREA-15 EQUAL TO "**13"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-15 TO COMPUTED-A
+              MOVE "**13" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-17-D.
+           IF EDIT-AREA-16 EQUAL TO "13.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-16 TO COMPUTED-A
+              MOVE "13.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-17-E.
+           IF EDIT-AREA-17 EQUAL TO "***13.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-17 TO COMPUTED-A
+              MOVE "***13.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-18.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-18" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER *" TO FEATURE.
+           MOVE  123   TO WORK-AREA-18.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-18.
+           MOVE WORK-AREA-18 TO EDIT-AREA-13  EDIT-AREA-14  EDIT-AREA-15
+                                EDIT-AREA-16  EDIT-AREA-17.
+           GO TO PICTURE-TEST-18-A.
+       PICTURE-DELETE-18.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-19.
+       PICTURE-TEST-18-A.
+           IF EDIT-AREA-13 EQUAL TO "*123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-13 TO COMPUTED-A
+              MOVE "*123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-18-B.
+           IF EDIT-AREA-14 EQUAL TO "*123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-14 TO COMPUTED-A
+              MOVE "*123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-18-C.
+           IF EDIT-AREA-15 EQUAL TO "*123"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-15 TO COMPUTED-A
+              MOVE "*123" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-18-D.
+           IF EDIT-AREA-16 EQUAL TO "23.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-16 TO COMPUTED-A
+              MOVE "23.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-18-E.
+           IF EDIT-AREA-17 EQUAL TO "**123.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-17 TO COMPUTED-A
+              MOVE "**123.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-19.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-19" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER *" TO FEATURE.
+           MOVE  2010  TO WORK-AREA-19.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-19.
+           MOVE WORK-AREA-19 TO EDIT-AREA-13  EDIT-AREA-14  EDIT-AREA-15
+                                EDIT-AREA-16  EDIT-AREA-17.
+           GO TO PICTURE-TEST-19-A.
+       PICTURE-DELETE-19.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-20.
+       PICTURE-TEST-19-A.
+           IF EDIT-AREA-13 EQUAL TO "2010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-13 TO COMPUTED-A
+              MOVE "2010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-19-B.
+           IF EDIT-AREA-14 EQUAL TO "2010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-14 TO COMPUTED-A
+              MOVE "2010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-19-C.
+           IF EDIT-AREA-15 EQUAL TO "2010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-15 TO COMPUTED-A
+              MOVE "2010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-19-D.
+           IF EDIT-AREA-16 EQUAL TO "10.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-16 TO COMPUTED-A
+              MOVE "10.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-19-E.
+           IF EDIT-AREA-17 EQUAL TO "2,010.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-17 TO COMPUTED-A
+              MOVE "2,010.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-20.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-20" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER *" TO FEATURE.
+           MOVE 1 TO REC-CT.
+           MOVE  1010.2 TO WORK-AREA-20.
+       PICTURE-TEST-20.
+           MOVE WORK-AREA-20 TO EDIT-AREA-13  EDIT-AREA-14  EDIT-AREA-15
+                                EDIT-AREA-16  EDIT-AREA-17.
+           GO TO PICTURE-TEST-20-A.
+       PICTURE-DELETE-20.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-21.
+       PICTURE-TEST-20-A.
+           IF EDIT-AREA-13 EQUAL TO "1010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-13 TO COMPUTED-A
+              MOVE "1010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-20-B.
+           IF EDIT-AREA-14 EQUAL TO "1010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-14 TO COMPUTED-A
+              MOVE "1010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-20-C.
+           IF EDIT-AREA-15 EQUAL TO "1010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-15 TO COMPUTED-A
+              MOVE "1010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-20-D.
+           IF EDIT-AREA-16 EQUAL TO "10.20"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-16 TO COMPUTED-A
+              MOVE "10.20" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-20-E.
+           IF EDIT-AREA-17 EQUAL TO "1,010.20"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-17 TO COMPUTED-A
+              MOVE "1,010.20" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-21.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-21" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER *" TO FEATURE.
+           MOVE  .01    TO WORK-AREA-21.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-21.
+           MOVE WORK-AREA-21 TO EDIT-AREA-13  EDIT-AREA-14  EDIT-AREA-15
+                                EDIT-AREA-16  EDIT-AREA-17.
+           GO TO PICTURE-TEST-21-A.
+       PICTURE-DELETE-21.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-22.
+       PICTURE-TEST-21-A.
+           IF EDIT-AREA-13 EQUAL TO "*000"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-13 TO COMPUTED-A
+              MOVE "*000" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-21-B.
+           IF EDIT-AREA-14 EQUAL TO "**00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-14 TO COMPUTED-A
+              MOVE "**00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-21-C.
+           IF EDIT-AREA-15 EQUAL TO "***0"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-15 TO COMPUTED-A
+              MOVE "***0" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-21-D.
+           IF EDIT-AREA-16 EQUAL TO "**.01"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-16 TO COMPUTED-A
+              MOVE "**.01" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-21-E.
+           IF EDIT-AREA-17 EQUAL TO "*****.01"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-17 TO COMPUTED-A
+              MOVE "*****.01" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-22.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-22" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER Z" TO FEATURE.
+           MOVE  0      TO WORK-AREA-22.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-22.
+           MOVE WORK-AREA-22 TO EDIT-AREA-18  EDIT-AREA-19  EDIT-AREA-20
+                                EDIT-AREA-21  EDIT-AREA-22  EDIT-AREA-23
+                                EDIT-AREA-24.
+           GO TO PICTURE-TEST-22-A.
+       PICTURE-DELETE-22.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-23.
+       PICTURE-TEST-22-A.
+           IF EDIT-AREA-18 EQUAL TO "0000"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-18 TO COMPUTED-A
+              MOVE "0000" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-22-B.
+           IF EDIT-AREA-19 EQUAL TO " 000"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-19 TO COMPUTED-A
+              MOVE " 000" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-22-C.
+           IF EDIT-AREA-20 EQUAL TO "  00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-20 TO COMPUTED-A
+              MOVE "  00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-22-D.
+           IF EDIT-AREA-21 EQUAL TO "   0"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-21 TO COMPUTED-A
+              MOVE "   0" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-22-E.
+           IF EDIT-AREA-22 EQUAL TO "    "
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-22 TO COMPUTED-A
+              MOVE "SPACES" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-22-F.
+           IF EDIT-AREA-23 EQUAL TO "     "
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-23 TO COMPUTED-A
+              MOVE "SPACES" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-22-G.
+           IF EDIT-AREA-24 EQUAL TO "     "
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-24 TO COMPUTED-A
+              MOVE "SPACES" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-23.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-23" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER Z" TO FEATURE.
+           MOVE  1.01   TO WORK-AREA-23.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-23.
+           MOVE WORK-AREA-23 TO EDIT-AREA-18  EDIT-AREA-19  EDIT-AREA-20
+                                EDIT-AREA-21  EDIT-AREA-22  EDIT-AREA-23
+                                EDIT-AREA-24.
+           GO TO PICTURE-TEST-23-A.
+       PICTURE-DELETE-23.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-24.
+       PICTURE-TEST-23-A.
+           IF EDIT-AREA-18 EQUAL TO "0001"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-18 TO COMPUTED-A
+              MOVE "0001" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-23-B.
+           IF EDIT-AREA-19 EQUAL TO " 001"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-19 TO COMPUTED-A
+              MOVE " 001" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-23-C.
+           IF EDIT-AREA-20 EQUAL TO "  01"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-20 TO COMPUTED-A
+              MOVE "  01" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-23-D.
+           IF EDIT-AREA-21 EQUAL TO "   1"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-21 TO COMPUTED-A
+              MOVE "   1" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-23-E.
+           IF EDIT-AREA-22 EQUAL TO "   1"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-22 TO COMPUTED-A
+              MOVE "   1" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-23-F.
+           IF EDIT-AREA-23 EQUAL TO " 1.01"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-23 TO COMPUTED-A
+              MOVE " 1.01" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-23-G.
+           IF EDIT-AREA-24 EQUAL TO "    1"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-24 TO COMPUTED-A
+              MOVE "    1" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-24.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-24" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER Z" TO FEATURE.
+           MOVE  217    TO WORK-AREA-24.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-24.
+           MOVE WORK-AREA-24 TO EDIT-AREA-18  EDIT-AREA-19  EDIT-AREA-20
+                                EDIT-AREA-21  EDIT-AREA-22  EDIT-AREA-23
+                                EDIT-AREA-24.
+           GO TO PICTURE-TEST-24-A.
+       PICTURE-DELETE-24.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-25.
+       PICTURE-TEST-24-A.
+           IF EDIT-AREA-18 EQUAL TO "0217"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-18 TO COMPUTED-A
+              MOVE "0217" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-24-B.
+           IF EDIT-AREA-19 EQUAL TO " 217"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-19 TO COMPUTED-A
+              MOVE " 217" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-24-C.
+           IF EDIT-AREA-20 EQUAL TO " 217"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-20 TO COMPUTED-A
+              MOVE " 217" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-24-D.
+           IF EDIT-AREA-21 EQUAL TO " 217"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-21 TO COMPUTED-A
+              MOVE " 217" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-24-E.
+           IF EDIT-AREA-22 EQUAL TO " 217"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-22 TO COMPUTED-A
+              MOVE " 217" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-24-F.
+           IF EDIT-AREA-23 EQUAL TO "17.00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-23 TO COMPUTED-A
+              MOVE "17.00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-24-G.
+           IF EDIT-AREA-24 EQUAL TO "  217"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-24 TO COMPUTED-A
+              MOVE "  217" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-25.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-25" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER Z" TO FEATURE.
+           MOVE  1010.20 TO WORK-AREA-25.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-25.
+           MOVE WORK-AREA-25 TO EDIT-AREA-18  EDIT-AREA-19  EDIT-AREA-20
+                                EDIT-AREA-21  EDIT-AREA-22  EDIT-AREA-23
+                                EDIT-AREA-24.
+           GO TO PICTURE-TEST-25-A.
+       PICTURE-DELETE-25.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-26.
+       PICTURE-TEST-25-A.
+           IF EDIT-AREA-18 EQUAL TO "1010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-18 TO COMPUTED-A
+              MOVE "1010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-25-B.
+           IF EDIT-AREA-19 EQUAL TO "1010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-19 TO COMPUTED-A
+              MOVE "1010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-25-C.
+           IF EDIT-AREA-20 EQUAL TO "1010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-20 TO COMPUTED-A
+              MOVE "1010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-25-D.
+           IF EDIT-AREA-21 EQUAL TO "1010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-21 TO COMPUTED-A
+              MOVE "1010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-25-E.
+           IF EDIT-AREA-22 EQUAL TO "1010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-22 TO COMPUTED-A
+              MOVE "1010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-25-F.
+           IF EDIT-AREA-23 EQUAL TO "10.20"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-23 TO COMPUTED-A
+              MOVE "10.20" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-25-G.
+           IF EDIT-AREA-24 EQUAL TO "1,010"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-24 TO COMPUTED-A
+              MOVE "1,010" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-26.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PCTRE-TST-26" TO PAR-NAME.
+           MOVE "PICTURE CHARACTER Z" TO FEATURE.
+           MOVE  .01     TO WORK-AREA-26.
+           MOVE 1 TO REC-CT.
+       PICTURE-TEST-26.
+           MOVE WORK-AREA-26 TO EDIT-AREA-18  EDIT-AREA-19  EDIT-AREA-20
+                                EDIT-AREA-21  EDIT-AREA-22  EDIT-AREA-23
+                                EDIT-AREA-24.
+           GO TO PICTURE-TEST-26-A.
+       PICTURE-DELETE-26.
+           PERFORM DE-LETE.
+           PERFORM PRINT-DETAIL.
+           GO TO PICTURE-INIT-27.
+       PICTURE-TEST-26-A.
+           IF EDIT-AREA-18 EQUAL TO "0000"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-18 TO COMPUTED-A
+              MOVE "0000" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-26-B.
+           IF EDIT-AREA-19 EQUAL TO " 000"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-19 TO COMPUTED-A
+              MOVE " 000" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-26-C.
+           IF EDIT-AREA-20 EQUAL TO "  00"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-20 TO COMPUTED-A
+              MOVE "  00" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+           IF EDIT-AREA-21 EQUAL TO "   0"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-21 TO COMPUTED-A
+              MOVE "   0" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-26-E.
+           IF EDIT-AREA-22 EQUAL TO "    "
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-22 TO COMPUTED-A
+              MOVE "SPACES" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-26-F.
+           IF EDIT-AREA-23 EQUAL TO "  .01"
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-23 TO COMPUTED-A
+              MOVE "  .01" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+           ADD 1 TO REC-CT.
+       PICTURE-TEST-26-G.
+           IF EDIT-AREA-24 EQUAL TO "     "
+              PERFORM PASS
+              PERFORM PRINT-DETAIL
+              ELSE PERFORM FAIL
+              MOVE EDIT-AREA-24 TO COMPUTED-A
+              MOVE "SPACES" TO CORRECT-A
+              PERFORM PRINT-DETAIL.
+       PICTURE-INIT-27.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE ZERO TO REC-CT.
+           MOVE  200     TO WORK-AREA-27.
+           MOVE  SPACE   TO WORK-AREA-27A.
+           MOVE "PICTURE CHARACTER P" TO FEATURE.
+       PICTURE-TEST-27-0.
+           MOVE WORK-AREA-27 TO WORK-AREA-27A.
+       PICTURE-TEST-27-1.
+           IF WORK-AREA-27A EQUAL TO "200"
+              PERFORM PASS
+              ELSE GO TO PICTURE-FAIL-27.
+           GO TO PICTURE-WRITE-27.
+       PICTURE-DELETE-27.
+           PERFORM DE-LETE.
+           GO TO PICTURE-WRITE-27.
+       PICTURE-FAIL-27.
+           PERFORM FAIL.
+           MOVE WORK-AREA-27A TO COMPUTED-A.
+           MOVE "200" TO CORRECT-A.
+       PICTURE-WRITE-27.
+           MOVE "PICTURE-TEST-27" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       PICTURE-INIT-28.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTURE CHARACTER P" TO FEATURE.
+           MOVE  567     TO WORK-AREA-28.
+           MOVE  ZERO    TO WORK-AREA-28A.
+       PICTURE-TEST-28-0.
+           MOVE WORK-AREA-28 TO WORK-AREA-28A.
+       PICTURE-TEST-28-1.
+           IF WORK-AREA-28A EQUAL TO 500
+              PERFORM PASS
+              ELSE GO TO PICTURE-FAIL-28.
+           GO TO PICTURE-WRITE-28.
+       PICTURE-DELETE-28.
+           PERFORM DE-LETE.
+           GO TO PICTURE-WRITE-28.
+       PICTURE-FAIL-28.
+           PERFORM FAIL.
+           MOVE WORK-AREA-28A TO COMPUTED-A.
+           MOVE 500 TO CORRECT-18V0.
+       PICTURE-WRITE-28.
+           MOVE "PICTURE-TEST-28" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       PICTURE-INIT-29.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTURE CHARACTER P" TO FEATURE.
+           MOVE  123     TO WORK-AREA-29.
+           MOVE  ZERO    TO WORK-AREA-29A.
+           MOVE  SPACE   TO WORK-AREA-29B.
+       PICTURE-TEST-29.
+           MOVE WORK-AREA-29 TO WORK-AREA-29A.
+           MOVE WORK-AREA-29A TO WORK-AREA-29B.
+           IF WORK-AREA-29B EQUAL TO "100"
+              PERFORM PASS
+              ELSE GO TO PICTURE-FAIL-29.
+           GO TO PICTURE-WRITE-29.
+       PICTURE-DELETE-29.
+           PERFORM DE-LETE.
+           GO TO PICTURE-WRITE-29.
+       PICTURE-FAIL-29.
+           PERFORM FAIL.
+           MOVE WORK-AREA-29B TO COMPUTED-A.
+           MOVE "100" TO CORRECT-A.
+       PICTURE-WRITE-29.
+           MOVE "PICTURE-TEST-29" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       PICTURE-INIT-30.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTURE CHARACTER P" TO FEATURE.
+           MOVE  00900   TO WORK-AREA-30.
+           MOVE  ZERO    TO WORK-AREA-30A.
+       PICTURE-TEST-30-0.
+           MOVE WORK-AREA-30 TO WORK-AREA-30A.
+       PICTURE-TEST-30-1.
+           IF WORK-AREA-30A EQUAL TO "  9"
+              PERFORM PASS
+              ELSE GO TO PICTURE-FAIL-30.
+           GO TO PICTURE-WRITE-30.
+       PICTURE-DELETE-30.
+           PERFORM DE-LETE.
+           GO TO PICTURE-WRITE-30.
+       PICTURE-FAIL-30.
+           PERFORM FAIL.
+           MOVE WORK-AREA-30A TO COMPUTED-A.
+           MOVE "  9" TO CORRECT-A.
+       PICTURE-WRITE-30.
+           MOVE "PICTURE-TEST-30" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       PICTURE-INIT-31.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTURE CHARACTER P" TO FEATURE.
+           MOVE  01200   TO WORK-AREA-31.
+           MOVE  ZERO    TO WORK-AREA-31A.
+           MOVE  SPACE   TO WORK-AREA-31B.
+       PICTURE-TEST-31.
+           MOVE WORK-AREA-31 TO WORK-AREA-31A.
+           MOVE WORK-AREA-31A TO WORK-AREA-31B.
+           IF WORK-AREA-31B EQUAL TO " 12  "
+              PERFORM PASS
+              ELSE GO TO PICTURE-FAIL-31.
+           GO TO PICTURE-WRITE-31.
+       PICTURE-DELETE-31.
+           PERFORM DE-LETE.
+           GO TO PICTURE-WRITE-31.
+       PICTURE-FAIL-31.
+           PERFORM FAIL.
+           MOVE WORK-AREA-31B TO COMPUTED-A.
+           MOVE " 12  " TO CORRECT-A.
+       PICTURE-WRITE-31.
+           MOVE "PICTURE-TEST-31" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       PICTURE-INIT-32.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTURE CHARACTER P" TO FEATURE.
+           MOVE  .001    TO WORK-AREA-32.
+           MOVE  ZERO    TO WORK-AREA-32A.
+       PICTURE-TEST-32-0.
+           MOVE WORK-AREA-32 TO WORK-AREA-32A.
+       PICTURE-TEST-32-1.
+           IF WORK-AREA-32A EQUAL TO .001
+              PERFORM PASS
+              ELSE GO TO PICTURE-FAIL-32.
+           GO TO PICTURE-WRITE-32.
+       PICTURE-DELETE-32.
+           PERFORM DE-LETE.
+           GO TO PICTURE-WRITE-32.
+       PICTURE-FAIL-32.
+           PERFORM FAIL.
+           MOVE WORK-AREA-32A TO COMPUTED-0V18.
+           MOVE .001 TO CORRECT-0V18.
+       PICTURE-WRITE-32.
+           MOVE "PICTURE-TEST-32" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       PICTURE-INIT-33.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTURE CHARACTER P" TO FEATURE.
+           MOVE  .567    TO WORK-AREA-33.
+           MOVE  ZERO    TO WORK-AREA-33A.
+       PICTURE-TEST-33-0.
+           MOVE WORK-AREA-33 TO WORK-AREA-33A.
+       PICTURE-TEST-33-1.
+           IF WORK-AREA-33A EQUAL TO .007
+              PERFORM PASS
+              ELSE GO TO PICTURE-FAIL-33.
+           GO TO PICTURE-WRITE-33.
+       PICTURE-DELETE-33.
+           PERFORM DE-LETE.
+           GO TO PICTURE-WRITE-33.
+       PICTURE-FAIL-33.
+           PERFORM FAIL.
+           MOVE WORK-AREA-33A TO COMPUTED-0V18.
+           MOVE .007 TO CORRECT-0V18.
+       PICTURE-WRITE-33.
+           MOVE "PICTURE-TEST-33" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       PICTURE-INIT-34.
+           MOVE "VI-31"           TO ANSI-REFERENCE.
+           MOVE "PICTURE CHARACTER P" TO FEATURE.
+           MOVE  .123    TO WORK-AREA-34.
+           MOVE  ZERO    TO WORK-AREA-34A.
+           MOVE  ZERO    TO WORK-AREA-34B.
+       PICTURE-TEST-34.
+           MOVE WORK-AREA-34 TO WORK-AREA-34A.
+           MOVE WORK-AREA-34A TO WORK-AREA-34B.
+           IF WORK-AREA-34B EQUAL TO .003
+              PERFORM PASS
+              ELSE GO TO PICTURE-FAIL-34.
+           GO TO PICTURE-WRITE-34.
+       PICTURE-DELETE-34.
+           PERFORM DE-LETE.
+           GO TO PICTURE-WRITE-34.
+       PICTURE-FAIL-34.
+           PERFORM FAIL.
+           MOVE WORK-AREA-34B TO COMPUTED-0V18.
+           MOVE .003 TO CORRECT-0V18.
+       PICTURE-WRITE-34.
+           MOVE "PICTURE-TEST-34" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+       CCVS-EXIT SECTION.
+       CCVS-999999.
+           GO TO CLOSE-FILES.
+      *> END-OF,NC124A

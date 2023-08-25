@@ -1,0 +1,67 @@
+      *> HEADER,COBOL,IC108A,SUBRTN,IC109A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           IC109A.
+      *> ***************************************************************
+      *>                                                               *
+      *>     VALIDATION FOR:-                                          *
+      *>                                                               *
+      *>     "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+      *>                                                               *
+      *>     "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+      *>                                                               *
+      *> ***************************************************************
+      *>                                                               *
+      *>       X-CARDS USED BY THIS PROGRAM ARE :-                     *
+      *>                                                               *
+      *>         X-55  - SYSTEM PRINTER NAME.                          *
+      *>         X-82  - SOURCE COMPUTER NAME.                         *
+      *>         X-83  - OBJECT COMPUTER NAME.                         *
+      *>                                                               *
+      *> ***************************************************************
+      *>         THE SUBPROGRAM IC109 IS THE FIRST SUBPROGRAM IN A
+      *>     SEQUENCE OF CALLS WHICH START IN THE MAIN PROGRAM IC108.
+      *>     IC109 CALLS IC110 WITH ONE OPERAND IN THE WORKING-STORAGE
+      *>     SECTION AND ONE OPERAND IN THE LINKAGE SECTION.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  WS1 PICTURE X.
+       LINKAGE SECTION.
+       01  GRP-01.
+           02  SUB-CALLED.
+               03  DN1  PICTURE X(6).
+               03  DN2  PICTURE X(6).
+               03  DN3  PICTURE X(6).
+           02  TIMES-CALLED.
+               03  DN4  PICTURE S999.
+               03  DN5  PICTURE S999.
+               03  DN6  PICTURE S999.
+           02  SPECIAL-FLAGS.
+               03  DN7 PICTURE X.
+               03  DN8 PICTURE X.
+               03  DN9 PICTURE X.
+       PROCEDURE DIVISION USING GRP-01.
+       SECT-IC109-0001 SECTION.
+       PARA-IC109.
+           MOVE "IC109A" TO DN1.
+           MOVE SPACE TO WS1.
+           CALL "IC110A" USING WS1 GRP-01.
+           ADD 1 TO DN4.
+           MOVE WS1 TO DN9.
+       EXIT-IC109.
+           EXIT PROGRAM.
+      *> END-OF,IC109A

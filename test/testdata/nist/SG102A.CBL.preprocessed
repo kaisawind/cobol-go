@@ -1,0 +1,607 @@
+      *> HEADER,COBOL,SG102A
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           SG102A.
+       AUTHOR.
+      *>CE     FEDERAL COMPILER TESTING CENTER.
+       INSTALLATION.
+      *>CE     GENERAL SERVICES ADMINISTRATION
+      *>CE      AUTOMATED DATA AND TELECOMMUNICATION SERVICE.
+      *>CE     SOFTWARE DEVELOPMENT OFFICE.
+      *>CE     5203 LEESBURG PIKE  SUITE 1100
+      *>CE     FALLS CHURCH VIRGINIA 22041.
+      *>CE 
+      *>CE     PHONE   (703) 756-6153
+      *>CE 
+      *>CE     " HIGH       ".
+       DATE-WRITTEN.
+      *>CE     CCVS-74 VERSION 4.0 - 1980 JULY 1.
+      *>CE     CREATION DATE     /    VALIDATION DATE
+      *>CE     "4.2 ".
+       SECURITY.
+      *>CE     NONE.
+      *>CE       THE FOLLOWING FEATURES ARE TESTED BY THIS PROGRAM ---
+      *>CE         VARIOUS ALTER AND PERFORM STATEMENTS ARE EXERCISED
+      *>CE         AND A DIRECTORY IS PREPARED IN EACH TEST TO TRACE
+      *>CE         PROGRAM FLOW.
+      *>CE 
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PRINT-FILE ASSIGN TO
+           XXXXX055.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PRINT-FILE
+           LABEL RECORDS
+           XXXXX084
+           DATA RECORD IS PRINT-REC DUMMY-RECORD.
+       01  PRINT-REC PICTURE X(120).
+       01  DUMMY-RECORD PICTURE X(120).
+       WORKING-STORAGE SECTION.
+       77  SEG-CALC           PICTURE 9  VALUE 0.
+       77  RANGE-SUB                    PICTURE 9  VALUE 0.
+       01  COMPUTED-RANGE.
+           02  RANGE-X OCCURS 7 TIMES  PICTURE X.
+       01  TEST-RESULTS.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 FEATURE                   PICTURE X(20) VALUE SPACE.
+           02 FILLER                    PICTURE X VALUE SPACE.
+           02 P-OR-F                    PICTURE X(5) VALUE SPACE.
+           02 FILLER                    PICTURE X  VALUE SPACE.
+           02  PAR-NAME.
+             03 FILLER PICTURE X(12) VALUE SPACE.
+             03  PARDOT-X PICTURE X  VALUE SPACE.
+             03 DOTVALUE PICTURE 99  VALUE ZERO.
+             03 FILLER PIC X(5) VALUE SPACE.
+           02 FILLER PIC X(10) VALUE SPACE.
+           02 RE-MARK PIC X(61).
+       01  TEST-COMPUTED.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       COMPUTED=".
+           02 COMPUTED-X.
+           03 COMPUTED-A                PICTURE X(20) VALUE SPACE.
+           03 COMPUTED-N REDEFINES COMPUTED-A PICTURE -9(9).9(9).
+           03 COMPUTED-0V18 REDEFINES COMPUTED-A  PICTURE -.9(18).
+           03 COMPUTED-4V14 REDEFINES COMPUTED-A  PICTURE -9(4).9(14).
+           03 COMPUTED-14V4 REDEFINES COMPUTED-A  PICTURE -9(14).9(4).
+           03       CM-18V0 REDEFINES COMPUTED-A.
+               04 COMPUTED-18V0                   PICTURE -9(18).
+               04 FILLER                          PICTURE X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  TEST-CORRECT.
+           02 FILLER PIC X(30) VALUE SPACE.
+           02 FILLER PIC X(17) VALUE "       CORRECT =".
+           02 CORRECT-X.
+           03 CORRECT-A                 PICTURE X(20) VALUE SPACE.
+           03 CORRECT-N REDEFINES CORRECT-A PICTURE -9(9).9(9).
+           03 CORRECT-0V18 REDEFINES CORRECT-A    PICTURE -.9(18).
+           03 CORRECT-4V14 REDEFINES CORRECT-A    PICTURE -9(4).9(14).
+           03 CORRECT-14V4 REDEFINES CORRECT-A    PICTURE -9(14).9(4).
+           03      CR-18V0 REDEFINES CORRECT-A.
+               04 CORRECT-18V0                    PICTURE -9(18).
+               04 FILLER                          PICTURE X.
+           03 FILLER PIC X(50) VALUE SPACE.
+       01  CCVS-C-1.
+           02 FILLER PICTURE IS X(99) VALUE IS " FEATURE              PASS  PARAGRAPH-NAME                                                  REMARKS".
+           02 FILLER PICTURE IS X(20) VALUE IS SPACE.
+       01  CCVS-C-2.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(6) VALUE IS "TESTED".
+           02 FILLER PICTURE IS X(15) VALUE IS SPACE.
+           02 FILLER PICTURE IS X(4) VALUE IS "FAIL".
+           02 FILLER PICTURE IS X(94) VALUE IS SPACE.
+       01  REC-SKL-SUB PICTURE 9(2) VALUE ZERO.
+       01  REC-CT PICTURE 99 VALUE ZERO.
+       01  DELETE-CNT                   PICTURE 999  VALUE ZERO.
+       01  ERROR-COUNTER PICTURE IS 999 VALUE IS ZERO.
+       01  INSPECT-COUNTER PIC 999 VALUE ZERO.
+       01  PASS-COUNTER PIC 999 VALUE ZERO.
+       01  TOTAL-ERROR PIC 999 VALUE ZERO.
+       01  ERROR-HOLD PIC 999 VALUE ZERO.
+       01  DUMMY-HOLD PIC X(120) VALUE SPACE.
+       01  RECORD-COUNT PIC 9(5) VALUE ZERO.
+       01  CCVS-H-1.
+           02  FILLER   PICTURE X(27)  VALUE SPACE.
+           02 FILLER PICTURE X(67) VALUE
+           " FEDERAL COMPILER TESTING CENTER COBOL COMPILER VALIDATION   SYSTEM".
+           02  FILLER     PICTURE X(26)  VALUE SPACE.
+       01  CCVS-H-2.
+           02 FILLER PICTURE X(52) VALUE IS
+           "CCVS74 NCC  COPY, NOT FOR DISTRIBUTION.".
+           02 FILLER PICTURE IS X(19) VALUE IS "TEST RESULTS SET-  ".
+           02 TEST-ID PICTURE IS X(9).
+           02 FILLER PICTURE IS X(40) VALUE IS SPACE.
+       01  CCVS-H-3.
+           02  FILLER PICTURE X(34) VALUE
+           " FOR OFFICIAL USE ONLY    ".
+           02  FILLER PICTURE X(58) VALUE
+           "COBOL 85 VERSION 4.2, Apr  1993 SSVG                      ".
+           02  FILLER PICTURE X(28) VALUE
+           "  COPYRIGHT   1974 ".
+       01  CCVS-E-1.
+           02 FILLER PICTURE IS X(52) VALUE IS SPACE.
+           02 FILLER PICTURE IS X(14) VALUE IS "END OF TEST-  ".
+           02 ID-AGAIN PICTURE IS X(9).
+           02 FILLER PICTURE X(45) VALUE IS
+           " NTIS DISTRIBUTION COBOL 74".
+       01  CCVS-E-2.
+           02  FILLER                   PICTURE X(31)  VALUE
+           SPACE.
+           02  FILLER                   PICTURE X(21)  VALUE SPACE.
+           02 CCVS-E-2-2.
+               03 ERROR-TOTAL PICTURE IS XXX VALUE IS SPACE.
+               03 FILLER PICTURE IS X VALUE IS SPACE.
+               03 ENDER-DESC PIC X(44) VALUE "ERRORS ENCOUNTERED".
+       01  CCVS-E-3.
+           02  FILLER PICTURE X(22) VALUE
+           " FOR OFFICIAL USE ONLY".
+           02  FILLER PICTURE X(12) VALUE SPACE.
+           02  FILLER PICTURE X(58) VALUE
+           "ON-SITE VALIDATION, NATIONAL INSTITUTE OF STD & TECH.     ".
+           02  FILLER PICTURE X(13) VALUE SPACE.
+           02 FILLER PIC X(15) VALUE " COPYRIGHT 1974".
+       01  CCVS-E-4.
+           02 CCVS-E-4-1 PIC XXX VALUE SPACE.
+           02 FILLER PIC XXXX VALUE " OF ".
+           02 CCVS-E-4-2 PIC XXX VALUE SPACE.
+           02 FILLER PIC X(40) VALUE
+            "  TESTS WERE EXECUTED SUCCESSFULLY".
+       01  XXINFO.
+           02 FILLER PIC X(30) VALUE "        *** INFORMATION  ***".
+           02 INFO-TEXT.
+           04 FILLER PIC X(20) VALUE SPACE.
+           04 XXCOMPUTED PIC X(20).
+           04 FILLER PIC X(5) VALUE SPACE.
+           04 XXCORRECT PIC X(20).
+       01  HYPHEN-LINE.
+           02 FILLER PICTURE IS X VALUE IS SPACE.
+           02 FILLER PICTURE IS X(65) VALUE IS "*****************************************************************".
+           02 FILLER PICTURE IS X(54) VALUE IS "******************************************************".
+       01  CCVS-PGM-ID PIC X(6) VALUE
+           "SG102A".
+       PROCEDURE DIVISION.
+       SECT-SG-02-001 SECTION 50.
+       SG-02-001.
+           PERFORM  CCVS1.
+           GO TO    SEG-TEST-1.
+       CCVS1 SECTION.
+       OPEN-FILES.
+           OPEN     OUTPUT PRINT-FILE.
+           MOVE CCVS-PGM-ID TO TEST-ID. MOVE CCVS-PGM-ID TO ID-AGAIN.
+           MOVE    SPACE TO TEST-RESULTS.
+           PERFORM  HEAD-ROUTINE THRU COLUMN-NAMES-ROUTINE.
+           GO TO CCVS1-EXIT.
+       CLOSE-FILES.
+           PERFORM END-ROUTINE THRU END-ROUTINE-13. CLOSE PRINT-FILE.
+       TERMINATE-CCVS.
+      *>     EXIT PROGRAM.
+      *> TERMINATE-CALL.
+           STOP     RUN.
+       INSPT. MOVE "INSPT" TO P-OR-F. ADD 1 TO INSPECT-COUNTER.
+       PASS.  MOVE "PASS " TO P-OR-F.  ADD 1 TO PASS-COUNTER.
+       FAIL.  MOVE "FAIL*" TO P-OR-F.  ADD 1 TO ERROR-COUNTER.
+       DE-LETE.  MOVE "*****" TO P-OR-F.  ADD 1 TO DELETE-CNT.
+           MOVE "****TEST DELETED****" TO RE-MARK.
+       PRINT-DETAIL.
+           IF REC-CT NOT EQUAL TO ZERO
+                   MOVE "." TO PARDOT-X
+                   MOVE REC-CT TO DOTVALUE.
+           MOVE     TEST-RESULTS TO PRINT-REC. PERFORM WRITE-LINE.
+           IF P-OR-F EQUAL TO "FAIL*"  PERFORM WRITE-LINE
+              PERFORM FAIL-ROUTINE THRU FAIL-ROUTINE-EX
+                ELSE PERFORM BAIL-OUT THRU BAIL-OUT-EX.
+           MOVE SPACE TO P-OR-F. MOVE SPACE TO COMPUTED-X.
+           MOVE SPACE TO CORRECT-X.
+           IF     REC-CT EQUAL TO ZERO  MOVE SPACE TO PAR-NAME.
+           MOVE     SPACE TO RE-MARK.
+       HEAD-ROUTINE.
+           MOVE CCVS-H-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE CCVS-H-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+           MOVE CCVS-H-3 TO DUMMY-RECORD. PERFORM WRITE-LINE 3 TIMES.
+       COLUMN-NAMES-ROUTINE.
+           MOVE CCVS-C-1 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-C-2 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       END-ROUTINE.
+           MOVE HYPHEN-LINE TO DUMMY-RECORD. PERFORM WRITE-LINE 5 TIMES.
+       END-RTN-EXIT.
+           MOVE CCVS-E-1 TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       END-ROUTINE-1.
+            ADD ERROR-COUNTER TO ERROR-HOLD ADD INSPECT-COUNTER TO
+            ERROR-HOLD. ADD DELETE-CNT TO ERROR-HOLD.
+            ADD PASS-COUNTER TO ERROR-HOLD.
+      *>      IF PASS-COUNTER EQUAL TO ERROR-HOLD GO TO END-ROUTINE-12.
+            MOVE PASS-COUNTER TO CCVS-E-4-1.
+            MOVE ERROR-HOLD TO CCVS-E-4-2.
+            MOVE CCVS-E-4 TO CCVS-E-2-2.
+            MOVE CCVS-E-2 TO DUMMY-RECORD PERFORM WRITE-LINE.
+        END-ROUTINE-12.
+            MOVE "TEST(S) FAILED" TO ENDER-DESC.
+           IF       ERROR-COUNTER IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL
+               ELSE
+               MOVE ERROR-COUNTER TO ERROR-TOTAL.
+           MOVE     CCVS-E-2 TO DUMMY-RECORD.
+           PERFORM WRITE-LINE.
+       END-ROUTINE-13.
+           IF DELETE-CNT IS EQUAL TO ZERO
+               MOVE "NO " TO ERROR-TOTAL  ELSE
+               MOVE DELETE-CNT TO ERROR-TOTAL.
+           MOVE "TEST(S) DELETED     " TO ENDER-DESC.
+           MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+            IF   INSPECT-COUNTER EQUAL TO ZERO
+                MOVE "NO " TO ERROR-TOTAL
+            ELSE MOVE INSPECT-COUNTER TO ERROR-TOTAL.
+            MOVE "TEST(S) REQUIRE INSPECTION" TO ENDER-DESC.
+            MOVE CCVS-E-2 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+           MOVE CCVS-E-3 TO DUMMY-RECORD. PERFORM WRITE-LINE.
+       WRITE-LINE.
+           ADD 1 TO RECORD-COUNT.
+      *>     IF RECORD-COUNT GREATER 50
+      *>         MOVE DUMMY-RECORD TO DUMMY-HOLD
+      *>         MOVE SPACE TO DUMMY-RECORD
+      *>         WRITE DUMMY-RECORD AFTER ADVANCING PAGE
+      *>         MOVE CCVS-C-1 TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE CCVS-C-2 TO DUMMY-RECORD PERFORM WRT-LN 2 TIMES
+      *>         MOVE HYPHEN-LINE TO DUMMY-RECORD PERFORM WRT-LN
+      *>         MOVE DUMMY-HOLD TO DUMMY-RECORD
+      *>         MOVE ZERO TO RECORD-COUNT.
+           PERFORM WRT-LN.
+       WRT-LN.
+           WRITE    DUMMY-RECORD AFTER ADVANCING 1 LINES.
+           MOVE SPACE TO DUMMY-RECORD.
+       BLANK-LINE-PRINT.
+           PERFORM WRT-LN.
+       FAIL-ROUTINE.
+           IF COMPUTED-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           IF CORRECT-X NOT EQUAL TO SPACE GO TO FAIL-ROUTINE-WRITE.
+           MOVE "NO FURTHER INFORMATION, SEE PROGRAM." TO INFO-TEXT.
+           MOVE XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+           GO TO FAIL-ROUTINE-EX.
+       FAIL-ROUTINE-WRITE.
+           MOVE TEST-COMPUTED TO PRINT-REC PERFORM WRITE-LINE
+           MOVE TEST-CORRECT TO PRINT-REC PERFORM WRITE-LINE 2 TIMES.
+       FAIL-ROUTINE-EX. EXIT.
+       BAIL-OUT.
+           IF COMPUTED-A NOT EQUAL TO SPACE GO TO BAIL-OUT-WRITE.
+           IF CORRECT-A EQUAL TO SPACE GO TO BAIL-OUT-EX.
+       BAIL-OUT-WRITE.
+           MOVE CORRECT-A TO XXCORRECT. MOVE COMPUTED-A TO XXCOMPUTED.
+           MOVE XXINFO TO DUMMY-RECORD. PERFORM WRITE-LINE 2 TIMES.
+       BAIL-OUT-EX. EXIT.
+       CCVS1-EXIT.
+           EXIT.
+       TEST-1 SECTION 00.
+       TEST-1A.
+           GO TO TEST-1D.
+       TEST-1B.
+           ADD 2 TO SEG-CALC.
+           MOVE SEG-CALC TO RANGE-X (RANGE-SUB).
+           ADD 2 TO RANGE-SUB.
+           GO TO TEST-1D.
+       TEST-1C.
+           ALTER PARA-1-22 TO PROCEED TO PARA-2-22.
+      *>     NOTE ALTERED PARAGRAPH IN SECTION 22.
+           PERFORM TEST22.
+       TEST-1D.
+           EXIT.
+       SEG-TEST2 SECTION 00.
+       SEG-TEST-2.
+           MOVE 0 TO SEG-CALC.
+           MOVE SPACE TO COMPUTED-RANGE.
+           ALTER TEST-1A TO PROCEED TO TEST-1B.
+           MOVE "-" TO RANGE-X (2) RANGE-X (4) RANGE-X (6).
+           MOVE 0 TO RANGE-X (1).
+           MOVE 3 TO RANGE-SUB.
+           PERFORM TEST-1.
+           ALTER TEST-1A TO PROCEED TO TEST-1C.
+           PERFORM TEST-1.
+           PERFORM TEST-1.
+           IF SEG-CALC EQUAL TO 2
+               PERFORM PASS
+               GO TO TEST-2-WRITE.
+           MOVE COMPUTED-RANGE TO COMPUTED-A.
+           MOVE "0-2-0-2" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TEST-2-WRITE.
+       TEST-2-DELETE.
+           PERFORM DE-LETE.
+       TEST-2-WRITE.
+           MOVE "SEG-TEST-2" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO SEG-TEST-3.
+       TEST-6-1 SECTION 07.
+       TEST-6A.
+           ALTER TEST-6B TO PROCEED TO TEST-6D.
+       TEST-6-2 SECTION 08.
+       TEST-6B.
+           GO TO TEST-6E.
+       TEST-6-3 SECTION 09.
+       TEST-6C.
+           SUBTRACT 9 FROM SEG-CALC.
+           MOVE SEG-CALC TO RANGE-X (RANGE-SUB).
+           ADD 2 TO RANGE-SUB.
+       TEST-6-4 SECTION 10.
+       TEST-6D.
+           ALTER TEST-6B TO PROCEED TO TEST-6F.
+       TEST-6-5 SECTION 11.
+       TEST-6E.
+           SUBTRACT SEG-CALC FROM SEG-CALC.
+           MOVE 0 TO RANGE-X (RANGE-SUB).
+           ADD 2 TO RANGE-SUB.
+           GO TO TEST-6-2.
+       START-TESTING SECTION 11.
+       SEG-TEST-1.
+           MOVE SPACE TO COMPUTED-RANGE.
+           MOVE 4 TO SEG-CALC.
+           MOVE "-" TO RANGE-X (2) RANGE-X (4).
+           MOVE 4 TO RANGE-X (1).
+           MOVE 3 TO RANGE-SUB.
+           ALTER TEST-1A TO PROCEED TO TEST-1C.
+      *>     NOTE ALTERED PARAGRAPH IN SECTION 00.
+           PERFORM TEST-1.
+           PERFORM TEST-1.
+      *>     NOTE 2ND PERFORM VERIFIES THAT TEST-1A IS STILL ALTERED
+      *>          TO TEST-1B.
+           IF SEG-CALC EQUAL TO 2
+               PERFORM PASS
+               GO TO TEST-1-WRITE.
+           MOVE COMPUTED-RANGE TO COMPUTED-A.
+           MOVE "4-0-2" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TEST-1-WRITE.
+       TEST-1-DELETE.
+           PERFORM DE-LETE.
+       TEST-1-WRITE.
+           MOVE "SEG-TEST-1" TO PAR-NAME.
+           MOVE "SEGMENTATION" TO FEATURE.
+           PERFORM PRINT-DETAIL.
+           GO TO SEG-TEST-2.
+       TEST-8-BRANCH SECTION 12.
+       PARA-8.
+           GO TO SEG-TEST8.
+       TEST-6-6 SECTION 15.
+       TEST-6F.
+           ADD 9 TO SEG-CALC.
+           MOVE SEG-CALC TO RANGE-X (RANGE-SUB).
+           ADD 2 TO RANGE-SUB.
+       TEST-6-7 SECTION 18.
+       TEST-6G.
+           ALTER TEST-6B TO PROCEED TO TEST-6-8.
+           GO TO TEST-6-2.
+       TEST-6-8 SECTION 20.
+       TEST-6H.
+           SUBTRACT 1 FROM SEG-CALC.
+           MOVE SEG-CALC TO RANGE-X (RANGE-SUB).
+           ADD 2 TO RANGE-SUB.
+       TEST-6-9 SECTION 22.
+       TEST-6I.
+           EXIT.
+       TEST22 SECTION 22.
+       PARA-1-22.
+           GO TO PARA-3-22.
+       PARA-2-22.
+           MOVE 0 TO SEG-CALC.
+           MOVE SEG-CALC TO RANGE-X (RANGE-SUB).
+           ADD 2 TO RANGE-SUB.
+           ALTER TEST-1A TO PROCEED TO TEST-1B.
+       PARA-3-22.
+           EXIT.
+       TEST-4 SECTION 43.
+       TEST-4A.
+           GO TO TEST-4C.
+       TEST-4B.
+           SUBTRACT 1 FROM SEG-CALC.
+           MOVE SEG-CALC TO RANGE-X (RANGE-SUB).
+           ADD 2 TO RANGE-SUB.
+           IF SEG-CALC IS GREATER THAN 0
+               GO TO TEST-4A.
+           GO TO TEST-4D.
+       TEST-4C.
+           ALTER TEST-4A TO PROCEED TO TEST-4B.
+           GO TO TEST-4B.
+       TEST-4D.
+           EXIT.
+       SEG-TEST5 SECTION 43.
+       SEG-TEST-5.
+           MOVE SPACE TO COMPUTED-RANGE.
+           MOVE 5 TO SEG-CALC.
+           MOVE SEG-CALC TO RANGE-X (1).
+           MOVE "-" TO RANGE-X (2) RANGE-X (4).
+           MOVE 3 TO RANGE-SUB.
+           PERFORM TEST-5.
+       SEG-5A.
+           GO TO SEG-5C.
+       SEG-5B.
+           PERFORM TEST-5B THRU TEST-5C.
+           IF SEG-CALC EQUAL TO 7
+               PERFORM PASS
+               GO TO TEST-5-WRITE.
+       SEG-5C.
+           MOVE COMPUTED-RANGE TO COMPUTED-A.
+           MOVE "5-6-7" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TEST-5-WRITE.
+       TEST-5-DELETE.
+           PERFORM DE-LETE.
+       TEST-5-WRITE.
+           MOVE "SEG-TEST-5" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO SEG-TEST-6.
+       SEG-TEST7 SECTION 74.
+       SEG-TEST-7.
+           MOVE SPACE TO COMPUTED-RANGE.
+           MOVE 3 TO SEG-CALC.
+           MOVE 3 TO RANGE-SUB.
+           MOVE SEG-CALC TO RANGE-X (1).
+           MOVE "-" TO RANGE-X (2) RANGE-X (4) RANGE-X (6).
+           ALTER TEST-7A TO PROCEED TO TEST-7D.
+           PERFORM TEST-7-1 THRU TEST-7-4.
+           PERFORM TEST-7-1 THRU TEST-7-4.
+           IF SEG-CALC EQUAL TO 4
+               PERFORM PASS
+               GO TO TEST-7-WRITE.
+           MOVE COMPUTED-RANGE TO COMPUTED-A.
+           MOVE "3-2-5-4" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TEST-7-WRITE.
+       TEST-7-DELETE.
+           PERFORM DE-LETE.
+       TEST-7-WRITE.
+           MOVE "SEG-TEST-7" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           MOVE 0 TO SEG-CALC.
+           GO TO TEST-8-BRANCH.
+       TEST-7-1 SECTION 74.
+       TEST-7A.
+           GO TO TEST-7B.
+       TEST-7-2 SECTION 74.
+       TEST-7B.
+           ALTER TEST-7A TO PROCEED TO TEST-7C.
+       TEST-7-3 SECTION 74.
+       TEST-7C.
+           ADD 3 TO SEG-CALC.
+           MOVE SEG-CALC TO RANGE-X (RANGE-SUB).
+           ADD 2 TO RANGE-SUB.
+       TEST-7D.
+           SUBTRACT 1 FROM SEG-CALC.
+           MOVE SEG-CALC TO RANGE-X (RANGE-SUB).
+           ADD 2 TO RANGE-SUB.
+           PERFORM TEST-7B.
+       TEST-7-4 SECTION 74.
+       TEST-7E.
+           GO TO TEST-7F.
+       TEST-7F.
+           ALTER TEST-7E TO PROCEED TO TEST-7G.
+       TEST-7G.
+           EXIT.
+       SEG-TEST3  SECTION 66.
+       SEG-TEST-3.
+           MOVE 2 TO SEG-CALC.
+           MOVE SPACE TO COMPUTED-RANGE.
+           MOVE 2 TO RANGE-X (1).
+           MOVE "-" TO RANGE-X (2) RANGE-X (4).
+           MOVE 3 TO RANGE-SUB.
+           PERFORM  TEST-3.
+           ALTER TEST-3X TO PROCEED TO TEST-3B.
+           ALTER TEST-3A TO PROCEED TO TEST-3C.
+           PERFORM TEST-3A THRU TEST-3EXIT.
+           PERFORM TEST-3C.
+           GO TO TEST-3X.
+      *>     NOTE PERFORMING AND GO TO SECTION 66 PARAGRAPHS.
+       TEST-3-DELETE.
+           PERFORM DE-LETE.
+       TEST-3-WRITE.
+           MOVE "SEG-TEST-3" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO SEG-TEST-4.
+       TEST-3 SECTION 66.
+       TEST-3X.
+           GO TO TEST-3D.
+       TEST-3A.
+           GO TO TEST-3B.
+       TEST-3B.
+           IF SEG-CALC EQUAL TO 6
+               PERFORM PASS
+               GO TO TEST-3-WRITE.
+           MOVE COMPUTED-RANGE TO COMPUTED-A.
+           MOVE "2-4-6" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TEST-3-WRITE.
+       TEST-3C.
+           ADD 2 TO SEG-CALC.
+           MOVE SEG-CALC TO RANGE-X (RANGE-SUB).
+           ADD 2 TO RANGE-SUB.
+       TEST-3D.
+           IF SEG-CALC EQUAL TO 2 GO TO TEST-3EXIT.
+           PERFORM TEST-3C.
+           GO TO TEST-3B.
+       TEST-3EXIT.
+           EXIT.
+       SEG-TEST4  SECTION 66.
+       SEG-TEST-4.
+           MOVE SPACE TO COMPUTED-RANGE.
+           MOVE 3 TO RANGE-SUB.
+           MOVE 3 TO SEG-CALC.
+           MOVE 3 TO RANGE-X (1).
+           MOVE "-" TO RANGE-X (2) RANGE-X (4) RANGE-X (6).
+           PERFORM TEST-4.
+           IF SEG-CALC EQUAL TO 0
+               PERFORM PASS
+               GO TO TEST-4-WRITE.
+           MOVE COMPUTED-RANGE TO COMPUTED-A.
+           MOVE "3-2-1-0" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TEST-4-WRITE.
+       TEST-4-DELETE.
+           PERFORM DE-LETE.
+       TEST-4-WRITE.
+           MOVE "SEG-TEST-4" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO SEG-TEST-5.
+       SEG-TEST6 SECTION 83.
+       SEG-TEST-6.
+           MOVE 9 TO SEG-CALC.
+           MOVE SPACE TO COMPUTED-RANGE.
+           MOVE SEG-CALC TO RANGE-X (1).
+           MOVE "-" TO RANGE-X (2) RANGE-X (4) RANGE-X (6).
+           MOVE 3 TO RANGE-SUB.
+           PERFORM TEST-6A THRU TEST-6I.
+           IF SEG-CALC EQUAL TO 8
+               PERFORM PASS
+               GO TO TEST-6-WRITE.
+           MOVE COMPUTED-RANGE TO COMPUTED-A.
+           MOVE "9-0-9-8" TO CORRECT-A.
+           PERFORM FAIL.
+           GO TO TEST-6-WRITE.
+       TEST-6-DELETE.
+           PERFORM DE-LETE.
+       TEST-6-WRITE.
+           MOVE "SEG-TEST-6" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO SEG-TEST-7.
+      *>     NOTE PERFORM RESIDENT SECTIONS 7 THRU 22.
+       SEG-TEST8 SECTION 84.
+       SEG-TEST-8.
+           ALTER PARA-8 TO PROCEED TO SEG-TEST-8A.
+           ADD 1 TO SEG-CALC.
+           IF SEG-CALC EQUAL TO 2
+               PERFORM FAIL
+               GO TO TEST-8-WRITE.
+           GO TO TEST-8-BRANCH.
+       SEG-TEST-8A SECTION 85.
+       PARA-85.
+           PERFORM PASS.
+       TEST-8-WRITE.
+           MOVE "ALTER RES TO NON-RES" TO FEATURE.
+           MOVE "SEG-TEST-8" TO PAR-NAME.
+           PERFORM PRINT-DETAIL.
+           GO TO    CLOSE-FILES.
+       TEST-5 SECTION 99.
+       TEST-5A.
+           GO TO TEST-5B.
+       TEST-5B.
+           ALTER SEG-5A TO PROCEED TO SEG-5B.
+           ALTER TEST-5A TO PROCEED TO TEST-5C.
+           PERFORM SEG-99A THROUGH SEG-99C.
+           GO TO TEST-5A.
+       TEST-5C.
+           EXIT.
+       SEG SECTION 99.
+       SEG-99A.
+           GO TO SEG-99B.
+       SEG-99B.
+           ALTER SEG-99A TO PROCEED TO SEG-99C.
+           ALTER TEST-5A TO PROCEED TO TEST-5B.
+           ADD 1 TO SEG-CALC.
+           MOVE SEG-CALC TO RANGE-X (RANGE-SUB).
+           ADD 2 TO RANGE-SUB.
+       SEG-99C.
+           EXIT.
+      *> END-OF,SG102A

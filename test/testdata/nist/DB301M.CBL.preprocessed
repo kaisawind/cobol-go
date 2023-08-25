@@ -1,0 +1,47 @@
+      *> HEADER,COBOL,DB301M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+           DB301M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF LEVEL 1
+      *> FEATURES OF THE DEBUGGING MODULE.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082
+           WITH DEBUGGING MODE.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT TFIL ASSIGN
+           XXXXX014
+               ORGANIZATION IS SEQUENTIAL
+               ACCESS MODE IS SEQUENTIAL.
+       DATA DIVISION.
+       FILE SECTION.
+       FD TFIL.
+       01 FREC.
+           03 RKEY PIC 9(8).
+       
+       PROCEDURE DIVISION.
+       
+       DECLARATIVES.
+       
+       
+       BUGGING-2 SECTION.
+       
+       
+           USE FOR DEBUGGING ON ALL PROCEDURES.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       
+       END DECLARATIVES.
+       
+       DB301M-FLAGS SECTION.
+       DB301M-CONTROL.
+           DISPLAY "THIS IS A DUMMY PROCEDURE".
+           STOP RUN.
+       
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 1.
+      *> END-OF,DB301M

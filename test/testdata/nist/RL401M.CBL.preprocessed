@@ -1,0 +1,80 @@
+      *> HEADER,COBOL,RL401M
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID.
+            RL401M.
+      *> THE FOLLOWING PROGRAM TESTS THE FLAGGING OF
+      *> HIGH SUBSET FEATURES THAT ARE USED IN RELATIVE
+      *> INPUT-OUTPUT.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.
+           XXXXX082.
+       OBJECT-COMPUTER.
+           XXXXX083.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT OPTIONAL TFIL ASSIGN
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+           XXXXX021
+               RESERVE 2 AREAS
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+               ORGANIZATION IS RELATIVE
+               ACCESS MODE IS DYNAMIC
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+               RELATIVE KEY IS RKEY.
+       
+           SELECT TFIL2 ASSIGN
+           XXXXX022
+               ORGANIZATION IS RELATIVE.
+       
+       I-O-CONTROL.
+           SAME RECORD AREA FOR TFIL2, TFIL.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       DATA DIVISION.
+       FILE SECTION.
+       FD TFIL
+           RECORD IS VARYING IN SIZE FROM 1 TO 8 CHARACTERS.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       01 FREC.
+           03 GUBBINS PIC 9(8).
+       
+       
+       FD TFIL2.
+       01 FREC2.
+           03 RKEY2 PIC 9(8).
+       
+       WORKING-STORAGE SECTION.
+       01 RKEY PIC 9(8) VALUE ZERO.
+       
+       PROCEDURE DIVISION.
+       
+       RL401M-CONTROL.
+           OPEN INPUT TFIL.
+           PERFORM RL401M-CLOSE THRU RL401M-START.
+           CLOSE TFIL.
+           CLOSE TFIL2.
+           STOP RUN.
+       
+       RL401M-CLOSE.
+           CLOSE TFIL WITH LOCK.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+           OPEN INPUT TFIL.
+       
+       RL401M-OPENEXT.
+           OPEN EXTEND TFIL2.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       RL401M-READNEXT.
+           READ TFIL NEXT RECORD
+               AT END DISPLAY "AT END".
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+       RL401M-START.
+           START TFIL KEY IS EQUAL TO RKEY
+               INVALID KEY STOP RUN.
+      *> Message expected for above statement: NON-CONFORMING STANDARD
+       
+      *> TOTAL NUMBER OF FLAGS EXPECTED = 9.
+      *> END-OF,RL401M
