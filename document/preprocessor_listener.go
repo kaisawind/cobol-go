@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/kaisawind/cobol/constant"
-	"github.com/kaisawind/cobol/copybook"
-	"github.com/kaisawind/cobol/format"
-	"github.com/kaisawind/cobol/gen/preprocessor"
-	"github.com/kaisawind/cobol/line"
-	"github.com/kaisawind/cobol/options"
+	"github.com/kaisawind/cobol-go/constant"
+	"github.com/kaisawind/cobol-go/copybook"
+	"github.com/kaisawind/cobol-go/format"
+	"github.com/kaisawind/cobol-go/gen/preprocessor"
+	"github.com/kaisawind/cobol-go/line"
+	"github.com/kaisawind/cobol-go/options"
 )
 
 type PreprocessorListener struct {

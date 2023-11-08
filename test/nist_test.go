@@ -8,11 +8,11 @@ import (
 	"testing"
 
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/kaisawind/cobol/asg/conv"
-	"github.com/kaisawind/cobol/document"
-	"github.com/kaisawind/cobol/format"
-	"github.com/kaisawind/cobol/gen/cobol85"
-	"github.com/kaisawind/cobol/options"
+	"github.com/kaisawind/cobol-go/asg/conv"
+	"github.com/kaisawind/cobol-go/document"
+	"github.com/kaisawind/cobol-go/format"
+	"github.com/kaisawind/cobol-go/gen/cobol85"
+	"github.com/kaisawind/cobol-go/options"
 )
 
 type ErrorListener struct {

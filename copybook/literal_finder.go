@@ -6,8 +6,8 @@ import (
 	fp "path/filepath"
 	"strings"
 
-	"github.com/kaisawind/cobol/gen/preprocessor"
-	"github.com/kaisawind/cobol/options"
+	"github.com/kaisawind/cobol-go/gen/preprocessor"
+	"github.com/kaisawind/cobol-go/options"
 )
 
 type LiteralFinder struct {

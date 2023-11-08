@@ -1,7 +1,7 @@
 package line
 
 import (
-	"github.com/kaisawind/cobol/format"
+	"github.com/kaisawind/cobol-go/format"
 )
 
 type Line struct {

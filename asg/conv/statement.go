@@ -1,8 +1,8 @@
 package conv
 
 import (
-	"github.com/kaisawind/cobol/gen/cobol85"
-	"github.com/kaisawind/cobol/pb"
+	"github.com/kaisawind/cobol-go/gen/cobol85"
+	"github.com/kaisawind/cobol-go/pb"
 )
 
 func Statement(in cobol85.IStatementContext) (out *pb.Statement) {

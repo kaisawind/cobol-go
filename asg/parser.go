@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/kaisawind/cobol/asg/conv"
-	"github.com/kaisawind/cobol/asg/visitor"
-	"github.com/kaisawind/cobol/document"
-	"github.com/kaisawind/cobol/gen/cobol85"
-	"github.com/kaisawind/cobol/options"
-	"github.com/kaisawind/cobol/pb"
+	"github.com/kaisawind/cobol-go/asg/conv"
+	"github.com/kaisawind/cobol-go/asg/visitor"
+	"github.com/kaisawind/cobol-go/document"
+	"github.com/kaisawind/cobol-go/gen/cobol85"
+	"github.com/kaisawind/cobol-go/options"
+	"github.com/kaisawind/cobol-go/pb"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )

@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/kaisawind/cobol/constant"
+	"github.com/kaisawind/cobol-go/constant"
 )
 
 func Symbol(name string) string {

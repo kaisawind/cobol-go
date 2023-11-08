@@ -4,7 +4,7 @@ import (
 	"sort"
 
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/kaisawind/cobol/gen/preprocessor"
+	"github.com/kaisawind/cobol-go/gen/preprocessor"
 )
 
 type Context struct {

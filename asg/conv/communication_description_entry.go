@@ -1,8 +1,8 @@
 package conv
 
 import (
-	"github.com/kaisawind/cobol/gen/cobol85"
-	"github.com/kaisawind/cobol/pb"
+	"github.com/kaisawind/cobol-go/gen/cobol85"
+	"github.com/kaisawind/cobol-go/pb"
 )
 
 func CommunicationDescriptionEntry(in cobol85.ICommunicationDescriptionEntryContext) (out *pb.CommunicationDescriptionEntry) {

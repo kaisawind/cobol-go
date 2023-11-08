@@ -2,8 +2,8 @@ package procedure
 
 import (
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/kaisawind/cobol/gen/cobol85"
-	"github.com/kaisawind/cobol/pb"
+	"github.com/kaisawind/cobol-go/gen/cobol85"
+	"github.com/kaisawind/cobol-go/pb"
 )
 
 type ProcedureSectionVisitor struct {

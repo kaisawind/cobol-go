@@ -2,7 +2,7 @@ package document
 
 import (
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/kaisawind/cobol/gen/preprocessor"
+	"github.com/kaisawind/cobol-go/gen/preprocessor"
 )
 
 func GetTextWithHiddenTokens(ctx antlr.Tree, cts *antlr.CommonTokenStream) string {

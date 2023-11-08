@@ -1,4 +1,4 @@
-module github.com/kaisawind/cobol
+module github.com/kaisawind/cobol-go
 
 go 1.21
 

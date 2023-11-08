@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kaisawind/cobol/document"
-	"github.com/kaisawind/cobol/format"
-	"github.com/kaisawind/cobol/options"
+	"github.com/kaisawind/cobol-go/document"
+	"github.com/kaisawind/cobol-go/format"
+	"github.com/kaisawind/cobol-go/options"
 )
 
 var (

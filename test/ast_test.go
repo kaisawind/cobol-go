@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/kaisawind/cobol/document"
-	"github.com/kaisawind/cobol/gen/cobol85"
-	"github.com/kaisawind/cobol/options"
+	"github.com/kaisawind/cobol-go/document"
+	"github.com/kaisawind/cobol-go/gen/cobol85"
+	"github.com/kaisawind/cobol-go/options"
 )
 
 var (

@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/kaisawind/cobol/format"
-	"github.com/kaisawind/cobol/options"
+	"github.com/kaisawind/cobol-go/format"
+	"github.com/kaisawind/cobol-go/options"
 )
 
 func TestLinkedLine(t *testing.T) {
