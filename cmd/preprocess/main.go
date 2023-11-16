@@ -50,6 +50,22 @@ func main() {
 	} else {
 		filepath.WalkDir(rootPath, func(path string, d fs.DirEntry, err error) error {
 			if !d.IsDir() {
+				if strings.HasSuffix(path, ".preprocessed") {
+					return nil
+				}
+				suffixes := strings.Split(*suffixFlag, ",")
+				has := false
+				for _, v := range suffixes {
+					trimed := strings.TrimSpace(v)
+					r := regexp.MustCompile(fmt.Sprintf(`(?i)%s$`, trimed))
+					if r.MatchString(path) {
+						has = true
+						break
+					}
+				}
+				if !has {
+					return nil
+				}
 				Process(path, f)
 			}
 			return err
@@ -59,23 +75,6 @@ func main() {
 }
 
 func Process(path string, f format.Format) {
-	if strings.HasSuffix(path, ".preprocessed") {
-		return
-	}
-	suffixes := strings.Split(*suffixFlag, ",")
-	has := false
-	for _, v := range suffixes {
-		trimed := strings.TrimSpace(v)
-		r := regexp.MustCompile(fmt.Sprintf(`(?i)%s$`, trimed))
-		if r.MatchString(path) {
-			has = true
-			break
-		}
-	}
-	if !has {
-		return
-	}
-
 	start := time.Now()
 	buff, err := os.ReadFile(path)
 	if err != nil {
